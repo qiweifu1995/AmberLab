@@ -11,7 +11,11 @@ def project_namelist(file_dir):
                  "Ch3": "",
                  "Ch1-2": "",
                  "Ch1-3": "",
-                 "Ch2-3": ""}
+                 "Ch2-3": "",
+                 "Locked": "",
+                 "Param": "",
+                 "Summary": "",
+                 }
     if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") > 1:
         root_folder = os.path.dirname(file_dir)
         file_name = os.path.basename(file_dir)
@@ -23,4 +27,8 @@ def project_namelist(file_dir):
                     if file.rfind(key) >= 0:
                         name_dict[key] = file
     return name_dict.copy()
+
+if __name__ == "__main__":
+    print(project_namelist("Z:\Data\EXP200601-2/200601_130231 AFB Peak Record.csv"))
+
 
