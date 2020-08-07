@@ -8,11 +8,15 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
+import pandas as pd
 import os
+import pprint
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.mainwindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1246, 749)
         MainWindow.setMinimumSize(QtCore.QSize(150, 150))
@@ -32,9 +36,11 @@ class Ui_MainWindow(object):
         self.label_files.setAlignment(QtCore.Qt.AlignCenter)
         self.label_files.setObjectName("label_files")
         self.layout_vertical_filecontrol.addWidget(self.label_files)
-        self.file_list_view = QtWidgets.QListView(self.centralwidget)
+        
+        self.file_list_view = QtWidgets.QListWidget(self.centralwidget)
         self.file_list_view.setObjectName("file_list_view")
         self.layout_vertical_filecontrol.addWidget(self.file_list_view)
+        
         self.layout_horizontal_renamebutton = QtWidgets.QHBoxLayout()
         self.layout_horizontal_renamebutton.setObjectName("layout_horizontal_renamebutton")
         self.button_rename = QtWidgets.QPushButton(self.centralwidget)
@@ -1721,11 +1727,149 @@ class Ui_MainWindow(object):
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
 
+        self.actionImport.triggered.connect(self.openfolder)
+        self.actionAdd_New.triggered.connect(self.add)
+        self.button_update.clicked.connect(self.pressed)
+
+        
         self.retranslateUi(MainWindow)
-        self.tab_widgets_main.setCurrentIndex(3)
+        self.tab_widgets_main.setCurrentIndex(0)
         self.tab_widgets_scatter.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        
+    def pressed(self):
+        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Raw_Time_Log
+        row = self.file_list_view.currentRow()
+        
+    # Channels file
+        Ch1 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch1 "])
+        Ch2 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch2 "])
+        Ch3 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch3 "])
+        Ch1_2 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch1-2"])
+        Ch1_3 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch1-3"])
+        Ch2_3 = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Ch2-3"])
+        
+    # Locked
+        if name_dict_list[row * 2]["Locked"] != "":
+            Locked = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Locked"])
+
+    # Peak_Record
+        Peak_Record = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Peak Record"],header = 2)
+        
+    # Raw time log
+        Raw_time_log = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Raw Time Log"],
+                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
+                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
+        row_count = len(Raw_time_log.index)
+        Run_total = Raw_time_log.iloc[row_count-1,0:6]
+        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
+        
+    # summary
+        df = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Summary"], header=None, sep='\n')
+        Summary = df[0].str.split(',', expand=True)
+
+        Total_sorted = Summary.iloc[5,0]
+        Total_droplets = Summary.iloc[5,1]
+        Total_lost_from_lockout = Summary.iloc[5,2]
+        Sorting_positive_rate = Summary.iloc[5,3]
+        Dt_total_cells = Summary.iloc[5,4]
+        Undersample_factor = Summary.iloc[5,5]
+        
+        Negative_Ch1_Hit = Summary.iloc[7,0]
+        Negative_Ch2_Hit = Summary.iloc[7,1]
+        Negative_Ch3_Hit = Summary.iloc[7,2]
+        Negative_Ch1_2_Hit = Summary.iloc[7,3]
+        Negative_Ch1_3_Hit = Summary.iloc[7,4]
+        Negative_Ch2_3_Hit = Summary.iloc[7,5]
+        
+        Percent_of_droplet_with_Ch1 = Summary.iloc[9,0]
+        Percent_of_droplet_with_Ch2 = Summary.iloc[9,1]
+        Percent_of_droplet_with_Ch3 = Summary.iloc[9,2]
+        Percent_of_droplet_with_Ch1_2 = Summary.iloc[9,3]
+        Percent_of_droplet_with_Ch1_3 = Summary.iloc[9,4]
+        Percent_of_droplet_with_Ch2_3 = Summary.iloc[9,5]
+        
+        Percent_of_Ch1_in_miss_population = Summary.iloc[11,0]
+        Percent_of_Ch2_in_miss_population = Summary.iloc[11,1]
+        Percent_of_Ch3_in_miss_population = Summary.iloc[11,2]
+        Percent_of_Ch1_2_in_miss_population = Summary.iloc[11,3]
+        Percent_of_Ch1_3_in_miss_population = Summary.iloc[11,4]
+        Percent_of_Ch2_3_in_miss_population = Summary.iloc[11,5]
+        
+      # parameter
+        df_parameter = pd.read_csv(name_dict_list[row * 2 + 1] + "/" + name_dict_list[row * 2]["Param"], header=None, sep='\n')
+        Parameter = df_parameter[0].str.split(',', expand=True)
+        
+        Laser_Setting_and_Gains =  Parameter.iloc[7:11,0:3]
+        Laser_Setting_and_Gains.columns = Parameter.iloc[6,0:3]
+        Laser_Setting_and_Gains.index = ['1', '2', '3', '4'] 
+        
+        Fluidic_Settings =  Parameter.iloc[14:15,0:4]
+        Fluidic_Settings.columns = Parameter.iloc[13,0:4]
+        Fluidic_Settings.index = ['1']     
+        
+        Sorting_Parameter1 =  Parameter.iloc[18:19,0:4]
+        Sorting_Parameter1.columns = Parameter.iloc[17,0:4]
+        Sorting_Parameter1.index = ['1']   
+        
+        Sorting_Parameter2 =  Parameter.iloc[20:24,0:11]
+        Sorting_Parameter2.columns = Parameter.iloc[19,0:11]
+        Sorting_Parameter2.index = ['1','2','3','4']          
+        
+        Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
+        Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
+        Sorting_Parameter3.index = ['1']   
+        
+        
+
+        
+    def add(self): 
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+        row = 0
+        for f in name:
+            file_dir = f
+            if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") > 1:
+                root_folder = os.path.dirname(file_dir)
+                file_name = os.path.basename(file_dir)
+                time_stamp = file_name[0:13]
+                file_list = os.listdir(root_folder)
+                for file in file_list:
+                    if file.rfind(str(time_stamp)) >= 0:
+                        for key in name_dict:
+                            if file.rfind(key) >= 0:
+                                name_dict[key] = file
+            name_dict_list.append(name_dict.copy())
+            name_dict_list.append(root_folder)
+            row = row + 1
+            self.file_list_view.insertItem(row, file_name)
+        
+        
+    def openfolder(self):
+        global  name_dict_list,name_dict
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+        self.file_list_view.clear()
+        row = 0
+        name_dict_list = []
+        for f in name:
+            file_dir = f
+            if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") > 1:
+                root_folder = os.path.dirname(file_dir)
+                file_name = os.path.basename(file_dir)
+                time_stamp = file_name[0:13]
+                file_list = os.listdir(root_folder)
+                for file in file_list:
+                    if file.rfind(str(time_stamp)) >= 0:
+                        for key in name_dict:
+                            if file.rfind(key) >= 0:
+                                name_dict[key] = file
+            name_dict_list.append(name_dict.copy())
+            name_dict_list.append(root_folder)
+            row = row + 1
+            self.file_list_view.insertItem(row, file_name)
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -1875,7 +2019,10 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    name_dict_list = []
+    name_dict = {"Ch1 ": "","Ch2 ": "","Ch3 ": "","Ch1-2": "","Ch1-3": "","Ch2-3": "",
+                 "Locked": "","Param": "","Summary": "","Peak Record":"","Raw Time Log":""}    
+    app = 0
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
