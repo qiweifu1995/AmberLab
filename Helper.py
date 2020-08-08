@@ -15,12 +15,18 @@ def project_namelist(file_dir):
                  "Locked": "",
                  "Param": "",
                  "Summary": "",
+                 "Peak Record": "",
+                 "Raw Time Log": "",
+                 "Time Log": "",
+                 "Root Folder": ""
                  }
     if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") >= 0:
         root_folder = os.path.dirname(file_dir)
         file_name = os.path.basename(file_dir)
         time_stamp = file_name[0:13]
         file_list = os.listdir(root_folder)
+        name_dict["Peak Record"] = file_name
+        name_dict["Root Folder"] = root_folder
         for file in file_list:
             if file.rfind(str(time_stamp)) >= 0:
                 for key in name_dict:
@@ -31,12 +37,12 @@ def project_namelist(file_dir):
 
 class Stats:
     """this class holds all the parameter"""
-    def __int__(self, file_path):
+    def __init__(self, file_path):
         print(file_path)
         stats_dict = {"Starting Time": "",
                       "Ending  Time": "",
                       "Total Run Time": "",
-                      "Total Sorted": "",
+                      "Total Sorted  ": "",
                       "Total Droplets": "",
                       "Total Lost From Lockout": "",
                       "Sorting Positive Rate": "",
@@ -48,7 +54,7 @@ class Stats:
                       "Negative Ch 1-2 Hit": "",
                       "Negative CH 1-3 Hit": "",
                       "Negative Ch 2-3 Hit": "",
-                      "Total Dispensed": "",
+                      "Total Dispensed ": "",
                       "Dispense Missed": ""}
         if os.path.isfile(file_path) and file_path.rfind("Summary") >= 0:
             print("run")
@@ -77,7 +83,7 @@ class Stats:
         self.end_time = stats_dict["Ending  Time"]
         self.total_runtime = stats_dict["Total Run Time"]
         self.total_droplets = stats_dict["Total Droplets"]
-        self.total_sorted = stats_dict["Total Sorted"]
+        self.total_sorted = stats_dict["Total Sorted  "]
         self.total_lost = stats_dict["Total Lost From Lockout"]
         self.ch1_hit = stats_dict["Negative Ch 1 Hit"]
         self.ch2_hit = stats_dict["Negative Ch 2 Hit"]
@@ -85,14 +91,15 @@ class Stats:
         self.ch12_hit = stats_dict["Negative Ch 1-2 Hit"]
         self.ch13_hit = stats_dict["Negative CH 1-3 Hit"]
         self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
-        self.undersample_factor = stats_dict["UnderSample Factor"]
+        self.under_sample_factor = stats_dict["UnderSample Factor"]
+        self.total_dispensed = stats_dict["Total Dispensed "]
+        self.dispense_missed = stats_dict["Dispense Missed"]
 
 
 if __name__ == "__main__":
     import Helper
     print(project_namelist(r"D:\Users\QIwei Fu\Downloads\EXP200601-2\EXP200601-2/200601_130231 AFB Peak Record.csv"))
     stats = Helper.Stats()
-    stats.__int__(r"D:\Users\QIwei Fu\Downloads\EXP200601-2\EXP200601-2/200601_130231 AFB Summary.csv")
     print(stats.total_runtime)
 
 
