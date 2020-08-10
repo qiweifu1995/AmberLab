@@ -6,9 +6,9 @@ import os, csv
 
 def project_namelist(file_dir):
     """function for loading all file names for the project, returns as dictionary"""
-    name_dict = {"Ch1": "",
-                 "Ch2": "",
-                 "Ch3": "",
+    name_dict = {"Ch1 ": "",
+                 "Ch2 ": "",
+                 "Ch3 ": "",
                  "Ch1-2": "",
                  "Ch1-3": "",
                  "Ch2-3": "",
