@@ -1749,13 +1749,13 @@ class Ui_MainWindow(object):
         os.chdir(current_file_dict["Root Folder"])
     # Channels file
         #i commented out the read since it was giving memory error
-        if current_file_dict["Ch1"] != "":
+        if current_file_dict["Ch1 "] != "":
             print("ok")
             #Ch1 = pd.read_csv(current_file_dict["Ch1"])
-        if current_file_dict["Ch2"] != "":
+        if current_file_dict["Ch2 "] != "":
             print("ok")
             #Ch2 = pd.read_csv(current_file_dict["Ch2"])
-        if current_file_dict["Ch3"] != "":
+        if current_file_dict["Ch3 "] != "":
             print("ok")
             #Ch3 = pd.read_csv(current_file_dict["Ch3"])
         if current_file_dict["Ch1-2"] != "":
