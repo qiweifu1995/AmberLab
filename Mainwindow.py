@@ -1992,7 +1992,7 @@ class Ui_MainWindow(object):
             print(i)
                 # stats.under_sample_factor
             under_sample_factor = int(float(stats.under_sample_factor))
-            if i = "Peak Record": 
+            if i == "Peak Record": 
                 under_sample_factor =1
             under_sample_range = int(1000 / under_sample_factor)
             number_of_droplets = int(int(Ch.index[-1] +1) / under_sample_range)
@@ -2004,9 +2004,6 @@ class Ui_MainWindow(object):
             width = []
             peak_total = []
             width_total = []
-
-
-            
 
             for channel in range(0,4):
                 for droplet in range(0,number_of_droplets):
@@ -2023,7 +2020,6 @@ class Ui_MainWindow(object):
                     for i in current_droplet_range_tier:
                         if Ch[channel][i] >= Threshold :
                             if Ch[channel][i-1] <= Threshold:
-                                
             # find next point smaller then threshold
                                 for ii in range(i + 1,droplet * under_sample_range + under_sample_range):
                                     if Ch[channel][ii] <= Threshold:
