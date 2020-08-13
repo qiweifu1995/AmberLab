@@ -2033,13 +2033,16 @@ class Ui_MainWindow(object):
                     width.append(intercept)
                     intercept = 0
                     intercept_in = 0
-            #         print(width)
+
                 peak_total.append(peak)
                 width_total.append(width)
                 peak = []
                 width = []
-#             print(width_total)
+            
+            ### enable print to see the peaks and widths for all analog files
+            # print(width_total)
             # print(peak_total)
+            ###
 
         end = time.time()
         print(end - start)
