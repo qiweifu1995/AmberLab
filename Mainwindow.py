@@ -12,7 +12,8 @@ from PyQt5.QtWidgets import QFileDialog
 import pandas as pd
 import os
 import Helper
-
+import time
+from itertools import islice
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1741,109 +1742,8 @@ class Ui_MainWindow(object):
 
 
         self.file_dict_list = []
-
         
-    def pressed(self):
-        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log
-        current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
-        os.chdir(current_file_dict["Root Folder"])
-    # Channels file
-        #i commented out the read since it was giving memory error
-        if current_file_dict["Ch1 "] != "":
-            print("ok")
-            #Ch1 = pd.read_csv(current_file_dict["Ch1"])
-        if current_file_dict["Ch2 "] != "":
-            print("ok")
-            #Ch2 = pd.read_csv(current_file_dict["Ch2"])
-        if current_file_dict["Ch3 "] != "":
-            print("ok")
-            #Ch3 = pd.read_csv(current_file_dict["Ch3"])
-        if current_file_dict["Ch1-2"] != "":
-            print("ok")
-            #Ch1_2 = pd.read_csv(current_file_dict["Ch1-2"])
-        if current_file_dict["Ch1-3"] != "":
-            print("ok")
-            #Ch1_3 = pd.read_csv(current_file_dict["Ch1-3"])
-        if current_file_dict["Ch2-3"] != "":
-            print("ok")
-            #Ch2_3 = pd.read_csv(current_file_dict["Ch2-3"])
-
-    # Locked
-        if current_file_dict["Locked"] != "":
-            Locked = pd.read_csv(current_file_dict["Locked"])
-
-    # Peak_Record
-        Peak_Record = pd.read_csv(current_file_dict["Peak Record"])
         
-    # Raw time log
-        Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
-                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
-                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
-        row_count = len(Raw_time_log.index)
-        Run_total = Raw_time_log.iloc[row_count-1,0:6]
-        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
-        
-    # summary
-        if current_file_dict["Summary"] != "":
-            stats = Helper.Stats(current_file_dict["Summary"])
-            self.lineEdit_startingtime.setText(stats.start_time)
-            self.lineEdit_endingtime.setText(stats.end_time)
-            self.lineEdit_runtime.setText(stats.total_runtime)
-            self.lineEdit_totalsorted.setText(stats.total_sorted)
-            self.lineEdit_totallost.setText(stats.total_lost)
-            self.lineEdit_totaldispensed.setText(stats.total_dispensed)
-            self.lineEdit_totaldroplets.setText(stats.total_droplets)
-            self.lineEdit_dispensemissed.setText(stats.dispense_missed)
-            self.lineEdit_ch1hit.setText(stats.ch1_hit)
-            self.lineEdit_ch2hit.setText(stats.ch2_hit)
-            self.lineEdit_ch3hit.setText(stats.ch3_hit)
-            self.lineEdit_ch12hit.setText(stats.ch12_hit)
-            self.lineEdit_ch13hit.setText(stats.ch13_hit)
-            self.lineEdit_ch23hit.setText(stats.ch23_hit)
-
-        
-      # parameter
-        df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
-        Parameter = df_parameter[0].str.split(',', expand=True)
-        
-        Laser_Setting_and_Gains =  Parameter.iloc[7:11,0:3]
-        Laser_Setting_and_Gains.columns = Parameter.iloc[6,0:3]
-        Laser_Setting_and_Gains.index = ['1', '2', '3', '4'] 
-        
-        Fluidic_Settings =  Parameter.iloc[14:15,0:4]
-        Fluidic_Settings.columns = Parameter.iloc[13,0:4]
-        Fluidic_Settings.index = ['1']     
-        
-        Sorting_Parameter1 =  Parameter.iloc[18:19,0:4]
-        Sorting_Parameter1.columns = Parameter.iloc[17,0:4]
-        Sorting_Parameter1.index = ['1']   
-        
-        Sorting_Parameter2 =  Parameter.iloc[20:24,0:11]
-        Sorting_Parameter2.columns = Parameter.iloc[19,0:11]
-        Sorting_Parameter2.index = ['1','2','3','4']          
-        
-        Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
-        Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
-        Sorting_Parameter3.index = ['1']   
-
-    def add(self): 
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
-        for f in name:
-            self.file_dict_list.append(Helper.project_namelist(f))
-            self.file_list_view.addItem(f)
-
-    def openfolder(self):
-        self.file_list_view.clear()
-        self.file_dict_list.clear()
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
-        for f in name:
-            self.file_dict_list.append(Helper.project_namelist(f))
-            self.file_list_view.addItem(f)
-        print(self.file_dict_list)
-
-
-
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -1988,6 +1888,182 @@ class Ui_MainWindow(object):
         self.actionImport.setText(_translate("MainWindow", "Import"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
+
+    def pressed(self):
+        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log
+        current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
+        #print(current_file_dict)
+        os.chdir(current_file_dict["Root Folder"])
+        
+        analog_files ={"Ch1": "",
+                 "Ch2": "",
+                 "Ch3": "",
+                 "Ch1-2": "",
+                 "Ch1-3": "",
+                 "Ch2-3": "",
+                "Peak Record":""}
+        
+    # Channels file
+        #i commented out the read since it was giving memory error
+        if current_file_dict["Ch1 "] != "":
+            print("ok")
+            analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
+        if current_file_dict["Ch2 "] != "":
+            print("ok")
+            analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
+        if current_file_dict["Ch3 "] != "":
+            print("ok")
+            analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
+        if current_file_dict["Ch1-2"] != "":
+            print("ok")
+            analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
+        if current_file_dict["Ch1-3"] != "":
+            print("ok")
+            analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
+        if current_file_dict["Ch2-3"] != "":
+            print("ok")
+            analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
+
+    # Locked
+        if current_file_dict["Locked"] != "":
+            Locked = pd.read_csv(current_file_dict["Locked"])
+
+    # Peak_Record
+        analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
+        analog_files['Peak Record'].columns =[0,1,2,3] 
+        
+    # Raw time log
+        Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
+                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
+                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
+        row_count = len(Raw_time_log.index)
+        Run_total = Raw_time_log.iloc[row_count-1,0:6]
+        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
+        
+    # summary
+        if current_file_dict["Summary"] != "":
+            stats = Helper.Stats(current_file_dict["Summary"])
+            self.lineEdit_startingtime.setText(stats.start_time)
+            self.lineEdit_endingtime.setText(stats.end_time)
+            self.lineEdit_runtime.setText(stats.total_runtime)
+            self.lineEdit_totalsorted.setText(stats.total_sorted)
+            self.lineEdit_totallost.setText(stats.total_lost)
+            self.lineEdit_totaldispensed.setText(stats.total_dispensed)
+            self.lineEdit_totaldroplets.setText(stats.total_droplets)
+            self.lineEdit_dispensemissed.setText(stats.dispense_missed)
+            self.lineEdit_ch1hit.setText(stats.ch1_hit)
+            self.lineEdit_ch2hit.setText(stats.ch2_hit)
+            self.lineEdit_ch3hit.setText(stats.ch3_hit)
+            self.lineEdit_ch12hit.setText(stats.ch12_hit)
+            self.lineEdit_ch13hit.setText(stats.ch13_hit)
+            self.lineEdit_ch23hit.setText(stats.ch23_hit)
+        
+#         print(stats.under_sample_factor) 
+        
+      # parameter
+        df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
+        Parameter = df_parameter[0].str.split(',', expand=True)
+        
+        Laser_Setting_and_Gains =  Parameter.iloc[7:11,0:3]
+        Laser_Setting_and_Gains.columns = Parameter.iloc[6,0:3]
+        Laser_Setting_and_Gains.index = ['1', '2', '3', '4'] 
+        
+        Fluidic_Settings =  Parameter.iloc[14:15,0:4]
+        Fluidic_Settings.columns = Parameter.iloc[13,0:4]
+        Fluidic_Settings.index = ['1']     
+        
+        Sorting_Parameter1 =  Parameter.iloc[18:19,0:4]
+        Sorting_Parameter1.columns = Parameter.iloc[17,0:4]
+        Sorting_Parameter1.index = ['1']   
+        
+        Sorting_Parameter2 =  Parameter.iloc[20:24,0:11]
+        Sorting_Parameter2.columns = Parameter.iloc[19,0:11]
+        Sorting_Parameter2.index = ['1','2','3','4']          
+        
+        Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
+        Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
+        Sorting_Parameter3.index = ['1']   
+
+        
+        start = time.time()
+        print("starting calculate peak and width...")
+        
+        for i in analog_files:
+            Ch = analog_files[i]
+            print(i)
+                # stats.under_sample_factor
+            under_sample_factor = int(float(stats.under_sample_factor))
+            if i == "Peak Record": 
+                under_sample_factor =1
+            under_sample_range = int(1000 / under_sample_factor)
+            number_of_droplets = int(int(Ch.index[-1] +1) / under_sample_range)
+
+            Threshold = 1
+            intercept = 0
+            # 
+            peak = []
+            width = []
+            peak_total = []
+            width_total = []
+
+            for channel in range(0,4):
+                for droplet in range(0,number_of_droplets):
+
+                    current_peak = round(Ch[channel][droplet*under_sample_range:droplet*under_sample_range+under_sample_range-1].max(),3)
+
+            # if threshold > peak, means no width available, skip
+                    if current_peak < Threshold: width.append(0); continue
+
+                    current_droplet_range = [*range(droplet * under_sample_range + 1,droplet * under_sample_range + under_sample_range,1)]
+                    current_droplet_range_tier =  iter(current_droplet_range)
+            
+            # find next point larger then threshold
+                    for i in current_droplet_range_tier:
+                        if Ch[channel][i] >= Threshold :
+                            if Ch[channel][i-1] <= Threshold:
+            # find next point smaller then threshold
+                                for ii in range(i + 1,droplet * under_sample_range + under_sample_range):
+                                    if Ch[channel][ii] <= Threshold:
+                                        if (ii - i) > intercept:
+                                            intercept = ii - i
+                                        break
+                                    next(islice(current_droplet_range_tier, intercept, 0), '')
+
+                    peak.append(current_peak)        
+                    width.append(intercept)
+                    intercept = 0
+                    intercept_in = 0
+            #         print(width)
+                peak_total.append(peak)
+                width_total.append(width)
+                peak = []
+                width = []
+#             print(width_total)
+            # print(peak_total)
+
+        end = time.time()
+        print(end - start)
+
+
+
+    def add(self): 
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+        for f in name:
+            self.file_dict_list.append(Helper.project_namelist(f))
+            self.file_list_view.addItem(f)
+
+    def openfolder(self):
+        self.file_list_view.clear()
+        self.file_dict_list.clear()
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+        for f in name:
+            self.file_dict_list.append(Helper.project_namelist(f))
+            self.file_list_view.addItem(f)
+#         print(self.file_dict_list)
+
+
+
+
 
 
 if __name__ == "__main__":
