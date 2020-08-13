@@ -1986,11 +1986,24 @@ class Ui_MainWindow(object):
 
         
         start = time.time()
-        print("starting calculate peak and width...")
-        
+ 
         for i in analog_files:
             Ch = analog_files[i]
-            print(i)
+            
+            peak = []
+            width = []
+            peak_total = []
+            width_total = []
+
+            if not len(Ch): 
+                print(i,"is","empty")
+                peak_total.append("")
+                width_total.append("")
+                continue
+            else:
+                print(i,"is","extracting...")
+
+                
                 # stats.under_sample_factor
             under_sample_factor = int(float(stats.under_sample_factor))
             if i == "Peak Record": 
@@ -2001,10 +2014,7 @@ class Ui_MainWindow(object):
             Threshold = 1
             intercept = 0
             # 
-            peak = []
-            width = []
-            peak_total = []
-            width_total = []
+
 
             for channel in range(0,4):
                 for droplet in range(0,number_of_droplets):
@@ -2033,16 +2043,13 @@ class Ui_MainWindow(object):
                     width.append(intercept)
                     intercept = 0
                     intercept_in = 0
-
+            #         print(width)
                 peak_total.append(peak)
                 width_total.append(width)
                 peak = []
                 width = []
-            
-            ### enable print to see the peaks and widths for all analog files
-            # print(width_total)
-            # print(peak_total)
-            ###
+#             print(width_total)
+#             print(peak_total)
 
         end = time.time()
         print(end - start)
