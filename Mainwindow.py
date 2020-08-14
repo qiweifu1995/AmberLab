@@ -2031,7 +2031,7 @@ class Ui_MainWindow(object):
 
 
             for i in range(len(index_list)):
-                print(index_list[i],"/",len(index_list))
+                print(index_list[i],"/",index_list[-1])
 
                 if index_list[i] > sample_size:  
                     peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
@@ -2058,10 +2058,10 @@ class Ui_MainWindow(object):
             width_total.append(width)
          
 
-            end = time.time()
-            print(end - start)
-            # print(width_total)
-            # print(peak_total)
+        end = time.time()
+        print(end - start)
+        # print(width_total)
+        # print(peak_total)
 
 
 
