@@ -1989,59 +1989,79 @@ class Ui_MainWindow(object):
  
         for i in analog_files:
             Ch = analog_files[i]
-            print(i)
-                # stats.under_sample_factor
-            under_sample_factor = int(float(stats.under_sample_factor))
-            if i == "Peak Record": 
-                under_sample_factor =1
-            under_sample_range = int(1000 / under_sample_factor)
-            number_of_droplets = int(int(Ch.index[-1] +1) / under_sample_range)
-
-            Threshold = 1
-            intercept = 0
-            # 
+            
             peak = []
             width = []
             peak_total = []
             width_total = []
 
-            for channel in range(0,4):
-                for droplet in range(0,number_of_droplets):
+            if not len(Ch): 
+                print(i,"is","empty")
+                peak_total.append("")
+                width_total.append("")
+                continue
+            else:
+                print(i,"is","extracting...")
 
-                    current_peak = round(Ch[channel][droplet*under_sample_range:droplet*under_sample_range+under_sample_range-1].max(),3)
+                
+            start = time.time()
 
-            # if threshold > peak, means no width available, skip
-                    if current_peak < Threshold: width.append(0); continue
+            under_sample_factor = 10
+            under_sample_range = int(1000 / under_sample_factor)
+            sample_size = under_sample_range
 
-                    current_droplet_range = [*range(droplet * under_sample_range + 1,droplet * under_sample_range + under_sample_range,1)]
-                    current_droplet_range_tier =  iter(current_droplet_range)
+            # select channel and threshold
+            threshold = 2
+            channel = 0
+
+
+            Ch[channel] = Ch[channel] -threshold
+            sign = Ch[channel].map(np.sign)
+            diff1 = sign.diff(periods=1).fillna(0)
+
+
+            df1 = Ch[channel].loc[diff1[diff1 != 0].index]
+            index_list = df1.index
+
+
+            current_width = 0
+            peak = []
+            width = []
+
+
+
+            for i in range(len(index_list)):
+                print(index_list[i],"/",len(index_list))
+
+                if index_list[i] > sample_size:  
+                    peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                    width.append(current_width)
+                    current_width = 0
+                    sample_size = sample_size + under_sample_range
+                    # check if 0 width exist
+                    for x in range((index_list[i] - sample_size) // under_sample_range):
+                        peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                        width.append(0)
+                        sample_size = sample_size + under_sample_range
+
+                if df1[index_list[i-1]] >= 0:
+                    if df1[index_list[i]] <= 0:
+                        if (index_list[i] - index_list[i-1] > current_width):
+                            current_width = index_list[i] - index_list[i-1]
+
+            # append the last width
+            peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
+            width.append(current_width)
+            current_width = 0
             
-            # find next point larger then threshold
-                    for i in current_droplet_range_tier:
-                        if Ch[channel][i] >= Threshold :
-                            if Ch[channel][i-1] <= Threshold:
-            # find next point smaller then threshold
-                                for ii in range(i + 1,droplet * under_sample_range + under_sample_range):
-                                    if Ch[channel][ii] <= Threshold:
-                                        if (ii - i) > intercept:
-                                            intercept = ii - i
-                                        break
-                                    next(islice(current_droplet_range_tier, intercept, 0), '')
+            peak_total.append(peak)
+            width_total.append(width)
+         
 
-                    peak.append(current_peak)        
-                    width.append(intercept)
-                    intercept = 0
-                    intercept_in = 0
-            #         print(width)
-                peak_total.append(peak)
-                width_total.append(width)
-                peak = []
-                width = []
-#             print(width_total)
+            end = time.time()
+            print(end - start)
+            # print(width_total)
             # print(peak_total)
-
-        end = time.time()
-        print(end - start)
 
 
 
@@ -2067,6 +2087,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+    import numpy as np
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
