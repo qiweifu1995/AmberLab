@@ -2016,53 +2016,72 @@ class Ui_MainWindow(object):
 
             under_sample_range = int(1000 / under_sample_factor)
             sample_size = under_sample_range
+            
+            
+            
+            start = time.time()
 
+            
+            
             # select channel and threshold
             threshold = 2
-            Ch = Ch - threshold
 
-            for channel in range(0,4):
 
+            Ch = Ch -threshold
+            peak_total = []
+            width_total = []
+
+            for channel in range(4):
                 sign = Ch[channel].map(np.sign)
                 diff1 = sign.diff(periods=1).fillna(0)
                 df1 = Ch[channel].loc[diff1[diff1 != 0].index]
                 index_list = df1.index
 
-
+            #     sample_size 
+                sample_size = under_sample_range
                 current_width = 0
                 peak = []
                 width = []
 
-
-
                 for i in range(len(index_list)):
-                    print(index_list[i])
+                    print(sample_size,"/",len(Ch),", channel",channel)
 
                     if index_list[i] > sample_size:  
-                        peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                        peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
                         width.append(current_width)
                         current_width = 0
                         sample_size = sample_size + under_sample_range
                         # check if 0 width exist
                         for x in range((index_list[i] - sample_size) // under_sample_range):
-                            peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                            peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
                             width.append(0)
                             sample_size = sample_size + under_sample_range
 
                     if df1[index_list[i-1]] >= 0:
                         if df1[index_list[i]] <= 0:
-                            if (index_list[i] - index_list[i-1] > current_width):
-                                current_width = index_list[i] - index_list[i-1]
+                            current_width = max(index_list[i] - index_list[i-1],current_width)
 
-                # append the last width
+                # append the last few peak and width
                 peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                width.append(current_width)
-                current_width = 0
+                width.append(current_width)   
+                print(sample_size,"/",len(Ch),", channel",channel)
 
-                end = time.time()
-                print(end - start)
-                # print(width_total)
-                # print(peak_total)
+                # append widths lower then threshold at last, and peaks
+                for x in range((len(Ch) - sample_size) // under_sample_range):
+                    sample_size = sample_size + under_sample_range
+                    print(sample_size,"/",len(Ch),", channel",channel)
+                    peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                    width.append(0)
+
+                peak_total.append(peak)
+                width_total.append(width)
+
+            end = time.time()
+            print(end - start)
+            # print(width_total)
+            # print(peak_total)
+
+
 
 
     def add(self): 
@@ -2087,6 +2106,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+    import numpy as np
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
