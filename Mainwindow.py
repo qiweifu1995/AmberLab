@@ -1933,12 +1933,14 @@ class Ui_MainWindow(object):
         analog_files['Peak Record'].columns =[0,1,2,3] 
         
     # Raw time log
+        """
         Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
                                    header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
                                                     'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
         row_count = len(Raw_time_log.index)
         Run_total = Raw_time_log.iloc[row_count-1,0:6]
         Raw_time_log = Raw_time_log.iloc[0:row_count-2]
+        """
         
     # summary
         if current_file_dict["Summary"] != "":
@@ -1957,10 +1959,12 @@ class Ui_MainWindow(object):
             self.lineEdit_ch12hit.setText(stats.ch12_hit)
             self.lineEdit_ch13hit.setText(stats.ch13_hit)
             self.lineEdit_ch23hit.setText(stats.ch23_hit)
+
         
 #         print(stats.under_sample_factor) 
         
       # parameter
+        """
         df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
         Parameter = df_parameter[0].str.split(',', expand=True)
         
@@ -1983,6 +1987,8 @@ class Ui_MainWindow(object):
         Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
         Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
         Sorting_Parameter3.index = ['1']   
+        
+        """
 
         
         start = time.time()
@@ -2004,65 +2010,59 @@ class Ui_MainWindow(object):
                 print(i,"is","extracting...")
 
                 
-            start = time.time()
+            under_sample_factor = int(float(stats.under_sample_factor))
+            if i == "Peak Record": 
+                under_sample_factor =1
 
-            under_sample_factor = 10
             under_sample_range = int(1000 / under_sample_factor)
             sample_size = under_sample_range
 
             # select channel and threshold
             threshold = 2
-            channel = 0
+            Ch = Ch - threshold
+
+            for channel in range(0,4):
+
+                sign = Ch[channel].map(np.sign)
+                diff1 = sign.diff(periods=1).fillna(0)
+                df1 = Ch[channel].loc[diff1[diff1 != 0].index]
+                index_list = df1.index
 
 
-            Ch[channel] = Ch[channel] -threshold
-            sign = Ch[channel].map(np.sign)
-            diff1 = sign.diff(periods=1).fillna(0)
-
-
-            df1 = Ch[channel].loc[diff1[diff1 != 0].index]
-            index_list = df1.index
-
-
-            current_width = 0
-            peak = []
-            width = []
+                current_width = 0
+                peak = []
+                width = []
 
 
 
-            for i in range(len(index_list)):
-                print(index_list[i],"/",index_list[-1])
+                for i in range(len(index_list)):
+                    print(index_list[i])
 
-                if index_list[i] > sample_size:  
-                    peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                    width.append(current_width)
-                    current_width = 0
-                    sample_size = sample_size + under_sample_range
-                    # check if 0 width exist
-                    for x in range((index_list[i] - sample_size) // under_sample_range):
+                    if index_list[i] > sample_size:  
                         peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                        width.append(0)
+                        width.append(current_width)
+                        current_width = 0
                         sample_size = sample_size + under_sample_range
+                        # check if 0 width exist
+                        for x in range((index_list[i] - sample_size) // under_sample_range):
+                            peak.append(round((Ch[0][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                            width.append(0)
+                            sample_size = sample_size + under_sample_range
 
-                if df1[index_list[i-1]] >= 0:
-                    if df1[index_list[i]] <= 0:
-                        if (index_list[i] - index_list[i-1] > current_width):
-                            current_width = index_list[i] - index_list[i-1]
+                    if df1[index_list[i-1]] >= 0:
+                        if df1[index_list[i]] <= 0:
+                            if (index_list[i] - index_list[i-1] > current_width):
+                                current_width = index_list[i] - index_list[i-1]
 
-            # append the last width
-            peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-            width.append(current_width)
-            current_width = 0
-            
-            peak_total.append(peak)
-            width_total.append(width)
-         
+                # append the last width
+                peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
+                width.append(current_width)
+                current_width = 0
 
-        end = time.time()
-        print(end - start)
-        # print(width_total)
-        # print(peak_total)
-
+                end = time.time()
+                print(end - start)
+                # print(width_total)
+                # print(peak_total)
 
 
     def add(self): 
@@ -2087,7 +2087,6 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-    import numpy as np
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
