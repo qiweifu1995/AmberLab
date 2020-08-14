@@ -16,19 +16,15 @@ def peak_detect():
 def width_detect(threshold, min, max):
     """this function calculate the width specified at a given voltage and size"""
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+
 import pandas as pd
 import os
-import Helper
 import time
-from itertools import islice
 import numpy as np
 
 
 
-# os.chdir('C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/EXP200225-6')
-# Ch = pd.read_csv('200225_171057 AFB AFB Ch2 Hit.csv',header = None)
+
 
 os.chdir('C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/Test_file_1')
 Ch = pd.read_csv('200225_171057 AFA Peak Record.csv',header = 2)
@@ -38,7 +34,7 @@ start = time.time()
 
 under_sample_factor = 1
 under_sample_range = int(1000 / under_sample_factor)
-# select channel and threshold
+# select threshold
 threshold = 2
 
 
