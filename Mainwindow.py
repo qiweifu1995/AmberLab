@@ -1933,12 +1933,14 @@ class Ui_MainWindow(object):
         analog_files['Peak Record'].columns =[0,1,2,3] 
         
     # Raw time log
+        """
         Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
                                    header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
                                                     'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
         row_count = len(Raw_time_log.index)
         Run_total = Raw_time_log.iloc[row_count-1,0:6]
         Raw_time_log = Raw_time_log.iloc[0:row_count-2]
+        """
         
     # summary
         if current_file_dict["Summary"] != "":
@@ -1957,10 +1959,12 @@ class Ui_MainWindow(object):
             self.lineEdit_ch12hit.setText(stats.ch12_hit)
             self.lineEdit_ch13hit.setText(stats.ch13_hit)
             self.lineEdit_ch23hit.setText(stats.ch23_hit)
+
         
 #         print(stats.under_sample_factor) 
         
       # parameter
+        """
         df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
         Parameter = df_parameter[0].str.split(',', expand=True)
         
@@ -1983,6 +1987,8 @@ class Ui_MainWindow(object):
         Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
         Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
         Sorting_Parameter3.index = ['1']   
+        
+        """
 
         
         start = time.time()
@@ -2005,7 +2011,8 @@ class Ui_MainWindow(object):
 
                 
                 # stats.under_sample_factor
-            under_sample_factor = int(float(stats.under_sample_factor))
+            #under_sample_factor = int(float(stats.under_sample_factor))
+            under_sample_factor = 1
             if i == "Peak Record": 
                 under_sample_factor =1
             under_sample_range = int(1000 / under_sample_factor)
