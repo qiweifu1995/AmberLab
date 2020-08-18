@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QFileDialog
 import pandas as pd
 import os
 import Helper
+import Analysis
 import time
 from itertools import islice
 
@@ -1895,42 +1896,42 @@ class Ui_MainWindow(object):
         #print(current_file_dict)
         os.chdir(current_file_dict["Root Folder"])
         
-        analog_files ={"Ch1": "",
-                 "Ch2": "",
-                 "Ch3": "",
-                 "Ch1-2": "",
-                 "Ch1-3": "",
-                 "Ch2-3": "",
-                "Peak Record":""}
+#         analog_files ={"Ch1": "",
+#                  "Ch2": "",
+#                  "Ch3": "",
+#                  "Ch1-2": "",
+#                  "Ch1-3": "",
+#                  "Ch2-3": "",
+#                 "Peak Record":""}
         
     # Channels file
         #i commented out the read since it was giving memory error
         if current_file_dict["Ch1 "] != "":
             print("ok")
-            analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
+#             analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
         if current_file_dict["Ch2 "] != "":
             print("ok")
-            analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
+#             analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
         if current_file_dict["Ch3 "] != "":
             print("ok")
-            analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
+#             analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
         if current_file_dict["Ch1-2"] != "":
             print("ok")
-            analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
+#             analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
         if current_file_dict["Ch1-3"] != "":
             print("ok")
-            analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
+#             analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
         if current_file_dict["Ch2-3"] != "":
             print("ok")
-            analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
+#             analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
 
     # Locked
         if current_file_dict["Locked"] != "":
             Locked = pd.read_csv(current_file_dict["Locked"])
 
     # Peak_Record
-        analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
-        analog_files['Peak Record'].columns =[0,1,2,3] 
+#         analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
+#         analog_files['Peak Record'].columns =[0,1,2,3] 
         
     # Raw time log
         """
@@ -1991,96 +1992,24 @@ class Ui_MainWindow(object):
         """
 
         
-        start = time.time()
- 
-        for i in analog_files:
-            Ch = analog_files[i]
-            
-            peak = []
-            width = []
-            peak_total = []
-            width_total = []
+#         start = time.time()
 
-            if not len(Ch): 
-                print(i,"is","empty")
-                peak_total.append("")
-                width_total.append("")
-                continue
-            else:
-                print(i,"is","extracting...")
-
-                
-            under_sample_factor = int(float(stats.under_sample_factor))
-            if i == "Peak Record": 
-                under_sample_factor =1
-
-            under_sample_range = int(1000 / under_sample_factor)
-            sample_size = under_sample_range
-            
-            
-            
-            start = time.time()
-
-            
-            
-            # select channel and threshold
-            threshold = 2
+        chunksize = int(1000 / float(stats.under_sample_factor))
+        threshold = 1
+        channel = 0
+        width_enable=True
 
 
-            Ch = Ch -threshold
-            peak_total = []
-            width_total = []
-
-            for channel in range(4):
-                sign = Ch[channel].map(np.sign)
-                diff1 = sign.diff(periods=1).fillna(0)
-                df1 = Ch[channel].loc[diff1[diff1 != 0].index]
-                index_list = df1.index
-
-            #     sample_size 
-                sample_size = under_sample_range
-                current_width = 0
-                peak = []
-                width = []
-
-                for i in range(len(index_list)):
-                    print(sample_size,"/",len(Ch),", channel",channel)
-
-                    if index_list[i] > sample_size:  
-                        peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                        width.append(current_width)
-                        current_width = 0
-                        sample_size = sample_size + under_sample_range
-                        # check if 0 width exist
-                        for x in range((index_list[i] - sample_size) // under_sample_range):
-                            peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                            width.append(0)
-                            sample_size = sample_size + under_sample_range
-
-                    if df1[index_list[i-1]] >= 0:
-                        if df1[index_list[i]] <= 0:
-                            current_width = max(index_list[i] - index_list[i-1],current_width)
-
-                # append the last few peak and width
-                peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                width.append(current_width)   
-                print(sample_size,"/",len(Ch),", channel",channel)
-
-                # append widths lower then threshold at last, and peaks
-                for x in range((len(Ch) - sample_size) // under_sample_range):
-                    sample_size = sample_size + under_sample_range
-                    print(sample_size,"/",len(Ch),", channel",channel)
-                    peak.append(round((Ch[channel][sample_size - under_sample_range:sample_size].max() + threshold),3))
-                    width.append(0)
-
-                peak_total.append(peak)
-                width_total.append(width)
-
-            end = time.time()
-            print(end - start)
-            # print(width_total)
-            # print(peak_total)
-
+        ### Qiwei's extraction code
+        ### Call stats_Ch1 ~ stats_Ch23 to extract
+#         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+#         print(len(a.stats_Peak))
+#         print(a.stats_Peak[-1].peak_voltage)
+        
+        ### Qing's extraction code
+        ### call Ch1list ~Ch23list to extract
+        a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+        print(a.Peaklist)
 
 
 
@@ -2106,7 +2035,6 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-    import numpy as np
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
