@@ -69,12 +69,26 @@ class Ui_MainWindow(object):
         # set y axis
         self.Ch1_channel1 = [2.123, 2.41, 2.381, 2.246, 2.137, 2.048, 2.2, 2.241, 1.894, 2.191, 2.073, 1.966, 2.098, 2.405, 2.234, 2.114, 2.192, 2.2, 2.438, 2.166, 2.167, 2.471, 2.089, 2.122, 2.248, 2.167, 2.414, 2.174, 2.069, 2.197, 2.254, 2.198, 2.099, 2.118, 2.071, 2.131, 2.081, 2.169, 1.973, 2.108, 2.22, 2.091, 1.96, 2.148, 2.156, 2.185, 1.997, 2.018, 2.197, 2.269, 3.113, 2.166, 2.24, 2.263, 2.108, 2.232, 2.149, 2.04, 2.089, 2.063, 2.049, 2.2, 2.219, 2.179, 2.208, 2.022, 2.112, 1.984, 2.779, 2.126, 1.996, 2.062, 2.115, 2.331, 2.063, 2.057, 2.186, 2.068, 2.025, 2.187, 1.962, 2.227, 2.09, 2.18, 3.244, 2.238, 1.957, 2.081, 2.107, 2.148, 2.165, 2.116, 2.042, 1.844, 2.173, 1.917, 2.002, 2.335, 2.428, 2.181, 2.396, 2.131, 2.05, 2.208, 2.158, 2.317, 2.185, 2.246, 2.173, 2.419, 2.174, 1.974, 1.797, 2.083, 2.328, 2.197, 2.139, 2.037, 2.164, 2.22, 2.166, 1.891, 2.149, 1.973, 2.134, 2.099, 2.19, 2.198, 2.279, 1.949, 2.108, 2.14, 2.187, 2.07, 2.347, 2.131, 2.295, 2.261, 2.042, 2.198, 1.775, 2.182, 2.134, 2.153, 2.057, 2.094, 2.144, 2.077, 2.013, 2.059, 2.065, 2.048, 2.046, 2.184, 2.157, 2.109, 2.089, 2.038, 2.159, 2.062, 2.065, 2.139, 2.155, 2.125, 2.121, 2.142, 1.992, 2.096, 2.222, 2.156, 2.042, 1.904, 1.883, 1.928, 2.017, 2.089, 1.739, 1.913, 2.003, 1.884, 1.873, 2.247, 2.052, 1.957, 2.121, 1.951, 2.112, 1.889, 1.884, 2.149, 2.105, 2.024, 2.126, 1.693, 1.86, 2.177, 2.254, 1.955, 1.796, 1.823, 1.842, 1.823, 1.791, 1.99, 1.803, 1.743, 2.21, 2.034, 2.005, 2.015, 2.112, 1.992, 1.979, 2.103, 2.413, 1.998, 1.985, 1.988, 2.099, 2.07, 2.009, 2.075, 1.916]
 
-        line_x = [1,max(self.Ch1_channel0)]
-        line_y = [1,1]
+        ### gate voltage
+        gate_voltage_x = 1
+        gate_voltage_y = 3
         
-        line_xx = [1,1]
+        line_x = [1,max(self.Ch1_channel0)]
+        line_y = [gate_voltage_y,gate_voltage_y]
+        
+        line_xx = [gate_voltage_x,gate_voltage_x]
         line_yy = [1,max(self.Ch1_channel1)]
         
+        pen = pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)
+        self.graphWidget.plot(line_x, line_y, pen=pen)
+        
+        pen = pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)
+        self.graphWidget.plot(line_xx, line_yy, pen=pen)
+        
+        filtered_gate_voltage_x = [x for x in self.Ch1_channel0 if x > gate_voltage_x]
+        filtered_gate_voltage_y = [x for x in self.Ch1_channel1 if x > gate_voltage_y]
+        print("number of points after entering gate voltage:",min(len(filtered_gate_voltage_x),len(filtered_gate_voltage_y)))
+        ###                     
         
         self.graphWidget.plot(self.Ch1_channel0, self.Ch1_channel1, pen=None,symbol='o',symbolSize=5, symbolBrush=('r'))
 
@@ -87,37 +101,25 @@ class Ui_MainWindow(object):
 
         lr2 = pg.LinearRegionItem([2,3],orientation = 'vertical')
         self.graphWidget.addItem(lr2)
-        
+
         lr1.sigRegionChangeFinished.connect(lambda:self.regionUpdated(lr1,lr2))
         lr2.sigRegionChangeFinished.connect(lambda:self.regionUpdated(lr1,lr2))
 
-        
-        pen = pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)
-        self.graphWidget.plot(line_x, line_y, pen=pen)
-        
-        pen = pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)
-        self.graphWidget.plot(line_xx, line_yy, pen=pen)
-        
-        
-        
+
     def regionUpdated(self,lr1,lr2):
-        # for x axis
-        lr1_min, lr1_max = lr1.getRegion()
         # for y axis
+        lr1_min, lr1_max = lr1.getRegion()
+        # for x axis
         lr2_min, lr2_max = lr2.getRegion()
         
         # filter x axis
-        filtered_x = [x for x in self.Ch1_channel0 if x < lr1_max and x > lr1_min]
-        # filter y axis
-        filtered_y = [x for x in self.Ch1_channel1 if x < lr2_max and x > lr2_min]
+        filtered_x = [x for x in self.Ch1_channel1 if x < lr1_max and x > lr1_min]
         
-        print(len(filtered_x))
-        print(len(filtered_y))
-
-    def less_than_three(number):
-        return number < 3
-
-    an_iterator = filter(less_than_three, numbers)
+        # filter y axis
+        filtered_y = [x for x in self.Ch1_channel0 if x < lr2_max and x > lr2_min]
+        
+        print(min(len(filtered_x),len(filtered_y)))
+        
 
         
     def clear(self):
@@ -133,6 +135,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
-
-    
