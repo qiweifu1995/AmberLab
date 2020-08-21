@@ -112,14 +112,23 @@ class Ui_MainWindow(object):
         # for x axis
         lr2_min, lr2_max = lr2.getRegion()
         
-        # filter x axis
-        filtered_x = [x for x in self.Ch1_channel1 if x < lr1_max and x > lr1_min]
         
         # filter y axis
-        filtered_y = [x for x in self.Ch1_channel0 if x < lr2_max and x > lr2_min]
+        a = (np.array(Ch1_channel0) > lr2_min ).tolist()
+        b = (np.array(Ch1_channel0) < lr2_max ).tolist()
         
-        print(min(len(filtered_x),len(filtered_y)))
-        
+        # filter x axis
+        c = (np.array(Ch1_channel1) > lr1_min ).tolist()
+        d = (np.array(Ch1_channel1) < lr1_max ).tolist()
+
+        count = 0
+        for i in range(len(a)):
+            if a[i] and b[i] and c[i] and d[i]:
+                count = count + 1
+        print("number of points inside the box:",count)
+
+    
+    
 
         
     def clear(self):
