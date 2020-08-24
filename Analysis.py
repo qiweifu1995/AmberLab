@@ -3,6 +3,7 @@
 import pandas as pd
 import time
 import numpy as np
+# import os
 
 class Droplet:
     """this class holds all the statistic info for each droplet, this DOES NOT hold raw data"""
@@ -14,27 +15,61 @@ class Droplet:
 
 class file_extracted_data_Qing:
     def __init__(self, current_file_dict, threshold=0, width_enable=True, channel=0, chunksize=1000, header=2):
+        self.Ch1list = []
+        self.Ch1width = []
+        self.Ch2list = []
+        self.Ch2width = []
+        self.Ch3list = []
+        self.Ch3width = []        
+        self.Ch12list = []
+        self.Ch12width = []  
+        self.Ch13list = []
+        self.Ch13width = []   
+        self.Ch23list = []
+        self.Ch23width = []
+        self.Peaklist = []
+        self.Peakwidth = []         
+        
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
-            self.Ch1list, self.Ch1width = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
+            list1, width1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
+            self.Ch1list.append(list1)
+            self.Ch1width.append(width1)
+            
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
-            self.Ch2list, self.Ch2width = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
+            list2, width2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
+            self.Ch2list.append(list2)
+            self.Ch2width.append(width2)
+        
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
-            self.Ch3list, self.Ch3width = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
+            list3, width3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
+            self.Ch3list.append(list3)
+            self.Ch3width.append(width3)        
+        
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
-            self.Ch12list, self.Ch12width = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
+            list12, width12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
+            self.Ch12list.append(list12)
+            self.Ch12width.append(width12)         
+        
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
-            self.Ch13list, self.Ch13width = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
+            list13, width13  = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
+            self.Ch13list.append(list13)
+            self.Ch13width.append(width13)        
+        
         if current_file_dict["Ch2-3"] != "":
-            self.Ch23list, self.Ch23width = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
-        
+            list23, width23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
+            self.Ch23list.append(list23)
+            self.Ch23width.append(width23)  
+            
         print("Extracting Peak...")
-        self.Peaklist, self.Peakwidth = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
-        
+        Peaklist, Peakwidth = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
+        self.Peaklist.append(Peaklist)
+        self.Peakwidth.append(Peakwidth)  
+            
         print("Done")
             
     def extract(self, file, threshold=1, width_enable=True, channel=0, chunksize=100, header=0):
@@ -75,28 +110,48 @@ class file_extracted_data_Qing:
     
 class file_extracted_data:
     def __init__(self, current_file_dict, threshold=0, width_enable=True, channel=0, chunksize=1000, header=0):
-
+        self.stats_Ch1 = []
+        self.stats_Ch2 = []
+        self.stats_Ch3 = []
+        self.stats_Ch12 = []
+        self.stats_Ch13 = []
+        self.stats_Ch23 = []
+        self.stats_Peak = []
+        
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
-            self.stats_Ch1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
+            stats_Ch1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch1.append(stats_Ch1)
+            
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
-            self.stats_Ch2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
+            stats_Ch2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch2.appned(stats_Ch2)
+            
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
-            self.stats_Ch3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
+            stats_Ch3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch3.append(stats_Ch3)
+            
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
-            self.stats_Ch12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
+            stats_Ch12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch12.append(stats_Ch12)
+            
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
-            self.stats_Ch13 = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
+            stats_Ch13 = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch13.append(stats_Ch13)
+            
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
-            self.stats_Ch23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
+            stats_Ch23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
+            self.stats_Ch23.append(stats_Ch23)
+            
             
         print("Extracting Peak...")
-        self.stats_Peak = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
+        stats_Peak = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
+        self.stats_Peak.append(stats_Peak)
 
         print("Done.")
 
@@ -131,7 +186,6 @@ class file_extracted_data:
                             width_max_holder = max(width_max_holder, width_holder)
             droplet_stats.append(Droplet(width_max_holder, max_holder))
         return droplet_stats
-
 
   
 # os.chdir('C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/EXP200225-6')
