@@ -2000,45 +2000,26 @@ class Ui_MainWindow(object):
         width_enable=True
 
 
-
         
 
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
-        
-#         self.stats_Ch1 = []
-#         self.stats_Ch2 = []
-#         self.stats_Ch3 = []
-#         self.stats_Ch12 = []
-#         self.stats_Ch13 = []
-#         self.stats_Ch23 = []
-#         self.stats_Peak = []
-#         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-#         print(len(a.stats_Peak))
-#         print(a.stats_Peak[-1].peak_voltage)
-    
+        a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+        self.analog.update(a.analog_file)
+        print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
         ### End
-    
-    
+
+        
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-        self.Ch1list = []
-        self.Ch1width = []
-        self.Ch2list = []
-        self.Ch2width = []
-        self.Ch3list = []
-        self.Ch3width = []        
-        self.Ch12list = []
-        self.Ch12width = []  
-        self.Ch13list = []
-        self.Ch13width = []   
-        self.Ch23list = []
-        self.Ch23width = []
-        self.Peaklist = []
-        self.Peakwidth = []    
-        a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-        print(a.Ch1list)
+#         a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+#         self.analog.update(a.analog_file)
+#         print(self.analog)
+        ### End
+        
 
+        
+        
 
 
     def add(self): 
@@ -2048,6 +2029,7 @@ class Ui_MainWindow(object):
             self.file_list_view.addItem(f)
 
     def openfolder(self):
+        self.analog = {}
         self.file_list_view.clear()
         self.file_dict_list.clear()
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
