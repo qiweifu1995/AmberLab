@@ -15,12 +15,12 @@ import pyqtgraph as pg
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 800)
+        MainWindow.resize(1500, 800)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         
         self.graphWidget = PlotWidget(self.centralwidget)
-        self.graphWidget.setGeometry(QtCore.QRect(50, 50, 700, 500))
+        self.graphWidget.setGeometry(QtCore.QRect(50, 50, 1300, 500))
         self.graphWidget.setObjectName("graphWidget")
         
         self.graphWidget.setTitle("test scatter plot", color="w", size="30pt")
@@ -114,12 +114,12 @@ class Ui_MainWindow(object):
         
         
         # filter y axis
-        a = (np.array(Ch1_channel0) > lr2_min ).tolist()
-        b = (np.array(Ch1_channel0) < lr2_max ).tolist()
+        a = (np.array(self.Ch1_channel0) > lr2_min ).tolist()
+        b = (np.array(self.Ch1_channel0) < lr2_max ).tolist()
         
         # filter x axis
-        c = (np.array(Ch1_channel1) > lr1_min ).tolist()
-        d = (np.array(Ch1_channel1) < lr1_max ).tolist()
+        c = (np.array(self.Ch1_channel1) > lr1_min ).tolist()
+        d = (np.array(self.Ch1_channel1) < lr1_max ).tolist()
 
         count = 0
         for i in range(len(a)):
