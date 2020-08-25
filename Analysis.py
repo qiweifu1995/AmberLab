@@ -3,7 +3,7 @@
 import pandas as pd
 import time
 import numpy as np
-# import os
+import os
 
 class Droplet:
     """this class holds all the statistic info for each droplet, this DOES NOT hold raw data"""
@@ -52,38 +52,41 @@ class file_extracted_data_Qing:
             
         print("Done")
             
-    def extract(self, file, threshold=1, width_enable=True, channel=0, chunksize=100, header=0):
+    def extract(self, file, threshold=1, width_enable=True, width_channel=0, chunksize=100, header=0):
 
         # select channel and threshold
-        peak = []
+        peak = [[],[],[],[]]
         width =[]
+
 
         for Ch in pd.read_csv(file, chunksize=chunksize, header=header):
             Ch.columns =[0,1,2,3] 
-            sign = Ch - threshold
-            sign[sign > 0] = 1
-            sign[sign < 0] = -1
+            
+            for channel in range(4):
+                peak[channel].append(round(Ch[channel].max(),3))
 
-            diff1 = sign[channel].diff(periods=1).fillna(0)
-            df1 = sign[channel].loc[diff1[diff1 != 0].index]
-            index_list = df1.index
+                if channel == width_channel and width_enable:
+                    sign = Ch - threshold
+                    sign[sign > 0] = 1
+                    sign[sign < 0] = -1
 
+                    diff1 = sign[channel].diff(periods=1).fillna(0)
+                    df1 = sign[channel].loc[diff1[diff1 != 0].index]
+                    index_list = df1.index
 
-            peak.append(round(Ch[channel].max(),3))
-
-            if width_enable == True:
-                current_width = 0
-
-                for i in range(len(index_list)):
-                    if df1[index_list[i-1]] >= 0:
-                        if df1[index_list[i]] <= 0:
-                            current_width = max(index_list[i] - index_list[i-1],current_width)
-
-                if current_width == 0:
-                    width.append(0)
-                else:
-                    width.append(current_width)
                     current_width = 0
+
+                    for i in range(len(index_list)):
+                        if df1[index_list[i-1]] >= 0:
+                            if df1[index_list[i]] <= 0:
+                                current_width = max(index_list[i] - index_list[i-1],current_width)
+
+                    if current_width == 0:
+                        width.append(0)
+                    else:
+                        width.append(current_width)
+                        current_width = 0
+                    
         return (peak, width)
 
     
@@ -157,11 +160,13 @@ class file_extracted_data:
         return droplet_stats
 
   
-  
 # os.chdir('C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/EXP200225-6')
 
 # current_file_list = {'Ch1 ': '200225_171057 AFB AFB Ch1 Hit.csv', 'Ch2 ': '200225_171057 AFB AFB Ch2 Hit.csv', 'Ch3 ': '200225_171057 AFB AFB Ch3 Hit.csv', 'Ch1-2': '200225_171057 AFB AFB Ch1-2 Hit.csv', 'Ch1-3': '200225_171057 AFB AFB Ch1-3 Hit.csv', 'Ch2-3': '200225_171057 AFB AFB Ch2-3 Hit.csv', 'Locked': '', 'Param': '200225_171057 AFB Param.csv', 'Summary': '200225_171057 AFB Summary.csv', 'Peak Record': '200225_171057 AFB Peak Record.csv', 'Raw Time Log': '200225_171057 AFBRaw Time Log.csv', 'Time Log': '200225_171057 AFBRaw Time Log.csv', 'Root Folder': 'C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/EXP200225-6'}
-# a = file_extracted_data(current_file_list, 2, True,0, 100, 0)
-# a.stats_Ch2
+# ### Qing's 
+# a = file_extracted_data_Qing(current_file_list, 2, True,1, 100, 0)
+# print(a.analog_file['200225_171057 AFB AFB Ch1 Hit.csv'][0])
 
-    
+# ### Qiwei's 
+# # a = file_extracted_data(current_file_list, 2, True,1, 100, 0)
+# # print(a.analog_file['200225_171057 AFB AFB Ch1 Hit.csv'][2].peak_voltage)
