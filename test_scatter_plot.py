@@ -86,12 +86,12 @@ class Ui_MainWindow(object):
     def draw(self):
         
         # set x axis
-        self.Ch1_channel0 = [2.408,2.617,2.706,2.57,2.273,2.275,2.24,2.299,2.302,2.434,2.349,2.317,2.361,2.435,2.409,2.293,2.357,2.523,
+        """self.Ch1_channel0 = [2.408,2.617,2.706,2.57,2.273,2.275,2.24,2.299,2.302,2.434,2.349,2.317,2.361,2.435,2.409,2.293,2.357,2.523,
                              2.927,2.331,2.359,2.939,2.363,2.399,2.312,2.333,2.703,2.404,2.225,2.34,2.373,2.273,2.31,2.323,2.298,2.35,
                              2.324,2.342,2.353,2.251,2.543,2.297,2.273,2.394,2.327,2.22,2.411,2.324,2.339,2.423,4.249,2.322,2.478,2.604,
                              2.364,2.375,2.412,2.272,2.406,2.357,2.266,2.321,2.469,2.41,2.36,2.423,2.208,2.309,2.915,2.319,2.162,2.19,
                              2.466,2.295,2.303,2.328,2.496,2.309,2.324,2.507,2.303,2.464,2.313,2.55,2.788,2.338,2.194,2.406,2.323,2.252,
-                             2.329,2.267,2.304,6.946,2.446,2.118,2.301,2.431,2.468,2.273,2.383,2.301,2.342,2.372,2.368,2.3,2.296,2.525,
+                             2.329,2.267,2.304,2.946,2.446,2.118,2.301,2.431,2.468,2.273,2.383,2.301,2.342,2.372,2.368,2.3,2.296,2.525,
                              2.333,2.333,2.298,2.348,3.398,2.349,2.382,2.43,2.18,2.434,2.422,2.449,2.241,2.472,2.396,2.303,2.468,2.361,
                              2.445,2.3,2.459,2.329,2.32,2.339,2.315,2.391,2.336,2.337,2.38,2.341,2.302,2.4,2.846,2.306,2.276,2.322,2.396,
                              2.544,2.54,2.407,2.303,2.43,2.344,2.306,2.962,2.38,2.316,2.337,2.369,2.41,2.364,2.453,2.319,2.406,2.433,2.379,
@@ -114,45 +114,85 @@ class Ui_MainWindow(object):
                              1.739, 1.913, 2.003, 1.884, 1.873, 2.247, 2.052, 1.957, 2.121, 1.951, 2.112, 1.889, 1.884, 2.149, 2.105, 2.024, 
                              2.126, 1.693, 1.86, 2.177, 2.254, 1.955, 1.796, 1.823, 1.842, 1.823, 1.791, 1.99, 1.803, 1.743, 2.21, 2.034, 
                              2.005, 2.015, 2.112, 1.992, 1.979, 2.103, 2.413, 1.998, 1.985, 1.988, 2.099, 2.07, 2.009, 2.075, 1.916]
+        """
+        self.Ch1_channel0 = np.random.normal(5,1, 500000)
+        self.Ch1_channel1 = np.random.normal(5, 1, 500000)
+        max_voltage = 12
+        bins = 1000
+        steps = max_voltage / bins
 
+        # all data is first sorted into a histogram
+        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]], density=True)
+        max_density = histo.max()
 
+        # made empty array to hold the sorted data according to density
+        density_listx = []
+        density_listy = []
+        for i in range(6):
+            density_listx.append([])
+            density_listy.append([])
+
+        print("start")
         for i in range(len(self.Ch1_channel0)):
-            legend_range = 0.07
+            """legend_range = 0.07
             aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
             bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
             
             ab_set = len(set(aa) & set(bb))   
+            """
+            x = self.Ch1_channel0[i]
+            y = self.Ch1_channel1[i]
 
-            percentage = 100*(ab_set/len(self.Ch1_channel0))
-            
-
-                
+            # checking for density, the value divided by steps serves as the index
+            density = histo[int(x/steps)][int(y/steps)]
+            percentage = density / max_density * 100
+            if i%10000 == 0:
+                print(i)
             if 15 > percentage >= 0:
-                red = 0
-                blue =  255*(percentage-0)/15 
-                green =  255
+                density_listx[0].append(x)
+                density_listy[0].append(y)
             elif 30 > percentage >= 15:
+                density_listx[1].append(x)
+                density_listy[1].append(y)
+            elif 45 > percentage >= 30:
+                density_listx[2].append(x)
+                density_listy[2].append(y)
+            elif 60 > percentage >= 45:
+                density_listx[3].append(x)
+                density_listy[3].append(y)
+            elif 75 > percentage >= 60:
+                density_listx[4].append(x)
+                density_listy[4].append(y)
+            else:
+                density_listx[5].append(x)
+                density_listy[5].append(y)
+        for i in range(6):
+            if i == 0:
+                red = 0
+                blue =  255/15
+                green =  255
+            elif i == 1:
                 red = 0
                 blue = 255
-                green = 255 - 255*(percentage-15)/15   
-            elif 45 > percentage >= 30:
-                red = 255*(percentage-30)/15 
+                green = 255 - 255/15
+            elif i == 2:
+                red = 255/15
                 blue = 255
                 green = 0
-            elif 60 > percentage >= 45:
+            elif i == 3:
                 red = 255
-                blue = 255 - 255*(percentage-45)/15  
+                blue = 255 - 255/15
                 green = 0
-            elif 75 > percentage >= 60:
+            elif i == 4:
                 red = 255
-                blue = 255*(percentage-60)/15
-                green = 255*(percentage-60)/15
+                blue = 255/15
+                green = 255/15
             else:
                 red = 255
                 blue = 255
-                green = 255               
-
-            self.graphWidget.plot([self.Ch1_channel0[i]], [self.Ch1_channel1[i]], symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(red,blue,green))
+                green = 255
+            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
+                                  symbolSize=5, symbolBrush=(red, blue, green))
 
         self.graphWidget.addLegend()    
 
