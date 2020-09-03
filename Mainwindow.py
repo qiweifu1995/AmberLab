@@ -15,6 +15,10 @@ import Helper
 import Analysis
 import time
 from itertools import islice
+from pyqtgraph import PlotWidget
+import numpy as np
+from PyQt5 import QtGui  # Place this at the top of your file.
+import pyqtgraph as pg
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -804,16 +808,44 @@ class Ui_MainWindow(object):
         self.line_6.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_6.setObjectName("line_6")
         self.horizontalLayout_22.addWidget(self.line_6)
-        self.widget_gating = QtWidgets.QWidget(self.tab_gating)
+        
+#         self.widget_gating = QtWidgets.QWidget(self.tab_gating)
+#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
+#         sizePolicy.setHorizontalStretch(0)
+#         sizePolicy.setVerticalStretch(0)
+#         sizePolicy.setHeightForWidth(self.widget_gating.sizePolicy().hasHeightForWidth())
+        
+#         self.widget_gating.setSizePolicy(sizePolicy)
+#         self.widget_gating.setMinimumSize(QtCore.QSize(700, 499))
+#         self.widget_gating.setMaximumSize(QtCore.QSize(16777215, 16777215))
+#         self.widget_gating.setObjectName("widget_gating")
+#         self.horizontalLayout_22.addWidget(self.widget_gating)
+
+        # histogram
+        self.histogram_graphWidget = PlotWidget(self.tab_gating)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_gating.sizePolicy().hasHeightForWidth())
-        self.widget_gating.setSizePolicy(sizePolicy)
-        self.widget_gating.setMinimumSize(QtCore.QSize(700, 499))
-        self.widget_gating.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.widget_gating.setObjectName("widget_gating")
-        self.horizontalLayout_22.addWidget(self.widget_gating)
+        sizePolicy.setHeightForWidth(self.histogram_graphWidget.sizePolicy().hasHeightForWidth())
+        self.histogram_graphWidget.setSizePolicy(sizePolicy)
+        self.histogram_graphWidget.setMinimumSize(QtCore.QSize(700, 499))
+        self.histogram_graphWidget.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.histogram_graphWidget.setObjectName("histogram_graphWidget")
+        self.horizontalLayout_22.addWidget(self.histogram_graphWidget)        
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.histogram_graphWidget.setTitle("test histogram",size="30pt")
+        self.histogram_graphWidget.setLabel('left', 'Frequency', **styles)
+        self.histogram_graphWidget.setLabel('bottom', 'Green', **styles)
+        self.histogram_graphWidget.setBackground('w')
+        self.histogram_graphWidget.setXRange(1, 10.5, padding=0)
+        self.histogram_graphWidget.setYRange(1, 10.5, padding=0)
+
+#         # threshold
+
+        self.lineEdit_gatevoltage.setText("0")
+        self.lineEdit_gatevoltage.textChanged.connect(self.thresholdUpdated)
+#         # threshold end
+
         self.tab_widgets_main.addTab(self.tab_gating, "")
         self.tab_scatter = QtWidgets.QWidget()
         self.tab_scatter.setObjectName("tab_scatter")
@@ -982,15 +1014,47 @@ class Ui_MainWindow(object):
         self.line_7.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_7.setObjectName("line_7")
         self.horizontalLayout_29.addWidget(self.line_7)
-        self.widget_scatter = QtWidgets.QWidget(self.subtab_scatter)
+        
+#         self.widget_scatter = QtWidgets.QWidget(self.subtab_scatter)
+#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+#         sizePolicy.setHorizontalStretch(0)
+#         sizePolicy.setVerticalStretch(0)
+#         sizePolicy.setHeightForWidth(self.widget_scatter.sizePolicy().hasHeightForWidth())
+#         self.widget_scatter.setSizePolicy(sizePolicy)
+#         self.widget_scatter.setMinimumSize(QtCore.QSize(500, 500))
+#         self.widget_scatter.setObjectName("widget_scatter")
+#         self.horizontalLayout_29.addWidget(self.widget_scatter)
+        
+    
+        
+        self.graphWidget = PlotWidget(self.subtab_scatter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_scatter.sizePolicy().hasHeightForWidth())
-        self.widget_scatter.setSizePolicy(sizePolicy)
-        self.widget_scatter.setMinimumSize(QtCore.QSize(500, 500))
-        self.widget_scatter.setObjectName("widget_scatter")
-        self.horizontalLayout_29.addWidget(self.widget_scatter)
+        sizePolicy.setHeightForWidth(self.graphWidget.sizePolicy().hasHeightForWidth())
+        self.graphWidget.setSizePolicy(sizePolicy)
+        self.graphWidget.setMinimumSize(QtCore.QSize(500, 500))
+        self.graphWidget.setObjectName("graphWidget")
+        self.horizontalLayout_29.addWidget(self.graphWidget)
+
+        self.graphWidget.setTitle("test scatter plot", color="w", size="30pt")
+        styles = {"color": "#fff", "font-size": "20px"}
+        
+        self.graphWidget.setLabel('left', 'Green', **styles)
+        self.graphWidget.setLabel('bottom', 'Far Red', **styles)
+        
+        # threshold
+       
+        self.lineEdit_scatterxvoltage.setText("0")
+        self.lineEdit_scatteryvoltage.setText("0")
+        
+        self.data_line_x = self.graphWidget.plot([0,1], [1,1], pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+        self.data_line_y = self.graphWidget.plot([1,1], [0,1], pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+                
+        self.lineEdit_scatterxvoltage.textChanged.connect(self.thresholdUpdated_2)
+        self.lineEdit_scatteryvoltage.textChanged.connect(self.thresholdUpdated_2)
+        # threshold end
+        
         self.tab_widgets_scatter.addTab(self.subtab_scatter, "")
         self.subtab_peakdisplay = QtWidgets.QWidget()
         self.subtab_peakdisplay.setObjectName("subtab_peakdisplay")
@@ -1732,18 +1796,241 @@ class Ui_MainWindow(object):
         self.actionImport.triggered.connect(self.openfolder)
         self.actionAdd_New.triggered.connect(self.add)
         self.button_update.clicked.connect(self.pressed)
+        
+        # need to have choices for all channels
+        self.button_update.clicked.connect(lambda:self.draw(self.checkBox_7))
+        self.button_update.clicked.connect(lambda:self.draw_2(self.checkBox_7))
 
+
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw(self.checkbox_ch1))
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw_2(self.checkbox_ch1))
         
         self.retranslateUi(MainWindow)
         self.tab_widgets_main.setCurrentIndex(0)
         self.tab_widgets_scatter.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+        
 
 
         self.file_dict_list = []
         
+    def thresholdUpdated(self):
+        
+        text_x = float(self.lineEdit_gatevoltage.text())
+        # x
+        line_xx = [text_x,text_x]
+        line_yy = [0,200]
+        
+        self.data_line.setData(line_xx, line_yy)
+
+        filtered_gate_voltage_x = [x for x in self.width if x > text_x]
+
+        percentage = round(100*len(filtered_gate_voltage_x)/len(self.width),2)
+        self.lineEdit_percentage.setText(str(percentage))    
+        
+        
+    def draw(self,b):
+    
+        if b.text() == "All Channel":
+            self.width = self.analog[current_file_dict['Peak Record']][0][0]
+        elif b.text() == "Channel 1":
+            self.width = self.analog[current_file_dict['Ch1 ']][0][0]
+        print(self.width)
+#         self.width = [2.408,2.617,2.706,2.57,2.273,2.275,2.24,2.299,2.302,2.434,2.349,2.317,2.361,2.435,2.409,2.293,2.357,2.523,2.927,2.331,2.359,2.939,2.363,2.399,2.312,2.333,2.703,2.404,2.225,2.34,2.373,2.273,2.31,2.323,2.298,2.35,2.324,2.342,2.353,2.251,2.543,2.297,2.273,2.394,2.327,2.22,2.411,2.324,2.339,2.423,4.249,2.322,2.478,2.604,2.364,2.375,2.412,2.272,2.406,2.357,2.266,2.321,2.469,2.41,2.36,2.423,2.208,2.309,2.915,2.319,2.162,2.19,2.466,2.295,2.303,2.328,2.496,2.309,2.324,2.507,2.303,2.464,2.313,2.55,2.788,2.338,2.194,2.406,2.323,2.252,2.329,2.267,2.304,6.946,2.446,2.118,2.301,2.431,2.468,2.273,2.383,2.301,2.342,2.372,2.368,2.3,2.296,2.525,2.333,2.333,2.298,2.348,3.398,2.349,2.382,2.43,2.18,2.434,2.422,2.449,2.241,2.472,2.396,2.303,2.468,2.361,2.445,2.3,2.459,2.329,2.32,2.339,2.315,2.391,2.336,2.337,2.38,2.341,2.302,2.4,2.846,2.306,2.276,2.322,2.396,2.544,2.54,2.407,2.303,2.43,2.344,2.306,2.962,2.38,2.316,2.337,2.369,2.41,2.364,2.453,2.319,2.406,2.433,2.379,2.444,2.266,2.349,2.334,2.309,2.378,2.307,2.317,2.516,2.247,2.251,2.666,2.474,2.304,2.345,2.353,2.224,2.322,2.198,2.301,2.302,2.55,2.341,2.415,2.4,2.336,2.328,2.376,2.333,2.401,2.228,2.271,2.304,2.277,3.694,2.303,2.45,2.33,2.3,2.239,2.331,2.439,2.702,2.118,2.35,2.233,2.32,2.362,2.308,2.354,2.776,2.217,2.334,2.356,2.516,2.515,2.304,2.386,2.295]
+        range_width = int(max(self.width))+1
+        y,x = np.histogram(self.width, bins=np.linspace(0, range_width , range_width*10+1))
+        separate_y = [0]*len(y)
+        for i in range(len(y)):
+            separate_y = [0]*len(y)
+            separate_y[i] = y[i]
+            self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(255,255,0))
+
+        self.histogram_graphWidget.setXRange(0, max(x), padding=0)
+        self.histogram_graphWidget.setYRange(0, max(y), padding=0)
+        
+        #after 1st map so the line will appear before the histogram
+        self.data_line = self.histogram_graphWidget.plot([0,0], [0,0], pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+        self.thresholdUpdated()
+    
+    def draw_2(self,b):
+        if b.text() == "All Channel":
+            self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][0]
+            self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][1]
+        elif b.text() == "Channel 1":
+            self.Ch1_channel0 = self.analog[current_file_dict['Ch1 ']][0][0]
+            self.Ch1_channel1 = self.analog[current_file_dict['Ch1 ']][0][1]            
+            
+        self.Ch1_channel0 = np.random.normal(5,1, 200)
+        self.Ch1_channel1 = np.random.normal(5, 1, 200)
+        max_voltage = 12
+        bins = 1000
+        steps = max_voltage / bins
+
+        # all data is first sorted into a histogram
+        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]], density=True)
+        max_density = histo.max()
+
+        # made empty array to hold the sorted data according to density
+        density_listx = []
+        density_listy = []
+        for i in range(6):
+            density_listx.append([])
+            density_listy.append([])
+
+        print("start")
+        for i in range(len(self.Ch1_channel0)):
+            """legend_range = 0.07
+            aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
+            bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
+            
+            ab_set = len(set(aa) & set(bb))   
+            """
+            x = self.Ch1_channel0[i]
+            y = self.Ch1_channel1[i]
+
+            # checking for density, the value divided by steps serves as the index
+            density = histo[int(x/steps)][int(y/steps)]
+            percentage = density / max_density * 100
+            if i%10000 == 0:
+                print(i)
+            if 15 > percentage >= 0:
+                density_listx[0].append(x)
+                density_listy[0].append(y)
+            elif 30 > percentage >= 15:
+                density_listx[1].append(x)
+                density_listy[1].append(y)
+            elif 45 > percentage >= 30:
+                density_listx[2].append(x)
+                density_listy[2].append(y)
+            elif 60 > percentage >= 45:
+                density_listx[3].append(x)
+                density_listy[3].append(y)
+            elif 75 > percentage >= 60:
+                density_listx[4].append(x)
+                density_listy[4].append(y)
+            else:
+                density_listx[5].append(x)
+                density_listy[5].append(y)
+        for i in range(6):
+            if i == 0:
+                red = 0
+                blue =  255/15
+                green =  255
+            elif i == 1:
+                red = 0
+                blue = 255
+                green = 255 - 255/15
+            elif i == 2:
+                red = 255/15
+                blue = 255
+                green = 0
+            elif i == 3:
+                red = 255
+                blue = 255 - 255/15
+                green = 0
+            elif i == 4:
+                red = 255
+                blue = 255/15
+                green = 255/15
+            else:
+                red = 255
+                blue = 255
+                green = 255
+            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
+                                  symbolSize=5, symbolBrush=(red, blue, green))
+
+        self.graphWidget.addLegend()    
+
+        self.graphWidget.plot(name = "0~15%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,0,255))
+        self.graphWidget.plot(name = "15~30%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,255))
+        self.graphWidget.plot(name = "30~45%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,0))
+        self.graphWidget.plot(name = "45~60%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,0))
+        self.graphWidget.plot(name = "60~75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,0,0))
+        self.graphWidget.plot(name = ">75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,255))
+        
+        
+#    >0%    0,0,1   blue        
+#    >15%   0,1,1  cyan
+#    >30%   0,1,0  green
+#    >45%   1,1,0  yellow
+#    >60%   1,0,0   red 
+#    >75%   1,1,1   white
+
+        #threshold
+        self.thresholdUpdated_2()
+
+    def thresholdUpdated_2(self):
+       
+        text_x = float(self.lineEdit_scatterxvoltage.text())
+        text_y = float(self.lineEdit_scatteryvoltage.text())
+
+        # x
+        line_xx = [text_x,text_x]
+        line_yy = [0,max(self.Ch1_channel1)]
+        
+        self.data_line_x.setData(line_xx, line_yy)
+        # y
+        line_x = [0,max(self.Ch1_channel0)]
+        line_y = [text_y,text_y]
+    
+        self.data_line_y.setData(line_x, line_y)
+        
+        filtered_gate_voltage_x = [x for x in self.Ch1_channel0 if x > text_x]
+        filtered_gate_voltage_y = [x for x in self.Ch1_channel1 if x > text_y]
+        
+        # filter y axis
+        a = (np.array(self.Ch1_channel0) > text_x ).tolist()
+        b = (np.array(self.Ch1_channel0) < text_x ).tolist()
+        
+        # filter x axis
+        c = (np.array(self.Ch1_channel1) > text_y ).tolist()
+        d = (np.array(self.Ch1_channel1) < text_y ).tolist()        
+        
+
+        count_quadrant1 = 0
+        count_quadrant2 = 0
+        count_quadrant3 = 0
+        count_quadrant4 = 0
+        
+        for i in range(len(a)):
+            if a[i] and c[i]:
+                count_quadrant1 += 1
+            elif not a[i] and c[i]:
+                count_quadrant2 +=1
+            elif a[i] and not c[i]:
+                count_quadrant3 +=1
+            elif not a[i] and not c[i]:
+                count_quadrant4 +=1    
+                
+        print("quadrant 1(top right):",count_quadrant1)
+        print("quadrant 2(top left):",count_quadrant2)
+        print("quadrant 3(bottom right):",count_quadrant3)
+        print("quadrant 4(bottom left):",count_quadrant4)
+        ###  
+
+    def regionUpdated(self,lr1,lr2):
+        # for y axis
+        lr1_min, lr1_max = lr1.getRegion()
+        # for x axis
+        lr2_min, lr2_max = lr2.getRegion()
+        
+        
+        # filter y axis
+        a = (np.array(self.Ch1_channel0) > lr2_min ).tolist()
+        b = (np.array(self.Ch1_channel0) < lr2_max ).tolist()
+        
+        # filter x axis
+        c = (np.array(self.Ch1_channel1) > lr1_min ).tolist()
+        d = (np.array(self.Ch1_channel1) < lr1_max ).tolist()
+
+#         print(a,b,c,d)
+
+        count = 0
+        for i in range(len(a)):
+            if a[i] and b[i] and c[i] and d[i]:
+                count = count + 1
+        print("number of points inside the box:",count)
         
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -1891,8 +2178,9 @@ class Ui_MainWindow(object):
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     def pressed(self):
-        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log
+        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
+
         #print(current_file_dict)
         os.chdir(current_file_dict["Root Folder"])
         
@@ -2004,16 +2292,16 @@ class Ui_MainWindow(object):
 
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
-        a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-        self.analog.update(a.analog_file)
-        print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
+#         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+#         self.analog.update(a.analog_file)
+#         print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
         ### End
 
         
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-#         a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-#         self.analog.update(a.analog_file)
+        a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+        self.analog.update(a.analog_file)
 #         print(self.analog)
         ### End
         
