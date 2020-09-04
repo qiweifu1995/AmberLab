@@ -1255,14 +1255,42 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.addLayout(self.horizontalLayout_option1)
         self.horizontalLayout_44 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_44.setObjectName("horizontalLayout_44")
-        self.widget_sweepparam2 = QtWidgets.QWidget(self.subtab_parameter)
+
+        # Sweep Histogram 1
+        self.widget_sweepparam2 = PlotWidget(self.subtab_parameter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_sweepparam2.sizePolicy().hasHeightForWidth())
         self.widget_sweepparam2.setSizePolicy(sizePolicy)
-        self.widget_sweepparam2.setMinimumSize(QtCore.QSize(400, 400))
+        self.widget_sweepparam2.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam2.setObjectName("widget_sweepparam2")
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.widget_sweepparam2.setTitle("Histogram 1",size="30pt")
+        self.widget_sweepparam2.setLabel('left', 'Frequency', **styles)
+        self.widget_sweepparam2.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam2.setBackground('w')
+        self.widget_sweepparam2.setXRange(1, 10.5, padding=0)
+        self.widget_sweepparam2.setYRange(1, 10.5, padding=0)
+
+        # Sweep Histogram 2
+        self.widget_sweepparam1 = PlotWidget(self.subtab_parameter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_sweepparam1.sizePolicy().hasHeightForWidth())
+        self.widget_sweepparam1.setSizePolicy(sizePolicy)
+        self.widget_sweepparam1.setMinimumSize(QtCore.QSize(200, 200))
+        self.widget_sweepparam1.setObjectName("widget_sweepparam1")
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.widget_sweepparam1.setTitle("Histogram 2",size="30pt")
+        self.widget_sweepparam1.setLabel('left', 'Frequency', **styles)
+        self.widget_sweepparam1.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam1.setBackground('w')
+        self.widget_sweepparam1.setXRange(1, 10.5, padding=0)
+        self.widget_sweepparam1.setYRange(1, 10.5, padding=0)
+
+
         self.horizontalLayout_44.addWidget(self.widget_sweepparam2)
         self.verticalLayout_12.addLayout(self.horizontalLayout_44)
         self.horizontalLayout_43.addLayout(self.verticalLayout_12)
@@ -1283,14 +1311,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_17.addLayout(self.horizontalLayout_option2)
         self.horizontalLayout_45 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_45.setObjectName("horizontalLayout_45")
-        self.widget_sweepparam1 = QtWidgets.QWidget(self.subtab_parameter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_sweepparam1.sizePolicy().hasHeightForWidth())
-        self.widget_sweepparam1.setSizePolicy(sizePolicy)
-        self.widget_sweepparam1.setMinimumSize(QtCore.QSize(400, 400))
-        self.widget_sweepparam1.setObjectName("widget_sweepparam1")
+
         self.horizontalLayout_45.addWidget(self.widget_sweepparam1)
         self.verticalLayout_17.addLayout(self.horizontalLayout_45)
         self.horizontalLayout_43.addLayout(self.verticalLayout_17)
@@ -1446,7 +1467,7 @@ class Ui_MainWindow(object):
         self.label_55.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_55.setObjectName("label_55")
         self.gridLayout_9.addWidget(self.label_55, 0, 0, 1, 1)
-        self.listView_channels_2 = QtWidgets.QListView(self.subtab_parameter)
+        self.listView_channels_2 = QtWidgets.QListWidget(self.subtab_parameter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1454,6 +1475,10 @@ class Ui_MainWindow(object):
         self.listView_channels_2.setSizePolicy(sizePolicy)
         self.listView_channels_2.setMinimumSize(QtCore.QSize(20, 20))
         self.listView_channels_2.setObjectName("listView_channels_2")
+        self.listView_channels_2.addItem("Green")
+        self.listView_channels_2.addItem("Red")
+        self.listView_channels_2.addItem("Blue")
+        self.listView_channels_2.addItem("Orange")
         self.gridLayout_9.addWidget(self.listView_channels_2, 0, 1, 1, 1)
         self.verticalLayout_channelsbinwidth.addLayout(self.gridLayout_9)
         self.horizontalLayout_48.addLayout(self.verticalLayout_channelsbinwidth)
@@ -1840,7 +1865,7 @@ class Ui_MainWindow(object):
         print(self.width)
 #         self.width = [2.408,2.617,2.706,2.57,2.273,2.275,2.24,2.299,2.302,2.434,2.349,2.317,2.361,2.435,2.409,2.293,2.357,2.523,2.927,2.331,2.359,2.939,2.363,2.399,2.312,2.333,2.703,2.404,2.225,2.34,2.373,2.273,2.31,2.323,2.298,2.35,2.324,2.342,2.353,2.251,2.543,2.297,2.273,2.394,2.327,2.22,2.411,2.324,2.339,2.423,4.249,2.322,2.478,2.604,2.364,2.375,2.412,2.272,2.406,2.357,2.266,2.321,2.469,2.41,2.36,2.423,2.208,2.309,2.915,2.319,2.162,2.19,2.466,2.295,2.303,2.328,2.496,2.309,2.324,2.507,2.303,2.464,2.313,2.55,2.788,2.338,2.194,2.406,2.323,2.252,2.329,2.267,2.304,6.946,2.446,2.118,2.301,2.431,2.468,2.273,2.383,2.301,2.342,2.372,2.368,2.3,2.296,2.525,2.333,2.333,2.298,2.348,3.398,2.349,2.382,2.43,2.18,2.434,2.422,2.449,2.241,2.472,2.396,2.303,2.468,2.361,2.445,2.3,2.459,2.329,2.32,2.339,2.315,2.391,2.336,2.337,2.38,2.341,2.302,2.4,2.846,2.306,2.276,2.322,2.396,2.544,2.54,2.407,2.303,2.43,2.344,2.306,2.962,2.38,2.316,2.337,2.369,2.41,2.364,2.453,2.319,2.406,2.433,2.379,2.444,2.266,2.349,2.334,2.309,2.378,2.307,2.317,2.516,2.247,2.251,2.666,2.474,2.304,2.345,2.353,2.224,2.322,2.198,2.301,2.302,2.55,2.341,2.415,2.4,2.336,2.328,2.376,2.333,2.401,2.228,2.271,2.304,2.277,3.694,2.303,2.45,2.33,2.3,2.239,2.331,2.439,2.702,2.118,2.35,2.233,2.32,2.362,2.308,2.354,2.776,2.217,2.334,2.356,2.516,2.515,2.304,2.386,2.295]
         range_width = int(max(self.width))+1
-        y,x = np.histogram(self.width, bins=np.linspace(0, range_width , range_width*10+1))
+        y,x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width*10+1))
         separate_y = [0]*len(y)
         for i in range(len(y)):
             separate_y = [0]*len(y)
@@ -2293,8 +2318,11 @@ class Ui_MainWindow(object):
 
         
 #         start = time.time()
-
-        chunksize = int(1000 / float(stats.under_sample_factor))
+        if stats.under_sample_factor == "":
+            under_sample = 1
+        else:
+            under_sample = stats.under_sample_factor
+        chunksize = int(1000 / float(under_sample))
         threshold = 1
         channel = 0
         width_enable=True
