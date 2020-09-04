@@ -19,6 +19,7 @@ from pyqtgraph import PlotWidget
 import numpy as np
 from PyQt5 import QtGui  # Place this at the top of your file.
 import pyqtgraph as pg
+import statistics
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1861,16 +1862,20 @@ class Ui_MainWindow(object):
             self.Ch1_channel0 = self.analog[current_file_dict['Ch1 ']][0][0]
             self.Ch1_channel1 = self.analog[current_file_dict['Ch1 ']][0][1]            
             
-        self.Ch1_channel0 = np.random.normal(5,1, 200)
-        self.Ch1_channel1 = np.random.normal(5, 1, 200)
+        # self.Ch1_channel0 = np.random.normal(5, 1, 30000)
+        # self.Ch1_channel1 = np.random.normal(5, 1, 30000)
         max_voltage = 12
-        bins = 1000
+        bins = 400
         steps = max_voltage / bins
 
         # all data is first sorted into a histogram
-        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]], density=True)
+        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]],
+                                     density=True)
+        histo_bin, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0, max_voltage],
+                                                                                      [0, max_voltage]],)
         max_density = histo.max()
-
+        sample_size = len(self.Ch1_channel0)
+        min_density = max(sample_size/bins/bins, 1)
         # made empty array to hold the sorted data according to density
         density_listx = []
         density_listy = []
@@ -1879,7 +1884,7 @@ class Ui_MainWindow(object):
             density_listy.append([])
 
         print("start")
-        for i in range(len(self.Ch1_channel0)):
+        for i in range(sample_size):
             """legend_range = 0.07
             aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
             bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
@@ -1891,27 +1896,33 @@ class Ui_MainWindow(object):
 
             # checking for density, the value divided by steps serves as the index
             density = histo[int(x/steps)][int(y/steps)]
+            total_in_bin = histo_bin[int(x/steps)][int(y/steps)]
             percentage = density / max_density * 100
+            print(density)
+            print(percentage)
             if i%10000 == 0:
                 print(i)
-            if 15 > percentage >= 0:
+            if 1 > percentage >= 0 or total_in_bin <= min_density :
                 density_listx[0].append(x)
                 density_listy[0].append(y)
-            elif 30 > percentage >= 15:
+            elif 20 > percentage >= 1 and total_in_bin >= min_density:
                 density_listx[1].append(x)
                 density_listy[1].append(y)
-            elif 45 > percentage >= 30:
+            elif 40 > percentage >= 20 and total_in_bin >= min_density:
                 density_listx[2].append(x)
                 density_listy[2].append(y)
-            elif 60 > percentage >= 45:
+            elif 60 > percentage >= 40 and total_in_bin >= min_density:
                 density_listx[3].append(x)
                 density_listy[3].append(y)
-            elif 75 > percentage >= 60:
+            elif 80 > percentage >= 60 and total_in_bin >= min_density:
                 density_listx[4].append(x)
                 density_listy[4].append(y)
-            else:
+            elif percentage > 80 and total_in_bin >= min_density * 2:
                 density_listx[5].append(x)
                 density_listy[5].append(y)
+            else:
+                density_listx[0].append(x)
+                density_listy[0].append(y)
         for i in range(6):
             if i == 0:
                 red = 0
@@ -1937,6 +1948,7 @@ class Ui_MainWindow(object):
                 red = 255
                 blue = 255
                 green = 255
+            print(len(density_listx[i]))
             self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
                                   symbolSize=5, symbolBrush=(red, blue, green))
 
