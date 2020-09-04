@@ -8,7 +8,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog,QTableWidgetItem
 import pandas as pd
 import os
 import Helper
@@ -19,7 +19,7 @@ from pyqtgraph import PlotWidget
 import numpy as np
 from PyQt5 import QtGui  # Place this at the top of your file.
 import pyqtgraph as pg
-import statistics
+import statistics 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -988,7 +988,7 @@ class Ui_MainWindow(object):
         self.label_36.setFont(font)
         self.label_36.setObjectName("label_36")
         self.verticalLayout_9.addWidget(self.label_36)
-        self.tableView_scatterquadrants = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatterquadrants = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatterquadrants.setObjectName("tableView_scatterquadrants")
         self.verticalLayout_9.addWidget(self.tableView_scatterquadrants)
         self.label_37 = QtWidgets.QLabel(self.subtab_scatter)
@@ -997,7 +997,7 @@ class Ui_MainWindow(object):
         self.label_37.setFont(font)
         self.label_37.setObjectName("label_37")
         self.verticalLayout_9.addWidget(self.label_37)
-        self.tableView_scatterxaxis = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatterxaxis = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatterxaxis.setObjectName("tableView_scatterxaxis")
         self.verticalLayout_9.addWidget(self.tableView_scatterxaxis)
         self.label_38 = QtWidgets.QLabel(self.subtab_scatter)
@@ -1006,9 +1006,45 @@ class Ui_MainWindow(object):
         self.label_38.setFont(font)
         self.label_38.setObjectName("label_38")
         self.verticalLayout_9.addWidget(self.label_38)
-        self.tableView_scatteryaxis = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatteryaxis = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatteryaxis.setObjectName("tableView_scatteryaxis")
         self.verticalLayout_9.addWidget(self.tableView_scatteryaxis)
+        
+### Quadrants table
+        # set row count
+        self.tableView_scatterquadrants.setRowCount(4)
+        # set column count
+        self.tableView_scatterquadrants.setColumnCount(3)
+        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '%','% Total Droplets'))
+        self.tableView_scatterquadrants.setVerticalHeaderLabels(('Top Right', 'Top Left','Bottom Left','Bottom Right'))
+        
+
+        
+        ### 2nd table
+        # set row count
+        self.tableView_scatterxaxis.setRowCount(4)
+        # set column count
+        self.tableView_scatterxaxis.setColumnCount(3)
+        self.tableView_scatterxaxis.setHorizontalHeaderLabels(('Mean', 'St Dev','Median'))
+        self.tableView_scatterxaxis.setVerticalHeaderLabels(('Top Right', 'Top Left','Bottom Left','Bottom Right'))
+        
+
+        
+        
+        ### 3rd table
+        # set row count
+        self.tableView_scatteryaxis.setRowCount(4)
+        # set column count
+        self.tableView_scatteryaxis.setColumnCount(3)
+        self.tableView_scatteryaxis.setHorizontalHeaderLabels(('Mean', 'St Dev','Median'))
+        self.tableView_scatteryaxis.setVerticalHeaderLabels(('Top Right', 'Top Left','Bottom Left','Bottom Right'))
+        
+
+
+
+
+        
+        
         self.horizontalLayout_29.addLayout(self.verticalLayout_9)
         self.line_7 = QtWidgets.QFrame(self.subtab_scatter)
         self.line_7.setFrameShape(QtWidgets.QFrame.VLine)
@@ -1887,20 +1923,16 @@ class Ui_MainWindow(object):
             self.Ch1_channel0 = self.analog[current_file_dict['Ch1 ']][0][0]
             self.Ch1_channel1 = self.analog[current_file_dict['Ch1 ']][0][1]            
             
-        # self.Ch1_channel0 = np.random.normal(5, 1, 30000)
-        # self.Ch1_channel1 = np.random.normal(5, 1, 30000)
+        self.Ch1_channel0 = np.random.normal(5,1, 200)
+        self.Ch1_channel1 = np.random.normal(5, 1, 200)
         max_voltage = 12
-        bins = 400
+        bins = 1000
         steps = max_voltage / bins
 
         # all data is first sorted into a histogram
-        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]],
-                                     density=True)
-        histo_bin, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0, max_voltage],
-                                                                                      [0, max_voltage]],)
+        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0,max_voltage], [0,max_voltage]], density=True)
         max_density = histo.max()
-        sample_size = len(self.Ch1_channel0)
-        min_density = max(sample_size/bins/bins, 1)
+
         # made empty array to hold the sorted data according to density
         density_listx = []
         density_listy = []
@@ -1909,7 +1941,7 @@ class Ui_MainWindow(object):
             density_listy.append([])
 
         print("start")
-        for i in range(sample_size):
+        for i in range(len(self.Ch1_channel0)):
             """legend_range = 0.07
             aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
             bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
@@ -1921,33 +1953,27 @@ class Ui_MainWindow(object):
 
             # checking for density, the value divided by steps serves as the index
             density = histo[int(x/steps)][int(y/steps)]
-            total_in_bin = histo_bin[int(x/steps)][int(y/steps)]
             percentage = density / max_density * 100
-            print(density)
-            print(percentage)
             if i%10000 == 0:
                 print(i)
-            if 1 > percentage >= 0 or total_in_bin <= min_density :
+            if 15 > percentage >= 0:
                 density_listx[0].append(x)
                 density_listy[0].append(y)
-            elif 20 > percentage >= 1 and total_in_bin >= min_density:
+            elif 30 > percentage >= 15:
                 density_listx[1].append(x)
                 density_listy[1].append(y)
-            elif 40 > percentage >= 20 and total_in_bin >= min_density:
+            elif 45 > percentage >= 30:
                 density_listx[2].append(x)
                 density_listy[2].append(y)
-            elif 60 > percentage >= 40 and total_in_bin >= min_density:
+            elif 60 > percentage >= 45:
                 density_listx[3].append(x)
                 density_listy[3].append(y)
-            elif 80 > percentage >= 60 and total_in_bin >= min_density:
+            elif 75 > percentage >= 60:
                 density_listx[4].append(x)
                 density_listy[4].append(y)
-            elif percentage > 80 and total_in_bin >= min_density * 2:
+            else:
                 density_listx[5].append(x)
                 density_listy[5].append(y)
-            else:
-                density_listx[0].append(x)
-                density_listy[0].append(y)
         for i in range(6):
             if i == 0:
                 red = 0
@@ -1973,7 +1999,6 @@ class Ui_MainWindow(object):
                 red = 255
                 blue = 255
                 green = 255
-            print(len(density_listx[i]))
             self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
                                   symbolSize=5, symbolBrush=(red, blue, green))
 
@@ -2030,16 +2055,123 @@ class Ui_MainWindow(object):
         count_quadrant3 = 0
         count_quadrant4 = 0
         
+        channel0_list_quadrant1 = []
+        channel1_list_quadrant1 = []
+        channel0_list_quadrant2 = []
+        channel1_list_quadrant2 = []
+        channel0_list_quadrant3 = []
+        channel1_list_quadrant3 = []
+        channel0_list_quadrant4 = []
+        channel1_list_quadrant4 = []
+        
         for i in range(len(a)):
             if a[i] and c[i]:
+                channel0_list_quadrant1.append(self.Ch1_channel0[i])
+                channel1_list_quadrant1.append(self.Ch1_channel1[i])
                 count_quadrant1 += 1
             elif not a[i] and c[i]:
+                channel0_list_quadrant2.append(self.Ch1_channel0[i])
+                channel1_list_quadrant2.append(self.Ch1_channel1[i])
                 count_quadrant2 +=1
-            elif a[i] and not c[i]:
-                count_quadrant3 +=1
             elif not a[i] and not c[i]:
+                channel0_list_quadrant3.append(self.Ch1_channel0[i])
+                channel1_list_quadrant3.append(self.Ch1_channel1[i])
+                count_quadrant3 +=1
+            elif a[i] and not c[i]:
+                channel0_list_quadrant4.append(self.Ch1_channel0[i])
+                channel1_list_quadrant4.append(self.Ch1_channel1[i])
                 count_quadrant4 +=1    
-                
+#             print(channel0_list_quadrant1) 
+
+        self.tableView_scatterquadrants.setItem(0,0, QTableWidgetItem(str(count_quadrant1)))
+        self.tableView_scatterquadrants.setItem(0,1, QTableWidgetItem(str(100*count_quadrant1/len(self.Ch1_channel0))))
+        self.tableView_scatterquadrants.setItem(1,0, QTableWidgetItem(str(count_quadrant2)))
+        self.tableView_scatterquadrants.setItem(1,1, QTableWidgetItem(str(100*count_quadrant2/len(self.Ch1_channel0))))
+        self.tableView_scatterquadrants.setItem(2,0, QTableWidgetItem(str(count_quadrant3)))
+        self.tableView_scatterquadrants.setItem(2,1, QTableWidgetItem(str(100*count_quadrant3/len(self.Ch1_channel0))))
+        self.tableView_scatterquadrants.setItem(3,0, QTableWidgetItem(str(count_quadrant4)))
+        self.tableView_scatterquadrants.setItem(3,1, QTableWidgetItem(str(100*count_quadrant4/len(self.Ch1_channel0))))
+ 
+
+### mid table
+
+        try:
+            self.tableView_scatterxaxis.setItem(0,0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant1)) ))   
+            self.tableView_scatterxaxis.setItem(0,1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant1)) ))
+            self.tableView_scatterxaxis.setItem(0,2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant1)) ))
+        except :
+            self.tableView_scatterxaxis.setItem(0,0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0,1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0,2, QTableWidgetItem('NaN'))  
+            
+        try:
+            self.tableView_scatterxaxis.setItem(1,0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant2)) ))                                      
+            self.tableView_scatterxaxis.setItem(1,1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant2)) ))                       
+            self.tableView_scatterxaxis.setItem(1,2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant2)) ))
+        except :
+            self.tableView_scatterxaxis.setItem(1,0, QTableWidgetItem('NaN')) 
+            self.tableView_scatterxaxis.setItem(1,1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(1,2, QTableWidgetItem('NaN'))
+            
+        try:                                         
+            self.tableView_scatterxaxis.setItem(2,0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant3)) ))
+            self.tableView_scatterxaxis.setItem(2,1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant3)) ))
+            self.tableView_scatterxaxis.setItem(2,2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant3)) ))
+        except :
+            self.tableView_scatterxaxis.setItem(2,0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2,1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2,2, QTableWidgetItem('NaN'))
+
+                        
+        try: 
+            self.tableView_scatterxaxis.setItem(3,0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant4)) ))
+            self.tableView_scatterxaxis.setItem(3,1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant4)) ))
+            self.tableView_scatterxaxis.setItem(3,2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant4)) ))
+        except :
+            self.tableView_scatterxaxis.setItem(3,0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3,1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3,2, QTableWidgetItem('NaN'))
+        
+# bottom
+        
+        try:
+            self.tableView_scatteryaxis.setItem(0,0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant1)) ))
+            self.tableView_scatteryaxis.setItem(0,1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant1)) ))
+            self.tableView_scatteryaxis.setItem(0,2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant1)) ))
+        except :
+            self.tableView_scatteryaxis.setItem(0,0, QTableWidgetItem('NaN' ))   
+            self.tableView_scatteryaxis.setItem(0,1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(0,2, QTableWidgetItem('NaN'))
+                                                
+        try:
+            self.tableView_scatteryaxis.setItem(1,0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant2)) ))                                    
+            self.tableView_scatteryaxis.setItem(1,1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant2)) ))
+            self.tableView_scatteryaxis.setItem(1,2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant2)) ))
+        except :
+            self.tableView_scatteryaxis.setItem(1,0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1,1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1,2, QTableWidgetItem('NaN'))
+                                                
+        try:                                         
+            self.tableView_scatteryaxis.setItem(2,0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant3)) ))
+            self.tableView_scatteryaxis.setItem(2,1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant3)) ))
+            self.tableView_scatteryaxis.setItem(2,2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant3)) ))
+        except :
+            self.tableView_scatteryaxis.setItem(2,0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2,1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2,2, QTableWidgetItem('NaN'))
+                        
+        try: 
+            self.tableView_scatteryaxis.setItem(3,0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant4)) ))
+            self.tableView_scatteryaxis.setItem(3,1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant4)) ))
+            self.tableView_scatteryaxis.setItem(3,2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant4)) ))
+        except :
+            self.tableView_scatteryaxis.setItem(3,0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3,1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3,2, QTableWidgetItem('NaN'))
+              
+
+
         print("quadrant 1(top right):",count_quadrant1)
         print("quadrant 2(top left):",count_quadrant2)
         print("quadrant 3(bottom right):",count_quadrant3)
