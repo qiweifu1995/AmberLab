@@ -645,7 +645,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.label_21)
         self.horizontalLayout_23 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_23.setObjectName("horizontalLayout_23")
-        self.listView_channels = QtWidgets.QListView(self.tab_gating)
+        self.listView_channels = QtWidgets.QListWidget(self.tab_gating)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -654,6 +654,10 @@ class Ui_MainWindow(object):
         self.listView_channels.setMinimumSize(QtCore.QSize(150, 150))
         self.listView_channels.setMaximumSize(QtCore.QSize(200, 200))
         self.listView_channels.setObjectName("listView_channels")
+        self.listView_channels.addItem("Green")
+        self.listView_channels.addItem("Red")
+        self.listView_channels.addItem("Blue")
+        self.listView_channels.addItem("Orange")
         self.horizontalLayout_23.addWidget(self.listView_channels)
         self.verticalLayout.addLayout(self.horizontalLayout_23)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
@@ -1729,7 +1733,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_.setStretch(5, 1)
         self.horizontalLayout_.setStretch(6, 1)
         self.verticalLayout_sweepresult1.addLayout(self.horizontalLayout_)
-        self.widget_sweepresult1 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult1 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1808,7 +1812,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.setStretch(5, 1)
         self.horizontalLayout_57.setStretch(6, 1)
         self.verticalLayout_sweepresult2.addLayout(self.horizontalLayout_57)
-        self.widget_sweepresult2 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult2 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1855,13 +1859,23 @@ class Ui_MainWindow(object):
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
 
+        # list of all connected functions
         self.actionImport.triggered.connect(self.openfolder)
         self.actionAdd_New.triggered.connect(self.add)
         self.button_update.clicked.connect(self.pressed)
+        self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
+        self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
+        self.lineEdit_increments.textChanged.connect(self.sweep_update)
+
         
         # need to have choices for all channels
         self.button_update.clicked.connect(lambda:self.draw(self.checkBox_7))
         self.button_update.clicked.connect(lambda:self.draw_2(self.checkBox_7))
+        self.button_update.clicked.connect(self.update_sweep_1)
+        self.listView_channels.currentRowChanged.connect(self.draw)
+        self.listView_channels_2.currentRowChanged.connect(self.update_sweep_1)
+        self.comboBox.currentIndexChanged.connect(self.draw_2)
+        self.comboBox_2.currentIndexChanged.connect(self.draw_2)
 
 
         self.checkbox_ch1.stateChanged.connect(lambda:self.draw(self.checkbox_ch1))
@@ -1876,7 +1890,39 @@ class Ui_MainWindow(object):
 
 
         self.file_dict_list = []
-        
+
+    def sweep_update(self):
+        print(self.lineEdit_gatevoltagemaximum.text())
+        print(self.lineEdit_gatevoltageminimum.text())
+        print(self.lineEdit_increments.text())
+        range_max = float(self.lineEdit_gatevoltagemaximum.text())
+        range_min = float(self.lineEdit_gatevoltageminimum.text())
+        increment = float(self.lineEdit_increments.text())
+        if 0 < increment < range_max-range_min and (range_max-range_min)/increment < 500:
+            self.widget_sweepresult1.clear()
+            self.widget_sweepresult1.setRowCount(int((range_max-range_min)/increment))
+            self.widget_sweepresult1.setColumnCount(4)
+            self.widget_sweepresult1.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
+                                                                "Total Count", "Percentages"))
+            self.widget_sweepresult1.verticalHeader().hide()
+            counter = range_min
+            sweep_list = []
+            i = 0
+            while counter < range_max:
+                filtered_gate_voltage_x = [x for x in self.width if x > counter]
+                percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
+                sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.width), percentage])
+                counter += increment
+                i += 1
+            for x, row in enumerate(sweep_list):
+                for y in range(4):
+                    item = QTableWidgetItem(str(row[y]))
+                    self.widget_sweepresult1.setItem(x, y, item)
+            self.widget_sweepresult1.show()
+
+
+
+
     def thresholdUpdated(self):
         
         text_x = float(self.lineEdit_gatevoltage.text())
@@ -1891,13 +1937,30 @@ class Ui_MainWindow(object):
         percentage = round(100*len(filtered_gate_voltage_x)/len(self.width),2)
         self.lineEdit_percentage.setText(str(percentage))    
         
-        
+    def update_sweep_1(self):
+        self.widget_sweepparam2.clear()
+        channel = self.listView_channels_2.currentRow()
+        print(channel)
+        self.width = self.analog[current_file_dict['Peak Record']][0][channel]
+        print(self.width)
+        range_width = int(max(self.width)) + 1
+        y, x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width * 10 + 1))
+        separate_y = [0]*len(y)
+        print(y)
+        print(x)
+        for i in range(len(y)):
+            separate_y = [0]*len(y)
+            separate_y[i] = y[i]
+            self.widget_sweepparam2.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(255,255,0))
+        self.widget_sweepparam2.setXRange(0, max(x), padding=0)
+        self.widget_sweepparam2.setYRange(0, max(y), padding=0)
+
+
+
     def draw(self,b):
-    
-        if b.text() == "All Channel":
-            self.width = self.analog[current_file_dict['Peak Record']][0][0]
-        elif b.text() == "Channel 1":
-            self.width = self.analog[current_file_dict['Ch1 ']][0][0]
+        channel = self.listView_channels.currentRow()
+        self.histogram_graphWidget.clear()
+        self.width = self.analog[current_file_dict['Peak Record']][0][channel]
         print(self.width)
 #         self.width = [2.408,2.617,2.706,2.57,2.273,2.275,2.24,2.299,2.302,2.434,2.349,2.317,2.361,2.435,2.409,2.293,2.357,2.523,2.927,2.331,2.359,2.939,2.363,2.399,2.312,2.333,2.703,2.404,2.225,2.34,2.373,2.273,2.31,2.323,2.298,2.35,2.324,2.342,2.353,2.251,2.543,2.297,2.273,2.394,2.327,2.22,2.411,2.324,2.339,2.423,4.249,2.322,2.478,2.604,2.364,2.375,2.412,2.272,2.406,2.357,2.266,2.321,2.469,2.41,2.36,2.423,2.208,2.309,2.915,2.319,2.162,2.19,2.466,2.295,2.303,2.328,2.496,2.309,2.324,2.507,2.303,2.464,2.313,2.55,2.788,2.338,2.194,2.406,2.323,2.252,2.329,2.267,2.304,6.946,2.446,2.118,2.301,2.431,2.468,2.273,2.383,2.301,2.342,2.372,2.368,2.3,2.296,2.525,2.333,2.333,2.298,2.348,3.398,2.349,2.382,2.43,2.18,2.434,2.422,2.449,2.241,2.472,2.396,2.303,2.468,2.361,2.445,2.3,2.459,2.329,2.32,2.339,2.315,2.391,2.336,2.337,2.38,2.341,2.302,2.4,2.846,2.306,2.276,2.322,2.396,2.544,2.54,2.407,2.303,2.43,2.344,2.306,2.962,2.38,2.316,2.337,2.369,2.41,2.364,2.453,2.319,2.406,2.433,2.379,2.444,2.266,2.349,2.334,2.309,2.378,2.307,2.317,2.516,2.247,2.251,2.666,2.474,2.304,2.345,2.353,2.224,2.322,2.198,2.301,2.302,2.55,2.341,2.415,2.4,2.336,2.328,2.376,2.333,2.401,2.228,2.271,2.304,2.277,3.694,2.303,2.45,2.33,2.3,2.239,2.331,2.439,2.702,2.118,2.35,2.233,2.32,2.362,2.308,2.354,2.776,2.217,2.334,2.356,2.516,2.515,2.304,2.386,2.295]
         range_width = int(max(self.width))+1
@@ -1916,15 +1979,14 @@ class Ui_MainWindow(object):
         self.thresholdUpdated()
     
     def draw_2(self,b):
-        if b.text() == "All Channel":
-            self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][0]
-            self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][1]
-        elif b.text() == "Channel 1":
-            self.Ch1_channel0 = self.analog[current_file_dict['Ch1 ']][0][0]
-            self.Ch1_channel1 = self.analog[current_file_dict['Ch1 ']][0][1]            
+        x_axis = self.comboBox.currentIndex()
+        y_axis = self.comboBox_2.currentIndex()
+        self.graphWidget.clear()
+        self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis]
+        self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis]
             
-        self.Ch1_channel0 = np.random.normal(5,1, 200)
-        self.Ch1_channel1 = np.random.normal(5, 1, 200)
+        # self.Ch1_channel0 = np.random.normal(5,1, 200)
+        # self.Ch1_channel1 = np.random.normal(5, 1, 200)
         max_voltage = 12
         bins = 1000
         steps = max_voltage / bins
@@ -2023,7 +2085,9 @@ class Ui_MainWindow(object):
         self.thresholdUpdated_2()
 
     def thresholdUpdated_2(self):
-       
+        self.graphWidget.removeItem(self.data_line_y)
+        self.graphWidget.removeItem(self.data_line_x)
+
         text_x = float(self.lineEdit_scatterxvoltage.text())
         text_y = float(self.lineEdit_scatteryvoltage.text())
 
@@ -2037,6 +2101,8 @@ class Ui_MainWindow(object):
         line_y = [text_y,text_y]
     
         self.data_line_y.setData(line_x, line_y)
+        self.data_line_x = self.graphWidget.plot(line_xx, line_yy, pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+        self.data_line_y = self.graphWidget.plot(line_x, line_y, pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
         
         filtered_gate_voltage_x = [x for x in self.Ch1_channel0 if x > text_x]
         filtered_gate_voltage_y = [x for x in self.Ch1_channel1 if x > text_y]
