@@ -1298,6 +1298,7 @@ class Ui_MainWindow(object):
 
         # Sweep Histogram 1
         self.widget_sweepparam2 = PlotWidget(self.subtab_parameter)
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1733,7 +1734,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_.setStretch(5, 1)
         self.horizontalLayout_.setStretch(6, 1)
         self.verticalLayout_sweepresult1.addLayout(self.horizontalLayout_)
-        self.widget_sweepresult1 = QtWidgets.QTableWidget(self.subtab_result)
+        self.widget_sweepresult1 = QtWidgets.QWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1812,7 +1813,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.setStretch(5, 1)
         self.horizontalLayout_57.setStretch(6, 1)
         self.verticalLayout_sweepresult2.addLayout(self.horizontalLayout_57)
-        self.widget_sweepresult2 = QtWidgets.QTableWidget(self.subtab_result)
+        self.widget_sweepresult2 = QtWidgets.QWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1867,7 +1868,7 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
         self.lineEdit_increments.textChanged.connect(self.sweep_update)
 
-        
+
         # need to have choices for all channels
         self.button_update.clicked.connect(lambda:self.draw(self.checkBox_7))
         self.button_update.clicked.connect(lambda:self.draw_2(self.checkBox_7))
@@ -1878,9 +1879,27 @@ class Ui_MainWindow(object):
         self.comboBox_2.currentIndexChanged.connect(self.draw_2)
 
 
-        self.checkbox_ch1.stateChanged.connect(lambda:self.draw(self.checkbox_ch1))
-        self.checkbox_ch1.stateChanged.connect(lambda:self.draw_2(self.checkbox_ch1))
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw_2())
         
+        self.checkbox_ch2.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch2.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch3.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch3.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch12.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch12.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch13.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch13.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch23.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch23.stateChanged.connect(lambda:self.draw_2())
+
+        self.comboBox.currentIndexChanged.connect(lambda:self.draw_2())
+        self.comboBox_2.currentIndexChanged.connect(lambda:self.draw_2())
+
         self.retranslateUi(MainWindow)
         self.tab_widgets_main.setCurrentIndex(0)
         self.tab_widgets_scatter.setCurrentIndex(0)
@@ -1985,8 +2004,8 @@ class Ui_MainWindow(object):
         self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis]
         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis]
             
-        # self.Ch1_channel0 = np.random.normal(5,1, 200)
-        # self.Ch1_channel1 = np.random.normal(5, 1, 200)
+        self.Ch1_channel0 = np.random.normal(5,1, 200)
+        self.Ch1_channel1 = np.random.normal(5, 1, 200)
         max_voltage = 12
         bins = 1000
         steps = max_voltage / bins
@@ -2061,6 +2080,7 @@ class Ui_MainWindow(object):
                 red = 255
                 blue = 255
                 green = 255
+
             self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
                                   symbolSize=5, symbolBrush=(red, blue, green))
 
@@ -2103,7 +2123,7 @@ class Ui_MainWindow(object):
         self.data_line_y.setData(line_x, line_y)
         self.data_line_x = self.graphWidget.plot(line_xx, line_yy, pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
         self.data_line_y = self.graphWidget.plot(line_x, line_y, pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
-        
+
         filtered_gate_voltage_x = [x for x in self.Ch1_channel0 if x > text_x]
         filtered_gate_voltage_y = [x for x in self.Ch1_channel1 if x > text_y]
         
