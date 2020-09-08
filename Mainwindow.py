@@ -1734,7 +1734,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_.setStretch(5, 1)
         self.horizontalLayout_.setStretch(6, 1)
         self.verticalLayout_sweepresult1.addLayout(self.horizontalLayout_)
-        self.widget_sweepresult1 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult1 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1939,11 +1939,7 @@ class Ui_MainWindow(object):
                     self.widget_sweepresult1.setItem(x, y, item)
             self.widget_sweepresult1.show()
 
-
-
-
     def thresholdUpdated(self):
-        
         text_x = float(self.lineEdit_gatevoltage.text())
         # x
         line_xx = [text_x,text_x]
