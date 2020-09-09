@@ -96,6 +96,30 @@ class Stats:
         self.dispense_missed = stats_dict["Dispense Missed"]
 
 
+def rgb_select(channel):
+    if channel == 0:
+        r = 0
+        g = 255
+        b = 0
+    elif channel == 1:
+        r = 255
+        g = 0
+        b = 0
+    elif channel == 2:
+        r = 0
+        g = 0
+        b = 255
+    elif channel == 3:
+        r = 255
+        g = 165
+        b = 0
+    else:
+        r = 0
+        g = 255
+        b = 0
+    return r, g, b
+
+
 if __name__ == "__main__":
     import Helper
     print(project_namelist(r"D:\Users\QIwei Fu\Downloads\EXP200601-2\EXP200601-2/200601_130231 AFB Peak Record.csv"))
