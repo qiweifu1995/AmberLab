@@ -1923,12 +1923,14 @@ class Ui_MainWindow(object):
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
 
     def sweep_update(self):
-        print(self.lineEdit_gatevoltagemaximum.text())
-        print(self.lineEdit_gatevoltageminimum.text())
-        print(self.lineEdit_increments.text())
-        range_max = float(self.lineEdit_gatevoltagemaximum.text())
-        range_min = float(self.lineEdit_gatevoltageminimum.text())
-        increment = float(self.lineEdit_increments.text())
+        try:
+            range_max = float(self.lineEdit_gatevoltagemaximum.text())
+            range_min = float(self.lineEdit_gatevoltageminimum.text())
+            increment = float(self.lineEdit_increments.text())
+        except:
+            range_max = 0
+            range_min = 0
+            increment = 0
         if 0 < increment < range_max-range_min and (range_max-range_min)/increment < 500:
             self.widget_sweepresult1.clear()
             self.widget_sweepresult1.setRowCount(int((range_max-range_min)/increment))
@@ -2003,17 +2005,16 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
 
 
-
     def draw(self):
-#         channel = self.listView_channels.currentRow()
+        channel = self.listView_channels.currentRow()
         self.histogram_graphWidget.clear()
-
-                # default
-#         self.width = self.analog[current_file_dict['Peak Record']][0][0]
-
+        r,g,b = Helper.rgb_select(channel)
+        # default
+        # self.width = self.analog[current_file_dict['Peak Record']][0][0]
         self.width = []
+
         if self.checkBox_7.isChecked():
-             self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch1.isChecked():
             self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch2.isChecked():
@@ -2639,9 +2640,12 @@ class Ui_MainWindow(object):
         
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-        a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-        self.analog.update(a.analog_file)
-#         print(self.analog)
+        if current_file_dict["Peak Record"] in self.analog:
+            return
+        else:
+            a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+            self.analog.update(a.analog_file)
+        # print(self.analog)
         ### End
         
 
