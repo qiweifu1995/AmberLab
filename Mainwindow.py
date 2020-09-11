@@ -1971,7 +1971,7 @@ class Ui_MainWindow(object):
         channel = self.listView_channels_2.currentRow()
         print(channel)
         r,g,b = Helper.rgb_select(channel)
-        self.width = self.analog[current_file_dict['Peak Record']][0][channel]
+        self.width = self.analog[self.current_file_dict['Peak Record']][0][channel]
         print(self.width)
         range_width = int(max(self.width)) + 1
         y, x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width * 10 + 1))
@@ -1990,7 +1990,7 @@ class Ui_MainWindow(object):
         channel = self.listView_channels_2.currentRow()
         print(channel)
         r,g,b = Helper.rgb_select(channel)
-        self.width = self.analog[current_file_dict['Peak Record']][0][channel]
+        self.width = self.analog[self.current_file_dict['Peak Record']][0][channel]
         print(self.width)
         range_width = int(max(self.width)) + 1
         y, x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width * 10 + 1))
@@ -2014,19 +2014,19 @@ class Ui_MainWindow(object):
         self.width = []
 
         if self.checkBox_7.isChecked():
-            self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch1.isChecked():
-            self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch2.isChecked():
-            self.width += self.analog[current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch3.isChecked():
-            self.width += self.analog[current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch12.isChecked():
-            self.width += self.analog[current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch13.isChecked():
-            self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch23.isChecked():
-            self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
+            self.width += self.analog[self.current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
 
 
         range_width = int(max(self.width))+1
@@ -2058,32 +2058,32 @@ class Ui_MainWindow(object):
         self.Ch1_channel1 = []
 #         if b.text() == "All Channel":
         if self.checkBox_7.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Peak Record']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Peak Record']][0][y_axis_channel]
 #         elif b.text() == "Channel 1":
         if self.checkbox_ch1.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1 ']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 2":
         if self.checkbox_ch2.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch2 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch2 ']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch2 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch2 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 3":
         if self.checkbox_ch3.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch3 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch3 ']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch3 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch3 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 1-2":
         if self.checkbox_ch12.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-2']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-2']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1-2']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1-2']][0][y_axis_channel]
 #         elif b.text() == "Channel 1-3":
         if self.checkbox_ch13.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-3']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1-3']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1-3']][0][y_axis_channel]
 #         elif b.text() == "Channel 2-3":
         if self.checkbox_ch23.isChecked():
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
+            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch2-3']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch2-3']][0][y_axis_channel]
             
 
 #         self.Ch1_channel0 = np.random.normal(5,1, 200)
@@ -2516,10 +2516,10 @@ class Ui_MainWindow(object):
 
     def pressed(self):
         global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
-        current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
+        self.current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
 
         #print(current_file_dict)
-        os.chdir(current_file_dict["Root Folder"])
+        os.chdir(self.current_file_dict["Root Folder"])
         
 #         analog_files ={"Ch1": "",
 #                  "Ch2": "",
@@ -2531,28 +2531,28 @@ class Ui_MainWindow(object):
         
     # Channels file
         #i commented out the read since it was giving memory error
-        if current_file_dict["Ch1 "] != "":
+        if self.current_file_dict["Ch1 "] != "":
             print("ok")
 #             analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
-        if current_file_dict["Ch2 "] != "":
+        if self.current_file_dict["Ch2 "] != "":
             print("ok")
 #             analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
-        if current_file_dict["Ch3 "] != "":
+        if self.current_file_dict["Ch3 "] != "":
             print("ok")
 #             analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
-        if current_file_dict["Ch1-2"] != "":
+        if self.current_file_dict["Ch1-2"] != "":
             print("ok")
 #             analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
-        if current_file_dict["Ch1-3"] != "":
+        if self.current_file_dict["Ch1-3"] != "":
             print("ok")
 #             analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
-        if current_file_dict["Ch2-3"] != "":
+        if self.current_file_dict["Ch2-3"] != "":
             print("ok")
 #             analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
 
     # Locked
-        if current_file_dict["Locked"] != "":
-            Locked = pd.read_csv(current_file_dict["Locked"])
+        if self.current_file_dict["Locked"] != "":
+            Locked = pd.read_csv(self.current_file_dict["Locked"])
 
     # Peak_Record
 #         analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
@@ -2569,8 +2569,8 @@ class Ui_MainWindow(object):
         """
         
     # summary
-        if current_file_dict["Summary"] != "":
-            stats = Helper.Stats(current_file_dict["Summary"])
+        if self.current_file_dict["Summary"] != "":
+            stats = Helper.Stats(self.current_file_dict["Summary"])
             self.lineEdit_startingtime.setText(stats.start_time)
             self.lineEdit_endingtime.setText(stats.end_time)
             self.lineEdit_runtime.setText(stats.total_runtime)
@@ -2627,9 +2627,6 @@ class Ui_MainWindow(object):
         channel = 0
         width_enable=True
 
-
-        
-
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
 #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
@@ -2640,11 +2637,16 @@ class Ui_MainWindow(object):
         
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-        if current_file_dict["Peak Record"] in self.analog:
+        if self.current_file_dict["Peak Record"] in self.analog:
             return
         else:
-            a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable,channel, chunksize, 0)
             self.analog.update(a.analog_file)
+        self.draw()
+        self.draw_2()
+        self.update_sweep_1()
+        self.update_sweep_2()
+        self.sweep_update()
         # print(self.analog)
         ### End
         
