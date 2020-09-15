@@ -120,11 +120,19 @@ def rgb_select(channel):
     return r, g, b
 
 
-if __name__ == "__main__":
-    import Helper
-    print(project_namelist(r"D:\Users\QIwei Fu\Downloads\EXP200601-2\EXP200601-2/200601_130231 AFB Peak Record.csv"))
-    stats = Helper.Stats()
-    print(stats.total_runtime)
+def histogram_bin(range_max, increment):
+    """funciton that return the bin"""
+    x_holder = 0
+    bin_edge = []
+    increment = increment
+    while x_holder < range_max:
+        bin_edge.append(x_holder)
+        x_holder += increment
+    bin_edge.append(x_holder)
+    return bin_edge
+
+
+
 
 
 
