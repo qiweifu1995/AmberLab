@@ -258,7 +258,7 @@ class Ui_MainWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem3)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
-        self.tableView_statistic = QtWidgets.QTableView(self.tab_statistic)
+        self.tableView_statistic = QtWidgets.QTableWidget(self.tab_statistic)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -267,6 +267,10 @@ class Ui_MainWindow(object):
         self.tableView_statistic.setMinimumSize(QtCore.QSize(150, 150))
         self.tableView_statistic.setMaximumSize(QtCore.QSize(16777215, 200))
         self.tableView_statistic.setObjectName("tableView_statistic")
+        self.tableView_statistic.setColumnCount(5)
+        self.tableView_statistic.setRowCount(4)
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
         self.verticalLayout_5.addWidget(self.tableView_statistic)
         self.gridLayout_2.addLayout(self.verticalLayout_5, 0, 2, 1, 1)
         spacerItem4 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
@@ -658,6 +662,7 @@ class Ui_MainWindow(object):
         self.listView_channels.addItem("Red")
         self.listView_channels.addItem("Blue")
         self.listView_channels.addItem("Orange")
+        self.listView_channels.setCurrentRow(0)
         self.horizontalLayout_23.addWidget(self.listView_channels)
         self.verticalLayout.addLayout(self.horizontalLayout_23)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
@@ -801,6 +806,7 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth.setMinimumSize(QtCore.QSize(80, 0))
         self.lineEdit_binwidth.setMaximumSize(QtCore.QSize(100, 16777215))
         self.lineEdit_binwidth.setObjectName("lineEdit_binwidth")
+        self.lineEdit_binwidth.setText("0.1")
         self.horizontalLayout_27.addWidget(self.lineEdit_binwidth)
         spacerItem18 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_27.addItem(spacerItem18)
@@ -838,9 +844,7 @@ class Ui_MainWindow(object):
         self.histogram_graphWidget.setObjectName("histogram_graphWidget")
         self.horizontalLayout_22.addWidget(self.histogram_graphWidget)        
         styles = {"color": "f#ff", "font-size": "20px"}
-        self.histogram_graphWidget.setTitle("test histogram",size="30pt")
         self.histogram_graphWidget.setLabel('left', 'Frequency', **styles)
-        self.histogram_graphWidget.setLabel('bottom', 'Green', **styles)
         self.histogram_graphWidget.setBackground('w')
         self.histogram_graphWidget.setXRange(1, 10.5, padding=0)
         self.histogram_graphWidget.setYRange(1, 10.5, padding=0)
@@ -1080,6 +1084,7 @@ class Ui_MainWindow(object):
 
         self.graphWidget.setTitle("test scatter plot", color="w", size="30pt")
         styles = {"color": "#fff", "font-size": "20px"}
+        self.graphWidget.setBackground('w')
         
         self.graphWidget.setLabel('left', 'Green', **styles)
         self.graphWidget.setLabel('bottom', 'Far Red', **styles)
@@ -1307,7 +1312,6 @@ class Ui_MainWindow(object):
         self.widget_sweepparam2.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam2.setObjectName("widget_sweepparam2")
         styles = {"color": "f#ff", "font-size": "20px"}
-        self.widget_sweepparam2.setTitle("Histogram 1",size="30pt")
         self.widget_sweepparam2.setLabel('left', 'Frequency', **styles)
         self.widget_sweepparam2.setLabel('bottom', 'Green', **styles)
         self.widget_sweepparam2.setBackground('w')
@@ -1324,7 +1328,6 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam1.setObjectName("widget_sweepparam1")
         styles = {"color": "f#ff", "font-size": "20px"}
-        self.widget_sweepparam1.setTitle("Histogram 2",size="30pt")
         self.widget_sweepparam1.setLabel('left', 'Frequency', **styles)
         self.widget_sweepparam1.setLabel('bottom', 'Green', **styles)
         self.widget_sweepparam1.setBackground('w')
@@ -1813,7 +1816,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.setStretch(5, 1)
         self.horizontalLayout_57.setStretch(6, 1)
         self.verticalLayout_sweepresult2.addLayout(self.horizontalLayout_57)
-        self.widget_sweepresult2 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult2 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1876,10 +1879,9 @@ class Ui_MainWindow(object):
         self.button_update.clicked.connect(self.update_sweep_1)
         self.listView_channels.currentRowChanged.connect(self.draw)
         self.listView_channels_2.currentRowChanged.connect(self.update_sweep_1)
-        self.comboBox.currentIndexChanged.connect(self.draw_2)
-        self.comboBox_2.currentIndexChanged.connect(self.draw_2)
+        self.listView_channels_2.currentRowChanged.connect(self.update_sweep_2)
 
-        self.checkBox_7.stateChanged.connect(lambda:self.draw())
+        """self.checkBox_7.stateChanged.connect(lambda:self.draw())
         self.checkBox_7.stateChanged.connect(lambda:self.draw_2())
 
         self.checkbox_ch1.stateChanged.connect(lambda:self.draw())
@@ -1902,6 +1904,7 @@ class Ui_MainWindow(object):
 
         self.comboBox.currentIndexChanged.connect(lambda:self.draw_2())
         self.comboBox_2.currentIndexChanged.connect(lambda:self.draw_2())
+        """
 
         self.retranslateUi(MainWindow)
         self.tab_widgets_main.setCurrentIndex(0)
@@ -1912,17 +1915,64 @@ class Ui_MainWindow(object):
 
 
         self.file_dict_list = []
+        self.sweep_1_data = []
+        self.working_data = []
 
         self.file_list_view.itemChanged.connect(self.update_names)
 
     def update_names(self):
+        """update the name of the sweep dropboxes"""
         self.comboBox_option1.clear()
         self.comboBox_option2.clear()
         for i in range(self.file_list_view.count()):
             self.comboBox_option1.addItem(self.file_list_view.item(i).text())
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
 
+
+    def update_working_data(self):
+        self.working_data.clear()
+        if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+            self.working_data += self.analog[self.current_file_dict['Peak Record']][0]
+        if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1 ']][0]
+        if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch2 ']][0]
+        if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch3 ']][0]
+        if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1-2']][0]
+        if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1-3']][0]
+        if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch2-3']][0]
+        print("working data:")
+        print(self.working_data)
+
+
+
+
+    def update_statistic(self):
+        """update the statistic table"""
+        stats = []
+        self.tableView_statistic.clear()
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
+        for i in range(4):
+            mean = statistics.mean(self.working_data[i])
+            median = statistics.median(self.working_data[i])
+            stddv = statistics.stdev(self.working_data[i])
+            max_value = max(self.working_data[i])
+            min_value = min(self.working_data[i])
+            stats.append([mean, median, stddv, max_value, min_value])
+        for x in range(4):
+            for y in range(5):
+                item = QTableWidgetItem(str(round(stats[x][y],2)))
+                self.tableView_statistic.setItem(x,y,item)
+
+
+
     def sweep_update(self):
+        """update the sweep result table"""
         try:
             range_max = float(self.lineEdit_gatevoltagemaximum.text())
             range_min = float(self.lineEdit_gatevoltageminimum.text())
@@ -1931,27 +1981,51 @@ class Ui_MainWindow(object):
             range_max = 0
             range_min = 0
             increment = 0
-        if 0 < increment < range_max-range_min and (range_max-range_min)/increment < 500:
+        if 0 < increment < range_max-range_min and (range_max-range_min)/increment < 500 and \
+                len(self.sweep_1_data) > 0 and len(self.sweep_2_data) > 0:
             self.widget_sweepresult1.clear()
             self.widget_sweepresult1.setRowCount(int((range_max-range_min)/increment))
             self.widget_sweepresult1.setColumnCount(4)
             self.widget_sweepresult1.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
                                                                 "Total Count", "Percentages"))
             self.widget_sweepresult1.verticalHeader().hide()
-            counter = range_min
-            sweep_list = []
-            i = 0
-            while counter < range_max:
-                filtered_gate_voltage_x = [x for x in self.width if x > counter]
-                percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
-                sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.width), percentage])
-                counter += increment
-                i += 1
-            for x, row in enumerate(sweep_list):
-                for y in range(4):
-                    item = QTableWidgetItem(str(row[y]))
-                    self.widget_sweepresult1.setItem(x, y, item)
-            self.widget_sweepresult1.show()
+            self.widget_sweepresult2.clear()
+            self.widget_sweepresult2.setRowCount(int((range_max - range_min) / increment))
+            self.widget_sweepresult2.setColumnCount(4)
+            self.widget_sweepresult2.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
+                                                                "Total Count", "Percentages"))
+            self.widget_sweepresult2.verticalHeader().hide()
+            if len(self.sweep_1_data) > 0:
+                counter = range_min
+                sweep_list = []
+                i = 0
+                while counter < range_max:
+                    filtered_gate_voltage_x = [x for x in self.sweep_1_data if x > counter]
+                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_1_data), 2)
+                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_1_data), percentage])
+                    counter += increment
+                    i += 1
+                for x, row in enumerate(sweep_list):
+                    for y in range(4):
+                        item = QTableWidgetItem(str(round(row[y],2)))
+                        self.widget_sweepresult1.setItem(x, y, item)
+                self.widget_sweepresult1.show()
+            if len(self.sweep_2_data) > 0:
+                counter = range_min
+                sweep_list = []
+                i = 0
+                while counter < range_max:
+                    filtered_gate_voltage_x = [x for x in self.sweep_2_data if x > counter]
+                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_2_data), 2)
+                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_2_data), percentage])
+                    counter += increment
+                    i += 1
+                for x, row in enumerate(sweep_list):
+                    for y in range(4):
+                        item = QTableWidgetItem(str(round(row[y],2)))
+                        self.widget_sweepresult2.setItem(x, y, item)
+                self.widget_sweepresult2.show()
+
 
     def thresholdUpdated(self):
         text_x = float(self.lineEdit_gatevoltage.text())
@@ -1969,12 +2043,30 @@ class Ui_MainWindow(object):
     def update_sweep_1(self):
         self.widget_sweepparam2.clear()
         channel = self.listView_channels_2.currentRow()
+        if channel == -1:
+            self.listView_channels_2.setCurrentRow(0)
+        axis_name = self.listView_channels_2.currentItem().text()
+        self.widget_sweepparam2.setLabel('bottom', axis_name)
         print(channel)
         r,g,b = Helper.rgb_select(channel)
-        self.width = self.analog[self.current_file_dict['Peak Record']][0][channel]
-        print(self.width)
-        range_width = int(max(self.width)) + 1
-        y, x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width * 10 + 1))
+        self.sweep_1_data = []
+        if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
+        if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
+        if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
+        if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
+        if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
+        if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
+        if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
+            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
+        range_width = int(max(self.sweep_1_data)) + 1
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
         separate_y = [0]*len(y)
         print(y)
         print(x)
@@ -1988,15 +2080,30 @@ class Ui_MainWindow(object):
     def update_sweep_2(self):
         self.widget_sweepparam1.clear()
         channel = self.listView_channels_2.currentRow()
-        print(channel)
+        if channel == -1:
+            self.listView_channels_2.setCurrentRow(0)
+        axis_name = self.listView_channels_2.currentItem().text()
+        self.widget_sweepparam1.setLabel('bottom', axis_name)
         r,g,b = Helper.rgb_select(channel)
-        self.width = self.analog[self.current_file_dict['Peak Record']][0][channel]
-        print(self.width)
-        range_width = int(max(self.width)) + 1
-        y, x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width * 10 + 1))
+        self.sweep_2_data = []
+        if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
+        if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
+        if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
+        if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
+        if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
+        if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
+        if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
+            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+        range_width = int(max(self.sweep_2_data)) + 1
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
         separate_y = [0]*len(y)
-        print(y)
-        print(x)
         for i in range(len(y)):
             separate_y = [0]*len(y)
             separate_y[i] = y[i]
@@ -2006,31 +2113,39 @@ class Ui_MainWindow(object):
 
 
     def draw(self):
+        print("update histo")
         channel = self.listView_channels.currentRow()
+        if channel == -1:
+            self.listView_channels.setCurrentRow(0)
         self.histogram_graphWidget.clear()
         r,g,b = Helper.rgb_select(channel)
+        styles = {"color": "f#ff", "font-size": "20px"}
+        axis_name = self.listView_channels.currentItem().text()
+        self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
         # default
         # self.width = self.analog[current_file_dict['Peak Record']][0][0]
-        self.width = []
+        self.width = self.working_data[self.listView_channels.currentRow()]
+        """
+        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+            self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+            self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+            self.width += self.analog[current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+            self.width += self.analog[current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+            self.width += self.analog[current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+            self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
+        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+            self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
+        """
 
-        if self.checkBox_7.isChecked():
-            self.width += self.analog[self.current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch1.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch2.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch3.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch12.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch13.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch23.isChecked():
-            self.width += self.analog[self.current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
-
-
+        self.lineEdit_count.setText(str(len(self.width)))
         range_width = int(max(self.width))+1
-        y,x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width*10+1))
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
+        y,x = np.histogram(self.width, bins=bin_edge)
         separate_y = [0]*len(y)
         for i in range(len(y)):
             separate_y = [0]*len(y)
@@ -2045,45 +2160,54 @@ class Ui_MainWindow(object):
         self.thresholdUpdated()
     
     def draw_2(self):
+        print("update draw")
         x_axis_channel = self.comboBox.currentIndex()
         y_axis_channel = self.comboBox_2.currentIndex()
+        x_axis_name = self.comboBox.currentText()
+        y_axis_name = self.comboBox_2.currentText()
+
         self.graphWidget.clear()
+
+        self.graphWidget.setLabel('left', y_axis_name, color= 'b')
+        self.graphWidget.setLabel('bottom', x_axis_name, color= 'b')
 
 # #         # default
 #         self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
 #         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
 
 
-        self.Ch1_channel0 = []
-        self.Ch1_channel1 = []
+        self.Ch1_channel0 = self.working_data[x_axis_channel]
+        self.Ch1_channel1 = self.working_data[y_axis_channel]
 #         if b.text() == "All Channel":
-        if self.checkBox_7.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Peak Record']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Peak Record']][0][y_axis_channel]
+        """
+        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
 #         elif b.text() == "Channel 1":
-        if self.checkbox_ch1.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1 ']][0][y_axis_channel]
+        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch1 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch1 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 2":
-        if self.checkbox_ch2.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch2 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch2 ']][0][y_axis_channel]
+        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch2 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch2 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 3":
-        if self.checkbox_ch3.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch3 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch3 ']][0][y_axis_channel]
+        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch3 ']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch3 ']][0][y_axis_channel]
 #         elif b.text() == "Channel 1-2":
-        if self.checkbox_ch12.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1-2']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1-2']][0][y_axis_channel]
+        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-2']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-2']][0][y_axis_channel]
 #         elif b.text() == "Channel 1-3":
-        if self.checkbox_ch13.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch1-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch1-3']][0][y_axis_channel]
+        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-3']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-3']][0][y_axis_channel]
 #         elif b.text() == "Channel 2-3":
-        if self.checkbox_ch23.isChecked():
-            self.Ch1_channel0 += self.analog[self.current_file_dict['Ch2-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[self.current_file_dict['Ch2-3']][0][y_axis_channel]
+        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+            self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
+            self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
+        """
             
 
 #         self.Ch1_channel0 = np.random.normal(5,1, 200)
@@ -2119,25 +2243,22 @@ class Ui_MainWindow(object):
             percentage = density / max_density * 100
             if i%10000 == 0:
                 print(i)
-            if 15 > percentage >= 0:
+            if 20 > percentage >= 0:
                 density_listx[0].append(x)
                 density_listy[0].append(y)
-            elif 30 > percentage >= 15:
+            elif 40 > percentage >= 20:
                 density_listx[1].append(x)
                 density_listy[1].append(y)
-            elif 45 > percentage >= 30:
+            elif 60 > percentage >= 40:
                 density_listx[2].append(x)
                 density_listy[2].append(y)
-            elif 60 > percentage >= 45:
+            elif 80 > percentage >=60:
                 density_listx[3].append(x)
                 density_listy[3].append(y)
-            elif 75 > percentage >= 60:
+            else:
                 density_listx[4].append(x)
                 density_listy[4].append(y)
-            else:
-                density_listx[5].append(x)
-                density_listy[5].append(y)
-        for i in range(6):
+        for i in range(5):
             if i == 0:
                 red = 0
                 blue =  255/15
@@ -2163,18 +2284,16 @@ class Ui_MainWindow(object):
                 blue = 255
                 green = 255
 
-            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='o', pen=None,
+            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen= None, symbolPen=None,
                                   symbolSize=5, symbolBrush=(red, blue, green))
-
-        self.graphWidget.addLegend()    
-
+        """
         self.graphWidget.plot(name = "0~15%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,0,255))
         self.graphWidget.plot(name = "15~30%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,255))
         self.graphWidget.plot(name = "30~45%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,0))
         self.graphWidget.plot(name = "45~60%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,0))
         self.graphWidget.plot(name = "60~75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,0,0))
         self.graphWidget.plot(name = ">75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,255))
-        
+        """
         
 #    >0%    0,0,1   blue        
 #    >15%   0,1,1  cyan
@@ -2515,59 +2634,13 @@ class Ui_MainWindow(object):
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     def pressed(self):
+        print('pressed')
         global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         self.current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
-
+        self.sweep_1_dict = self.file_dict_list[self.comboBox_option1.currentIndex()]
+        self.sweep_2_dict = self.file_dict_list[self.comboBox_option2.currentIndex()]
         #print(current_file_dict)
         os.chdir(self.current_file_dict["Root Folder"])
-        
-#         analog_files ={"Ch1": "",
-#                  "Ch2": "",
-#                  "Ch3": "",
-#                  "Ch1-2": "",
-#                  "Ch1-3": "",
-#                  "Ch2-3": "",
-#                 "Peak Record":""}
-        
-    # Channels file
-        #i commented out the read since it was giving memory error
-        if self.current_file_dict["Ch1 "] != "":
-            print("ok")
-#             analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
-        if self.current_file_dict["Ch2 "] != "":
-            print("ok")
-#             analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
-        if self.current_file_dict["Ch3 "] != "":
-            print("ok")
-#             analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
-        if self.current_file_dict["Ch1-2"] != "":
-            print("ok")
-#             analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
-        if self.current_file_dict["Ch1-3"] != "":
-            print("ok")
-#             analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
-        if self.current_file_dict["Ch2-3"] != "":
-            print("ok")
-#             analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
-
-    # Locked
-        if self.current_file_dict["Locked"] != "":
-            Locked = pd.read_csv(self.current_file_dict["Locked"])
-
-    # Peak_Record
-#         analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
-#         analog_files['Peak Record'].columns =[0,1,2,3] 
-        
-    # Raw time log
-        """
-        Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
-                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
-                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
-        row_count = len(Raw_time_log.index)
-        Run_total = Raw_time_log.iloc[row_count-1,0:6]
-        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
-        """
-        
     # summary
         if self.current_file_dict["Summary"] != "":
             stats = Helper.Stats(self.current_file_dict["Summary"])
@@ -2627,6 +2700,10 @@ class Ui_MainWindow(object):
         channel = 0
         width_enable=True
 
+
+
+        
+
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
 #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
@@ -2638,17 +2715,27 @@ class Ui_MainWindow(object):
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
         if self.current_file_dict["Peak Record"] in self.analog:
-            return
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_1()
+            self.update_sweep_2()
+            self.update_statistic()
+
         else:
             a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable,channel, chunksize, 0)
             self.analog.update(a.analog_file)
-        self.draw()
-        self.draw_2()
-        self.update_sweep_1()
-        self.update_sweep_2()
-        self.sweep_update()
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_1()
+            self.update_sweep_2()
+            self.update_statistic()
         # print(self.analog)
         ### End
+        print("update draws")
+
+
         
 
         
