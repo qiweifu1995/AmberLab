@@ -1930,21 +1930,22 @@ class Ui_MainWindow(object):
 
 
     def update_working_data(self):
-        current_file_dict = self.file_dict_list[self.listView_channels.currentRow()]
-        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
-            self.working_data += self.analog[current_file_dict['Peak Record']][0]
-        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
-            self.working_data += self.analog[current_file_dict['Ch1 ']][0]
-        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
-            self.working_data += self.analog[current_file_dict['Ch2 ']][0]
-        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
-            self.working_data += self.analog[current_file_dict['Ch3 ']][0]
-        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
-            self.working_data += self.analog[current_file_dict['Ch1-2']][0]
-        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
-            self.working_data += self.analog[current_file_dict['Ch1-3']][0]
-        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
-            self.working_data += self.analog[current_file_dict['Ch2-3']][0]
+        self.working_data.clear()
+        if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+            self.working_data += self.analog[self.current_file_dict['Peak Record']][0]
+        if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1 ']][0]
+        if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch2 ']][0]
+        if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch3 ']][0]
+        if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1-2']][0]
+        if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch1-3']][0]
+        if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+            self.working_data += self.analog[self.current_file_dict['Ch2-3']][0]
+        print("working data:")
         print(self.working_data)
 
 
@@ -1965,7 +1966,7 @@ class Ui_MainWindow(object):
             stats.append([mean, median, stddv, max_value, min_value])
         for x in range(4):
             for y in range(5):
-                item = QTableWidgetItem(str(stats[x][y]))
+                item = QTableWidgetItem(str(round(stats[x][y],2)))
                 self.tableView_statistic.setItem(x,y,item)
 
 
@@ -2006,7 +2007,7 @@ class Ui_MainWindow(object):
                     i += 1
                 for x, row in enumerate(sweep_list):
                     for y in range(4):
-                        item = QTableWidgetItem(str(row[y]))
+                        item = QTableWidgetItem(str(round(row[y],2)))
                         self.widget_sweepresult1.setItem(x, y, item)
                 self.widget_sweepresult1.show()
             if len(self.sweep_2_data) > 0:
@@ -2021,7 +2022,7 @@ class Ui_MainWindow(object):
                     i += 1
                 for x, row in enumerate(sweep_list):
                     for y in range(4):
-                        item = QTableWidgetItem(str(row[y]))
+                        item = QTableWidgetItem(str(round(row[y],2)))
                         self.widget_sweepresult2.setItem(x, y, item)
                 self.widget_sweepresult2.show()
 
@@ -2123,8 +2124,8 @@ class Ui_MainWindow(object):
         self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
         # default
         # self.width = self.analog[current_file_dict['Peak Record']][0][0]
-        self.width = []
-
+        self.width = self.working_data[self.listView_channels.currentRow()]
+        """
         if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
             self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
@@ -2139,6 +2140,7 @@ class Ui_MainWindow(object):
             self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
         if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
             self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
+        """
 
         self.lineEdit_count.setText(str(len(self.width)))
         range_width = int(max(self.width))+1
@@ -2174,9 +2176,10 @@ class Ui_MainWindow(object):
 #         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
 
 
-        self.Ch1_channel0 = []
-        self.Ch1_channel1 = []
+        self.Ch1_channel0 = self.working_data[x_axis_channel]
+        self.Ch1_channel1 = self.working_data[y_axis_channel]
 #         if b.text() == "All Channel":
+        """
         if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
             self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
             self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
@@ -2204,6 +2207,7 @@ class Ui_MainWindow(object):
         if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
             self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
             self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
+        """
             
 
 #         self.Ch1_channel0 = np.random.normal(5,1, 200)
@@ -2632,62 +2636,14 @@ class Ui_MainWindow(object):
     def pressed(self):
         print('pressed')
         global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
-        current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
+        self.current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
         self.sweep_1_dict = self.file_dict_list[self.comboBox_option1.currentIndex()]
         self.sweep_2_dict = self.file_dict_list[self.comboBox_option2.currentIndex()]
         #print(current_file_dict)
-        os.chdir(current_file_dict["Root Folder"])
-        
-#         analog_files ={"Ch1": "",
-#                  "Ch2": "",
-#                  "Ch3": "",
-#                  "Ch1-2": "",
-#                  "Ch1-3": "",
-#                  "Ch2-3": "",
-#                 "Peak Record":""}
-        
-    # Channels file
-        #i commented out the read since it was giving memory error
-        if current_file_dict["Ch1 "] != "":
-            print("ok")
-#             analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
-        if current_file_dict["Ch2 "] != "":
-            print("ok")
-#             analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
-        if current_file_dict["Ch3 "] != "":
-            print("ok")
-#             analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
-        if current_file_dict["Ch1-2"] != "":
-            print("ok")
-#             analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
-        if current_file_dict["Ch1-3"] != "":
-            print("ok")
-#             analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
-        if current_file_dict["Ch2-3"] != "":
-            print("ok")
-#             analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
-
-    # Locked
-        if current_file_dict["Locked"] != "":
-            Locked = pd.read_csv(current_file_dict["Locked"])
-
-    # Peak_Record
-#         analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
-#         analog_files['Peak Record'].columns =[0,1,2,3] 
-        
-    # Raw time log
-        """
-        Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
-                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
-                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
-        row_count = len(Raw_time_log.index)
-        Run_total = Raw_time_log.iloc[row_count-1,0:6]
-        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
-        """
-        
+        os.chdir(self.current_file_dict["Root Folder"])
     # summary
-        if current_file_dict["Summary"] != "":
-            stats = Helper.Stats(current_file_dict["Summary"])
+        if self.current_file_dict["Summary"] != "":
+            stats = Helper.Stats(self.current_file_dict["Summary"])
             self.lineEdit_startingtime.setText(stats.start_time)
             self.lineEdit_endingtime.setText(stats.end_time)
             self.lineEdit_runtime.setText(stats.total_runtime)
@@ -2758,7 +2714,7 @@ class Ui_MainWindow(object):
         
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-        if current_file_dict["Peak Record"] in self.analog:
+        if self.current_file_dict["Peak Record"] in self.analog:
             self.update_working_data()
             self.draw()
             self.draw_2()
@@ -2767,7 +2723,7 @@ class Ui_MainWindow(object):
             self.update_statistic()
 
         else:
-            a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable,channel, chunksize, 0)
             self.analog.update(a.analog_file)
             self.update_working_data()
             self.draw()
