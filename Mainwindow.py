@@ -258,7 +258,7 @@ class Ui_MainWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem3)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
-        self.tableView_statistic = QtWidgets.QTableView(self.tab_statistic)
+        self.tableView_statistic = QtWidgets.QTableWidget(self.tab_statistic)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -267,6 +267,10 @@ class Ui_MainWindow(object):
         self.tableView_statistic.setMinimumSize(QtCore.QSize(150, 150))
         self.tableView_statistic.setMaximumSize(QtCore.QSize(16777215, 200))
         self.tableView_statistic.setObjectName("tableView_statistic")
+        self.tableView_statistic.setColumnCount(5)
+        self.tableView_statistic.setRowCount(4)
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
         self.verticalLayout_5.addWidget(self.tableView_statistic)
         self.gridLayout_2.addLayout(self.verticalLayout_5, 0, 2, 1, 1)
         spacerItem4 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
@@ -658,6 +662,7 @@ class Ui_MainWindow(object):
         self.listView_channels.addItem("Red")
         self.listView_channels.addItem("Blue")
         self.listView_channels.addItem("Orange")
+        self.listView_channels.setCurrentRow(0)
         self.horizontalLayout_23.addWidget(self.listView_channels)
         self.verticalLayout.addLayout(self.horizontalLayout_23)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
@@ -801,6 +806,7 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth.setMinimumSize(QtCore.QSize(80, 0))
         self.lineEdit_binwidth.setMaximumSize(QtCore.QSize(100, 16777215))
         self.lineEdit_binwidth.setObjectName("lineEdit_binwidth")
+        self.lineEdit_binwidth.setText("0.1")
         self.horizontalLayout_27.addWidget(self.lineEdit_binwidth)
         spacerItem18 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_27.addItem(spacerItem18)
@@ -1874,8 +1880,6 @@ class Ui_MainWindow(object):
         self.listView_channels.currentRowChanged.connect(self.draw)
         self.listView_channels_2.currentRowChanged.connect(self.update_sweep_1)
         self.listView_channels_2.currentRowChanged.connect(self.update_sweep_2)
-        self.comboBox.currentIndexChanged.connect(self.draw_2)
-        self.comboBox_2.currentIndexChanged.connect(self.draw_2)
 
         """self.checkBox_7.stateChanged.connect(lambda:self.draw())
         self.checkBox_7.stateChanged.connect(lambda:self.draw_2())
@@ -1912,17 +1916,62 @@ class Ui_MainWindow(object):
 
         self.file_dict_list = []
         self.sweep_1_data = []
+        self.working_data = []
 
         self.file_list_view.itemChanged.connect(self.update_names)
 
     def update_names(self):
+        """update the name of the sweep dropboxes"""
         self.comboBox_option1.clear()
         self.comboBox_option2.clear()
         for i in range(self.file_list_view.count()):
             self.comboBox_option1.addItem(self.file_list_view.item(i).text())
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
 
+
+    def update_working_data(self):
+        current_file_dict = self.file_dict_list[self.listView_channels.currentRow()]
+        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+            self.working_data += self.analog[current_file_dict['Peak Record']][0]
+        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+            self.working_data += self.analog[current_file_dict['Ch1 ']][0]
+        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+            self.working_data += self.analog[current_file_dict['Ch2 ']][0]
+        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+            self.working_data += self.analog[current_file_dict['Ch3 ']][0]
+        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+            self.working_data += self.analog[current_file_dict['Ch1-2']][0]
+        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+            self.working_data += self.analog[current_file_dict['Ch1-3']][0]
+        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+            self.working_data += self.analog[current_file_dict['Ch2-3']][0]
+        print(self.working_data)
+
+
+
+
+    def update_statistic(self):
+        """update the statistic table"""
+        stats = []
+        self.tableView_statistic.clear()
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
+        for i in range(4):
+            mean = statistics.mean(self.working_data[i])
+            median = statistics.median(self.working_data[i])
+            stddv = statistics.stdev(self.working_data[i])
+            max_value = max(self.working_data[i])
+            min_value = min(self.working_data[i])
+            stats.append([mean, median, stddv, max_value, min_value])
+        for x in range(4):
+            for y in range(5):
+                item = QTableWidgetItem(str(stats[x][y]))
+                self.tableView_statistic.setItem(x,y,item)
+
+
+
     def sweep_update(self):
+        """update the sweep result table"""
         try:
             range_max = float(self.lineEdit_gatevoltagemaximum.text())
             range_min = float(self.lineEdit_gatevoltageminimum.text())
@@ -2063,6 +2112,7 @@ class Ui_MainWindow(object):
 
 
     def draw(self):
+        print("update histo")
         channel = self.listView_channels.currentRow()
         if channel == -1:
             self.listView_channels.setCurrentRow(0)
@@ -2090,9 +2140,10 @@ class Ui_MainWindow(object):
         if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
             self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
 
-
+        self.lineEdit_count.setText(str(len(self.width)))
         range_width = int(max(self.width))+1
-        y,x = np.histogram(self.width, bins=np.linspace(0, range_width, range_width*10+1))
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
+        y,x = np.histogram(self.width, bins=bin_edge)
         separate_y = [0]*len(y)
         for i in range(len(y)):
             separate_y = [0]*len(y)
@@ -2107,6 +2158,7 @@ class Ui_MainWindow(object):
         self.thresholdUpdated()
     
     def draw_2(self):
+        print("update draw")
         x_axis_channel = self.comboBox.currentIndex()
         y_axis_channel = self.comboBox_2.currentIndex()
         x_axis_name = self.comboBox.currentText()
@@ -2578,6 +2630,7 @@ class Ui_MainWindow(object):
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     def pressed(self):
+        print('pressed')
         global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
         self.sweep_1_dict = self.file_dict_list[self.comboBox_option1.currentIndex()]
@@ -2692,6 +2745,7 @@ class Ui_MainWindow(object):
         width_enable=True
 
 
+
         
 
         ### Qiwei's extraction code
@@ -2705,12 +2759,27 @@ class Ui_MainWindow(object):
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
         if current_file_dict["Peak Record"] in self.analog:
-            return
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_1()
+            self.update_sweep_2()
+            self.update_statistic()
+
         else:
             a = Analysis.file_extracted_data_Qing(current_file_dict, threshold, width_enable,channel, chunksize, 0)
             self.analog.update(a.analog_file)
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_1()
+            self.update_sweep_2()
+            self.update_statistic()
         # print(self.analog)
         ### End
+        print("update draws")
+
+
         
 
         
