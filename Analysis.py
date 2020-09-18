@@ -60,7 +60,7 @@ class file_extracted_data_Qing:
         width =[]
         count = 0
         
-        for Ch in pd.read_csv(file, chunksize=50000, header=header):  
+        for Ch in pd.read_csv(file, chunksize=500000, header=header):
             count += 1
             print(count)
             Ch.columns =[0,1,2,3] 

@@ -196,13 +196,11 @@ class ui_state:
 
     def gating_update(self, update_state=True, channel_select=None, bins=None, gate_voltage=None):
         """keeps track of states in gating"""
-        replot, recalculate = False
+        replot = False
         if channel_select is not None and channel_select != self.gating_channel_select:
             replot = True
         elif bins is not None and bins != self.gating_bins:
             replot = True
-        if gate_voltage is not None and gate_voltage != self.gating_voltage:
-            recalculate = True
         if update_state:
             if channel_select is not None:
                 self.gating_channel_select = channel_select
@@ -210,19 +208,14 @@ class ui_state:
                 self.gating_bins = bins
             if gate_voltage is not None:
                 self.gating_voltage = gate_voltage
-        return replot, recalculate
-
+        return replot
     def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None):
         """keep track of state in scatter tab"""
-        replot, recalculate = False
+        replot = False
         if x_select is not None and x_select != self.scatter_channel_select_x:
             replot = True
         elif y_select is not None and y_select != self.scatter_channel_select_y:
             replot = True
-        if x_gate is not None and x_gate != self.scatter_gate_voltage_x:
-            recalculate = True
-        elif y_gate is not None and y_gate != self.scatter_gate_voltage_y:
-            recalculate = True
         if update_state:
             if x_select is not None:
                 self.scatter_channel_select_x = x_select
@@ -232,18 +225,23 @@ class ui_state:
                 self.scatter_gate_voltage_x = x_gate
             if y_gate is not None:
                 self.scatter_gate_voltage_y = y_gate
-        return replot, recalculate
+        return replot
 
-    def sweep_update(self, update_state=False, channel_select=None, bins=None, file1=None, file2=None):
+    def sweep_update(self, update_state=True, channel_select=None, bins=None, file1=None, file2=None):
         """keep track of state in sweep tab"""
-        replot1, replot2 = False
+        replot1 = False
+        replot2 = False
+        data_changed = False
         if file1 is not None and file1 != self.sweep_file_1:
             replot1 = True
+            data_changed = True
         if file2 is not None and file2 != self.sweep_file_2:
             replot2 = True
+            data_changed = True
         if channel_select is not None and channel_select != self.sweep_channel_select:
             replot1 = True
             replot2 = True
+            data_changed = True
         elif bins is not None and bins != self.sweep_bins:
             replot1 = True
             replot2 = True
@@ -256,7 +254,7 @@ class ui_state:
                 self.sweep_file_1 = file1
             if file2 is not None:
                 self.sweep_file_2 = file2
-        return replot1, replot2
+        return replot1, replot2, data_changed
 
 
 

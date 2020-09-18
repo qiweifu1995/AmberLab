@@ -1916,6 +1916,8 @@ class Ui_MainWindow(object):
         self.file_list_view.itemChanged.connect(self.update_names)
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+        self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
+        self.lineEdit_binwidth.editingFinished.connect(self.draw)
 
     def update_names(self):
         """update the name of the sweep dropboxes"""
@@ -1960,8 +1962,10 @@ class Ui_MainWindow(object):
             if len(self.working_data) == 0:
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
-            self.draw()
-            self.draw_2()
+            self.draw(True)
+            self.draw_2(True)
+            self.update_sweep_graphs(True)
+
 
     def update_statistic(self):
         """update the statistic table"""
@@ -2073,30 +2077,45 @@ class Ui_MainWindow(object):
         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
         self.lineEdit_percentage.setText(str(percentage))
 
-    def update_sweep_1(self):
+    def update_sweep_graphs(self, bypass=False):
+        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        update1, update2, data_updated = self.ui_state.sweep_update(channel_select=self.sweep_channel,
+                                                                    file1=self.sweep_file_1,
+                                                                    file2=self.sweep_file_2, bins=self.sweep_bins)
+        if update1:
+            self.update_sweep_1(data_updated)
+        elif bypass:
+            self.update_sweep_1(bypass)
+        if update2:
+            self.update_sweep_2(data_updated)
+        elif bypass:
+            self.update_sweep_2(bypass)
+
+    def update_sweep_1(self, data_updated=False):
         self.widget_sweepparam2.clear()
         channel = self.listView_channels_2.currentRow()
         if channel == -1:
             self.listView_channels_2.setCurrentRow(0)
         axis_name = self.listView_channels_2.currentItem().text()
         self.widget_sweepparam2.setLabel('bottom', axis_name)
-        print(channel)
+        print("update sweep 1")
         r, g, b = Helper.rgb_select(channel)
-        self.sweep_1_data = []
-        if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
-        if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
-        if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
-        if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
-        if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
-        if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
-        if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
-            self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
+        if data_updated:
+            self.sweep_1_data = []
+            if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
+            if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
+            if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
+            if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
+            if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
+            if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
+            if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
         range_width = int(max(self.sweep_1_data)) + 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
@@ -2110,7 +2129,7 @@ class Ui_MainWindow(object):
         self.widget_sweepparam2.setXRange(0, max(x), padding=0)
         self.widget_sweepparam2.setYRange(0, max(y), padding=0)
 
-    def update_sweep_2(self):
+    def update_sweep_2(self, data_updated=False):
         self.widget_sweepparam1.clear()
         channel = self.listView_channels_2.currentRow()
         if channel == -1:
@@ -2118,21 +2137,23 @@ class Ui_MainWindow(object):
         axis_name = self.listView_channels_2.currentItem().text()
         self.widget_sweepparam1.setLabel('bottom', axis_name)
         r, g, b = Helper.rgb_select(channel)
-        self.sweep_2_data = []
-        if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
-        if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
-        if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
-        if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
-        if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
-        if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
-        if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
-            self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+        print("update sweep 2")
+        if data_updated:
+            self.sweep_2_data = []
+            if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
+            if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
+            if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
+            if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
+            if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
+            if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
+            if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
         range_width = int(max(self.sweep_2_data)) + 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
@@ -2144,199 +2165,208 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
 
-    def draw(self, data_updated):
-        print("update histo")
-        channel = self.listView_channels.currentRow()
-        if channel == -1:
-            self.listView_channels.setCurrentRow(0)
-        self.histogram_graphWidget.clear()
-        r, g, b = Helper.rgb_select(channel)
-        styles = {"color": "f#ff", "font-size": "20px"}
-        axis_name = self.listView_channels.currentItem().text()
-        self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
-        # default
-        # self.width = self.analog[current_file_dict['Peak Record']][0][0]
-        self.width = self.working_data[self.listView_channels.currentRow()]
-        """
-        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
-            self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
-            self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
-            self.width += self.analog[current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
-            self.width += self.analog[current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
-            self.width += self.analog[current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
-            self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
-        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
-            self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
-        """
+    def draw(self, data_updated=False):
 
-        self.lineEdit_count.setText(str(len(self.width)))
-        range_width = int(max(self.width)) + 1
-        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
-        y, x = np.histogram(self.width, bins=bin_edge)
-        separate_y = [0] * len(y)
-        for i in range(len(y)):
-            separate_y = [0] * len(y)
-            separate_y[i] = y[i]
-            self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
-                                            brush=(r, g, b))
-
-        self.histogram_graphWidget.setXRange(0, max(x), padding=0)
-        self.histogram_graphWidget.setYRange(0, max(y), padding=0)
-
-        # after 1st map so the line will appear before the histogram
-        self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
-                                                         pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
-        self.thresholdUpdated()
-
-    def draw_2(self):
-        print("update draw")
-        x_axis_channel = self.comboBox.currentIndex()
-        y_axis_channel = self.comboBox_2.currentIndex()
-        x_axis_name = self.comboBox.currentText()
-        y_axis_name = self.comboBox_2.currentText()
-
-        self.graphWidget.clear()
-
-        self.graphWidget.setLabel('left', y_axis_name, color='b')
-        self.graphWidget.setLabel('bottom', x_axis_name, color='b')
-
-        # #         # default
-        #         self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
-        #         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
-
-        self.Ch1_channel0 = self.working_data[x_axis_channel]
-        self.Ch1_channel1 = self.working_data[y_axis_channel]
-        #         if b.text() == "All Channel":
-        """
-        if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
-#         elif b.text() == "Channel 1":
-        if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1 ']][0][y_axis_channel]
-#         elif b.text() == "Channel 2":
-        if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch2 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch2 ']][0][y_axis_channel]
-#         elif b.text() == "Channel 3":
-        if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch3 ']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch3 ']][0][y_axis_channel]
-#         elif b.text() == "Channel 1-2":
-        if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-2']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-2']][0][y_axis_channel]
-#         elif b.text() == "Channel 1-3":
-        if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch1-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch1-3']][0][y_axis_channel]
-#         elif b.text() == "Channel 2-3":
-        if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
-            self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
-            self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
-        """
-
-        #         self.Ch1_channel0 = np.random.normal(5,1, 200)
-        #         self.Ch1_channel1 = np.random.normal(5, 1, 200)
-        max_voltage = 12
-        bins = 1000
-        steps = max_voltage / bins
-
-        # all data is first sorted into a histogram
-        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins, [[0, max_voltage], [0, max_voltage]],
-                                     density=True)
-        max_density = histo.max()
-
-        # made empty array to hold the sorted data according to density
-        density_listx = []
-        density_listy = []
-        for i in range(6):
-            density_listx.append([])
-            density_listy.append([])
-
-        print("start")
-        for i in range(len(self.Ch1_channel0)):
-            """legend_range = 0.07
-            aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
-            bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
-            
-            ab_set = len(set(aa) & set(bb))   
+        self.histo_bins = float(self.lineEdit_binwidth.text())
+        update = self.ui_state.gating_update(channel_select=self.histo_channel, bins=self.histo_bins)
+        if update or data_updated:
+            print("update histo")
+            channel = self.listView_channels.currentRow()
+            if channel == -1:
+                self.listView_channels.setCurrentRow(0)
+            self.histogram_graphWidget.clear()
+            r, g, b = Helper.rgb_select(channel)
+            styles = {"color": "f#ff", "font-size": "20px"}
+            axis_name = self.listView_channels.currentItem().text()
+            self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
+            # default
+            # self.width = self.analog[current_file_dict['Peak Record']][0][0]
+            self.width = self.working_data[self.listView_channels.currentRow()]
             """
-            x = self.Ch1_channel0[i]
-            y = self.Ch1_channel1[i]
+            if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+                self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+                self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+                self.width += self.analog[current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+                self.width += self.analog[current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+                self.width += self.analog[current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+                self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+                self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
+            """
 
-            # checking for density, the value divided by steps serves as the index
-            density = histo[int(x / steps)][int(y / steps)]
-            percentage = density / max_density * 100
-            if i % 10000 == 0:
-                print(i)
-            if 20 > percentage >= 0:
-                density_listx[0].append(x)
-                density_listy[0].append(y)
-            elif 40 > percentage >= 20:
-                density_listx[1].append(x)
-                density_listy[1].append(y)
-            elif 60 > percentage >= 40:
-                density_listx[2].append(x)
-                density_listy[2].append(y)
-            elif 80 > percentage >= 60:
-                density_listx[3].append(x)
-                density_listy[3].append(y)
-            else:
-                density_listx[4].append(x)
-                density_listy[4].append(y)
-        for i in range(5):
-            if i == 0:
-                red = 0
-                blue = 255 / 15
-                green = 255
-            elif i == 1:
-                red = 0
-                blue = 255
-                green = 255 - 255 / 15
-            elif i == 2:
-                red = 255 / 15
-                blue = 255
-                green = 0
-            elif i == 3:
-                red = 255
-                blue = 255 - 255 / 15
-                green = 0
-            elif i == 4:
-                red = 255
-                blue = 255 / 15
-                green = 255 / 15
-            else:
-                red = 255
-                blue = 255
-                green = 255
+            self.lineEdit_count.setText(str(len(self.width)))
+            range_width = int(max(self.width)) + 1
+            bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
+            y, x = np.histogram(self.width, bins=bin_edge)
+            separate_y = [0] * len(y)
+            for i in range(len(y)):
+                separate_y = [0] * len(y)
+                separate_y[i] = y[i]
+                self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
+                                                brush=(r, g, b))
 
-            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-                                  symbolSize=5, symbolBrush=(red, blue, green))
-        """
-        self.graphWidget.plot(name = "0~15%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,0,255))
-        self.graphWidget.plot(name = "15~30%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,255))
-        self.graphWidget.plot(name = "30~45%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,0))
-        self.graphWidget.plot(name = "45~60%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,0))
-        self.graphWidget.plot(name = "60~75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,0,0))
-        self.graphWidget.plot(name = ">75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,255))
-        """
+            self.histogram_graphWidget.setXRange(0, max(x), padding=0)
+            self.histogram_graphWidget.setYRange(0, max(y), padding=0)
 
-        #    >0%    0,0,1   blue
-        #    >15%   0,1,1  cyan
-        #    >30%   0,1,0  green
-        #    >45%   1,1,0  yellow
-        #    >60%   1,0,0   red
-        #    >75%   1,1,1   white
+            # after 1st map so the line will appear before the histogram
+            self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
+                                                             pen=pg.mkPen(color=('r'), width=5,
+                                                                          style=QtCore.Qt.DashLine))
+            self.thresholdUpdated()
 
-        # threshold
-        self.thresholdUpdated_2()
+    def draw_2(self, data_updated=False):
+
+        update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
+        if update or data_updated:
+            print("update draw")
+            x_axis_channel = self.comboBox.currentIndex()
+            y_axis_channel = self.comboBox_2.currentIndex()
+            x_axis_name = self.comboBox.currentText()
+            y_axis_name = self.comboBox_2.currentText()
+
+            self.graphWidget.clear()
+
+            self.graphWidget.setLabel('left', y_axis_name, color='b')
+            self.graphWidget.setLabel('bottom', x_axis_name, color='b')
+
+            # #         # default
+            #         self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
+            #         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
+
+            self.Ch1_channel0 = self.working_data[x_axis_channel]
+            self.Ch1_channel1 = self.working_data[y_axis_channel]
+            #         if b.text() == "All Channel":
+            """
+            if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1":
+            if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 2":
+            if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch2 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch2 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 3":
+            if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch3 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch3 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1-2":
+            if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1-2']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1-2']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1-3":
+            if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1-3']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1-3']][0][y_axis_channel]
+    #         elif b.text() == "Channel 2-3":
+            if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
+            """
+
+            #         self.Ch1_channel0 = np.random.normal(5,1, 200)
+            #         self.Ch1_channel1 = np.random.normal(5, 1, 200)
+            max_voltage = 12
+            bins = 1000
+            steps = max_voltage / bins
+
+            # all data is first sorted into a histogram
+            histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
+                                         [[0, max_voltage], [0, max_voltage]],
+                                         density=True)
+            max_density = histo.max()
+
+            # made empty array to hold the sorted data according to density
+            density_listx = []
+            density_listy = []
+            for i in range(6):
+                density_listx.append([])
+                density_listy.append([])
+
+            print("start")
+            for i in range(len(self.Ch1_channel0)):
+                """legend_range = 0.07
+                aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
+                bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
+                
+                ab_set = len(set(aa) & set(bb))   
+                """
+                x = self.Ch1_channel0[i]
+                y = self.Ch1_channel1[i]
+
+                # checking for density, the value divided by steps serves as the index
+                density = histo[int(x / steps)][int(y / steps)]
+                percentage = density / max_density * 100
+                if i % 10000 == 0:
+                    print(i)
+                if 20 > percentage >= 0:
+                    density_listx[0].append(x)
+                    density_listy[0].append(y)
+                elif 40 > percentage >= 20:
+                    density_listx[1].append(x)
+                    density_listy[1].append(y)
+                elif 60 > percentage >= 40:
+                    density_listx[2].append(x)
+                    density_listy[2].append(y)
+                elif 80 > percentage >= 60:
+                    density_listx[3].append(x)
+                    density_listy[3].append(y)
+                else:
+                    density_listx[4].append(x)
+                    density_listy[4].append(y)
+            for i in range(5):
+                if i == 0:
+                    red = 0
+                    blue = 255 / 15
+                    green = 255
+                elif i == 1:
+                    red = 0
+                    blue = 255
+                    green = 255 - 255 / 15
+                elif i == 2:
+                    red = 255 / 15
+                    blue = 255
+                    green = 0
+                elif i == 3:
+                    red = 255
+                    blue = 255 - 255 / 15
+                    green = 0
+                elif i == 4:
+                    red = 255
+                    blue = 255 / 15
+                    green = 255 / 15
+                else:
+                    red = 255
+                    blue = 255
+                    green = 255
+
+                self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+                                      symbolSize=5, symbolBrush=(red, blue, green))
+            """
+            self.graphWidget.plot(name = "0~15%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,0,255))
+            self.graphWidget.plot(name = "15~30%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,255))
+            self.graphWidget.plot(name = "30~45%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,0))
+            self.graphWidget.plot(name = "45~60%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,0))
+            self.graphWidget.plot(name = "60~75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,0,0))
+            self.graphWidget.plot(name = ">75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,255))
+            """
+
+            #    >0%    0,0,1   blue
+            #    >15%   0,1,1  cyan
+            #    >30%   0,1,0  green
+            #    >45%   1,1,0  yellow
+            #    >60%   1,0,0   red
+            #    >75%   1,1,1   white
+
+            # threshold
+            self.thresholdUpdated_2()
 
     def thresholdUpdated_2(self):
         self.graphWidget.removeItem(self.data_line_y)
@@ -2406,50 +2436,50 @@ class Ui_MainWindow(object):
 
         self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
         self.tableView_scatterquadrants.setItem(0, 1,
-                                                QTableWidgetItem(str(100 * count_quadrant1 / len(self.Ch1_channel0))))
+                                                QTableWidgetItem(str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))))
         self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
         self.tableView_scatterquadrants.setItem(1, 1,
-                                                QTableWidgetItem(str(100 * count_quadrant2 / len(self.Ch1_channel0))))
+                                                QTableWidgetItem(str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))))
         self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
         self.tableView_scatterquadrants.setItem(2, 1,
-                                                QTableWidgetItem(str(100 * count_quadrant3 / len(self.Ch1_channel0))))
+                                                QTableWidgetItem(str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))))
         self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
         self.tableView_scatterquadrants.setItem(3, 1,
-                                                QTableWidgetItem(str(100 * count_quadrant4 / len(self.Ch1_channel0))))
+                                                QTableWidgetItem(str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))))
 
         ### mid table
 
         try:
-            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant1))))
-            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant1))))
-            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant1))))
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant1),2))))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant1),2))))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant1),2))))
         except:
             self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant2))))
-            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant2))))
-            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant2))))
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant2),2))))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant2),2))))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant2),2))))
         except:
             self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant3))))
-            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant3))))
-            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant3))))
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant3),2))))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant3),2))))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant3),2))))
         except:
             self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(str(statistics.mean(channel0_list_quadrant4))))
-            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(str(statistics.stdev(channel0_list_quadrant4))))
-            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(str(statistics.median(channel0_list_quadrant4))))
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant4),2))))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant4),2))))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant4),2))))
         except:
             self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem('NaN'))
@@ -2458,36 +2488,36 @@ class Ui_MainWindow(object):
         # bottom
 
         try:
-            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant1))))
-            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant1))))
-            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant1))))
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant1),2))))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant1),2))))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant1),2))))
         except:
             self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant2))))
-            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant2))))
-            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant2))))
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant2),2))))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant2),2))))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant2),2))))
         except:
             self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant3))))
-            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant3))))
-            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant3))))
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant3),2))))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant3),2))))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant3),2))))
         except:
             self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(str(statistics.mean(channel1_list_quadrant4))))
-            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(str(statistics.stdev(channel1_list_quadrant4))))
-            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(str(statistics.median(channel1_list_quadrant4))))
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant4),2))))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant4),2))))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant4),2))))
         except:
             self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
@@ -2694,6 +2724,7 @@ class Ui_MainWindow(object):
         self.sweep_channel = self.listView_channels_2.currentRow()
         self.sweep_file_1 = self.comboBox_option1.currentIndex()
         self.sweep_file_2 = self.comboBox_option2.currentIndex()
+        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         self.current_file_dict = self.file_dict_list[self.main_file_select]
         self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
         self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
@@ -2770,8 +2801,7 @@ class Ui_MainWindow(object):
             self.update_working_data()
             self.draw()
             self.draw_2()
-            self.update_sweep_1()
-            self.update_sweep_2()
+            self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
             self.update_statistic()
@@ -2783,14 +2813,12 @@ class Ui_MainWindow(object):
             self.update_working_data()
             self.draw()
             self.draw_2()
-            self.update_sweep_1()
-            self.update_sweep_2()
+            self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
             self.update_statistic()
         # print(self.analog)
         ### End
-        print("update draws")
 
     def add(self):
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
