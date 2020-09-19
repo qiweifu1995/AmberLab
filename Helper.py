@@ -156,8 +156,9 @@ class ui_state:
         self.sweep_file_2 = -1
 
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
-                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None):
+                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, reset = None):
         """checks if checkbox are updated and needs to be refreshed"""
+
         changed = False
         if file is not None and self.file_select != file:
             changed = True
@@ -175,6 +176,9 @@ class ui_state:
             changed = True
         elif ch2_3 is not None and self.ch2_3_check != ch2_3:
             changed = True
+        elif reset is not None and reset == True:
+            changed = True
+         
         if update_state:
             if file is not None:
                 self.file_select = file
@@ -192,6 +196,8 @@ class ui_state:
                 self.ch1_3_check = ch1_3
             if ch2_3 is not None:
                 self.ch2_3_check = ch2_3
+    
+
         return changed
 
     def gating_update(self, update_state=True, channel_select=None, bins=None, gate_voltage=None):
