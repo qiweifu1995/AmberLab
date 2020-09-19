@@ -8,7 +8,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QLineEdit
+
 import pandas as pd
 import os
 import Helper
@@ -21,6 +22,35 @@ from PyQt5 import QtGui  # Place this at the top of your file.
 import pyqtgraph as pg
 import statistics
 
+class OtherWindow(QWidget):
+    """
+    This "window" is a QWidget. If it has no parent, it 
+    will appear as a free-floating window as we want.
+    """
+    def __init__(self,parent = None):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Please select a sampling rate: 250, 500, or 1000")
+        self.lineEdit = QLineEdit('100')
+        self.pushButton_1 = QPushButton('Ok')
+        self.pushButton_2 = QPushButton('Close')      
+        
+        layout.addWidget(self.label)
+        layout.addWidget(self.lineEdit)
+        layout.addWidget(self.pushButton_1)
+        layout.addWidget(self.pushButton_2)
+        
+        self.setLayout(layout)
+        self.pushButton_1.clicked.connect(self.ok_clicked)
+        self.pushButton_2.clicked.connect(self.close_clicked)
+    def ok_clicked(self):
+        self.hide() 
+        Ui_MainWindow.OtherWindow_Button_ok_clicked(Ui_MainWindow,self.lineEdit.text())
+    def close_clicked(self):
+        self.hide()      
+        ###
+
+        
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1919,6 +1949,37 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
         self.lineEdit_binwidth.editingFinished.connect(self.draw)
 
+        self.file_list_view.itemChanged.connect(self.update_names)
+        self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
+        self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+    
+        self.w = OtherWindow(self)
+        self.pushButton_resample.clicked.connect(self.openWindow)
+        
+
+        
+    def OtherWindow_Button_ok_clicked(self,text):
+        self.chunk_resample = int(text)
+        self.reset = True
+
+
+    def openWindow(self):
+        
+        self.w.show()
+    def update_sampling_Rate(self):
+        
+        self.listWidget_sampingrate.clear()
+        
+        self.listWidget_sampingrate.addItem('Ch1:'+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch2:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch1_2:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch1_3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch2_3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("All Hit:1000")
+#         self.listWidget_sampingrate.setCurrentRow(0)
+        
+        
     def update_names(self):
         """update the name of the sweep dropboxes"""
         self.comboBox_option1.clear()
@@ -1929,12 +1990,26 @@ class Ui_MainWindow(object):
 
     def update_working_data(self):
 
-        update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
+        try:
+            update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
+                                                         ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                         ch3=self.ch3_checkbox,
+                                                         ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                         ch2_3=self.ch23_checkbox, reset = Ui_MainWindow.reset)
+            
+        except:
+            update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
                                                          ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
                                                          ch3=self.ch3_checkbox,
                                                          ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
                                                          ch2_3=self.ch23_checkbox)
+
+        print("update working data status:", update)
+        try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
+        except : print("Ui_MainWindow.reset: FALSE")
+        
         if update:
+            print("update working data")
             self.working_data = []
             for i in range(4):
                 self.working_data.append([])
@@ -2776,17 +2851,21 @@ class Ui_MainWindow(object):
         Sorting_Parameter3.index = ['1']   
         
         """
-
+        
         #         start = time.time()
         if stats.under_sample_factor == "":
             under_sample = 1
         else:
             under_sample = stats.under_sample_factor
-        chunksize = int(1000 / float(under_sample))
+        
         threshold = 1
         channel = 0
         width_enable = True
-
+        
+        try: self.chunksize = self.chunk_resample
+        except: self.chunksize = int(1000 / float(under_sample))
+            
+        
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
         #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
@@ -2796,7 +2875,16 @@ class Ui_MainWindow(object):
 
         ### Qing's extraction code
         ### call Ch1list ~Ch23list to extract
-        if self.current_file_dict["Peak Record"] in self.analog:
+        
+        try: 
+            if self.reset == True:
+                reset = True
+            else:
+                reset = False
+        except: reset = False
+        
+        if self.current_file_dict["Peak Record"] in self.analog and not reset:
+            print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
             self.update_working_data()
             self.draw()
@@ -2805,10 +2893,13 @@ class Ui_MainWindow(object):
             self.sweep_update_high()
             self.sweep_update_low()
             self.update_statistic()
+            self.update_sampling_Rate()
 
         else:
-            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable, channel, chunksize,
+            print("--------------------------------------------------------reset")
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable, channel, self.chunksize,
                                                   0)
+            
             self.analog.update(a.analog_file)
             self.update_working_data()
             self.draw()
@@ -2817,6 +2908,9 @@ class Ui_MainWindow(object):
             self.sweep_update_high()
             self.sweep_update_low()
             self.update_statistic()
+            self.update_sampling_Rate()
+            Ui_MainWindow.reset = False
+            print("reset statue:",Ui_MainWindow.reset)
         # print(self.analog)
         ### End
 
@@ -2853,7 +2947,6 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
