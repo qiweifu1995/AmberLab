@@ -19,32 +19,32 @@ class file_extracted_data_Qing:
         self.analog_file = {} 
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
-            list1, width1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, 200, header)
+            list1, width1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1 "]] = [list1, width1]
             
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
-            list2, width2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, 200, header)
+            list2, width2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch2 "]] = [list2, width2]
         
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
-            list3, width3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, 200, header)
+            list3, width3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch3 "]] = [list3, width3]  
         
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
-            list12, width12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, 200, header)
+            list12, width12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]        
         
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
-            list13, width13  = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, 200, header)
+            list13, width13  = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13]      
         
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
-            list23, width23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, 200, header)
+            list23, width23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23] 
             
         print("Extracting Peak...")
