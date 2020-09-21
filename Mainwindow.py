@@ -2096,6 +2096,7 @@ class Ui_MainWindow(object):
             increment = 0
         if 0 < increment < range_max - range_min and (range_max - range_min) / increment < 500 and \
                 len(self.sweep_1_data) > 0 and len(self.sweep_2_data) > 0:
+            print("Updating Sweep Table")
             self.widget_sweepresult1.clear()
             self.widget_sweepresult1.setRowCount(int((range_max - range_min) / increment))
             self.widget_sweepresult1.setColumnCount(4)
@@ -2446,7 +2447,6 @@ class Ui_MainWindow(object):
     def thresholdUpdated_2(self):
         self.graphWidget.removeItem(self.data_line_y)
         self.graphWidget.removeItem(self.data_line_x)
-
         text_x = float(self.lineEdit_scatterxvoltage.text())
         text_y = float(self.lineEdit_scatteryvoltage.text())
 
@@ -2508,19 +2508,34 @@ class Ui_MainWindow(object):
                 channel1_list_quadrant4.append(self.Ch1_channel1[i])
                 count_quadrant4 += 1
             #             print(channel0_list_quadrant1)
+        try:
+            droplets = float(self.lineEdit_totaldroplets.text())
+            totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
+            totalpercent2 = round(count_quadrant2 / droplets * 100, 2)
+            totalpercent3 = round(count_quadrant3 / droplets * 100, 2)
+            totalpercent4 = round(count_quadrant4 / droplets * 100, 2)
+        except:
+            totalpercent1 = 0
+            totalpercent2 = 0
+            totalpercent3 = 0
+            totalpercent4 = 0
 
         self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
         self.tableView_scatterquadrants.setItem(0, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
         self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
         self.tableView_scatterquadrants.setItem(1, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(1, 2, QTableWidgetItem(str(totalpercent2)))
         self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
         self.tableView_scatterquadrants.setItem(2, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(2, 2, QTableWidgetItem(str(totalpercent3)))
         self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
         self.tableView_scatterquadrants.setItem(3, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(3, 2, QTableWidgetItem(str(totalpercent4)))
 
         ### mid table
 
@@ -2892,6 +2907,7 @@ class Ui_MainWindow(object):
             self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
+            self.sweep_update()
             self.update_statistic()
             self.update_sampling_Rate()
 
@@ -2907,6 +2923,7 @@ class Ui_MainWindow(object):
             self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
+            self.sweep_update()
             self.update_statistic()
             self.update_sampling_Rate()
             Ui_MainWindow.reset = False
