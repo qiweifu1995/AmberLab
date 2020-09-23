@@ -8,12 +8,49 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QLineEdit
+
 import pandas as pd
 import os
 import Helper
+import Analysis
 import time
 from itertools import islice
+from pyqtgraph import PlotWidget
+import numpy as np
+from PyQt5 import QtGui  # Place this at the top of your file.
+import pyqtgraph as pg
+import statistics
+
+class OtherWindow(QWidget):
+    """
+    This "window" is a QWidget. If it has no parent, it 
+    will appear as a free-floating window as we want.
+    """
+    def __init__(self,parent = None):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Please select a sampling rate: 250, 500, or 1000")
+        self.lineEdit = QLineEdit('100')
+        self.pushButton_1 = QPushButton('Ok')
+        self.pushButton_2 = QPushButton('Close')      
+        
+        layout.addWidget(self.label)
+        layout.addWidget(self.lineEdit)
+        layout.addWidget(self.pushButton_1)
+        layout.addWidget(self.pushButton_2)
+        
+        self.setLayout(layout)
+        self.pushButton_1.clicked.connect(self.ok_clicked)
+        self.pushButton_2.clicked.connect(self.close_clicked)
+    def ok_clicked(self):
+        self.hide() 
+        Ui_MainWindow.OtherWindow_Button_ok_clicked(Ui_MainWindow,self.lineEdit.text())
+    def close_clicked(self):
+        self.hide()      
+        ###
+
+        
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -37,11 +74,11 @@ class Ui_MainWindow(object):
         self.label_files.setAlignment(QtCore.Qt.AlignCenter)
         self.label_files.setObjectName("label_files")
         self.layout_vertical_filecontrol.addWidget(self.label_files)
-        
+
         self.file_list_view = QtWidgets.QListWidget(self.centralwidget)
         self.file_list_view.setObjectName("file_list_view")
         self.layout_vertical_filecontrol.addWidget(self.file_list_view)
-        
+
         self.layout_horizontal_renamebutton = QtWidgets.QHBoxLayout()
         self.layout_horizontal_renamebutton.setObjectName("layout_horizontal_renamebutton")
         self.button_rename = QtWidgets.QPushButton(self.centralwidget)
@@ -252,7 +289,7 @@ class Ui_MainWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem3)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
-        self.tableView_statistic = QtWidgets.QTableView(self.tab_statistic)
+        self.tableView_statistic = QtWidgets.QTableWidget(self.tab_statistic)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -261,6 +298,10 @@ class Ui_MainWindow(object):
         self.tableView_statistic.setMinimumSize(QtCore.QSize(150, 150))
         self.tableView_statistic.setMaximumSize(QtCore.QSize(16777215, 200))
         self.tableView_statistic.setObjectName("tableView_statistic")
+        self.tableView_statistic.setColumnCount(5)
+        self.tableView_statistic.setRowCount(4)
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
         self.verticalLayout_5.addWidget(self.tableView_statistic)
         self.gridLayout_2.addLayout(self.verticalLayout_5, 0, 2, 1, 1)
         spacerItem4 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
@@ -639,7 +680,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.label_21)
         self.horizontalLayout_23 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_23.setObjectName("horizontalLayout_23")
-        self.listView_channels = QtWidgets.QListView(self.tab_gating)
+        self.listView_channels = QtWidgets.QListWidget(self.tab_gating)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -648,6 +689,11 @@ class Ui_MainWindow(object):
         self.listView_channels.setMinimumSize(QtCore.QSize(150, 150))
         self.listView_channels.setMaximumSize(QtCore.QSize(200, 200))
         self.listView_channels.setObjectName("listView_channels")
+        self.listView_channels.addItem("Green")
+        self.listView_channels.addItem("Red")
+        self.listView_channels.addItem("Blue")
+        self.listView_channels.addItem("Orange")
+        self.listView_channels.setCurrentRow(0)
         self.horizontalLayout_23.addWidget(self.listView_channels)
         self.verticalLayout.addLayout(self.horizontalLayout_23)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
@@ -791,6 +837,7 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth.setMinimumSize(QtCore.QSize(80, 0))
         self.lineEdit_binwidth.setMaximumSize(QtCore.QSize(100, 16777215))
         self.lineEdit_binwidth.setObjectName("lineEdit_binwidth")
+        self.lineEdit_binwidth.setText("0.1")
         self.horizontalLayout_27.addWidget(self.lineEdit_binwidth)
         spacerItem18 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_27.addItem(spacerItem18)
@@ -803,16 +850,42 @@ class Ui_MainWindow(object):
         self.line_6.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_6.setObjectName("line_6")
         self.horizontalLayout_22.addWidget(self.line_6)
-        self.widget_gating = QtWidgets.QWidget(self.tab_gating)
+
+        #         self.widget_gating = QtWidgets.QWidget(self.tab_gating)
+        #         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
+        #         sizePolicy.setHorizontalStretch(0)
+        #         sizePolicy.setVerticalStretch(0)
+        #         sizePolicy.setHeightForWidth(self.widget_gating.sizePolicy().hasHeightForWidth())
+
+        #         self.widget_gating.setSizePolicy(sizePolicy)
+        #         self.widget_gating.setMinimumSize(QtCore.QSize(700, 499))
+        #         self.widget_gating.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        #         self.widget_gating.setObjectName("widget_gating")
+        #         self.horizontalLayout_22.addWidget(self.widget_gating)
+
+        # histogram
+        self.histogram_graphWidget = PlotWidget(self.tab_gating)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_gating.sizePolicy().hasHeightForWidth())
-        self.widget_gating.setSizePolicy(sizePolicy)
-        self.widget_gating.setMinimumSize(QtCore.QSize(700, 499))
-        self.widget_gating.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.widget_gating.setObjectName("widget_gating")
-        self.horizontalLayout_22.addWidget(self.widget_gating)
+        sizePolicy.setHeightForWidth(self.histogram_graphWidget.sizePolicy().hasHeightForWidth())
+        self.histogram_graphWidget.setSizePolicy(sizePolicy)
+        self.histogram_graphWidget.setMinimumSize(QtCore.QSize(700, 499))
+        self.histogram_graphWidget.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.histogram_graphWidget.setObjectName("histogram_graphWidget")
+        self.horizontalLayout_22.addWidget(self.histogram_graphWidget)
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.histogram_graphWidget.setLabel('left', 'Frequency', **styles)
+        self.histogram_graphWidget.setBackground('w')
+        self.histogram_graphWidget.setXRange(1, 10.5, padding=0)
+        self.histogram_graphWidget.setYRange(1, 10.5, padding=0)
+
+        #         # threshold
+
+        self.lineEdit_gatevoltage.setText("0")
+        self.lineEdit_gatevoltage.editingFinished.connect(self.thresholdUpdated)
+        #         # threshold end
+
         self.tab_widgets_main.addTab(self.tab_gating, "")
         self.tab_scatter = QtWidgets.QWidget()
         self.tab_scatter.setObjectName("tab_scatter")
@@ -954,7 +1027,7 @@ class Ui_MainWindow(object):
         self.label_36.setFont(font)
         self.label_36.setObjectName("label_36")
         self.verticalLayout_9.addWidget(self.label_36)
-        self.tableView_scatterquadrants = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatterquadrants = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatterquadrants.setObjectName("tableView_scatterquadrants")
         self.verticalLayout_9.addWidget(self.tableView_scatterquadrants)
         self.label_37 = QtWidgets.QLabel(self.subtab_scatter)
@@ -963,7 +1036,7 @@ class Ui_MainWindow(object):
         self.label_37.setFont(font)
         self.label_37.setObjectName("label_37")
         self.verticalLayout_9.addWidget(self.label_37)
-        self.tableView_scatterxaxis = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatterxaxis = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatterxaxis.setObjectName("tableView_scatterxaxis")
         self.verticalLayout_9.addWidget(self.tableView_scatterxaxis)
         self.label_38 = QtWidgets.QLabel(self.subtab_scatter)
@@ -972,24 +1045,84 @@ class Ui_MainWindow(object):
         self.label_38.setFont(font)
         self.label_38.setObjectName("label_38")
         self.verticalLayout_9.addWidget(self.label_38)
-        self.tableView_scatteryaxis = QtWidgets.QTableView(self.subtab_scatter)
+        self.tableView_scatteryaxis = QtWidgets.QTableWidget(self.subtab_scatter)
         self.tableView_scatteryaxis.setObjectName("tableView_scatteryaxis")
         self.verticalLayout_9.addWidget(self.tableView_scatteryaxis)
+
+        ### Quadrants table
+        # set row count
+        self.tableView_scatterquadrants.setRowCount(4)
+        # set column count
+        self.tableView_scatterquadrants.setColumnCount(3)
+        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '%', '% Total Droplets'))
+        self.tableView_scatterquadrants.setVerticalHeaderLabels(
+            ('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
+
+        ### 2nd table
+        # set row count
+        self.tableView_scatterxaxis.setRowCount(4)
+        # set column count
+        self.tableView_scatterxaxis.setColumnCount(3)
+        self.tableView_scatterxaxis.setHorizontalHeaderLabels(('Mean', 'St Dev', 'Median'))
+        self.tableView_scatterxaxis.setVerticalHeaderLabels(('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
+
+        ### 3rd table
+        # set row count
+        self.tableView_scatteryaxis.setRowCount(4)
+        # set column count
+        self.tableView_scatteryaxis.setColumnCount(3)
+        self.tableView_scatteryaxis.setHorizontalHeaderLabels(('Mean', 'St Dev', 'Median'))
+        self.tableView_scatteryaxis.setVerticalHeaderLabels(('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
+
         self.horizontalLayout_29.addLayout(self.verticalLayout_9)
         self.line_7 = QtWidgets.QFrame(self.subtab_scatter)
         self.line_7.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_7.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_7.setObjectName("line_7")
         self.horizontalLayout_29.addWidget(self.line_7)
-        self.widget_scatter = QtWidgets.QWidget(self.subtab_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+
+        #         self.widget_scatter = QtWidgets.QWidget(self.subtab_scatter)
+        #         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        #         sizePolicy.setHorizontalStretch(0)
+        #         sizePolicy.setVerticalStretch(0)
+        #         sizePolicy.setHeightForWidth(self.widget_scatter.sizePolicy().hasHeightForWidth())
+        #         self.widget_scatter.setSizePolicy(sizePolicy)
+        #         self.widget_scatter.setMinimumSize(QtCore.QSize(500, 500))
+        #         self.widget_scatter.setObjectName("widget_scatter")
+        #         self.horizontalLayout_29.addWidget(self.widget_scatter)
+
+        self.graphWidget = PlotWidget(self.subtab_scatter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_scatter.sizePolicy().hasHeightForWidth())
-        self.widget_scatter.setSizePolicy(sizePolicy)
-        self.widget_scatter.setMinimumSize(QtCore.QSize(500, 500))
-        self.widget_scatter.setObjectName("widget_scatter")
-        self.horizontalLayout_29.addWidget(self.widget_scatter)
+        sizePolicy.setHeightForWidth(self.graphWidget.sizePolicy().hasHeightForWidth())
+        self.graphWidget.setSizePolicy(sizePolicy)
+        self.graphWidget.setMinimumSize(QtCore.QSize(500, 500))
+        self.graphWidget.setObjectName("graphWidget")
+        self.horizontalLayout_29.addWidget(self.graphWidget)
+
+        self.graphWidget.setTitle("test scatter plot", color="w", size="30pt")
+        styles = {"color": "#fff", "font-size": "20px"}
+        self.graphWidget.setBackground('w')
+
+        self.graphWidget.setLabel('left', 'Green', **styles)
+        self.graphWidget.setLabel('bottom', 'Far Red', **styles)
+
+        # threshold
+
+        self.lineEdit_scatterxvoltage.setText("0")
+        self.lineEdit_scatteryvoltage.setText("0")
+
+        self.data_line_x = self.graphWidget.plot([0, 1], [1, 1],
+                                                 pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+        self.data_line_y = self.graphWidget.plot([1, 1], [0, 1],
+                                                 pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+
+        self.lineEdit_scatterxvoltage.editingFinished.connect(self.thresholdUpdated_2)
+        self.lineEdit_scatteryvoltage.editingFinished.connect(self.thresholdUpdated_2)
+        # threshold end
+
         self.tab_widgets_scatter.addTab(self.subtab_scatter, "")
         self.subtab_peakdisplay = QtWidgets.QWidget()
         self.subtab_peakdisplay.setObjectName("subtab_peakdisplay")
@@ -1079,7 +1212,8 @@ class Ui_MainWindow(object):
         self.lineEdit_scatterpeaksperwindow.setMinimumSize(QtCore.QSize(50, 0))
         self.lineEdit_scatterpeaksperwindow.setMaximumSize(QtCore.QSize(100, 16777215))
         self.lineEdit_scatterpeaksperwindow.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.lineEdit_scatterpeaksperwindow.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_scatterpeaksperwindow.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_scatterpeaksperwindow.setObjectName("lineEdit_scatterpeaksperwindow")
         self.horizontalLayout_peaksperwindow.addWidget(self.lineEdit_scatterpeaksperwindow)
         self.verticalLayout_11.addLayout(self.horizontalLayout_peaksperwindow)
@@ -1107,7 +1241,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.lineEdit_scatterstartingpeak.sizePolicy().hasHeightForWidth())
         self.lineEdit_scatterstartingpeak.setSizePolicy(sizePolicy)
         self.lineEdit_scatterstartingpeak.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_scatterstartingpeak.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_scatterstartingpeak.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_scatterstartingpeak.setObjectName("lineEdit_scatterstartingpeak")
         self.horizontalLayout_startingpeak.addWidget(self.lineEdit_scatterstartingpeak)
         self.verticalLayout_11.addLayout(self.horizontalLayout_startingpeak)
@@ -1135,7 +1270,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.lineEdit_scatterendingpeak.sizePolicy().hasHeightForWidth())
         self.lineEdit_scatterendingpeak.setSizePolicy(sizePolicy)
         self.lineEdit_scatterendingpeak.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_scatterendingpeak.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_scatterendingpeak.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_scatterendingpeak.setObjectName("lineEdit_scatterendingpeak")
         self.horizontalLayout_endingpeak.addWidget(self.lineEdit_scatterendingpeak)
         self.verticalLayout_11.addLayout(self.horizontalLayout_endingpeak)
@@ -1189,14 +1325,42 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.addLayout(self.horizontalLayout_option1)
         self.horizontalLayout_44 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_44.setObjectName("horizontalLayout_44")
-        self.widget_sweepparam2 = QtWidgets.QWidget(self.subtab_parameter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+
+        # Sweep Histogram 1
+        self.widget_sweepparam2 = PlotWidget(self.subtab_parameter)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_sweepparam2.sizePolicy().hasHeightForWidth())
         self.widget_sweepparam2.setSizePolicy(sizePolicy)
-        self.widget_sweepparam2.setMinimumSize(QtCore.QSize(400, 400))
+        self.widget_sweepparam2.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam2.setObjectName("widget_sweepparam2")
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.widget_sweepparam2.setLabel('left', 'Frequency', **styles)
+        self.widget_sweepparam2.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam2.setBackground('w')
+        self.widget_sweepparam2.setXRange(1, 10.5, padding=0)
+        self.widget_sweepparam2.setYRange(1, 10.5, padding=0)
+
+        # Sweep Histogram 2
+        self.widget_sweepparam1 = PlotWidget(self.subtab_parameter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_sweepparam1.sizePolicy().hasHeightForWidth())
+        self.widget_sweepparam1.setSizePolicy(sizePolicy)
+        self.widget_sweepparam1.setMinimumSize(QtCore.QSize(200, 200))
+        self.widget_sweepparam1.setObjectName("widget_sweepparam1")
+        styles = {"color": "f#ff", "font-size": "20px"}
+        self.widget_sweepparam1.setLabel('left', 'Frequency', **styles)
+        self.widget_sweepparam1.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam1.setBackground('w')
+        self.widget_sweepparam1.setXRange(1, 10.5, padding=0)
+        self.widget_sweepparam1.setYRange(1, 10.5, padding=0)
+
         self.horizontalLayout_44.addWidget(self.widget_sweepparam2)
         self.verticalLayout_12.addLayout(self.horizontalLayout_44)
         self.horizontalLayout_43.addLayout(self.verticalLayout_12)
@@ -1217,14 +1381,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_17.addLayout(self.horizontalLayout_option2)
         self.horizontalLayout_45 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_45.setObjectName("horizontalLayout_45")
-        self.widget_sweepparam1 = QtWidgets.QWidget(self.subtab_parameter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_sweepparam1.sizePolicy().hasHeightForWidth())
-        self.widget_sweepparam1.setSizePolicy(sizePolicy)
-        self.widget_sweepparam1.setMinimumSize(QtCore.QSize(400, 400))
-        self.widget_sweepparam1.setObjectName("widget_sweepparam1")
+
         self.horizontalLayout_45.addWidget(self.widget_sweepparam1)
         self.verticalLayout_17.addLayout(self.horizontalLayout_45)
         self.horizontalLayout_43.addLayout(self.verticalLayout_17)
@@ -1254,7 +1411,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.lineEdit_percentagelow1.sizePolicy().hasHeightForWidth())
         self.lineEdit_percentagelow1.setSizePolicy(sizePolicy)
         self.lineEdit_percentagelow1.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.lineEdit_percentagelow1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_percentagelow1.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_percentagelow1.setObjectName("lineEdit_percentagelow1")
         self.horizontalLayout_47.addWidget(self.lineEdit_percentagelow1)
         self.label_43 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1281,7 +1439,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_percentagehigh1.sizePolicy().hasHeightForWidth())
         self.lineEdit_percentagehigh1.setSizePolicy(sizePolicy)
-        self.lineEdit_percentagehigh1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_percentagehigh1.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_percentagehigh1.setObjectName("lineEdit_percentagehigh1")
         self.horizontalLayout_47.addWidget(self.lineEdit_percentagehigh1)
         self.label_46 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1313,7 +1472,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_percentagelow2.sizePolicy().hasHeightForWidth())
         self.lineEdit_percentagelow2.setSizePolicy(sizePolicy)
-        self.lineEdit_percentagelow2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_percentagelow2.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_percentagelow2.setObjectName("lineEdit_percentagelow2")
         self.horizontalLayout_47.addWidget(self.lineEdit_percentagelow2)
         self.label_47 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1340,7 +1500,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_percentagehigh2.sizePolicy().hasHeightForWidth())
         self.lineEdit_percentagehigh2.setSizePolicy(sizePolicy)
-        self.lineEdit_percentagehigh2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lineEdit_percentagehigh2.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lineEdit_percentagehigh2.setObjectName("lineEdit_percentagehigh2")
         self.horizontalLayout_47.addWidget(self.lineEdit_percentagehigh2)
         self.label_48 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1373,14 +1534,14 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth_2.setObjectName("lineEdit_binwidth_2")
         self.gridLayout_9.addWidget(self.lineEdit_binwidth_2, 1, 1, 1, 1)
         self.label_56 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_56.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_56.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_56.setObjectName("label_56")
         self.gridLayout_9.addWidget(self.label_56, 1, 0, 1, 1)
         self.label_55 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_55.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_55.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_55.setObjectName("label_55")
         self.gridLayout_9.addWidget(self.label_55, 0, 0, 1, 1)
-        self.listView_channels_2 = QtWidgets.QListView(self.subtab_parameter)
+        self.listView_channels_2 = QtWidgets.QListWidget(self.subtab_parameter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1388,6 +1549,10 @@ class Ui_MainWindow(object):
         self.listView_channels_2.setSizePolicy(sizePolicy)
         self.listView_channels_2.setMinimumSize(QtCore.QSize(20, 20))
         self.listView_channels_2.setObjectName("listView_channels_2")
+        self.listView_channels_2.addItem("Green")
+        self.listView_channels_2.addItem("Red")
+        self.listView_channels_2.addItem("Blue")
+        self.listView_channels_2.addItem("Orange")
         self.gridLayout_9.addWidget(self.listView_channels_2, 0, 1, 1, 1)
         self.verticalLayout_channelsbinwidth.addLayout(self.gridLayout_9)
         self.horizontalLayout_48.addLayout(self.verticalLayout_channelsbinwidth)
@@ -1414,11 +1579,11 @@ class Ui_MainWindow(object):
         self.gridLayout_7.setVerticalSpacing(20)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.label_50 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_50.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_50.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_50.setObjectName("label_50")
         self.gridLayout_7.addWidget(self.label_50, 0, 0, 1, 1)
         self.label_61 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_61.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_61.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_61.setObjectName("label_61")
         self.gridLayout_7.addWidget(self.label_61, 2, 0, 1, 1)
         self.lineEdit_increments = QtWidgets.QLineEdit(self.subtab_parameter)
@@ -1431,7 +1596,7 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltageminimum.setObjectName("lineEdit_gatevoltageminimum")
         self.gridLayout_7.addWidget(self.lineEdit_gatevoltageminimum, 0, 1, 1, 1)
         self.label_62 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_62.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_62.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_62.setObjectName("label_62")
         self.gridLayout_7.addWidget(self.label_62, 1, 0, 1, 1)
         self.label_63 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1470,11 +1635,11 @@ class Ui_MainWindow(object):
         self.lineEdit_sweepxlimits1.setObjectName("lineEdit_sweepxlimits1")
         self.gridLayout_8.addWidget(self.lineEdit_sweepxlimits1, 0, 1, 1, 1)
         self.label_71 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_71.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_71.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_71.setObjectName("label_71")
         self.gridLayout_8.addWidget(self.label_71, 1, 0, 1, 1)
         self.label_69 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_69.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_69.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_69.setObjectName("label_69")
         self.gridLayout_8.addWidget(self.label_69, 0, 0, 1, 1)
         self.label_70 = QtWidgets.QLabel(self.subtab_parameter)
@@ -1602,7 +1767,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_.setStretch(5, 1)
         self.horizontalLayout_.setStretch(6, 1)
         self.verticalLayout_sweepresult1.addLayout(self.horizontalLayout_)
-        self.widget_sweepresult1 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult1 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1681,7 +1846,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.setStretch(5, 1)
         self.horizontalLayout_57.setStretch(6, 1)
         self.verticalLayout_sweepresult2.addLayout(self.horizontalLayout_57)
-        self.widget_sweepresult2 = QtWidgets.QWidget(self.subtab_result)
+        self.widget_sweepresult2 = QtWidgets.QTableWidget(self.subtab_result)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1728,22 +1893,754 @@ class Ui_MainWindow(object):
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
 
+        # list of all connected functions
         self.actionImport.triggered.connect(self.openfolder)
         self.actionAdd_New.triggered.connect(self.add)
         self.button_update.clicked.connect(self.pressed)
+        self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
+        self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
+        self.lineEdit_increments.textChanged.connect(self.sweep_update)
 
+        # need to have choices for all channels
+        # no auto graph if no channel select
+        #         self.button_update.clicked.connect(lambda:self.draw(self.checkBox_7))
+        #         self.button_update.clicked.connect(lambda:self.draw_2(self.checkBox_7))
+
+        """self.checkBox_7.stateChanged.connect(lambda:self.draw())
+        self.checkBox_7.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch1.stateChanged.connect(lambda:self.draw_2())
         
+        self.checkbox_ch2.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch2.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch3.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch3.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch12.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch12.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch13.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch13.stateChanged.connect(lambda:self.draw_2())
+
+        self.checkbox_ch23.stateChanged.connect(lambda:self.draw())
+        self.checkbox_ch23.stateChanged.connect(lambda:self.draw_2())
+
+        self.comboBox.currentIndexChanged.connect(lambda:self.draw_2())
+        self.comboBox_2.currentIndexChanged.connect(lambda:self.draw_2())
+        """
+
         self.retranslateUi(MainWindow)
         self.tab_widgets_main.setCurrentIndex(0)
         self.tab_widgets_scatter.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
-
         self.file_dict_list = []
+        self.sweep_1_data = []
+        self.working_data = []
+        self.current_file_dict = {}
+        self.ui_state = Helper.ui_state()
+
+        self.file_list_view.itemChanged.connect(self.update_names)
+        self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
+        self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+        self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
+        self.lineEdit_binwidth.editingFinished.connect(self.draw)
+
+        self.file_list_view.itemChanged.connect(self.update_names)
+        self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
+        self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+    
+        self.w = OtherWindow(self)
+        self.pushButton_resample.clicked.connect(self.openWindow)
+        
+
+        
+    def OtherWindow_Button_ok_clicked(self,text):
+        self.chunk_resample = int(text)
+        self.reset = True
+
+
+    def openWindow(self):
+        
+        self.w.show()
+    def update_sampling_Rate(self):
+        
+        self.listWidget_sampingrate.clear()
+        
+        self.listWidget_sampingrate.addItem('Ch1:'+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch2:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch1_2:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch1_3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("Ch2_3:"+ str(self.chunksize))
+        self.listWidget_sampingrate.addItem("All Hit:1000")
+#         self.listWidget_sampingrate.setCurrentRow(0)
         
         
+    def update_names(self):
+        """update the name of the sweep dropboxes"""
+        self.comboBox_option1.clear()
+        self.comboBox_option2.clear()
+        for i in range(self.file_list_view.count()):
+            self.comboBox_option1.addItem(self.file_list_view.item(i).text())
+            self.comboBox_option2.addItem(self.file_list_view.item(i).text())
+
+    def update_working_data(self):
+
+        try:
+            update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
+                                                         ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                         ch3=self.ch3_checkbox,
+                                                         ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                         ch2_3=self.ch23_checkbox, reset = Ui_MainWindow.reset)
+            
+        except:
+            update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
+                                                         ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                         ch3=self.ch3_checkbox,
+                                                         ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                         ch2_3=self.ch23_checkbox)
+
+        print("update working data status:", update)
+        try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
+        except : print("Ui_MainWindow.reset: FALSE")
+        
+        if update:
+            print("update working data")
+            self.working_data = []
+            for i in range(4):
+                self.working_data.append([])
+            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
+            if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch1 ']][0][i]
+            if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch2 ']][0][i]
+            if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch3 ']][0][i]
+            if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch1-2']][0][i]
+            if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch1-3']][0][i]
+            if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch2-3']][0][i]
+            if len(self.working_data) == 0:
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
+            self.draw(True)
+            self.draw_2(True)
+            self.update_sweep_graphs(True)
+
+
+    def update_statistic(self):
+        """update the statistic table"""
+        stats = []
+        self.tableView_statistic.clear()
+        self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
+        for i in range(4):
+            mean = statistics.mean(self.working_data[i])
+            median = statistics.median(self.working_data[i])
+            stddv = statistics.stdev(self.working_data[i])
+            max_value = max(self.working_data[i])
+            min_value = min(self.working_data[i])
+            stats.append([mean, median, stddv, max_value, min_value])
+        for x in range(4):
+            for y in range(5):
+                item = QTableWidgetItem(str(round(stats[x][y], 2)))
+                self.tableView_statistic.setItem(x, y, item)
+
+    def sweep_update_low(self):
+        """update sweep parameter threshold for low"""
+        sweep_thresh = float(self.lineEdit_gatevoltageminimum.text())
+        if len(self.sweep_1_data) > 0:
+            filtered_gate_voltage = [x for x in self.sweep_1_data if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_1_data), 2)
+            self.lineEdit_percentagelow1.setText(str(percentage))
+        if len(self.sweep_2_data) > 0:
+            filtered_gate_voltage = [x for x in self.sweep_2_data if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_2_data), 2)
+            self.lineEdit_percentagelow2.setText(str(percentage))
+
+    def sweep_update_high(self):
+        """update sweep parameter threshold for above"""
+        sweep_thresh = float(self.lineEdit_gatevoltagemaximum.text())
+        if len(self.sweep_1_data) > 0:
+            filtered_gate_voltage = [x for x in self.sweep_1_data if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_1_data), 2)
+            self.lineEdit_percentagehigh1.setText(str(percentage))
+        if len(self.sweep_2_data) > 0:
+            filtered_gate_voltage = [x for x in self.sweep_2_data if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_2_data), 2)
+            self.lineEdit_percentagehigh2.setText(str(percentage))
+
+    def sweep_update(self):
+        """update the sweep result table"""
+        try:
+            range_max = float(self.lineEdit_gatevoltagemaximum.text())
+            range_min = float(self.lineEdit_gatevoltageminimum.text())
+            increment = float(self.lineEdit_increments.text())
+        except:
+            range_max = 0
+            range_min = 0
+            increment = 0
+        if 0 < increment < range_max - range_min and (range_max - range_min) / increment < 500 and \
+                len(self.sweep_1_data) > 0 and len(self.sweep_2_data) > 0:
+            print("Updating Sweep Table")
+            self.widget_sweepresult1.clear()
+            self.widget_sweepresult1.setRowCount(int((range_max - range_min) / increment))
+            self.widget_sweepresult1.setColumnCount(4)
+            self.widget_sweepresult1.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
+                                                                "Total Count", "Percentages"))
+            self.widget_sweepresult1.verticalHeader().hide()
+            self.widget_sweepresult2.clear()
+            self.widget_sweepresult2.setRowCount(int((range_max - range_min) / increment))
+            self.widget_sweepresult2.setColumnCount(4)
+            self.widget_sweepresult2.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
+                                                                "Total Count", "Percentages"))
+            self.widget_sweepresult2.verticalHeader().hide()
+            if len(self.sweep_1_data) > 0:
+                counter = range_min
+                sweep_list = []
+                i = 0
+                while counter < range_max:
+                    filtered_gate_voltage_x = [x for x in self.sweep_1_data if x > counter]
+                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_1_data), 2)
+                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_1_data), percentage])
+                    counter += increment
+                    i += 1
+                for x, row in enumerate(sweep_list):
+                    for y in range(4):
+                        item = QTableWidgetItem(str(round(row[y], 2)))
+                        self.widget_sweepresult1.setItem(x, y, item)
+                self.widget_sweepresult1.show()
+            if len(self.sweep_2_data) > 0:
+                counter = range_min
+                sweep_list = []
+                i = 0
+                while counter < range_max:
+                    filtered_gate_voltage_x = [x for x in self.sweep_2_data if x > counter]
+                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_2_data), 2)
+                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_2_data), percentage])
+                    counter += increment
+                    i += 1
+                for x, row in enumerate(sweep_list):
+                    for y in range(4):
+                        item = QTableWidgetItem(str(round(row[y], 2)))
+                        self.widget_sweepresult2.setItem(x, y, item)
+                self.widget_sweepresult2.show()
+
+    def thresholdUpdated(self):
+        text_x = float(self.lineEdit_gatevoltage.text())
+        # x
+        line_xx = [text_x, text_x]
+        line_yy = [0, 200]
+
+        self.data_line.setData(line_xx, line_yy)
+
+        filtered_gate_voltage_x = [x for x in self.width if x > text_x]
+
+        percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
+        self.lineEdit_percentage.setText(str(percentage))
+
+    def update_sweep_graphs(self, bypass=False):
+        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        update1, update2, data_updated = self.ui_state.sweep_update(channel_select=self.sweep_channel,
+                                                                    file1=self.sweep_file_1,
+                                                                    file2=self.sweep_file_2, bins=self.sweep_bins)
+        if update1:
+            self.update_sweep_1(data_updated)
+        elif bypass:
+            self.update_sweep_1(bypass)
+        if update2:
+            self.update_sweep_2(data_updated)
+        elif bypass:
+            self.update_sweep_2(bypass)
+
+    def update_sweep_1(self, data_updated=False):
+        self.widget_sweepparam2.clear()
+        channel = self.listView_channels_2.currentRow()
+        if channel == -1:
+            self.listView_channels_2.setCurrentRow(0)
+        axis_name = self.listView_channels_2.currentItem().text()
+        self.widget_sweepparam2.setLabel('bottom', axis_name)
+        print("update sweep 1")
+        r, g, b = Helper.rgb_select(channel)
+        if data_updated:
+            self.sweep_1_data = []
+            if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
+            if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
+            if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
+            if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
+            if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
+            if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
+            if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
+                self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
+        range_width = int(max(self.sweep_1_data)) + 1
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
+        separate_y = [0] * len(y)
+        print(y)
+        print(x)
+        for i in range(len(y)):
+            separate_y = [0] * len(y)
+            separate_y[i] = y[i]
+            self.widget_sweepparam2.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
+        self.widget_sweepparam2.setXRange(0, max(x), padding=0)
+        self.widget_sweepparam2.setYRange(0, max(y), padding=0)
+
+    def update_sweep_2(self, data_updated=False):
+        self.widget_sweepparam1.clear()
+        channel = self.listView_channels_2.currentRow()
+        if channel == -1:
+            self.listView_channels_2.setCurrentRow(0)
+        axis_name = self.listView_channels_2.currentItem().text()
+        self.widget_sweepparam1.setLabel('bottom', axis_name)
+        r, g, b = Helper.rgb_select(channel)
+        print("update sweep 2")
+        if data_updated:
+            self.sweep_2_data = []
+            if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
+            if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
+            if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
+            if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
+            if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
+            if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
+            if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
+                self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+        range_width = int(max(self.sweep_2_data)) + 1
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
+        separate_y = [0] * len(y)
+        for i in range(len(y)):
+            separate_y = [0] * len(y)
+            separate_y[i] = y[i]
+            self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
+        self.widget_sweepparam1.setXRange(0, max(x), padding=0)
+        self.widget_sweepparam1.setYRange(0, max(y), padding=0)
+
+    def draw(self, data_updated=False):
+
+        self.histo_bins = float(self.lineEdit_binwidth.text())
+        update = self.ui_state.gating_update(channel_select=self.histo_channel, bins=self.histo_bins)
+        if update or data_updated:
+            print("update histo")
+            channel = self.listView_channels.currentRow()
+            if channel == -1:
+                self.listView_channels.setCurrentRow(0)
+            self.histogram_graphWidget.clear()
+            r, g, b = Helper.rgb_select(channel)
+            styles = {"color": "f#ff", "font-size": "20px"}
+            axis_name = self.listView_channels.currentItem().text()
+            self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
+            # default
+            # self.width = self.analog[current_file_dict['Peak Record']][0][0]
+            self.width = self.working_data[self.listView_channels.currentRow()]
+            """
+            if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+                self.width += self.analog[current_file_dict['Peak Record']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+                self.width += self.analog[current_file_dict['Ch1 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+                self.width += self.analog[current_file_dict['Ch2 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+                self.width += self.analog[current_file_dict['Ch3 ']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+                self.width += self.analog[current_file_dict['Ch1-2']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+                self.width += self.analog[current_file_dict['Ch1-3']][0][self.listView_channels.currentRow()]
+            if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+                self.width += self.analog[current_file_dict['Ch2-3']][0][self.listView_channels.currentRow()]
+            """
+
+            self.lineEdit_count.setText(str(len(self.width)))
+            range_width = int(max(self.width)) + 1
+            bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
+            y, x = np.histogram(self.width, bins=bin_edge)
+            separate_y = [0] * len(y)
+            for i in range(len(y)):
+                separate_y = [0] * len(y)
+                separate_y[i] = y[i]
+                self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
+                                                brush=(r, g, b))
+
+            self.histogram_graphWidget.setXRange(0, max(x), padding=0)
+            self.histogram_graphWidget.setYRange(0, max(y), padding=0)
+
+            # after 1st map so the line will appear before the histogram
+            self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
+                                                             pen=pg.mkPen(color=('r'), width=5,
+                                                                          style=QtCore.Qt.DashLine))
+            self.thresholdUpdated()
+
+    def draw_2(self, data_updated=False):
+
+        update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
+        if update or data_updated:
+            print("update draw")
+            x_axis_channel = self.comboBox.currentIndex()
+            y_axis_channel = self.comboBox_2.currentIndex()
+            x_axis_name = self.comboBox.currentText()
+            y_axis_name = self.comboBox_2.currentText()
+
+            self.graphWidget.clear()
+
+            self.graphWidget.setLabel('left', y_axis_name, color='b')
+            self.graphWidget.setLabel('bottom', x_axis_name, color='b')
+
+            # #         # default
+            #         self.Ch1_channel0 = self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
+            #         self.Ch1_channel1 = self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
+
+            self.Ch1_channel0 = self.working_data[x_axis_channel]
+            self.Ch1_channel1 = self.working_data[y_axis_channel]
+            #         if b.text() == "All Channel":
+            """
+            if self.checkBox_7.isChecked() and current_file_dict['Peak Record'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Peak Record']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Peak Record']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1":
+            if self.checkbox_ch1.isChecked() and current_file_dict['Ch1 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 2":
+            if self.checkbox_ch2.isChecked() and current_file_dict['Ch2 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch2 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch2 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 3":
+            if self.checkbox_ch3.isChecked() and current_file_dict['Ch3 '] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch3 ']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch3 ']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1-2":
+            if self.checkbox_ch12.isChecked() and current_file_dict['Ch1-2'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1-2']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1-2']][0][y_axis_channel]
+    #         elif b.text() == "Channel 1-3":
+            if self.checkbox_ch13.isChecked() and current_file_dict['Ch1-3'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch1-3']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch1-3']][0][y_axis_channel]
+    #         elif b.text() == "Channel 2-3":
+            if self.checkbox_ch23.isChecked() and current_file_dict['Ch2-3'] != '':
+                self.Ch1_channel0 += self.analog[current_file_dict['Ch2-3']][0][x_axis_channel]
+                self.Ch1_channel1 += self.analog[current_file_dict['Ch2-3']][0][y_axis_channel]
+            """
+
+            #         self.Ch1_channel0 = np.random.normal(5,1, 200)
+            #         self.Ch1_channel1 = np.random.normal(5, 1, 200)
+            max_voltage = 12
+            bins = 1000
+            steps = max_voltage / bins
+
+            # all data is first sorted into a histogram
+            histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
+                                         [[0, max_voltage], [0, max_voltage]],
+                                         density=True)
+            max_density = histo.max()
+
+            # made empty array to hold the sorted data according to density
+            density_listx = []
+            density_listy = []
+            for i in range(6):
+                density_listx.append([])
+                density_listy.append([])
+
+            print("start")
+            for i in range(len(self.Ch1_channel0)):
+                """legend_range = 0.07
+                aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
+                bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
+                
+                ab_set = len(set(aa) & set(bb))   
+                """
+                x = self.Ch1_channel0[i]
+                y = self.Ch1_channel1[i]
+
+                # checking for density, the value divided by steps serves as the index
+                density = histo[int(x / steps)][int(y / steps)]
+                percentage = density / max_density * 100
+                if i % 10000 == 0:
+                    print(i)
+                if 20 > percentage >= 0:
+                    density_listx[0].append(x)
+                    density_listy[0].append(y)
+                elif 40 > percentage >= 20:
+                    density_listx[1].append(x)
+                    density_listy[1].append(y)
+                elif 60 > percentage >= 40:
+                    density_listx[2].append(x)
+                    density_listy[2].append(y)
+                elif 80 > percentage >= 60:
+                    density_listx[3].append(x)
+                    density_listy[3].append(y)
+                else:
+                    density_listx[4].append(x)
+                    density_listy[4].append(y)
+            for i in range(5):
+                if i == 0:
+                    red = 0
+                    blue = 255 / 15
+                    green = 255
+                elif i == 1:
+                    red = 0
+                    blue = 255
+                    green = 255 - 255 / 15
+                elif i == 2:
+                    red = 255 / 15
+                    blue = 255
+                    green = 0
+                elif i == 3:
+                    red = 255
+                    blue = 255 - 255 / 15
+                    green = 0
+                elif i == 4:
+                    red = 255
+                    blue = 255 / 15
+                    green = 255 / 15
+                else:
+                    red = 255
+                    blue = 255
+                    green = 255
+
+                self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+                                      symbolSize=5, symbolBrush=(red, blue, green))
+            """
+            self.graphWidget.plot(name = "0~15%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,0,255))
+            self.graphWidget.plot(name = "15~30%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,255))
+            self.graphWidget.plot(name = "30~45%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(0,255,0))
+            self.graphWidget.plot(name = "45~60%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,0))
+            self.graphWidget.plot(name = "60~75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,0,0))
+            self.graphWidget.plot(name = ">75%",symbol='o',symbolPen=None,symbolSize=5, symbolBrush=(255,255,255))
+            """
+
+            #    >0%    0,0,1   blue
+            #    >15%   0,1,1  cyan
+            #    >30%   0,1,0  green
+            #    >45%   1,1,0  yellow
+            #    >60%   1,0,0   red
+            #    >75%   1,1,1   white
+
+            # threshold
+            self.thresholdUpdated_2()
+
+    def thresholdUpdated_2(self):
+        self.graphWidget.removeItem(self.data_line_y)
+        self.graphWidget.removeItem(self.data_line_x)
+        text_x = float(self.lineEdit_scatterxvoltage.text())
+        text_y = float(self.lineEdit_scatteryvoltage.text())
+
+        # x
+        line_xx = [text_x, text_x]
+        line_yy = [0, max(self.Ch1_channel1)]
+
+        self.data_line_x.setData(line_xx, line_yy)
+        # y
+        line_x = [0, max(self.Ch1_channel0)]
+        line_y = [text_y, text_y]
+
+        self.data_line_y.setData(line_x, line_y)
+        self.data_line_x = self.graphWidget.plot(line_xx, line_yy,
+                                                 pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+        self.data_line_y = self.graphWidget.plot(line_x, line_y,
+                                                 pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+
+        filtered_gate_voltage_x = [x for x in self.Ch1_channel0 if x > text_x]
+        filtered_gate_voltage_y = [x for x in self.Ch1_channel1 if x > text_y]
+
+        # filter y axis
+        a = (np.array(self.Ch1_channel0) > text_x).tolist()
+        b = (np.array(self.Ch1_channel0) < text_x).tolist()
+
+        # filter x axis
+        c = (np.array(self.Ch1_channel1) > text_y).tolist()
+        d = (np.array(self.Ch1_channel1) < text_y).tolist()
+
+        count_quadrant1 = 0
+        count_quadrant2 = 0
+        count_quadrant3 = 0
+        count_quadrant4 = 0
+
+        channel0_list_quadrant1 = []
+        channel1_list_quadrant1 = []
+        channel0_list_quadrant2 = []
+        channel1_list_quadrant2 = []
+        channel0_list_quadrant3 = []
+        channel1_list_quadrant3 = []
+        channel0_list_quadrant4 = []
+        channel1_list_quadrant4 = []
+
+        for i in range(len(a)):
+            if a[i] and c[i]:
+                channel0_list_quadrant1.append(self.Ch1_channel0[i])
+                channel1_list_quadrant1.append(self.Ch1_channel1[i])
+                count_quadrant1 += 1
+            elif not a[i] and c[i]:
+                channel0_list_quadrant2.append(self.Ch1_channel0[i])
+                channel1_list_quadrant2.append(self.Ch1_channel1[i])
+                count_quadrant2 += 1
+            elif not a[i] and not c[i]:
+                channel0_list_quadrant3.append(self.Ch1_channel0[i])
+                channel1_list_quadrant3.append(self.Ch1_channel1[i])
+                count_quadrant3 += 1
+            elif a[i] and not c[i]:
+                channel0_list_quadrant4.append(self.Ch1_channel0[i])
+                channel1_list_quadrant4.append(self.Ch1_channel1[i])
+                count_quadrant4 += 1
+            #             print(channel0_list_quadrant1)
+        try:
+            droplets = float(self.lineEdit_totaldroplets.text())
+            totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
+            totalpercent2 = round(count_quadrant2 / droplets * 100, 2)
+            totalpercent3 = round(count_quadrant3 / droplets * 100, 2)
+            totalpercent4 = round(count_quadrant4 / droplets * 100, 2)
+        except:
+            totalpercent1 = 0
+            totalpercent2 = 0
+            totalpercent3 = 0
+            totalpercent4 = 0
+
+        self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
+        self.tableView_scatterquadrants.setItem(0, 1,
+                                                QTableWidgetItem(str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
+        self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
+        self.tableView_scatterquadrants.setItem(1, 1,
+                                                QTableWidgetItem(str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(1, 2, QTableWidgetItem(str(totalpercent2)))
+        self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
+        self.tableView_scatterquadrants.setItem(2, 1,
+                                                QTableWidgetItem(str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(2, 2, QTableWidgetItem(str(totalpercent3)))
+        self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
+        self.tableView_scatterquadrants.setItem(3, 1,
+                                                QTableWidgetItem(str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(3, 2, QTableWidgetItem(str(totalpercent4)))
+
+        ### mid table
+
+        try:
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant1),2))))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant1),2))))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant1),2))))
+        except:
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant2),2))))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant2),2))))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant2),2))))
+        except:
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant3),2))))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant3),2))))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant3),2))))
+        except:
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant4),2))))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant4),2))))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant4),2))))
+        except:
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem('NaN'))
+
+        # bottom
+
+        try:
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant1),2))))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant1),2))))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant1),2))))
+        except:
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant2),2))))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant2),2))))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant2),2))))
+        except:
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant3),2))))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant3),2))))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant3),2))))
+        except:
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem('NaN'))
+
+        try:
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant4),2))))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant4),2))))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant4),2))))
+        except:
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem('NaN'))
+
+        print("quadrant 1(top right):", count_quadrant1)
+        print("quadrant 2(top left):", count_quadrant2)
+        print("quadrant 3(bottom right):", count_quadrant3)
+        print("quadrant 4(bottom left):", count_quadrant4)
+        ###  
+
+    def regionUpdated(self, lr1, lr2):
+        # for y axis
+        lr1_min, lr1_max = lr1.getRegion()
+        # for x axis
+        lr2_min, lr2_max = lr2.getRegion()
+
+        # filter y axis
+        a = (np.array(self.Ch1_channel0) > lr2_min).tolist()
+        b = (np.array(self.Ch1_channel0) < lr2_max).tolist()
+
+        # filter x axis
+        c = (np.array(self.Ch1_channel1) > lr1_min).tolist()
+        d = (np.array(self.Ch1_channel1) < lr1_max).tolist()
+
+        #         print(a,b,c,d)
+
+        count = 0
+        for i in range(len(a)):
+            if a[i] and b[i] and c[i] and d[i]:
+                count = count + 1
+        print("number of points inside the box:", count)
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -1783,7 +2680,8 @@ class Ui_MainWindow(object):
         self.label_18.setText(_translate("MainWindow", "Dispensing Stats"))
         self.label_20.setText(_translate("MainWindow", "Dispense Missed"))
         self.label_7.setText(_translate("MainWindow", "Ending Time"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_statistic), _translate("MainWindow", "Statistic"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_statistic),
+                                         _translate("MainWindow", "Statistic"))
         self.label_21.setText(_translate("MainWindow", "Channels"))
         self.pushButton_saveplot.setText(_translate("MainWindow", "Save Plot"))
         self.label_22.setText(_translate("MainWindow", "Scaling"))
@@ -1796,7 +2694,8 @@ class Ui_MainWindow(object):
         self.label_26.setText(_translate("MainWindow", "Percentage"))
         self.label_27.setText(_translate("MainWindow", "%"))
         self.label_28.setText(_translate("MainWindow", "Bin Width"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_gating), _translate("MainWindow", "Gating"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_gating),
+                                         _translate("MainWindow", "Gating"))
         self.label_30.setText(_translate("MainWindow", "Gate Voltages"))
         self.label_31.setText(_translate("MainWindow", "X-Axis"))
         self.comboBox.setItemText(0, _translate("MainWindow", "Green"))
@@ -1816,7 +2715,8 @@ class Ui_MainWindow(object):
         self.label_36.setText(_translate("MainWindow", "Quadrants"))
         self.label_37.setText(_translate("MainWindow", "X Axis"))
         self.label_38.setText(_translate("MainWindow", "Y Axis"))
-        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.subtab_scatter), _translate("MainWindow", "Scatter"))
+        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.subtab_scatter),
+                                            _translate("MainWindow", "Scatter"))
         self.label_files_2.setText(_translate("MainWindow", "Counts"))
         self.label_files_3.setText(_translate("MainWindow", "Peak List"))
         self.label_files_4.setText(_translate("MainWindow", "Peaks Per Window"))
@@ -1825,8 +2725,10 @@ class Ui_MainWindow(object):
         self.lineEdit_scatterstartingpeak.setText(_translate("MainWindow", "0"))
         self.label_files_6.setText(_translate("MainWindow", "Ending Peak"))
         self.lineEdit_scatterendingpeak.setText(_translate("MainWindow", "0"))
-        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.subtab_peakdisplay), _translate("MainWindow", "Peak Display"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_scatter), _translate("MainWindow", "Scatter"))
+        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.subtab_peakdisplay),
+                                            _translate("MainWindow", "Peak Display"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_scatter),
+                                         _translate("MainWindow", "Scatter"))
         self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
         self.comboBox_option2.setItemText(0, _translate("MainWindow", "Option 2"))
         self.label_41.setText(_translate("MainWindow", "Percentage Low"))
@@ -1879,72 +2781,48 @@ class Ui_MainWindow(object):
         self.label_74.setText(_translate("MainWindow", "Total Events"))
         self.label_75.setText(_translate("MainWindow", "%"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.subtab_result), _translate("MainWindow", "Result"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_sweep), _translate("MainWindow", "Sweep"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_timelog), _translate("MainWindow", "Time Log"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakmax), _translate("MainWindow", "Peak Maxes Log"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth), _translate("MainWindow", "Peak Width"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report), _translate("MainWindow", "Report"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_sweep),
+                                         _translate("MainWindow", "Sweep"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_timelog),
+                                         _translate("MainWindow", "Time Log"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakmax),
+                                         _translate("MainWindow", "Peak Maxes Log"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
+                                         _translate("MainWindow", "Peak Width"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
+                                         _translate("MainWindow", "Report"))
         self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     def pressed(self):
-        global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log
-        current_file_dict = self.file_dict_list[self.file_list_view.currentRow()]
-        #print(current_file_dict)
-        os.chdir(current_file_dict["Root Folder"])
-        
-        analog_files ={"Ch1": "",
-                 "Ch2": "",
-                 "Ch3": "",
-                 "Ch1-2": "",
-                 "Ch1-3": "",
-                 "Ch2-3": "",
-                "Peak Record":""}
-        
-    # Channels file
-        #i commented out the read since it was giving memory error
-        if current_file_dict["Ch1 "] != "":
-            print("ok")
-            analog_files['Ch1'] = pd.read_csv(current_file_dict["Ch1 "],header = None)
-        if current_file_dict["Ch2 "] != "":
-            print("ok")
-            analog_files['Ch2'] = pd.read_csv(current_file_dict["Ch2 "],header = None)
-        if current_file_dict["Ch3 "] != "":
-            print("ok")
-            analog_files['Ch3'] = pd.read_csv(current_file_dict["Ch3 "],header = None)
-        if current_file_dict["Ch1-2"] != "":
-            print("ok")
-            analog_files['Ch1-2'] = pd.read_csv(current_file_dict["Ch1-2"],header = None)
-        if current_file_dict["Ch1-3"] != "":
-            print("ok")
-            analog_files['Ch1-3'] = pd.read_csv(current_file_dict["Ch1-3"],header = None)
-        if current_file_dict["Ch2-3"] != "":
-            print("ok")
-            analog_files['Ch2-3'] = pd.read_csv(current_file_dict["Ch2-3"],header = None)
-
-    # Locked
-        if current_file_dict["Locked"] != "":
-            Locked = pd.read_csv(current_file_dict["Locked"])
-
-    # Peak_Record
-        analog_files['Peak Record'] = pd.read_csv(current_file_dict["Peak Record"],header = 2)
-        analog_files['Peak Record'].columns =[0,1,2,3] 
-        
-    # Raw time log
-        """
-        Raw_time_log = pd.read_csv(current_file_dict["Raw Time Log"],
-                                   header=0, names=['Miss_Ch_1','Miss_Ch_2','Miss_Ch_3','Miss_Ch_1_2',
-                                                    'Miss_Ch_1_3','Miss_Ch_2_3','g','h','i','j'])
-        row_count = len(Raw_time_log.index)
-        Run_total = Raw_time_log.iloc[row_count-1,0:6]
-        Raw_time_log = Raw_time_log.iloc[0:row_count-2]
-        """
-        
-    # summary
-        if current_file_dict["Summary"] != "":
-            stats = Helper.Stats(current_file_dict["Summary"])
+        print('pressed')
+        # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
+        self.main_file_select = self.file_list_view.currentRow()
+        self.ch1_checkbox = self.checkbox_ch1.isChecked()
+        self.ch2_checkbox = self.checkbox_ch2.isChecked()
+        self.ch3_checkbox = self.checkbox_ch3.isChecked()
+        self.ch12_checkbox = self.checkbox_ch12.isChecked()
+        self.ch13_checkbox = self.checkbox_ch13.isChecked()
+        self.ch23_checkbox = self.checkbox_ch23.isChecked()
+        self.all_checkbox = self.checkBox_7.isChecked()
+        self.histo_channel = self.listView_channels.currentRow()
+        self.histo_bins = float(self.lineEdit_binwidth.text())
+        self.scatter_channelx = self.comboBox.currentIndex()
+        self.scatter_channely = self.comboBox_2.currentIndex()
+        self.sweep_channel = self.listView_channels_2.currentRow()
+        self.sweep_file_1 = self.comboBox_option1.currentIndex()
+        self.sweep_file_2 = self.comboBox_option2.currentIndex()
+        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        self.current_file_dict = self.file_dict_list[self.main_file_select]
+        self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
+        self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
+        # print(current_file_dict)
+        os.chdir(self.current_file_dict["Root Folder"])
+        # summary
+        if self.current_file_dict["Summary"] != "":
+            stats = Helper.Stats(self.current_file_dict["Summary"])
             self.lineEdit_startingtime.setText(stats.start_time)
             self.lineEdit_endingtime.setText(stats.end_time)
             self.lineEdit_runtime.setText(stats.total_runtime)
@@ -1960,10 +2838,9 @@ class Ui_MainWindow(object):
             self.lineEdit_ch13hit.setText(stats.ch13_hit)
             self.lineEdit_ch23hit.setText(stats.ch23_hit)
 
-        
-#         print(stats.under_sample_factor) 
-        
-      # parameter
+        #         print(stats.under_sample_factor)
+
+        # parameter
         """
         df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
         Parameter = df_parameter[0].str.split(',', expand=True)
@@ -1989,98 +2866,100 @@ class Ui_MainWindow(object):
         Sorting_Parameter3.index = ['1']   
         
         """
-
         
-        start = time.time()
- 
-        for i in analog_files:
-            Ch = analog_files[i]
+        #         start = time.time()
+        if stats.under_sample_factor == "":
+            under_sample = 1
+        else:
+            under_sample = stats.under_sample_factor
+        
+        threshold = 1
+        channel = 0
+        width_enable = True
+        
+        try: self.chunksize = self.chunk_resample
+        except: self.chunksize = int(1000 / float(under_sample))
             
-            peak = []
-            width = []
-            peak_total = []
-            width_total = []
+        
+        ### Qiwei's extraction code
+        ### Call stats_Ch1 ~ stats_Ch23 to extract
+        #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+        #         self.analog.update(a.analog_file)
+        #         print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
+        ### End
 
-            if not len(Ch): 
-                print(i,"is","empty")
-                peak_total.append("")
-                width_total.append("")
-                continue
+        ### Qing's extraction code
+        ### call Ch1list ~Ch23list to extract
+        
+        try: 
+            if self.reset == True:
+                reset = True
             else:
-                print(i,"is","extracting...")
+                reset = False
+        except: reset = False
+        
+        if self.current_file_dict["Peak Record"] in self.analog and not reset:
+            print("--------------------------------------------------------not reset")
+            self.tab_widgets_main.currentIndex
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_graphs()
+            self.sweep_update_high()
+            self.sweep_update_low()
+            self.sweep_update()
+            self.update_statistic()
+            self.update_sampling_Rate()
 
-                
-                # stats.under_sample_factor
-            #under_sample_factor = int(float(stats.under_sample_factor))
-            under_sample_factor = 1
-            if i == "Peak Record": 
-                under_sample_factor =1
-            under_sample_range = int(1000 / under_sample_factor)
-            number_of_droplets = int(int(Ch.index[-1] +1) / under_sample_range)
-
-            Threshold = 1
-            intercept = 0
-            # 
-
-
-            for channel in range(0,4):
-                for droplet in range(0,number_of_droplets):
-
-                    current_peak = round(Ch[channel][droplet*under_sample_range:droplet*under_sample_range+under_sample_range-1].max(),3)
-
-            # if threshold > peak, means no width available, skip
-                    if current_peak < Threshold: width.append(0); continue
-
-                    current_droplet_range = [*range(droplet * under_sample_range + 1,droplet * under_sample_range + under_sample_range,1)]
-                    current_droplet_range_tier =  iter(current_droplet_range)
+        else:
+            print("--------------------------------------------------------reset")
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable, channel, self.chunksize,
+                                                  0)
             
-            # find next point larger then threshold
-                    for i in current_droplet_range_tier:
-                        if Ch[channel][i] >= Threshold :
-                            if Ch[channel][i-1] <= Threshold:
-            # find next point smaller then threshold
-                                for ii in range(i + 1,droplet * under_sample_range + under_sample_range):
-                                    if Ch[channel][ii] <= Threshold:
-                                        if (ii - i) > intercept:
-                                            intercept = ii - i
-                                        break
-                                    next(islice(current_droplet_range_tier, intercept, 0), '')
+            self.analog.update(a.analog_file)
+            self.update_working_data()
+            self.draw()
+            self.draw_2()
+            self.update_sweep_graphs()
+            self.sweep_update_high()
+            self.sweep_update_low()
+            self.sweep_update()
+            self.update_statistic()
+            self.update_sampling_Rate()
+            Ui_MainWindow.reset = False
+            print("reset statue:",Ui_MainWindow.reset)
+        # print(self.analog)
+        ### End
 
-                    peak.append(current_peak)        
-                    width.append(intercept)
-                    intercept = 0
-                    intercept_in = 0
-            #         print(width)
-                peak_total.append(peak)
-                width_total.append(width)
-                peak = []
-                width = []
-#             print(width_total)
-#             print(peak_total)
-
-        end = time.time()
-        print(end - start)
-
-
-
-    def add(self): 
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+    def add(self):
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
         for f in name:
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
+            self.comboBox_option1.addItem(f)
+            self.comboBox_option2.addItem(f)
+        for i in range(self.file_list_view.count()):
+            item = self.file_list_view.item(i)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
     def openfolder(self):
+        self.analog = {}
         self.file_list_view.clear()
         self.file_dict_list.clear()
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File',filter="*peak*")
+        self.comboBox_option1.clear()
+        self.comboBox_option2.clear()
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
         for f in name:
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
+            self.comboBox_option1.addItem(f)
+            self.comboBox_option2.addItem(f)
+        for i in range(self.file_list_view.count()):
+            item = self.file_list_view.item(i)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+
 #         print(self.file_dict_list)
-
-
-
-
 
 
 if __name__ == "__main__":
