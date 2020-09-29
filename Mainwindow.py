@@ -6,7 +6,6 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QLineEdit
 
@@ -874,7 +873,7 @@ class Ui_MainWindow(object):
         self.histogram_graphWidget.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.histogram_graphWidget.setObjectName("histogram_graphWidget")
         self.horizontalLayout_22.addWidget(self.histogram_graphWidget)
-        styles = {"color": "f#ff", "font-size": "20px"}
+        styles = {"color": "r", "font-size": "20px"}
         self.histogram_graphWidget.setLabel('left', 'Frequency', **styles)
         self.histogram_graphWidget.setBackground('w')
         self.histogram_graphWidget.setXRange(1, 10.5, padding=0)
@@ -1103,7 +1102,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_29.addWidget(self.graphWidget)
 
         self.graphWidget.setTitle("test scatter plot", color="w", size="30pt")
-        styles = {"color": "#fff", "font-size": "20px"}
+        styles = {"color": "r", "font-size": "20px"}
         self.graphWidget.setBackground('w')
 
         self.graphWidget.setLabel('left', 'Green', **styles)
@@ -1337,7 +1336,7 @@ class Ui_MainWindow(object):
         self.widget_sweepparam2.setSizePolicy(sizePolicy)
         self.widget_sweepparam2.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam2.setObjectName("widget_sweepparam2")
-        styles = {"color": "f#ff", "font-size": "20px"}
+        styles = {"color": "r", "font-size": "20px"}
         self.widget_sweepparam2.setLabel('left', 'Frequency', **styles)
         self.widget_sweepparam2.setLabel('bottom', 'Green', **styles)
         self.widget_sweepparam2.setBackground('w')
@@ -1354,7 +1353,7 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setSizePolicy(sizePolicy)
         self.widget_sweepparam1.setMinimumSize(QtCore.QSize(200, 200))
         self.widget_sweepparam1.setObjectName("widget_sweepparam1")
-        styles = {"color": "f#ff", "font-size": "20px"}
+        styles = {"color": "r", "font-size": "20px"}
         self.widget_sweepparam1.setLabel('left', 'Frequency', **styles)
         self.widget_sweepparam1.setLabel('bottom', 'Green', **styles)
         self.widget_sweepparam1.setBackground('w')
@@ -1864,9 +1863,213 @@ class Ui_MainWindow(object):
         self.tab_peakmax = QtWidgets.QWidget()
         self.tab_peakmax.setObjectName("tab_peakmax")
         self.tab_widgets_main.addTab(self.tab_peakmax, "")
+
+        
+### Peak Width
+
+
         self.tab_peakwidth = QtWidgets.QWidget()
         self.tab_peakwidth.setObjectName("tab_peakwidth")
+        
+
+        self.gridLayout_10 = QtWidgets.QGridLayout(self.tab_peakwidth)
+        self.gridLayout_10.setObjectName("gridLayout_10")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.label_54 = QtWidgets.QLabel(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_54.sizePolicy().hasHeightForWidth())
+        self.label_54.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_54.setFont(font)
+        self.label_54.setObjectName("label_54")
+        self.verticalLayout_8.addWidget(self.label_54)
+        self.horizontalLayout_34 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_34.setObjectName("horizontalLayout_34")
+        self.listView_channels_3 = QtWidgets.QListWidget(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.listView_channels_3.sizePolicy().hasHeightForWidth())
+        self.listView_channels_3.setSizePolicy(sizePolicy)
+        self.listView_channels_3.setMinimumSize(QtCore.QSize(150, 150))
+        self.listView_channels_3.setMaximumSize(QtCore.QSize(200, 200))
+        self.listView_channels_3.setObjectName("listView_channels_3")
+        self.listView_channels_3.addItem("Green")
+        self.listView_channels_3.addItem("Red")
+        self.listView_channels_3.addItem("Blue")
+        self.listView_channels_3.addItem("Orange")
+        self.listView_channels_3.setCurrentRow(0)        
+
+        
+        self.horizontalLayout_34.addWidget(self.listView_channels_3)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_34)
+        self.horizontalLayout_35 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_35.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_35.setObjectName("horizontalLayout_35")
+        self.pushButton_saveplot_2 = QtWidgets.QPushButton(self.tab_peakwidth)
+        self.pushButton_saveplot_2.setMinimumSize(QtCore.QSize(60, 0))
+        self.pushButton_saveplot_2.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.pushButton_saveplot_2.setObjectName("pushButton_saveplot_2")
+        self.horizontalLayout_35.addWidget(self.pushButton_saveplot_2)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_35)
+        self.line_32 = QtWidgets.QFrame(self.tab_peakwidth)
+        self.line_32.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_32.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_32.setObjectName("line_32")
+        self.verticalLayout_8.addWidget(self.line_32)
+        
+        
+        self.label_59 = QtWidgets.QLabel(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_59.sizePolicy().hasHeightForWidth())
+        self.label_59.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_59.setFont(font)
+        self.label_59.setObjectName("label_59")
+        self.verticalLayout_8.addWidget(self.label_59)
+        self.horizontalLayout_37 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_37.setObjectName("horizontalLayout_37")
+        self.label_60 = QtWidgets.QLabel(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_60.sizePolicy().hasHeightForWidth())
+        self.label_60.setSizePolicy(sizePolicy)
+        self.label_60.setMinimumSize(QtCore.QSize(80, 0))
+        self.label_60.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.label_60.setObjectName("label_60")
+        self.horizontalLayout_37.addWidget(self.label_60)
+        self.lineEdit_gatevoltage_2 = QtWidgets.QLineEdit(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_gatevoltage_2.sizePolicy().hasHeightForWidth())
+        self.lineEdit_gatevoltage_2.setSizePolicy(sizePolicy)
+        self.lineEdit_gatevoltage_2.setMinimumSize(QtCore.QSize(80, 0))
+        self.lineEdit_gatevoltage_2.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.lineEdit_gatevoltage_2.setObjectName("lineEdit_gatevoltage_2")
+        self.horizontalLayout_37.addWidget(self.lineEdit_gatevoltage_2)
+        self.label_76 = QtWidgets.QLabel(self.tab_peakwidth)
+        self.label_76.setObjectName("label_76")
+        self.horizontalLayout_37.addWidget(self.label_76)
+        spacerItem22 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_37.addItem(spacerItem22)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_37)
+        self.horizontalLayout_38 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_38.setObjectName("horizontalLayout_38")
+        self.label_77 = QtWidgets.QLabel(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_77.sizePolicy().hasHeightForWidth())
+        self.label_77.setSizePolicy(sizePolicy)
+        self.label_77.setMinimumSize(QtCore.QSize(80, 0))
+        self.label_77.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.label_77.setObjectName("label_77")
+        self.horizontalLayout_38.addWidget(self.label_77)
+        self.lineEdit_percentage_2 = QtWidgets.QLineEdit(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_percentage_2.sizePolicy().hasHeightForWidth())
+        self.lineEdit_percentage_2.setSizePolicy(sizePolicy)
+        self.lineEdit_percentage_2.setMinimumSize(QtCore.QSize(80, 0))
+        self.lineEdit_percentage_2.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.lineEdit_percentage_2.setObjectName("lineEdit_percentage_2")
+        self.horizontalLayout_38.addWidget(self.lineEdit_percentage_2)
+        self.label_78 = QtWidgets.QLabel(self.tab_peakwidth)
+        self.label_78.setObjectName("label_78")
+        self.horizontalLayout_38.addWidget(self.label_78)
+        spacerItem23 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_38.addItem(spacerItem23)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_38)
+        self.horizontalLayout_39 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_39.setObjectName("horizontalLayout_39")
+        self.label_79 = QtWidgets.QLabel(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_79.sizePolicy().hasHeightForWidth())
+        self.label_79.setSizePolicy(sizePolicy)
+        self.label_79.setMinimumSize(QtCore.QSize(80, 0))
+        self.label_79.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.label_79.setObjectName("label_79")
+        self.horizontalLayout_39.addWidget(self.label_79)
+        self.lineEdit_binwidth_3 = QtWidgets.QLineEdit(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_binwidth_3.sizePolicy().hasHeightForWidth())
+        self.lineEdit_binwidth_3.setSizePolicy(sizePolicy)
+        self.lineEdit_binwidth_3.setMinimumSize(QtCore.QSize(80, 0))
+        self.lineEdit_binwidth_3.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.lineEdit_binwidth_3.setObjectName("lineEdit_binwidth_3")
+        
+        self.lineEdit_binwidth_3.setText("1")
+        self.horizontalLayout_39.addWidget(self.lineEdit_binwidth_3)
+        spacerItem24 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_39.addItem(spacerItem24)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_39)
+        spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_8.addItem(spacerItem25)
+        self.gridLayout_10.addLayout(self.verticalLayout_8, 0, 0, 1, 1)
+        self.line_34 = QtWidgets.QFrame(self.tab_peakwidth)
+        self.line_34.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_34.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_34.setObjectName("line_34")
+        
+        
+        self.gridLayout_10.addWidget(self.line_34, 0, 1, 1, 1)
+#         self.widget_7 = QtWidgets.QWidget(self.tab_peakwidth)
+#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
+#         sizePolicy.setHorizontalStretch(0)
+#         sizePolicy.setVerticalStretch(0)
+#         sizePolicy.setHeightForWidth(self.widget_7.sizePolicy().hasHeightForWidth())
+#         self.widget_7.setSizePolicy(sizePolicy)
+#         self.widget_7.setMinimumSize(QtCore.QSize(700, 499))
+#         self.widget_7.setMaximumSize(QtCore.QSize(16777215, 16777215))
+#         self.widget_7.setObjectName("widget_7")
+#         self.gridLayout_10.addWidget(self.widget_7, 0, 2, 1, 1)
+
+
+  # histogram
+        self.histogram_graphWidget_3 = PlotWidget(self.tab_peakwidth)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.histogram_graphWidget_3.sizePolicy().hasHeightForWidth())
+        self.histogram_graphWidget_3.setSizePolicy(sizePolicy)
+        self.histogram_graphWidget_3.setMinimumSize(QtCore.QSize(700, 499))
+        self.histogram_graphWidget_3.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.histogram_graphWidget_3.setObjectName("histogram_graphWidget_3")
+        self.gridLayout_10.addWidget(self.histogram_graphWidget_3, 0, 2, 1, 1)
+        styles = {"color": "r", "font-size": "20px"}
+        self.histogram_graphWidget_3.setLabel('left', 'Frequency', **styles)
+        self.histogram_graphWidget_3.setBackground('w')
+        self.histogram_graphWidget_3.setXRange(1, 10.5, padding=0)
+        self.histogram_graphWidget_3.setYRange(1, 10.5, padding=0)
+
+
+
+        #         # threshold
+
+        self.lineEdit_gatevoltage_2.setText("2")
+#         self.lineEdit_gatevoltage_2.editingFinished.connect(self.thresholdUpdated_peak_width)
+        #         # threshold end
+
+
         self.tab_widgets_main.addTab(self.tab_peakwidth, "")
+
+        
+### Peak width end
+
         self.tab_report = QtWidgets.QWidget()
         self.tab_report.setObjectName("tab_report")
         self.tab_widgets_main.addTab(self.tab_report, "")
@@ -2096,7 +2299,6 @@ class Ui_MainWindow(object):
             increment = 0
         if 0 < increment < range_max - range_min and (range_max - range_min) / increment < 500 and \
                 len(self.sweep_1_data) > 0 and len(self.sweep_2_data) > 0:
-            print("Updating Sweep Table")
             self.widget_sweepresult1.clear()
             self.widget_sweepresult1.setRowCount(int((range_max - range_min) / increment))
             self.widget_sweepresult1.setColumnCount(4)
@@ -2153,6 +2355,23 @@ class Ui_MainWindow(object):
         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
         self.lineEdit_percentage.setText(str(percentage))
 
+#     def thresholdUpdated_peak_width(self):
+#         width_count = len(self.peak_width)
+#         self.lineEdit_percentage.setText(str(width_count))
+
+#         text_x = float(self.lineEdit_gatevoltage_2.text())
+#         # x
+#         line_xx = [text_x, text_x]
+#         line_yy = [0, 200]
+
+#         self.data_line_peak_width.setData(line_xx, line_yy)
+
+#         filtered_gate_voltage_x = [x for x in self.peak_width if x > text_x]
+        
+
+#         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.peak_width), 2)
+#         self.lineEdit_percentage.setText(str(percentage))
+        
     def update_sweep_graphs(self, bypass=False):
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         update1, update2, data_updated = self.ui_state.sweep_update(channel_select=self.sweep_channel,
@@ -2240,6 +2459,70 @@ class Ui_MainWindow(object):
             self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
+        
+    def draw_peak_width(self,data_updated=True):
+        self.histo_bins_peak_width = float(self.lineEdit_binwidth_3.text())
+        update, reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins, 
+                                                            peak_width_threshold = self.lineEdit_gatevoltage_2.text())
+        if update or data_updated:
+            print("update peak width")
+            channel = self.listView_channels_3.currentRow()
+            if channel == -1:
+                self.listView_channels.setCurrentRow(0)
+            self.histogram_graphWidget_3.clear()
+            r, g, b = Helper.rgb_select(channel)
+            styles = {"color": "r", "font-size": "20px"}
+            axis_name = self.listView_channels_3.currentItem().text()
+            self.histogram_graphWidget_3.setLabel('bottom', axis_name, **styles)
+            self.peak_width = []
+            
+            # default
+            # self.width = self.analog[current_file_dict['Peak Record']][0][0]
+
+            
+            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                self.peak_width += self.analog[self.current_file_dict['Peak Record']][1]
+            if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch1 ']][1]
+            if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch2 ']][1]
+            if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch3 ']][1]
+            if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch1-2']][1]
+            if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch1-3']][1]
+            if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                self.peak_width += self.analog[self.current_file_dict['Ch2-3']][1]
+            
+            range_width = int(max(self.peak_width)) + 1
+            bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_3.text()))
+            y, x = np.histogram(self.peak_width, bins=bin_edge)
+            separate_y = [0] * len(y)
+            for i in range(len(y)):
+                separate_y = [0] * len(y)
+                separate_y[i] = y[i]
+                self.histogram_graphWidget_3.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
+                                                brush=(r, g, b))
+
+            self.histogram_graphWidget_3.setXRange(0, max(x), padding=0)
+            self.histogram_graphWidget_3.setYRange(0, max(y), padding=0)
+
+            
+            peak_width_without_zero = [i for i in self.peak_width if i != 0]
+            width_count = round(100 * len(peak_width_without_zero) / len(self.width), 2)
+            self.lineEdit_percentage_2.setText(str(width_count))
+            
+
+            
+#             print(self.width)
+#             print(self.peak_width)
+            # after 1st map so the line layer will appear before the histogram
+            self.data_line_peak_width = self.histogram_graphWidget_3.plot([0, 0], [0, 0],
+                                                             pen=pg.mkPen(color=('r'), width=5,
+                                                                          style=QtCore.Qt.DashLine))
+#             self.thresholdUpdated()            
+        
 
     def draw(self, data_updated=False):
 
@@ -2252,7 +2535,7 @@ class Ui_MainWindow(object):
                 self.listView_channels.setCurrentRow(0)
             self.histogram_graphWidget.clear()
             r, g, b = Helper.rgb_select(channel)
-            styles = {"color": "f#ff", "font-size": "20px"}
+            styles = {"color": "r", "font-size": "20px"}
             axis_name = self.listView_channels.currentItem().text()
             self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
             # default
@@ -2289,7 +2572,7 @@ class Ui_MainWindow(object):
             self.histogram_graphWidget.setXRange(0, max(x), padding=0)
             self.histogram_graphWidget.setYRange(0, max(y), padding=0)
 
-            # after 1st map so the line will appear before the histogram
+            # after 1st map so the line layer will appear before the histogram
             self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
                                                              pen=pg.mkPen(color=('r'), width=5,
                                                                           style=QtCore.Qt.DashLine))
@@ -2447,6 +2730,7 @@ class Ui_MainWindow(object):
     def thresholdUpdated_2(self):
         self.graphWidget.removeItem(self.data_line_y)
         self.graphWidget.removeItem(self.data_line_x)
+
         text_x = float(self.lineEdit_scatterxvoltage.text())
         text_y = float(self.lineEdit_scatteryvoltage.text())
 
@@ -2508,34 +2792,19 @@ class Ui_MainWindow(object):
                 channel1_list_quadrant4.append(self.Ch1_channel1[i])
                 count_quadrant4 += 1
             #             print(channel0_list_quadrant1)
-        try:
-            droplets = float(self.lineEdit_totaldroplets.text())
-            totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
-            totalpercent2 = round(count_quadrant2 / droplets * 100, 2)
-            totalpercent3 = round(count_quadrant3 / droplets * 100, 2)
-            totalpercent4 = round(count_quadrant4 / droplets * 100, 2)
-        except:
-            totalpercent1 = 0
-            totalpercent2 = 0
-            totalpercent3 = 0
-            totalpercent4 = 0
 
         self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
         self.tableView_scatterquadrants.setItem(0, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))))
-        self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
         self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
         self.tableView_scatterquadrants.setItem(1, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))))
-        self.tableView_scatterquadrants.setItem(1, 2, QTableWidgetItem(str(totalpercent2)))
         self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
         self.tableView_scatterquadrants.setItem(2, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))))
-        self.tableView_scatterquadrants.setItem(2, 2, QTableWidgetItem(str(totalpercent3)))
         self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
         self.tableView_scatterquadrants.setItem(3, 1,
                                                 QTableWidgetItem(str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))))
-        self.tableView_scatterquadrants.setItem(3, 2, QTableWidgetItem(str(totalpercent4)))
 
         ### mid table
 
@@ -2791,6 +3060,14 @@ class Ui_MainWindow(object):
                                          _translate("MainWindow", "Peak Width"))
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
                                          _translate("MainWindow", "Report"))
+        self.label_54.setText(_translate("MainWindow", "Channels"))
+        self.pushButton_saveplot_2.setText(_translate("MainWindow", "Save Plot"))
+        self.label_59.setText(_translate("MainWindow", "Peak Width Threshold"))
+        self.label_60.setText(_translate("MainWindow", "Width Threshold"))
+#         self.label_76.setText(_translate("MainWindow", "V"))
+        self.label_77.setText(_translate("MainWindow", "Count"))
+        self.label_78.setText(_translate("MainWindow", "%"))
+        self.label_79.setText(_translate("MainWindow", "Bin Width"))
         self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
@@ -2809,6 +3086,8 @@ class Ui_MainWindow(object):
         self.all_checkbox = self.checkBox_7.isChecked()
         self.histo_channel = self.listView_channels.currentRow()
         self.histo_bins = float(self.lineEdit_binwidth.text())
+        self.peak_width_channel = self.listView_channels_3.currentRow()
+        self.peak_width_bins = float(self.lineEdit_binwidth_3.text())
         self.scatter_channelx = self.comboBox.currentIndex()
         self.scatter_channely = self.comboBox_2.currentIndex()
         self.sweep_channel = self.listView_channels_2.currentRow()
@@ -2873,8 +3152,7 @@ class Ui_MainWindow(object):
         else:
             under_sample = stats.under_sample_factor
         
-        threshold = 1
-        channel = 0
+        channel = self.peak_width_channel
         width_enable = True
         
         try: self.chunksize = self.chunk_resample
@@ -2898,32 +3176,35 @@ class Ui_MainWindow(object):
                 reset = False
         except: reset = False
         
-        if self.current_file_dict["Peak Record"] in self.analog and not reset:
+        update,reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins,
+                                                           peak_width_threshold = self.lineEdit_gatevoltage_2.text())
+        
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not reanalysis:
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
             self.update_working_data()
             self.draw()
+            self.draw_peak_width()
             self.draw_2()
             self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
-            self.sweep_update()
             self.update_statistic()
             self.update_sampling_Rate()
 
         else:
             print("--------------------------------------------------------reset")
-            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold, width_enable, channel, self.chunksize,
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict,float(self.lineEdit_gatevoltage_2.text()), width_enable, channel, self.chunksize,
                                                   0)
             
             self.analog.update(a.analog_file)
             self.update_working_data()
             self.draw()
+            self.draw_peak_width()
             self.draw_2()
             self.update_sweep_graphs()
             self.sweep_update_high()
             self.sweep_update_low()
-            self.sweep_update()
             self.update_statistic()
             self.update_sampling_Rate()
             Ui_MainWindow.reset = False
