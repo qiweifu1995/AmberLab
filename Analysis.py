@@ -4,6 +4,7 @@ import pandas as pd
 import time
 import numpy as np
 import os
+import csv
 import math
 
 class Droplet:
@@ -15,62 +16,89 @@ class Droplet:
 
 
 class file_extracted_data_Qing:
-    def __init__(self, current_file_dict, threshold=0, width_enable=True, channel=0, chunksize=1000, header=2):
+    def __init__(self, current_file_dict, entered_threshold = 'default', width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2):
         self.analog_file = {} 
+        
+        self.threshold = [[],[],[],[]]
+        try:
+            for i in range(4):
+                self.threshold[i] = float(entered_threshold[i])
+        except:
+            if current_file_dict["Param"] != "":
+                stats_reader = csv.reader(open(current_file_dict["Param"]), delimiter=",")
+                channel_threshold = []
+                record_threshold = False
+                for lines in stats_reader: 
+                    if record_threshold == True:
+                        channel_threshold.append(lines[line_check])
+                        continue
+                    count_field = 0
+                    for field in lines:
+                        if field == "Peak Threshold (V)":
+                            line_check = count_field
+                            record_threshold = True
+                        count_field +=1  
+
+                for i in range(4):
+                    self.threshold[i] = float(channel_threshold[i])
+            else:
+                self.threshold = [2,2,2,2]
+           
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
-            list1, width1 = self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
+            list1, width1 = self.extract(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1 "]] = [list1, width1]
             
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
-            list2, width2 = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
+            list2, width2 = self.extract(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch2 "]] = [list2, width2]
         
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
-            list3, width3 = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
+            list3, width3 = self.extract(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch3 "]] = [list3, width3]  
         
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
-            list12, width12 = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
+            list12, width12 = self.extract(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]        
         
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
-            list13, width13  = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
+            list13, width13  = self.extract(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13]      
         
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
-            list23, width23 = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
+            list23, width23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header)
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23] 
             
         print("Extracting Peak...")
-        Peaklist, Peakwidth = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
+        Peaklist, Peakwidth = self.extract(current_file_dict["Peak Record"], self.threshold, width_enable, peak_enable, channel, 1000 , 2)
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth]  
-            
+
+
+        
         print("Done")
             
-    def extract(self, file, threshold=2, width_enable=True, width_channel=0, user_set_chunk_size=100, header=0):
+    def extract(self, file, threshold, width_enable=True, peak_enable = False, width_channel=0, user_set_chunk_size=100, header=0):
 
         # select channel and threshold
         peak = [[],[],[],[]]
-        width =[]
-        count = 0
-        
+        width =[[],[],[],[]]
+
         for Ch in pd.read_csv(file, chunksize=500000, header=header):
-            count += 1
-            print(count)
             Ch.columns =[0,1,2,3] 
+            print(len(Ch))
 
             for channel in range(4):
-                for row in range(0,len(Ch),user_set_chunk_size):
-                    peak[channel].append((round(Ch.iloc[row:(row+user_set_chunk_size),channel].max(),3)))
+                if peak_enable:
+                    for row in range(0,len(Ch),user_set_chunk_size):
+                        peak[channel].append((round(Ch.iloc[row:(row+user_set_chunk_size),channel].max(),3)))
 
-                if channel == width_channel and width_enable:
-                    sign = Ch - threshold
+                if width_enable:
+                    sign = Ch - threshold[channel]
                     sign[sign > 0] = 1
                     sign[sign < 0] = -1
 
@@ -85,18 +113,24 @@ class file_extracted_data_Qing:
                     for i in range(len(index_list)):
                             # 0~99
                         if df1.index[i] > row_chunk:
-        #                     print(df1.index[i],current_width)
-        #                     print((df1.index[i]-row_chunk)//user_set_chunk_size)
-                            width.append(current_width)
+                            width[channel].append(current_width)
                             current_width = 0
                             for number_of_skip_chunck in range((df1.index[i]-row_chunk)//user_set_chunk_size):
+                                width[channel].append(current_width)
                                 row_chunk += user_set_chunk_size
                             row_chunk += user_set_chunk_size
                         if df1[index_list[i-1]] >= 0:
                             if df1[index_list[i]] <= 0:
                                 current_width = max(index_list[i] - index_list[i-1],current_width)
         #                         print(df1.index[i],current_width)
-                    width.append(current_width)
+                    width[channel].append(current_width)
+                    for number_of_skip_chunck_after in range(round(len(Ch)/user_set_chunk_size) - len(width[channel])):
+                        width[channel].append(0)
+                    
+#                     if len(width[channel]) < round(len(Ch)/user_set_chunk_size):
+#                         print(1)
+                    
+                
         #     break 
         for col in range(4):
             peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
@@ -104,6 +138,8 @@ class file_extracted_data_Qing:
                 
                     
         return (peak, width)
+
+
 
     
     
