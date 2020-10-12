@@ -148,9 +148,12 @@ class ui_state:
         self.gating_voltage = 0
         self.peak_width_channel_select = -1
         self.peak_width_bins = 0
-        self.peak_width_threshold = 0
+        self.peak_width_threshold = -1
+        self.voltage_threshold = [[-1],[-1],[-1],[-1]]
         self.scatter_channel_select_x = -1
         self.scatter_channel_select_y = -1
+        self.width_scatter_channel_select_x = -1
+        self.width_scatter_channel_select_y = -1
         self.scatter_gate_voltage_x = 0
         self.scatter_gate_voltage_y = 0
         self.sweep_channel_select = -1
@@ -219,16 +222,19 @@ class ui_state:
                 self.gating_voltage = gate_voltage
         return replot
     
-    def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None):
+    def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None, voltage_threshold = None):
         """keeps track of states in gating"""
         replot = False
         channel_reanalysis = False
+        
+        if voltage_threshold is not None and voltage_threshold != self.voltage_threshold:
+            replot = True
+            channel_reanalysis = True             
         if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
             replot = True
             channel_reanalysis = True            
         elif channel_select is not None and channel_select != self.peak_width_channel_select:
             replot = True
-            channel_reanalysis = True
         elif bins is not None and bins != self.peak_width_bins:
             replot = True
         if update_state:
@@ -238,6 +244,8 @@ class ui_state:
                 self.peak_width_bins = bins
             if peak_width_threshold is not None:
                 self.peak_width_threshold = peak_width_threshold
+                
+#         print(peak_width_threshold,self.peak_width_threshold,channel_select,self.peak_width_channel_select,replot)
         return replot,channel_reanalysis
     
     
@@ -258,7 +266,25 @@ class ui_state:
             if y_gate is not None:
                 self.scatter_gate_voltage_y = y_gate
         return replot
-
+    
+    def width_scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None):
+        """keep track of state in width scatter tab"""
+        replot = False
+        if x_select is not None and x_select != self.width_scatter_channel_select_x:
+            replot = True
+        elif y_select is not None and y_select != self.width_scatter_channel_select_y:
+            replot = True
+        if update_state:
+            if x_select is not None:
+                self.width_scatter_channel_select_x = x_select
+            if y_select is not None:
+                self.width_scatter_channel_select_y = y_select
+            if x_gate is not None:
+                self.width_scatter_gate_voltage_x = x_gate
+            if y_gate is not None:
+                self.width_scatter_gate_voltage_y = y_gate
+        return replot
+    
     def sweep_update(self, update_state=True, channel_select=None, bins=None, file1=None, file2=None):
         """keep track of state in sweep tab"""
         replot1 = False
