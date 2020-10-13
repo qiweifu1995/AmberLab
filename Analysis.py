@@ -90,7 +90,6 @@ class file_extracted_data_Qing:
 
         for Ch in pd.read_csv(file, chunksize=500000, header=header):
             Ch.columns =[0,1,2,3] 
-            print(len(Ch))
 
             for channel in range(4):
                 if peak_enable:
@@ -105,7 +104,7 @@ class file_extracted_data_Qing:
                     diff1 = sign[channel].diff(periods=1).fillna(0)
                     df1 = sign[channel].loc[diff1[diff1 != 0].index]
                     index_list = df1.index
-        #             print(df1.index)
+
 
 
                     row_chunk = user_set_chunk_size
@@ -122,13 +121,11 @@ class file_extracted_data_Qing:
                         if df1[index_list[i-1]] >= 0:
                             if df1[index_list[i]] <= 0:
                                 current_width = max(index_list[i] - index_list[i-1],current_width)
-        #                         print(df1.index[i],current_width)
                     width[channel].append(current_width)
                     for number_of_skip_chunck_after in range(round(len(Ch)/user_set_chunk_size) - len(width[channel])):
                         width[channel].append(0)
                     
-#                     if len(width[channel]) < round(len(Ch)/user_set_chunk_size):
-#                         print(1)
+
                     
                 
         #     break 
