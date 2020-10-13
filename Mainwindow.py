@@ -2487,11 +2487,16 @@ class Ui_MainWindow(object):
         self.lineEdit_6.editingFinished.connect(self.lr_peak_width_plot)
         self.lineEdit_7.editingFinished.connect(self.lr_peak_width_plot)
         self.lineEdit_8.editingFinished.connect(self.lr_peak_width_plot)
+
+
+        
+        
         self.recalculate_peak_dataset = True
 
         self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
         self.lr_y_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
 
+        self.comboBox_6.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
         self.comboBox_5.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
         self.listView_channels_3.currentItemChanged.connect(self.width_histogram_channel_to_scatter_channel)
         self.lineEdit_gatevoltage_2.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
@@ -2503,12 +2508,14 @@ class Ui_MainWindow(object):
 
     def width_scatter_channel_to_histogram_channel(self):
         self.listView_channels_3.setCurrentRow(self.comboBox_5.currentIndex())
+        self.recalculate_peak_dataset = True
     
     def width_histogram_channel_to_scatter_channel(self):
         self.comboBox_5.setCurrentIndex(self.listView_channels_3.currentRow())
         self.lineEdit_5.setText(self.lineEdit_gatevoltage_2.text())
         self.lineEdit_7.setText(self.lineEdit_gatevoltage_4.text())
         self.lr_peak_width_plot()
+        self.recalculate_peak_dataset = True
         
     def OtherWindow_Button_ok_clicked(self,text):
         self.chunk_resample = int(text)
@@ -2541,10 +2548,12 @@ class Ui_MainWindow(object):
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
 
     def update_working_data(self):
-        try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
-        except : print("Ui_MainWindow.reset: FALSE")
+#         try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
+#         except : print("Ui_MainWindow.reset: FALSE")
 
-        if self.update or self.width_update:
+        
+        
+        if self.update or self.filter_update:
             self.peak_width_working_data  = []
             for i in range(4):
                 self.peak_width_working_data.append([])
@@ -2577,7 +2586,6 @@ class Ui_MainWindow(object):
             self.draw_peak_width_2(True)
             
         if self.update:
-            print("update working data")
             self.working_data = []
             self.filtered_working_data = []
             for i in range(4):
@@ -2610,7 +2618,9 @@ class Ui_MainWindow(object):
                      
 
         ### filter data by using min and max width
-            
+        for channel in range(3):
+            if self.filtered_working_data[channel] == []:
+                self.filtered_working_data[channel] = self.working_data[channel]            
             
         if self.recalculate_peak_dataset == True:
             try:
@@ -2629,13 +2639,8 @@ class Ui_MainWindow(object):
     
             self.filtered_working_data[self.comboBox_5.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
             self.filtered_working_data[self.comboBox_6.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
-
-            for channel in range(3):
-                if self.filtered_working_data[channel] == []:
-                    self.filtered_working_data[channel] = self.working_data[channel]
             
             
-            print(self.filtered_working_data)
             self.recalculate_peak_dataset == False
         
       
@@ -2820,8 +2825,6 @@ class Ui_MainWindow(object):
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
         separate_y = [0] * len(y)
-        print(y)
-        print(x)
         for i in range(len(y)):
             separate_y = [0] * len(y)
             separate_y[i] = y[i]
@@ -2868,11 +2871,9 @@ class Ui_MainWindow(object):
         
     def draw_peak_width(self,data_updated=False):
         self.histo_bins_peak_width = float(self.lineEdit_binwidth_3.text())
-#         update, reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins, 
-#                                                             peak_width_threshold = self.lineEdit_gatevoltage_2.text())
-#         print("``````````````````````````````````````````",update)
-        if self.width_update or data_updated:
-            print("update peak width")
+
+        if self.filter_update or data_updated:
+            print("draw_peak_width")
             channel = self.listView_channels_3.currentRow()
             if channel == -1:
                 self.listView_channels.setCurrentRow(0)
@@ -2909,9 +2910,6 @@ class Ui_MainWindow(object):
             self.lineEdit_gatevoltage_6.setText(str(len(self.full_peak_width)))
             
 
-            
-#             print(self.width)
-#             print(self.peak_width)
             # after 1st map so the line layer will appear before the histogram
             self.data_line_peak_width = self.histogram_graphWidget_3.plot([0, 0], [0, 0],
                                                              pen=pg.mkPen(color=('r'), width=5,
@@ -2921,8 +2919,8 @@ class Ui_MainWindow(object):
     def draw_peak_width_2(self,data_updated=False):
         update = self.ui_state.width_scatter_update(x_select=self.width_scatter_channelx, y_select=self.width_scatter_channely)
 
-        if self.width_update or data_updated or update:
-            print("update draw")
+        if self.filter_update or data_updated or update:
+            print("draw_peak_width_2")
             x_axis_channel = self.comboBox_5.currentIndex()
             y_axis_channel = self.comboBox_6.currentIndex()
             x_axis_name = self.comboBox_5.currentText()
@@ -2966,8 +2964,8 @@ class Ui_MainWindow(object):
                 # checking for density, the value divided by steps serves as the index
                 density = histo[a][b]
                 percentage = density / max_density * 100
-                if i % 10000 == 0:
-                    print(i)
+#                 if i % 10000 == 0:
+#                     print(i)
                 if 20 > percentage >= 0:
                     density_listx[0].append(x)
                     density_listy[0].append(y)
@@ -3041,7 +3039,7 @@ class Ui_MainWindow(object):
     
         
     def lr_peak_width_change(self):
-        print("region changed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("lr_peak_width_change")
         x_low,x_high = self.lr_x_axis.getRegion()
         y_low,y_high = self.lr_y_axis.getRegion()
         
@@ -3076,7 +3074,7 @@ class Ui_MainWindow(object):
         self.histo_bins = float(self.lineEdit_binwidth.text())
         update = self.ui_state.gating_update(channel_select=self.histo_channel, bins=self.histo_bins)
         if update or data_updated:
-            print("update histo")
+            print("update draw")
             channel = self.listView_channels.currentRow()
             if channel == -1:
                 self.listView_channels.setCurrentRow(0)
@@ -3113,7 +3111,7 @@ class Ui_MainWindow(object):
 
         update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
         if update or data_updated:
-            print("update draw")
+            print("update draw2")
             x_axis_channel = self.comboBox.currentIndex()
             y_axis_channel = self.comboBox_2.currentIndex()
             x_axis_name = self.comboBox.currentText()
@@ -3180,7 +3178,6 @@ class Ui_MainWindow(object):
                 density_listx.append([])
                 density_listy.append([])
 
-            print("start")
             for i in range(len(self.Ch1_channel0)):
                 """legend_range = 0.07
                 aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
@@ -3199,10 +3196,9 @@ class Ui_MainWindow(object):
                     
                 # checking for density, the value divided by steps serves as the index
                 density = histo[a][b]
-#                 print('``````````````````````````````````````numbers are:',x,steps,y,density,max_density)
                 percentage = density / max_density * 100
-                if i % 10000 == 0:
-                    print(i)
+#                 if i % 10000 == 0:
+#                     print(i)
                 if 20 > percentage >= 0:
                     density_listx[0].append(x)
                     density_listy[0].append(y)
@@ -3329,7 +3325,7 @@ class Ui_MainWindow(object):
                 channel0_list_quadrant4.append(self.Ch1_channel0[i])
                 channel1_list_quadrant4.append(self.Ch1_channel1[i])
                 count_quadrant4 += 1
-            #             print(channel0_list_quadrant1)
+
             
         try:
             droplets = float(self.lineEdit_totaldroplets.text())
@@ -3438,33 +3434,9 @@ class Ui_MainWindow(object):
             self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem('NaN'))
 
-        print("quadrant 1(top right):", count_quadrant1)
-        print("quadrant 2(top left):", count_quadrant2)
-        print("quadrant 3(bottom right):", count_quadrant3)
-        print("quadrant 4(bottom left):", count_quadrant4)
+
         ###  
 
-    def regionUpdated(self, lr1, lr2):
-        # for y axis
-        lr1_min, lr1_max = lr1.getRegion()
-        # for x axis
-        lr2_min, lr2_max = lr2.getRegion()
-
-        # filter y axis
-        a = (np.array(self.Ch1_channel0) > lr2_min).tolist()
-        b = (np.array(self.Ch1_channel0) < lr2_max).tolist()
-
-        # filter x axis
-        c = (np.array(self.Ch1_channel1) > lr1_min).tolist()
-        d = (np.array(self.Ch1_channel1) < lr1_max).tolist()
-
-        #         print(a,b,c,d)
-
-        count = 0
-        for i in range(len(a)):
-            if a[i] and b[i] and c[i] and d[i]:
-                count = count + 1
-        print("number of points inside the box:", count)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -3687,7 +3659,7 @@ class Ui_MainWindow(object):
         self.current_file_dict = self.file_dict_list[self.main_file_select]
         self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
         self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
-        # print(current_file_dict)
+
         os.chdir(self.current_file_dict["Root Folder"])
         # summary
         if self.current_file_dict["Summary"] != "":
@@ -3707,7 +3679,7 @@ class Ui_MainWindow(object):
             self.lineEdit_ch13hit.setText(stats.ch13_hit)
             self.lineEdit_ch23hit.setText(stats.ch23_hit)
 
-        #         print(stats.under_sample_factor)
+
 
         # parameter
         """
@@ -3771,8 +3743,8 @@ class Ui_MainWindow(object):
         
         threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
         
-        self.width_update,reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins,
-                                                           peak_width_threshold = self.lineEdit_gatevoltage_2.text(),voltage_threshold = threshold )
+#         self.width_update,reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins,
+#                                                            peak_width_threshold = self.lineEdit_gatevoltage_2.text(),voltage_threshold = threshold )
         
 
         try:
@@ -3788,12 +3760,24 @@ class Ui_MainWindow(object):
                                                          ch3=self.ch3_checkbox,
                                                          ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
                                                          ch2_3=self.ch23_checkbox)            
+        
+        self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number = int(self.comboBox_5.currentIndex()), 
+                                                              y_axis_channel_number = int(self.comboBox_6.currentIndex()), 
+                                                              x_axis_channel_min = float(self.lineEdit_5.text()), 
+                                                              x_axis_channel_max = float(self.lineEdit_7.text()), 
+                                                              y_axis_channel_min = float(self.lineEdit_6.text()), 
+                                                              y_axis_channel_max = float(self.lineEdit_8.text()))
+            
+        
         if self.update:
             peak_enable =True
         else:
             peak_enable = False
-        print("peak_enable check is :",peak_enable)  
-        if self.current_file_dict["Peak Record"] in self.analog and not reset and not reanalysis:
+        print("peak recalculate enable check is :",peak_enable) 
+        print("resample parameter self.reset check is :",reset) 
+        print("filter condition change check is :",self.filter_update) 
+            
+        if self.current_file_dict["Peak Record"] in self.analog and not reset :
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
             self.update_working_data()
@@ -3826,16 +3810,13 @@ class Ui_MainWindow(object):
             self.update_statistic()
             self.update_sampling_Rate()
             Ui_MainWindow.reset = False
-            print("reset statue:",Ui_MainWindow.reset)
             
             self.lineEdit_9.setText(str(a.threshold[0]))
             self.lineEdit_10.setText(str(a.threshold[1]))
             self.lineEdit_11.setText(str(a.threshold[2]))
             self.lineEdit_12.setText(str(a.threshold[3]))
             
-            print("threshold:",a.threshold)
 
-        # print(self.analog)
         ### End
 
     def add(self):
@@ -3866,7 +3847,7 @@ class Ui_MainWindow(object):
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
 
-#         print(self.file_dict_list)
+
 
 
 if __name__ == "__main__":
