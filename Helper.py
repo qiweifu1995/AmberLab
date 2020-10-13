@@ -160,7 +160,18 @@ class ui_state:
         self.sweep_bins = 0
         self.sweep_file_1 = -1
         self.sweep_file_2 = -1
+        
+        self.channel_0_min = -1
+        self.channel_1_min = -1
+        self.channel_2_min = -1
+        self.channel_3_min = -1
 
+        self.channel_0_max = 100
+        self.channel_1_max = 100
+        self.channel_2_max = 100
+        self.channel_3_max = 100
+
+        
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
                                   ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, reset = None):
         """checks if checkbox are updated and needs to be refreshed"""
@@ -222,32 +233,105 @@ class ui_state:
                 self.gating_voltage = gate_voltage
         return replot
     
-    def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None, voltage_threshold = None):
-        """keeps track of states in gating"""
-        replot = False
-        channel_reanalysis = False
+#     def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None, voltage_threshold = None):
+#         """keeps track of states in gating"""
+#         replot = False
+#         channel_reanalysis = False
         
-        if voltage_threshold is not None and voltage_threshold != self.voltage_threshold:
-            replot = True
-            channel_reanalysis = True             
-        if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
-            replot = True
-            channel_reanalysis = True            
-        elif channel_select is not None and channel_select != self.peak_width_channel_select:
-            replot = True
-        elif bins is not None and bins != self.peak_width_bins:
-            replot = True
-        if update_state:
-            if channel_select is not None:
-                self.peak_width_channel_select = channel_select
-            if bins is not None:
-                self.peak_width_bins = bins
-            if peak_width_threshold is not None:
-                self.peak_width_threshold = peak_width_threshold
+#         if voltage_threshold is not None and voltage_threshold != self.voltage_threshold:
+#             replot = True
+#             channel_reanalysis = True             
+#         if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
+#             replot = True
+#             channel_reanalysis = True            
+#         elif channel_select is not None and channel_select != self.peak_width_channel_select:
+#             replot = True
+#         elif bins is not None and bins != self.peak_width_bins:
+#             replot = True
+#         if update_state:
+#             if channel_select is not None:
+#                 self.peak_width_channel_select = channel_select
+#             if bins is not None:
+#                 self.peak_width_bins = bins
+#             if peak_width_threshold is not None:
+#                 self.peak_width_threshold = peak_width_threshold
+#             if voltage_threshold is not None:
                 
-#         print(peak_width_threshold,self.peak_width_threshold,channel_select,self.peak_width_channel_select,replot)
-        return replot,channel_reanalysis
+                
+#         return replot,channel_reanalysis
     
+    def filter_peak_update(self, x_axis_channel_number = None, y_axis_channel_number = None, 
+                           x_axis_channel_min = None, x_axis_channel_max = None, y_axis_channel_min = None, y_axis_channel_max = None):
+        refilter = False
+        
+        if x_axis_channel_number == 0:
+            if x_axis_channel_min is not None and x_axis_channel_min != self.channel_0_min:
+                refilter = True       
+                self.channel_0_min = x_axis_channel_min
+            if x_axis_channel_max is not None and x_axis_channel_max != self.channel_0_max:
+                refilter = True
+                self.channel_0_min = x_axis_channel_max
+                
+        elif x_axis_channel_number == 1:
+            if x_axis_channel_min is not None and x_axis_channel_min != self.channel_1_min:
+                refilter = True    
+                self.channel_1_min = x_axis_channel_min
+            if x_axis_channel_max is not None and x_axis_channel_max != self.channel_1_max:
+                refilter = True
+                self.channel_1_min = x_axis_channel_max
+                
+        elif x_axis_channel_number == 2:
+            if x_axis_channel_min is not None and x_axis_channel_min != self.channel_2_min:
+                refilter = True            
+                self.channel_2_min = x_axis_channel_min
+            if x_axis_channel_max is not None and x_axis_channel_max != self.channel_2_max:
+                refilter = True
+                self.channel_2_min = x_axis_channel_max
+                
+        elif x_axis_channel_number == 3:
+            if x_axis_channel_min is not None and x_axis_channel_min != self.channel_3_min:
+                refilter = True            
+                self.channel_3_min = x_axis_channel_min
+            if x_axis_channel_max is not None and x_axis_channel_max != self.channel_3_max:
+                refilter = True
+                self.channel_3_min = x_axis_channel_max
+                
+                
+                
+        if y_axis_channel_number == 0:
+            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_0_min:
+                refilter = True       
+                self.channel_0_min = y_axis_channel_min
+            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_0_max:
+                refilter = True
+                self.channel_0_min = y_axis_channel_max
+                
+        elif y_axis_channel_number == 1:
+            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_1_min:
+                refilter = True     
+                self.channel_1_min = y_axis_channel_min
+            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_1_max:
+                refilter = True
+                self.channel_1_min = y_axis_channel_max
+                
+        elif y_axis_channel_number == 2:
+            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_2_min:
+                refilter = True       
+                self.channel_2_min = y_axis_channel_min
+            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_2_max:
+                refilter = True     
+                self.channel_2_min = y_axis_channel_max
+                
+        elif y_axis_channel_number == 3:
+            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_3_min:
+                refilter = True
+                self.channel_3_min = y_axis_channel_min
+            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_3_max:
+                refilter = True
+                self.channel_3_min = y_axis_channel_max
+
+                
+        return refilter
     
     def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None):
         """keep track of state in scatter tab"""
@@ -320,9 +404,9 @@ class ui_state:
 if __name__ == "__main__":
     state = ui_state()
     update = state.checkbox_update_check(True,ch2=True)
-    print(update)
-    print(state.ch2_check)
-    print(state.ch1_check)
+#     print(update)
+#     print(state.ch2_check)
+#     print(state.ch1_check)
 
 
 
