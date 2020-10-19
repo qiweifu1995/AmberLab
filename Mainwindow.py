@@ -3355,14 +3355,14 @@ class Ui_MainWindow(object):
         self.label_37.setText(_translate("MainWindow", "X Axis"))
         self.label_38.setText(_translate("MainWindow", "Y Axis"))
         self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.subtab_scatter),
-                                            _translate("MainWindow", "Height Scatter"))
+                                            _translate("MainWindow", "Scatter"))
         self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.tab_gating),
-                                         _translate("MainWindow", "Peak Height"))        
+                                         _translate("MainWindow", "Histogram"))        
         
 
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_scatter),
-                                         _translate("MainWindow", "Scatter"))
+                                         _translate("MainWindow", "Peak Height"))
         self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
         self.comboBox_option2.setItemText(0, _translate("MainWindow", "Option 2"))
         self.label_41.setText(_translate("MainWindow", "Percentage Low"))
