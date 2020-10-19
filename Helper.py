@@ -52,7 +52,7 @@ class Stats:
                       "Negative Ch 2 Hit": "",
                       "Negative Ch 3 Hit": "",
                       "Negative Ch 1-2 Hit": "",
-                      "Negative CH 1-3 Hit": "",
+                      "Negative Ch 1-3 Hit": "",
                       "Negative Ch 2-3 Hit": "",
                       "Total Dispensed ": "",
                       "Dispense Missed": ""}
@@ -89,12 +89,11 @@ class Stats:
         self.ch2_hit = stats_dict["Negative Ch 2 Hit"]
         self.ch3_hit = stats_dict["Negative Ch 3 Hit"]
         self.ch12_hit = stats_dict["Negative Ch 1-2 Hit"]
-        self.ch13_hit = stats_dict["Negative CH 1-3 Hit"]
+        self.ch13_hit = stats_dict["Negative Ch 1-3 Hit"]
         self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
         self.under_sample_factor = stats_dict["UnderSample Factor"]
         self.total_dispensed = stats_dict["Total Dispensed "]
         self.dispense_missed = stats_dict["Dispense Missed"]
-
 
 def rgb_select(channel):
     if channel == 0:
@@ -233,32 +232,32 @@ class ui_state:
                 self.gating_voltage = gate_voltage
         return replot
     
-#     def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None, voltage_threshold = None):
-#         """keeps track of states in gating"""
-#         replot = False
-#         channel_reanalysis = False
+    def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None, voltage_threshold = None):
+        """keeps track of states in gating"""
+        replot = False
+        channel_reanalysis = False
         
-#         if voltage_threshold is not None and voltage_threshold != self.voltage_threshold:
-#             replot = True
-#             channel_reanalysis = True             
-#         if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
-#             replot = True
-#             channel_reanalysis = True            
-#         elif channel_select is not None and channel_select != self.peak_width_channel_select:
-#             replot = True
-#         elif bins is not None and bins != self.peak_width_bins:
-#             replot = True
-#         if update_state:
-#             if channel_select is not None:
-#                 self.peak_width_channel_select = channel_select
-#             if bins is not None:
-#                 self.peak_width_bins = bins
-#             if peak_width_threshold is not None:
-#                 self.peak_width_threshold = peak_width_threshold
-#             if voltage_threshold is not None:
+        if voltage_threshold is not None and voltage_threshold != self.voltage_threshold:
+            replot = True
+            channel_reanalysis = True             
+        if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
+            replot = True
+            channel_reanalysis = True            
+        elif channel_select is not None and channel_select != self.peak_width_channel_select:
+            replot = True
+        elif bins is not None and bins != self.peak_width_bins:
+            replot = True
+        if update_state:
+            if channel_select is not None:
+                self.peak_width_channel_select = channel_select
+            if bins is not None:
+                self.peak_width_bins = bins
+            if peak_width_threshold is not None:
+                self.peak_width_threshold = peak_width_threshold
+            if voltage_threshold is not None:
+                self.voltage_threshold = voltage_threshold 
                 
-                
-#         return replot,channel_reanalysis
+        return replot,channel_reanalysis
     
     def filter_peak_update(self, x_axis_channel_number = None, y_axis_channel_number = None, 
                            x_axis_channel_min = None, x_axis_channel_max = None, y_axis_channel_min = None, y_axis_channel_max = None):
