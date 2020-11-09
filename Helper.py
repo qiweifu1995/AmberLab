@@ -241,8 +241,7 @@ class ui_state:
             replot = True
             channel_reanalysis = True             
         if peak_width_threshold is not None and peak_width_threshold != self.peak_width_threshold:
-            replot = True
-            channel_reanalysis = True            
+            replot = True          
         elif channel_select is not None and channel_select != self.peak_width_channel_select:
             replot = True
         elif bins is not None and bins != self.peak_width_bins:
