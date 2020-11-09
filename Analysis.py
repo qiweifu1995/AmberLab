@@ -16,34 +16,10 @@ class Droplet:
 
 
 class file_extracted_data_Qing:
-    def __init__(self, current_file_dict, entered_threshold = 'default', width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", total_count="1"):
+    def __init__(self, current_file_dict, threshold, width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", total_count="1"):
         self.analog_file = {} 
         
-        self.threshold = [[],[],[],[]]
-        try:
-            for i in range(4):
-                self.threshold[i] = float(entered_threshold[i])
-        except:
-            if current_file_dict["Param"] != "":
-                stats_reader = csv.reader(open(current_file_dict["Param"]), delimiter=",")
-                channel_threshold = []
-                record_threshold = False
-                for lines in stats_reader: 
-                    if record_threshold == True:
-                        channel_threshold.append(lines[line_check])
-                        continue
-                    count_field = 0
-                    for field in lines:
-                        if field == "Peak Threshold (V)":
-                            line_check = count_field
-                            record_threshold = True
-                        count_field +=1  
-
-                for i in range(4):
-                    self.threshold[i] = float(channel_threshold[i])
-            else:
-                self.threshold = [2,2,2,2]
-        
+        self.threshold = threshold
 
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")      
@@ -112,7 +88,7 @@ class file_extracted_data_Qing:
                     index_list = df1.index
                     row_chunk = current_row_number
                     current_width = 0
-                    for i in range(len(index_list)):
+                    for i in range(1,len(index_list)):
                             # 0~99
                         if df1.index[i] > row_chunk:
                             width[channel].append(current_width)
@@ -121,6 +97,7 @@ class file_extracted_data_Qing:
                                 width[channel].append(current_width)
                                 row_chunk += user_set_chunk_size
                             row_chunk += user_set_chunk_size
+                            continue
                         if df1[index_list[i-1]] >= 0:
                             if df1[index_list[i]] <= 0:
                                 current_width = max(index_list[i] - index_list[i-1],current_width)
