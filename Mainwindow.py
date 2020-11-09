@@ -21,6 +21,7 @@ from PyQt5 import QtGui  # Place this at the top of your file.
 import pyqtgraph as pg
 import statistics
 from scipy.signal import savgol_filter
+import csv
 
 class OtherWindow(QWidget):
     def __init__(self,parent = None):
@@ -2774,7 +2775,7 @@ class Ui_MainWindow(object):
 
         
         
-        if self.update or self.filter_update:
+        if self.update or self.filter_update or self.reanalysis:
             self.peak_width_working_data  = []
             for i in range(4):
                 self.peak_width_working_data.append([])
@@ -4064,12 +4065,62 @@ class Ui_MainWindow(object):
                 reset = False
         except: reset = False
         
-        threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
         
-        self.width_update,reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, bins=self.peak_width_bins,
-                                                           peak_width_threshold = self.lineEdit_gatevoltage_2.text(),voltage_threshold = threshold )
+        
+        
+        
+        
+        
         
 
+                
+                
+        ### check Voltage threshold(V)  
+        threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
+        
+        try:
+            # test if numbers entered in threshold 
+            for i in range(4):
+                threshold[i] = float(threshold[i])
+        except:
+            # if not, find in parameter file
+            if self.current_file_dict["Param"] != "":
+                stats_reader = csv.reader(open(self.current_file_dict["Param"]), delimiter=",")
+                in_file_threshold = []
+                record_threshold = False
+                for lines in stats_reader: 
+                    if record_threshold == True:
+                        in_file_threshold.append(lines[line_check])
+                        continue
+                    count_field = 0
+                    for field in lines:
+                        if field == "Peak Threshold (V)":
+                            line_check = count_field
+                            record_threshold = True
+                        count_field +=1  
+
+                for i in range(4):
+                    threshold[i] = float(in_file_threshold[i])
+            else:
+                threshold = [2,2,2,2]
+                
+        self.lineEdit_9.setText(str(threshold[0]))
+        self.lineEdit_10.setText(str(threshold[1]))
+        self.lineEdit_11.setText(str(threshold[2]))
+        self.lineEdit_12.setText(str(threshold[3]))    
+
+        
+        self.width_update,self.reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, 
+                                                                       bins=self.peak_width_bins,
+                                                                       peak_width_threshold = self.lineEdit_gatevoltage_2.text(),
+                                                                       voltage_threshold = threshold )
+ 
+        
+        
+        ### check end
+        
+        
+        
         try:
             self.update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
                                                          ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
@@ -4098,9 +4149,10 @@ class Ui_MainWindow(object):
             peak_enable = False
         print("peak recalculate enable check is :",peak_enable) 
         print("resample parameter self.reset check is :",reset) 
-        print("filter condition change check is :",self.filter_update) 
+        print("filter condition change check is :",self.filter_update)
+        print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
             
-        if self.current_file_dict["Peak Record"] in self.analog and not reset :
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
             self.update_working_data()
@@ -4138,10 +4190,8 @@ class Ui_MainWindow(object):
             self.update_sampling_Rate()
             Ui_MainWindow.reset = False
             
-            self.lineEdit_9.setText(str(a.threshold[0]))
-            self.lineEdit_10.setText(str(a.threshold[1]))
-            self.lineEdit_11.setText(str(a.threshold[2]))
-            self.lineEdit_12.setText(str(a.threshold[3]))
+
+            
             
             print("complete!")
         ### End
