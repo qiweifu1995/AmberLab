@@ -2857,9 +2857,6 @@ class Ui_MainWindow(object):
             
             
         if self.recalculate_peak_dataset == True:
-#             try:
-#                 points_inside_square = self.points_inside_square
-#             except:  
                 ## x-axis
             if self.comboBox_5.currentIndex()==0:
                 self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
@@ -3032,9 +3029,13 @@ class Ui_MainWindow(object):
 
         self.data_line.setData(line_xx, line_yy)
 
-        filtered_gate_voltage_x = [x for x in self.width if x > text_x]
 
-        percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
+        if len(self.width)!=0:
+            filtered_gate_voltage_x = [x for x in self.width if x > text_x]
+            percentage = round(100 * len(filtered_gate_voltage_x) / len(self.width), 2)
+        else:
+            percentage = "NA"
+            
         self.lineEdit_percentage.setText(str(percentage))
         
 
@@ -3164,7 +3165,13 @@ class Ui_MainWindow(object):
             x_high = float(self.lineEdit_gatevoltage_4.text())
             
             self.peak_width = [x for x in self.full_peak_width if x >= x_low and x <=x_high]
-            range_width = int(max(self.peak_width)) + 1
+            
+            try:
+                range_width = int(max(self.peak_width)) + 1
+            except:
+                print("No dots inside")
+                range_width = 1
+
             bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_3.text()))
             y, x = np.histogram(self.peak_width, bins=bin_edge)
             separate_y = [0] * len(y)
@@ -3336,7 +3343,6 @@ class Ui_MainWindow(object):
         width_index2 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
 
         
-#         self.points_inside_square = [value for value in width_index1 if value in width_index2]
         self.points_inside_square = list(set(width_index1).intersection(set(width_index2)))
         
         self.lineEdit_gatevoltage_5.setText(str(len(self.points_inside_square)))
@@ -3352,38 +3358,37 @@ class Ui_MainWindow(object):
         if update or data_updated:
             print("update draw")
 
-            
-            channel = self.listView_channels.currentRow()
-            if channel == -1:
-                self.listView_channels.setCurrentRow(0)
-            self.histogram_graphWidget.clear()
-            r, g, b = Helper.rgb_select(channel)
-            styles = {"color": "r", "font-size": "20px"}
-            axis_name = self.listView_channels.currentItem().text()
-            self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
-            # default
-            # self.width = self.analog[current_file_dict['Peak Record']][0][0]
             self.width = self.filtered_working_data[self.listView_channels.currentRow()]
-
             self.lineEdit_count.setText(str(len(self.width)))
-            range_width = int(max(self.width)) + 1
-            bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
-            y, x = np.histogram(self.width, bins=bin_edge)
-            separate_y = [0] * len(y)
-            for i in range(len(y)):
+            if len(self.width)!=0:
+
+                channel = self.listView_channels.currentRow()
+                if channel == -1:
+                    self.listView_channels.setCurrentRow(0)
+                self.histogram_graphWidget.clear()
+                r, g, b = Helper.rgb_select(channel)
+                styles = {"color": "r", "font-size": "20px"}
+                axis_name = self.listView_channels.currentItem().text()
+                self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
+
+                range_width = int(max(self.width)) + 1
+                bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth.text()))
+                y, x = np.histogram(self.width, bins=bin_edge)
                 separate_y = [0] * len(y)
-                separate_y[i] = y[i]
-                self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
-                                                brush=(r, g, b))
+                for i in range(len(y)):
+                    separate_y = [0] * len(y)
+                    separate_y[i] = y[i]
+                    self.histogram_graphWidget.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True,
+                                                    brush=(r, g, b))
 
-            self.histogram_graphWidget.setXRange(0, max(x), padding=0)
-            self.histogram_graphWidget.setYRange(0, max(y), padding=0)
+                self.histogram_graphWidget.setXRange(0, max(x), padding=0)
+                self.histogram_graphWidget.setYRange(0, max(y), padding=0)
 
-            # after 1st map so the line layer will appear before the histogram
-            self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
-                                                             pen=pg.mkPen(color=('r'), width=5,
-                                                                          style=QtCore.Qt.DashLine))
-            self.thresholdUpdated()
+                # after 1st map so the line layer will appear in front of the histogram
+                self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
+                                                                 pen=pg.mkPen(color=('r'), width=5,
+                                                                              style=QtCore.Qt.DashLine))
+                self.thresholdUpdated()
 
     def draw_2(self, data_updated=False):
 
@@ -3446,8 +3451,13 @@ class Ui_MainWindow(object):
             peak_data_x = self.working_data[self.comboBox.currentIndex()]  
             peak_data_y = self.working_data[self.comboBox_2.currentIndex()] 
 
-            self.filtered_working_data[self.comboBox.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
-            self.filtered_working_data[self.comboBox_2.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
+            
+            if len(points_inside_square) !=0:
+                self.filtered_working_data[self.comboBox.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
+                self.filtered_working_data[self.comboBox_2.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
+            else:
+                self.filtered_working_data[self.comboBox.currentIndex()] = []
+                self.filtered_working_data[self.comboBox_2.currentIndex()] = []
 
             
             x_axis_channel = self.comboBox.currentIndex()
@@ -3456,112 +3466,116 @@ class Ui_MainWindow(object):
             y_axis_name = self.comboBox_2.currentText()
 
 
-            
+            try:
+                print("x",len(self.filtered_working_data[x_axis_channel]),"y",len(self.filtered_working_data[y_axis_channel]))
+            except:
+                print("x",0,"y",0)
+                
             self.graphWidget.clear()
-
-            self.graphWidget.setLabel('left', y_axis_name, color='b')
-            self.graphWidget.setLabel('bottom', x_axis_name, color='b')
-
-            self.Ch1_channel0 = self.filtered_working_data[x_axis_channel]
-            self.Ch1_channel1 = self.filtered_working_data[y_axis_channel]
-
-            max_voltage = 12
-            bins = 1000
-            steps = max_voltage / bins
-
-            print("x",len(self.Ch1_channel0),"y",len(self.Ch1_channel1))
             
+            
+            print("no dots inside the square!!!")
+            if len(self.filtered_working_data[x_axis_channel]) !=0 and len(self.filtered_working_data[y_axis_channel])!=0:
 
-                
-            # all data is first sorted into a histogram
-            histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
-                                         [[0, max_voltage], [0, max_voltage]],
-                                         density=True)
-            max_density = histo.max()
+                self.graphWidget.setLabel('left', y_axis_name, color='b')
+                self.graphWidget.setLabel('bottom', x_axis_name, color='b')
 
-            # made empty array to hold the sorted data according to density
-            density_listx = []
-            density_listy = []
-            for i in range(6):
-                density_listx.append([])
-                density_listy.append([])
+                self.Ch1_channel0 = self.filtered_working_data[x_axis_channel]
+                self.Ch1_channel1 = self.filtered_working_data[y_axis_channel]
 
-            for i in range(len(self.Ch1_channel0)):
-                """legend_range = 0.07
-                aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
-                bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
-                
-                ab_set = len(set(aa) & set(bb))   
-                """
-                x = self.Ch1_channel0[i]
-                y = self.Ch1_channel1[i]
-                a = int(x / steps)
-                b = int(y / steps)
-                if a >= 1000:
-                    a = 999
-                if b >= 1000:
-                    b = 999
-                    
-                # checking for density, the value divided by steps serves as the index
-                density = histo[a][b]
-                percentage = density / max_density * 100
-#                 if i % 10000 == 0:
-#                     print(i)
-                if 20 > percentage >= 0:
-                    density_listx[0].append(x)
-                    density_listy[0].append(y)
-                elif 40 > percentage >= 20:
-                    density_listx[1].append(x)
-                    density_listy[1].append(y)
-                elif 60 > percentage >= 40:
-                    density_listx[2].append(x)
-                    density_listy[2].append(y)
-                elif 80 > percentage >= 60:
-                    density_listx[3].append(x)
-                    density_listy[3].append(y)
-                else:
-                    density_listx[4].append(x)
-                    density_listy[4].append(y)
-            for i in range(5):
-                if i == 0:
-                    red = 0
-                    blue = 255 / 15
-                    green = 255
-                elif i == 1:
-                    red = 0
-                    blue = 255
-                    green = 255 - 255 / 15
-                elif i == 2:
-                    red = 255 / 15
-                    blue = 255
-                    green = 0
-                elif i == 3:
-                    red = 255
-                    blue = 255 - 255 / 15
-                    green = 0
-                elif i == 4:
-                    red = 255
-                    blue = 255 / 15
-                    green = 255 / 15
-                else:
-                    red = 255
-                    blue = 255
-                    green = 255
+                max_voltage = 12
+                bins = 1000
+                steps = max_voltage / bins
 
-                self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-                                      symbolSize=5, symbolBrush=(red, blue, green))
-           
+                # all data is first sorted into a histogram
+                histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
+                                             [[0, max_voltage], [0, max_voltage]],
+                                             density=True)
+                max_density = histo.max()
 
-            #    >0%    0,0,1   blue
-            #    >15%   0,1,1  cyan
-            #    >30%   0,1,0  green
-            #    >45%   1,1,0  yellow
-            #    >60%   1,0,0   red
-            #    >75%   1,1,1   white
+                # made empty array to hold the sorted data according to density
+                density_listx = []
+                density_listy = []
+                for i in range(6):
+                    density_listx.append([])
+                    density_listy.append([])
 
-            print("draw2 end")
-            # threshold
-            self.thresholdUpdated_2()
+                for i in range(len(self.Ch1_channel0)):
+                    """legend_range = 0.07
+                    aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
+                    bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
+
+                    ab_set = len(set(aa) & set(bb))   
+                    """
+                    x = self.Ch1_channel0[i]
+                    y = self.Ch1_channel1[i]
+                    a = int(x / steps)
+                    b = int(y / steps)
+                    if a >= 1000:
+                        a = 999
+                    if b >= 1000:
+                        b = 999
+
+                    # checking for density, the value divided by steps serves as the index
+                    density = histo[a][b]
+                    percentage = density / max_density * 100
+    #                 if i % 10000 == 0:
+    #                     print(i)
+                    if 20 > percentage >= 0:
+                        density_listx[0].append(x)
+                        density_listy[0].append(y)
+                    elif 40 > percentage >= 20:
+                        density_listx[1].append(x)
+                        density_listy[1].append(y)
+                    elif 60 > percentage >= 40:
+                        density_listx[2].append(x)
+                        density_listy[2].append(y)
+                    elif 80 > percentage >= 60:
+                        density_listx[3].append(x)
+                        density_listy[3].append(y)
+                    else:
+                        density_listx[4].append(x)
+                        density_listy[4].append(y)
+                for i in range(5):
+                    if i == 0:
+                        red = 0
+                        blue = 255 / 15
+                        green = 255
+                    elif i == 1:
+                        red = 0
+                        blue = 255
+                        green = 255 - 255 / 15
+                    elif i == 2:
+                        red = 255 / 15
+                        blue = 255
+                        green = 0
+                    elif i == 3:
+                        red = 255
+                        blue = 255 - 255 / 15
+                        green = 0
+                    elif i == 4:
+                        red = 255
+                        blue = 255 / 15
+                        green = 255 / 15
+                    else:
+                        red = 255
+                        blue = 255
+                        green = 255
+
+                    self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+                                          symbolSize=5, symbolBrush=(red, blue, green))
+
+
+                #    >0%    0,0,1   blue
+                #    >15%   0,1,1  cyan
+                #    >30%   0,1,0  green
+                #    >45%   1,1,0  yellow
+                #    >60%   1,0,0   red
+                #    >75%   1,1,1   white
+
+                print("draw2 end")
+                # threshold
+                self.thresholdUpdated_2()
 
     def thresholdUpdated_2(self):
         self.graphWidget.removeItem(self.data_line_y)
@@ -3572,11 +3586,19 @@ class Ui_MainWindow(object):
 
         # x
         line_xx = [text_x, text_x]
-        line_yy = [0, max(self.Ch1_channel1)]
+        
+        try:
+            line_yy = [0, max(self.Ch1_channel1)]
+        except:
+            line_yy = [0, 1]
 
         self.data_line_x.setData(line_xx, line_yy)
         # y
-        line_x = [0, max(self.Ch1_channel0)]
+        try:
+            line_x = [0, max(self.Ch1_channel0)]
+        except:
+            line_x = [0, 1]       
+
         line_y = [text_y, text_y]
 
         self.data_line_y.setData(line_x, line_y)
@@ -3641,22 +3663,28 @@ class Ui_MainWindow(object):
             totalpercent3 = 0
             totalpercent4 = 0
             
+        if len(self.Ch1_channel0)!=0:
+            view1 = str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))
+            view2 = str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))
+            view3 = str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))
+            view4 = str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))
+        else:
+            view1 = 0
+            view2 = 0
+            view3 = 0
+            view4 = 0
 
         self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
-        self.tableView_scatterquadrants.setItem(0, 1,
-                                                QTableWidgetItem(str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(0, 1, QTableWidgetItem(view1))
         self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
         self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
-        self.tableView_scatterquadrants.setItem(1, 1,
-                                                QTableWidgetItem(str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(1, 1, QTableWidgetItem(view2))
         self.tableView_scatterquadrants.setItem(1, 2, QTableWidgetItem(str(totalpercent2)))
         self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
-        self.tableView_scatterquadrants.setItem(2, 1,
-                                                QTableWidgetItem(str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(2, 1, QTableWidgetItem(view3))
         self.tableView_scatterquadrants.setItem(2, 2, QTableWidgetItem(str(totalpercent3)))
         self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
-        self.tableView_scatterquadrants.setItem(3, 1,
-                                                QTableWidgetItem(str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))))
+        self.tableView_scatterquadrants.setItem(3, 1, QTableWidgetItem(view4))
         self.tableView_scatterquadrants.setItem(3, 2, QTableWidgetItem(str(totalpercent4)))
         
         
