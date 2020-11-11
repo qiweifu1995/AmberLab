@@ -9,6 +9,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QLineEdit
 
+from pyqtgraph.Qt import QtGui, QtCore
+from pyqtgraph.Point import Point
+import pyqtgraph as pg
+
 import pandas as pd
 import os
 import Helper
@@ -1464,6 +1468,11 @@ class Ui_MainWindow(object):
         self.lineEdit_scatterxvoltage.editingFinished.connect(self.thresholdUpdated_2)
         self.lineEdit_scatteryvoltage.editingFinished.connect(self.thresholdUpdated_2)
         # threshold end
+        
+        
+        
+        
+        
 
         self.tab_widgets_scatter.addTab(self.subtab_scatter, "")
         
@@ -2607,7 +2616,24 @@ class Ui_MainWindow(object):
         self.w = OtherWindow(self)
         self.pushButton_resample.clicked.connect(self.openWindow)
         
+
+
+        self.x = []
+        self.y = []
         
+        self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved) 
+
+    def onMouseMoved(self,point):
+        p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
+        
+        self.graphWidget.plot([p.x()], [p.y()], pen=None, symbol='o')
+            
+        self.x.append(p.x())
+        self.y.append(p.y())
+        
+        self.graphWidget.plot(self.x, self.y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+                   
+#         print(type(self.x))
         
     def reset_linear_plot(self):
         self.linear_plot()
