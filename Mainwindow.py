@@ -21,7 +21,7 @@ import time
 from itertools import islice
 from pyqtgraph import PlotWidget
 import numpy as np
-from PyQt5 import QtGui  # Place this at the top of your file.
+from PyQt5 import QtGui, Qt  # Place this at the top of your file.
 import pyqtgraph as pg
 import statistics
 from scipy.signal import savgol_filter
@@ -2791,6 +2791,8 @@ class Ui_MainWindow(object):
         """update the name of the sweep dropboxes"""
         self.comboBox_option1.clear()
         self.comboBox_option2.clear()
+        self.comboBox_option1.addItem("Current Data")
+        self.comboBox_option2.addItem("Current Data")
         for i in range(self.file_list_view.count()):
             self.comboBox_option1.addItem(self.file_list_view.item(i).text())
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
@@ -3107,22 +3109,25 @@ class Ui_MainWindow(object):
         print("update sweep 1")
         r, g, b = Helper.rgb_select(channel)
         if data_updated:
-            self.sweep_1_data = self.working_data[channel]
-#             self.sweep_1_data = []
-#             if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
-#             if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
-#             if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
-#             if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
-#             if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
-#             if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
-#             if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
-#                 self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
+            #self.sweep_1_data = self.working_data[channel]
+            self.sweep_1_data = []
+            if self.comboBox_option1.currentIndex() == 0:
+                self.sweep_1_data = self.filtered_working_data[channel]
+            else:
+                if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
+                if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
+                if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
+                if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
+                if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
+                if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
+                if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
+                    self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
         range_width = int(max(self.sweep_1_data)) + 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
@@ -3144,22 +3149,25 @@ class Ui_MainWindow(object):
         r, g, b = Helper.rgb_select(channel)
         print("update sweep 2")
         if data_updated:
-            self.sweep_2_data = self.working_data[channel]
-#             self.sweep_2_data = []
-#             if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
-#             if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
-#             if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
-#             if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
-#             if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
-#             if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
-#             if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
-#                 self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+            #self.sweep_2_data = self.working_data[channel]
+            self.sweep_2_data = []
+            if self.comboBox_option2.currentIndex() == 0:
+                self.sweep_2_data = self.filtered_working_data[channel]
+            else:
+                if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
+                if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
+                if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
+                if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
+                if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
+                if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
+                if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
         range_width = int(max(self.sweep_2_data)) + 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
@@ -4031,8 +4039,14 @@ class Ui_MainWindow(object):
         self.width_scatter_channely = self.comboBox_6.currentIndex()        
         
         self.sweep_channel = self.listView_channels_2.currentRow()
-        self.sweep_file_1 = self.comboBox_option1.currentIndex()
-        self.sweep_file_2 = self.comboBox_option2.currentIndex()
+        if self.comboBox_option1.currentIndex() > 0:
+            self.sweep_file_1 = self.comboBox_option1.currentIndex() - 1
+        else:
+            self.sweep_file_1 = self.comboBox_option1.currentIndex()
+        if self.comboBox_option2.currentIndex() > 0:
+            self.sweep_file_2 = self.comboBox_option2.currentIndex() - 1
+        else:
+            self.sweep_file_2 = self.comboBox_option2.currentIndex()
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         self.current_file_dict = self.file_dict_list[self.main_file_select]
         self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
@@ -4252,7 +4266,11 @@ class Ui_MainWindow(object):
 
     def add(self):
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        if self.comboBox_option1.count() == 0:
+            self.comboBox_option1.addItem("Current Data")
+            self.comboBox_option2.addItem("Current Data")
         for f in name:
+            print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
             self.comboBox_option1.addItem(f)
@@ -4268,6 +4286,8 @@ class Ui_MainWindow(object):
         self.comboBox_option1.clear()
         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        self.comboBox_option1.addItem("Current Data")
+        self.comboBox_option2.addItem("Current Data")
         for f in name:
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
@@ -4276,6 +4296,7 @@ class Ui_MainWindow(object):
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
 
 
 
