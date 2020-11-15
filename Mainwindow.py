@@ -4145,6 +4145,9 @@ class Ui_MainWindow(object):
                 
         ### check Voltage threshold(V)  
         threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
+        peaks_threshold = [1,1,1,1]
+        width_min = [0,0,0,0]
+        width_max = [500,500,500,500]
         
         try:
             # test if numbers entered in threshold 
@@ -4162,7 +4165,7 @@ class Ui_MainWindow(object):
                         continue
                     count_field = 0
                     for field in lines:
-                        if field == "Peak Threshold (V)":
+                        if field == "BG Threshold (V)":
                             line_check = count_field
                             record_threshold = True
                         count_field +=1  
@@ -4237,7 +4240,7 @@ class Ui_MainWindow(object):
 
         else:
             print("--------------------------------------------------------reset")
-            a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, width_enable, peak_enable, channel, self.chunksize,
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, self.chunksize,
                                                   0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, stats.ch13_hit,
                                                   stats.ch23_hit, stats.total_sorted)
             

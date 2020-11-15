@@ -16,64 +16,70 @@ class Droplet:
 
 
 class file_extracted_data_Qing:
-    def __init__(self, current_file_dict, threshold, width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", total_count="1"):
-        self.analog_file = {} 
-        
+    def __init__(self, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", total_count="1"):
+        self.analog_file = {}
+
         self.threshold = threshold
 
         if current_file_dict["Ch1 "] != "":
-            print("Extracting Ch1...")      
-            list1, width1 = self.extract(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1', ch1_count)
-            self.analog_file[current_file_dict["Ch1 "]] = [list1, width1]
-            
+            print("Extracting Ch1...")
+            list1, width1, num_peaks1 = self.extract(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1', ch1_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch1 "]] = [list1, width1, num_peaks1]
+
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
-            list2, width2 = self.extract(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2', ch2_count)
-            self.analog_file[current_file_dict["Ch2 "]] = [list2, width2]
-        
+            list2, width2, num_peaks2 = self.extract(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2', ch2_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch2 "]] = [list2, width2, num_peaks2]
+
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
-            list3, width3 = self.extract(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch3', ch3_count)
-            self.analog_file[current_file_dict["Ch3 "]] = [list3, width3]  
-        
+            list3, width3, num_peaks3 = self.extract(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch3', ch3_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch3 "]] = [list3, width3, num_peaks3]
+
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
-            list12, width12 = self.extract(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_2', ch12_count)
-            self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]        
-        
+            list12, width12, num_peaks12 = self.extract(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_2', ch12_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]
+
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
-            list13, width13  = self.extract(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_3', ch13_count)
-            self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13]      
-        
+            list13, width13, num_peaks13 = self.extract(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_3', ch13_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13, num_peaks13]
+
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
-            list23, width23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count)
-            self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23] 
-            
+            list23, width23, num_peaks23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
+
         print("Extracting Peak...")
-        Peaklist, Peakwidth = self.extract(current_file_dict["Peak Record"], self.threshold, width_enable, peak_enable, channel, 1000 , 2, 'Peak Record', total_count)
-        self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth]  
+        Peaklist, Peakwidth, NumPeaks = self.extract(current_file_dict["Peak Record"], self.threshold, width_enable, peak_enable, channel, 1000 , 2, 'Peak Record', total_count, peak_threshold, width_min, width_max)
+        self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
+        print(NumPeaks)
 
 
         print("Done")
-            
-    def extract(self, file, threshold, width_enable=True, peak_enable = False, width_channel=0, user_set_chunk_size=100, header=0, channel_name = "N/A", channel_count = "0"):
+
+    def extract(self, file, threshold,
+                width_enable=True, peak_enable = False, width_channel=0, user_set_chunk_size=100, header=0,
+                channel_name = "N/A", channel_count = "0", peak_threshold=1, peak_min=0, peak_max=1000):
 
         # select channel and threshold
         peak = [[],[],[],[]]
         width =[[],[],[],[]]
+        peak_counts = [[],[],[],[]]
         current_row_number = 0
         row_chunk = 0
+        peak_row_count = 0
         row_count = 0
         for Ch in pd.read_csv(file, chunksize=500000, header=header):
             Ch.columns =[0,1,2,3]
             row_count += len(Ch)
             progress_percentage = round(((row_count+1)/(float(channel_count)*user_set_chunk_size))*100,2)
-            print(channel_name,progress_percentage,"%")             
-            
-            current_row_number = row_chunk + user_set_chunk_size 
+            print(channel_name,progress_percentage,"%")
+
+            current_row_number = row_chunk + user_set_chunk_size
             for channel in range(4):
+                loop_tracker = 0
                 if peak_enable:
                     for row in range(0,len(Ch),user_set_chunk_size):
                         peak[channel].append((round(Ch.iloc[row:(row+user_set_chunk_size),channel].max(),3)))
@@ -101,60 +107,84 @@ class file_extracted_data_Qing:
                         if df1[index_list[i-1]] >= 0:
                             if df1[index_list[i]] <= 0:
                                 current_width = max(index_list[i] - index_list[i-1],current_width)
-                                
+
                     width[channel].append(current_width)
 
-                    for number_of_skip_chunck_after in range(round(len(Ch)/user_set_chunk_size) - 
-                                                             (len(width[channel]) - 
+                    for number_of_skip_chunck_after in range(round(len(Ch)/user_set_chunk_size) -
+                                                             (len(width[channel]) -
                                                               round((current_row_number-user_set_chunk_size)/user_set_chunk_size))):
                         row_chunk += user_set_chunk_size
-                        width[channel].append(0)    
+                        width[channel].append(0)
+
+                    """Code for peak extraction starts here"""
+
+                    peaks_signs = Ch - peak_threshold[channel]
+                    peaks_signs[peaks_signs > 0] = 1
+                    peaks_signs[peaks_signs < 0] = -1
+                    edges = peaks_signs[channel].diff(periods=1).fillna(0)
+                    edges_index = peaks_signs[channel].loc[edges[edges != 0].index]
+                    edges_index_list = edges_index.index
+                    number_of_peaks = 0
+                    for i in range(1,len(edges_index_list)): #check for each direction changing index
+                        """this case deal with when current edge is in next droplet, return peaks count"""
+                        if edges_index.index[i] >= peak_row_count + user_set_chunk_size:
+                            peak_counts[channel].append(number_of_peaks)
+                            number_of_peaks = 0
+                            peak_row_count += user_set_chunk_size
+                            loop_tracker += user_set_chunk_size
+                            """this case deal with when direction change is with the next dorplet"""
+                        elif edges_index[edges_index_list[i-1]] >= 0 and edges_index_list[i-1] >= peak_row_count:
+                            if edges_index[edges_index_list[i]] <= 0:
+                                peak_width = edges_index_list[i] - edges_index_list[i-1]
+                                if peak_min[channel] <= peak_width <= peak_max[channel]:
+                                    number_of_peaks += 1
+                    for skipped_end in range(loop_tracker, len(Ch), user_set_chunk_size):
+                        peak_row_count += user_set_chunk_size
+                        peak_counts[channel].append(0)
 
 #             if row_count>=1500000 :
 #                 print('len(peak[0])',len(peak[0]),len(peak[1]),len(peak[2]),len(peak[3]))
 #                 print('len(width[0])',len(width[0]),len(width[1]),len(width[2]),len(width[3]))
-#                 break 
+#                 break
         for col in range(4):
             peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
 
-                
-                    
-        return (peak, width)
+        return (peak, width, peak_counts)
 
 
 
-    
-    
+
+
 class file_extracted_data:
     def __init__(self, current_file_dict, threshold=0, width_enable=True, channel=0, chunksize=1000, header=0):
-        self.analog_file = {} 
-        
+        self.analog_file = {}
+
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
             self.analog_file[current_file_dict["Ch1 "]] =  self.extract(current_file_dict["Ch1 "], threshold, width_enable, channel, chunksize, header)
-            
+
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
             self.analog_file[current_file_dict["Ch2 "]]  = self.extract(current_file_dict["Ch2 "], threshold, width_enable, channel, chunksize, header)
-            
+
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
             self.analog_file[current_file_dict["Ch3 "]] = self.extract(current_file_dict["Ch3 "], threshold, width_enable, channel, chunksize, header)
-            
+
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
             self.analog_file[current_file_dict["Ch1-2"]] = self.extract(current_file_dict["Ch1-2"], threshold, width_enable, channel, chunksize, header)
 
-            
+
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
             self.analog_file[current_file_dict["Ch1-3"]] = self.extract(current_file_dict["Ch1-3"], threshold, width_enable, channel, chunksize, header)
-            
+
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
             self.analog_file[current_file_dict["Ch2-3"]] = self.extract(current_file_dict["Ch2-3"], threshold, width_enable, channel, chunksize, header)
-            
-            
+
+
         print("Extracting Peak...")
         self.analog_file[current_file_dict['Peak Record']] = self.extract(current_file_dict["Peak Record"], threshold, width_enable, channel, 1000 , 2)
 
@@ -193,8 +223,8 @@ class file_extracted_data:
             droplet_stats.append(Droplet(width_max_holder, max_holder))
         return droplet_stats
 
-  
-  
+
+
 
 # time1 = time.time()
 # # os.chdir('C:/Users/qingy/Desktop/Jupiter/Internship_Amberstone/AmberLab/EXP200225-6')
