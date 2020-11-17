@@ -18,7 +18,7 @@ import os
 import Helper
 import Analysis
 import time
-from itertools import islice
+from itertools import islice,compress
 from pyqtgraph import PlotWidget
 import numpy as np
 from PyQt5 import QtGui, Qt  # Place this at the top of your file.
@@ -26,6 +26,8 @@ import pyqtgraph as pg
 import statistics
 from scipy.signal import savgol_filter
 import csv
+
+import matplotlib.path as mpltPath
 
 class OtherWindow(QWidget):
     def __init__(self,parent = None):
@@ -1331,36 +1333,66 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         spacerItem20 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_4.addItem(spacerItem20, 0, 2, 1, 1)
-        self.radioButton_scatterlinear = QtWidgets.QRadioButton(self.subtab_scatter)
-        self.radioButton_scatterlinear.setChecked(True)
-        self.radioButton_scatterlinear.setObjectName("radioButton_scatterlinear")
-        self.gridLayout_4.addWidget(self.radioButton_scatterlinear, 1, 0, 1, 1)
-        self.radioButton_scatterlog = QtWidgets.QRadioButton(self.subtab_scatter)
-        self.radioButton_scatterlog.setObjectName("radioButton_scatterlog")
-        self.gridLayout_4.addWidget(self.radioButton_scatterlog, 1, 1, 1, 1)
-        self.label_33 = QtWidgets.QLabel(self.subtab_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_33.sizePolicy().hasHeightForWidth())
-        self.label_33.setSizePolicy(sizePolicy)
-        self.label_33.setMinimumSize(QtCore.QSize(60, 0))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_33.setFont(font)
-        self.label_33.setObjectName("label_33")
-        self.gridLayout_4.addWidget(self.label_33, 0, 0, 1, 1)
-        self.horizontalLayout_32 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_32.setObjectName("horizontalLayout_32")
-        self.label_35 = QtWidgets.QLabel(self.subtab_scatter)
-        self.label_35.setObjectName("label_35")
-        self.horizontalLayout_32.addWidget(self.label_35)
-        self.spinBox_scatterscaling = QtWidgets.QSpinBox(self.subtab_scatter)
-        self.spinBox_scatterscaling.setMinimum(2)
-        self.spinBox_scatterscaling.setMaximum(10)
-        self.spinBox_scatterscaling.setObjectName("spinBox_scatterscaling")
-        self.horizontalLayout_32.addWidget(self.spinBox_scatterscaling)
-        self.gridLayout_4.addLayout(self.horizontalLayout_32, 0, 1, 1, 1)
+        
+#         self.radioButton_scatterlinear = QtWidgets.QRadioButton(self.subtab_scatter)
+#         self.radioButton_scatterlinear.setChecked(True)
+#         self.radioButton_scatterlinear.setObjectName("radioButton_scatterlinear")
+#         self.gridLayout_4.addWidget(self.radioButton_scatterlinear, 1, 0, 1, 1)
+#         self.radioButton_scatterlog = QtWidgets.QRadioButton(self.subtab_scatter)
+#         self.radioButton_scatterlog.setObjectName("radioButton_scatterlog")
+#         self.gridLayout_4.addWidget(self.radioButton_scatterlog, 1, 1, 1, 1)
+        
+        
+#         self.label_33 = QtWidgets.QLabel(self.subtab_scatter)
+#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+#         sizePolicy.setHorizontalStretch(0)
+#         sizePolicy.setVerticalStretch(0)
+#         sizePolicy.setHeightForWidth(self.label_33.sizePolicy().hasHeightForWidth())
+#         self.label_33.setSizePolicy(sizePolicy)
+#         self.label_33.setMinimumSize(QtCore.QSize(60, 0))
+#         font = QtGui.QFont()
+#         font.setPointSize(9)
+#         self.label_33.setFont(font)
+#         self.label_33.setObjectName("label_33")
+#         self.gridLayout_4.addWidget(self.label_33, 0, 0, 1, 1)
+
+#         self.label_35 = QtWidgets.QLabel(self.subtab_scatter)
+#         self.label_35.setObjectName("label_35")
+#         self.horizontalLayout_32.addWidget(self.label_35)
+
+#         self.horizontalLayout_32 = QtWidgets.QHBoxLayout()
+#         self.horizontalLayout_32.setObjectName("horizontalLayout_32")        
+        
+#         self.spinBox_scatterscaling = QtWidgets.QSpinBox(self.subtab_scatter)
+#         self.spinBox_scatterscaling.setMinimum(2)
+#         self.spinBox_scatterscaling.setMaximum(10)
+#         self.spinBox_scatterscaling.setObjectName("spinBox_scatterscaling")
+#         self.horizontalLayout_32.addWidget(self.spinBox_scatterscaling)
+
+#         self.gridLayout_4.addLayout(self.horizontalLayout_32, 0, 1, 1, 1)
+
+
+    
+        self.pushButton_9 = QtWidgets.QPushButton(self.subtab_scatter)
+        self.pushButton_9.setMinimumSize(QtCore.QSize(110, 0))
+        self.pushButton_9.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.pushButton_9.setObjectName("pushButton_9")
+        self.gridLayout_4.addWidget(self.pushButton_9, 0, 0, 1, 1)
+#         self.horizontalLayout_32.addWidget(self.pushButton_9)
+        
+
+        self.pushButton_10 = QtWidgets.QPushButton(self.subtab_scatter)
+        self.pushButton_10.setMinimumSize(QtCore.QSize(110, 0))
+        self.pushButton_10.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.pushButton_10.setObjectName("pushButton_10")
+        self.gridLayout_4.addWidget(self.pushButton_10, 0, 1, 1, 1)
+       
+        self.pushButton_11 = QtWidgets.QPushButton(self.subtab_scatter)
+        self.pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
+        self.pushButton_11.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.pushButton_11.setObjectName("pushButton_11")
+        self.gridLayout_4.addWidget(self.pushButton_11, 0, 2, 1, 1)
+        
         self.verticalLayout_9.addLayout(self.gridLayout_4)
         self.line_13 = QtWidgets.QFrame(self.subtab_scatter)
         self.line_13.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1542,6 +1574,8 @@ class Ui_MainWindow(object):
         font.setPointSize(9)
         self.label_22.setFont(font)
         self.label_22.setObjectName("label_22")
+        
+        
         self.gridLayout.addWidget(self.label_22, 0, 0, 1, 1)
         self.radioButton_linear = QtWidgets.QRadioButton(self.tab_gating)
         self.radioButton_linear.setMinimumSize(QtCore.QSize(80, 0))
@@ -1554,6 +1588,8 @@ class Ui_MainWindow(object):
         self.radioButton__logarithmic.setMaximumSize(QtCore.QSize(80, 16777215))
         self.radioButton__logarithmic.setObjectName("radioButton__logarithmic")
         self.gridLayout.addWidget(self.radioButton__logarithmic, 1, 1, 1, 1)
+        
+        
         self.horizontalLayout_24 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_24.setObjectName("horizontalLayout_24")
         self.label_34 = QtWidgets.QLabel(self.tab_gating)
@@ -1793,8 +1829,268 @@ class Ui_MainWindow(object):
         
 ### sweep end
 
+#### subtab polygon linear graph
+        
+        self.tab_4 = QtWidgets.QWidget()
+        self.tab_4.setObjectName("tab_4")
+        self.horizontalLayout_151 = QtWidgets.QHBoxLayout(self.tab_4)
+        self.horizontalLayout_151.setObjectName("horizontalLayout_151")
+        self.verticalLayout_52 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_52.setContentsMargins(5, -1, 5, -1)
+        self.verticalLayout_52.setObjectName("verticalLayout_52")
+        self.gridLayout_42 = QtWidgets.QGridLayout()
+        self.gridLayout_42.setContentsMargins(10, -1, 10, -1)
+        self.gridLayout_42.setObjectName("gridLayout_42")
+        self.label_181 = QtWidgets.QLabel(self.tab_4)
+        self.label_181.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_181.setObjectName("label_181")
+        self.gridLayout_42.addWidget(self.label_181, 0, 0, 1, 2)
+        self.label_183 = QtWidgets.QLabel(self.tab_4)
+        self.label_183.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_183.setObjectName("label_183")
+        self.gridLayout_42.addWidget(self.label_183, 7, 0, 1, 2)
+        
+        #pushbutton5
+        self.pushButton_6 = QtWidgets.QPushButton(self.tab_4)
+        self.pushButton_6.setObjectName("pushButton_6")
+#         self.gridLayout_42.addWidget(self.pushButton_5, 8, 0, 1, 2)
+        self.gridLayout_42.addWidget(self.pushButton_6, 8, 0, 1, 2)
+        
+#         self.pushButton_3 = QtWidgets.QPushButton(self.tab_3)
+        self.pushButton_7 = QtWidgets.QPushButton(self.tab_4)
+    
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_7.sizePolicy().hasHeightForWidth())
+        self.pushButton_7.setSizePolicy(sizePolicy)
+        self.pushButton_7.setObjectName("pushButton_7")
+        self.gridLayout_42.addWidget(self.pushButton_7, 12, 0, 1, 2)
+        self.label_180 = QtWidgets.QLabel(self.tab_4)
+        self.label_180.setAlignment(QtCore.Qt.AlignCenter)
+#         self.label_270.setObjectName("label_270")
+        self.label_180.setObjectName("label_180")
+    
+        self.gridLayout_42.addWidget(self.label_180, 3, 0, 1, 1)
+        self.label_182 = QtWidgets.QLabel(self.tab_4)
+        self.label_182.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_182.setObjectName("label_182")
+        self.gridLayout_42.addWidget(self.label_182, 5, 0, 1, 1)
+        
+#         self.pushButton_4 = QtWidgets.QPushButton(self.tab_3)
+        self.pushButton_8 = QtWidgets.QPushButton(self.tab_4)
+        
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_8.sizePolicy().hasHeightForWidth())
+        self.pushButton_8.setSizePolicy(sizePolicy)
+        self.pushButton_8.setObjectName("pushButton_8")
+        self.gridLayout_42.addWidget(self.pushButton_8, 11, 0, 1, 2)
+        
+#         self.lineEdit_32 = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_36 = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_36.sizePolicy().hasHeightForWidth())
+        self.lineEdit_36.setSizePolicy(sizePolicy)
+        self.lineEdit_36.setObjectName("lineEdit_36")
+        self.gridLayout_42.addWidget(self.lineEdit_36, 3, 1, 1, 1)
+        
+        
+        
+        
+#         self.lineEdit_35 = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_37 = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_37.sizePolicy().hasHeightForWidth())
+        self.lineEdit_37.setSizePolicy(sizePolicy)
+        self.lineEdit_37.setObjectName("lineEdit_37")
+        self.gridLayout_42.addWidget(self.lineEdit_37, 6, 1, 1, 1)
+        
+        self.label_188 = QtWidgets.QLabel(self.tab_4)
+        self.label_188.setAlignment(QtCore.Qt.AlignCenter)
+#         self.label_278.setObjectName("label_278")
+        self.label_188.setObjectName("label_188")
+        self.gridLayout_42.addWidget(self.label_188, 6, 0, 1, 1)
+        
+        
+        
+        
+#         self.comboBox_13 = QtWidgets.QComboBox(self.tab_3)
+        self.comboBox_14 = QtWidgets.QComboBox(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox_14.sizePolicy().hasHeightForWidth())
+        self.comboBox_14.setSizePolicy(sizePolicy)
+        self.comboBox_14.setObjectName("comboBox_13")
+#         self.comboBox_14.addItem("Ch1 ")
+#         self.comboBox_14.addItem("Ch2 ")
+#         self.comboBox_14.addItem("Ch3 ")
+#         self.comboBox_14.addItem("Ch1-2")
+#         self.comboBox_14.addItem("Ch1-3")
+#         self.comboBox_14.addItem("Ch2-3")
+#         self.comboBox_14.addItem("Peak Record")
+        self.gridLayout_42.addWidget(self.comboBox_14, 1, 0, 1, 2)
+        
+        
+#         self.lineEdit_31 = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_38 = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_38.sizePolicy().hasHeightForWidth())
+        self.lineEdit_38.setSizePolicy(sizePolicy)
+        self.lineEdit_38.setObjectName("lineEdit_38")
+        self.gridLayout_42.addWidget(self.lineEdit_38, 5, 1, 1, 1)
+        
+#         self.lineEdit_32.setText("0")
+#         self.lineEdit_31.setText("15")
+#         self.lineEdit_35.setText("0")
+        self.lineEdit_36.setText("0")
+        self.lineEdit_38.setText("15")
+        self.lineEdit_37.setText("0")
+        
+        
+        
+#         self.layout_vertical_checkbox_2 = QtWidgets.QVBoxLayout()
+        self.layout_vertical_checkbox_3 = QtWidgets.QVBoxLayout()
+        self.layout_vertical_checkbox_3.setObjectName("layout_vertical_checkbox_3")
+        
+        self.polygon_channel_1 = QtWidgets.QCheckBox(self.centralwidget)
+        self.polygon_channel_1.setObjectName("self.polygon_channel_1")
+        
+        self.polygon_channel_2 = QtWidgets.QCheckBox(self.centralwidget)
+        self.polygon_channel_2.setObjectName("self.polygon_channel_2")
+  
+        self.polygon_channel_3 = QtWidgets.QCheckBox(self.centralwidget)
+        self.polygon_channel_3.setObjectName("self.polygon_channel_3")
+        
+        self.polygon_channel_4 = QtWidgets.QCheckBox(self.centralwidget)
+        self.polygon_channel_4.setObjectName("self.polygon_channel_4")
+        
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_1)
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_2)
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_3)
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_4)
 
-#### subtab peak leanear graph
+        self.polygon_channel_1.setChecked(True)
+        self.polygon_channel_2.setChecked(True)
+        self.polygon_channel_3.setChecked(True)
+        self.polygon_channel_4.setChecked(True)
+
+        self.gridLayout_42.addItem(self.layout_vertical_checkbox_3, 14, 0, 1,2 )
+        
+        
+#         self.label_277 = QtWidgets.QLabel(self.tab_3)
+        self.label_187 = QtWidgets.QLabel(self.tab_4)
+        self.label_187.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_187.setObjectName("label_187")
+        self.gridLayout_42.addWidget(self.label_187, 15, 0, 1, 2)
+        
+        self.polygon_Smooth_enable = QtWidgets.QCheckBox(self.tab_4)
+        self.polygon_Smooth_enable.setObjectName("polygon_Smooth_enable")
+        self.gridLayout_42.addWidget(self.polygon_Smooth_enable, 16, 0, 1, 2)        
+        
+        
+        
+#         self.lineEdit_33 = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_39 = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_39.sizePolicy().hasHeightForWidth())
+        self.lineEdit_39.setSizePolicy(sizePolicy)
+        self.lineEdit_39.setObjectName("lineEdit_39")
+        self.gridLayout_42.addWidget(self.lineEdit_39, 17, 1, 1, 1)
+
+        
+
+#         self.lineEdit_34 = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_40 = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_40.sizePolicy().hasHeightForWidth())
+        self.lineEdit_40.setSizePolicy(sizePolicy)
+        self.lineEdit_40.setObjectName("lineEdit_40")
+        self.gridLayout_42.addWidget(self.lineEdit_40, 18, 1, 1, 1)
+
+        
+#         self.lineEdit_33.setText("7")
+#         self.lineEdit_34.setText("29")
+        self.lineEdit_39.setText("7")
+        self.lineEdit_40.setText("29")
+        
+        
+        
+#         self.label_275 = QtWidgets.QLabel(self.tab_3)
+        self.label_185 = QtWidgets.QLabel(self.tab_4)
+        self.label_185.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_185.setObjectName("label_185")
+        self.gridLayout_42.addWidget(self.label_185, 17, 0, 1, 1)
+#         self.label_276 = QtWidgets.QLabel(self.tab_3)
+        self.label_186 = QtWidgets.QLabel(self.tab_4)
+        self.label_186.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_186.setObjectName("label_186")
+        self.gridLayout_42.addWidget(self.label_186, 18, 0, 1, 1)  
+
+        
+        
+        spacerItem28 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_42.addItem(spacerItem28, 13, 0, 1, 2)        
+        
+        spacerItem27 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_42.addItem(spacerItem27, 9, 0, 1, 2)
+        
+#         self.label_274 = QtWidgets.QLabel(self.tab_3)
+        self.label_184 = QtWidgets.QLabel(self.tab_4)
+        self.label_184.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_184.setObjectName("label_184")
+        self.gridLayout_42.addWidget(self.label_184, 10, 0, 1, 2)
+        self.verticalLayout_52.addLayout(self.gridLayout_42)
+        
+        spacerItem29 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_52.addItem(spacerItem29)
+        
+        self.horizontalLayout_151.addLayout(self.verticalLayout_52)
+        
+        self.line_101 = QtWidgets.QFrame(self.tab_4)
+        self.line_101.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_101.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_101.setObjectName("line_101")
+        self.horizontalLayout_151.addWidget(self.line_101)
+        
+#         self.widget_28 = QtWidgets.QWidget(self.tab_3)
+        self.widget_29 = PlotWidget(self.tab_4)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_29.sizePolicy().hasHeightForWidth())
+        self.widget_29.setSizePolicy(sizePolicy)
+        self.widget_29.setMinimumSize(QtCore.QSize(500, 500))
+        self.widget_29.setObjectName("widget_29")
+        self.horizontalLayout_151.addWidget(self.widget_29)
+        
+        
+
+        styles = {"color": "r", "font-size": "20px"}
+        self.widget_29.setLabel('left', 'Height', **styles)
+        self.widget_29.setBackground('w')
+        
+        self.tab_widgets_scatter.addTab(self.tab_4, "")
+        
+#### polygon linear end
+
+
+
+
+#### subtab peak linear graph
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.horizontalLayout_150 = QtWidgets.QHBoxLayout(self.tab_3)
@@ -2563,6 +2859,10 @@ class Ui_MainWindow(object):
         self.pushButton_4.clicked.connect(self.last_page)
         self.pushButton_3.clicked.connect(self.next_page)
         
+        self.pushButton_6.clicked.connect(self.polygon_reset_linear_plot)
+        self.pushButton_8.clicked.connect(self.polygon_last_page)
+        self.pushButton_7.clicked.connect(self.polygon_next_page)        
+        
         self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
         self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
         self.lineEdit_increments.textChanged.connect(self.sweep_update)
@@ -2602,6 +2902,11 @@ class Ui_MainWindow(object):
         self.channel_3.stateChanged.connect(self.linear_plot)
         self.channel_4.stateChanged.connect(self.linear_plot)
         
+        self.polygon_channel_1.stateChanged.connect(self.polygon_linear_plot)
+        self.polygon_channel_2.stateChanged.connect(self.polygon_linear_plot)
+        self.polygon_channel_3.stateChanged.connect(self.polygon_linear_plot)
+        self.polygon_channel_4.stateChanged.connect(self.polygon_linear_plot)
+        
         self.recalculate_peak_dataset = True
 
         self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
@@ -2620,25 +2925,221 @@ class Ui_MainWindow(object):
 
         self.x = []
         self.y = []
+        self.polygon = []
         
         self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved) 
 
+        
+        self.polygon_trigger = False
+        self.pushButton_9.clicked.connect(self.polygon_triggering)
+        self.pushButton_10.clicked.connect(self.polygon_clean)
+        self.pushButton_11.clicked.connect(self.polygon_linear_plot)
+        
+        
+    def polygon_triggering(self):
+        self.polygon_trigger = True
+        
+    def polygon_clean(self):
+        self.x = []
+        self.y = []
+        self.polygon = []
+        self.graphWidget.removeItem(self.polygon_points)
+        self.graphWidget.removeItem(self.polygon_lines)
+        self.polygon_trigger = False
     def onMouseMoved(self,point):
-        p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
-        
-        self.graphWidget.plot([p.x()], [p.y()], pen=None, symbol='o')
+        if self.polygon_trigger:
+            try:            
+                self.graphWidget.removeItem(self.polygon_points)
+                self.graphWidget.removeItem(self.polygon_lines)
+            except:
+                print("Start Polygon")
+            p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
+
+            self.x.append(p.x())
+            self.y.append(p.y())
+            self.polygon_points = self.graphWidget.plot(self.x, self.y, pen=None, symbol='o')
+            self.polygon_lines = self.graphWidget.plot(self.x, self.y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
+
+
+            self.polygon.append([p.x(),p.y()])
+            self.points = list(zip(self.Ch1_channel0,self.Ch1_channel1))
+
+            path = mpltPath.Path(self.polygon)
+            self.inside2 = path.contains_points(self.points)
+#             points_inside = list(compress(self.points, inside2))
+#             print(points_inside)
             
-        self.x.append(p.x())
-        self.y.append(p.y())
+            # show the dots have index before the first filter
+            self.points_inside = list(compress(self.points_inside_square, self.inside2))
+            
+            # reset polygon upperbond
+            self.lineEdit_38.setText(str(15))
+            
+    def polygon_linear_plot(self):
         
-        self.graphWidget.plot(self.x, self.y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine))
-                   
-#         print(type(self.x))
+        self.widget_29.clear()
+#         text1 = self.comboBox.currentText()
+
+        polygon_text = self.comboBox_14.currentText()
+
+        polygon_index = int(self.comboBox_14.currentIndex())
+        polygon_length = 0
+        for i in range(polygon_index):
+            print(self.comboBox_14.itemText(i))
+            polygon_length += len(self.analog[self.current_file_dict[self.comboBox_14.itemText(i)]][0][0])
+               
+        print(polygon_length)
+        print(len(self.analog[self.current_file_dict[polygon_text]][0][0]))
+        polygon_length_end = polygon_length + len(self.analog[self.current_file_dict[polygon_text]][0][0])
+        
+        index_in_all_selected_channel = [x for x, x in enumerate(self.points_inside) if x > polygon_length and x <= polygon_length_end]
+        
+        
+        index_in_current_channel = [x - polygon_length for x in index_in_all_selected_channel]
+        
+        print("index_in_all_selected_channel",index_in_all_selected_channel)
+        print("index_in_current_channel",index_in_current_channel)
+        
+        # find data in csv file
+        text1 = self.comboBox_14.currentText()
+        
+        header = 0
+        
+        try:
+            if int(self.lineEdit_37.text())>0:
+                sample_size = int(self.lineEdit_37.text())
+                if text1 == "Peak Record":
+                    header = 2
+                print(sample_size)
+            else:
+                sample_size = 100
+                if text1 == "Peak Record":
+                    header = 2
+                    sample_size = 1000
+                    print(sample_size)
+        except:
+            sample_size = 100
+            if text1 == "Peak Record":
+                header = 2
+                sample_size = 1000
+                print(sample_size)
+                
+
+        lower_bond = int(self.lineEdit_36.text())
+        upper_bond = int(self.lineEdit_38.text())
+        nrows = upper_bond - lower_bond
+        if nrows>15:
+            self.lineEdit_38.setText(str(lower_bond + 15))
+            nrows = 15
+
+        print("upper_bond",upper_bond)
+        
+        if len(index_in_current_channel) < upper_bond :
+            upper_bond  = len(index_in_current_channel)
+#             self.lineEdit_38.setText(str(upper_bond))
+            nrows = upper_bond - lower_bond
+#         else:
+#             upper_bond  = len(index_in_current_channel)
+#             self.lineEdit_38.setText(str(upper_bond))
+#             nrows = upper_bond - lower_bond           
+
+        
+        self.main_file_select = self.file_list_view.currentRow()
+        self.current_file_dict = self.file_dict_list[self.main_file_select]
+        os.chdir(self.current_file_dict["Root Folder"])
+        file = self.current_file_dict[text1]    
+        
+        
+        
+        data = pd.DataFrame({0: [],1: [], 2: [],3: []},)
+
+        for x in range(lower_bond,upper_bond):
+            print(x)
+            i = index_in_current_channel[x]
+            skip_rows = i * sample_size 
+            polygon_data = pd.read_csv(file, skiprows = skip_rows, nrows=sample_size, header=header) 
+            length = len(polygon_data.columns) 
+            polygon_data.columns = list(range(0,length))
+            data = pd.concat([data,polygon_data])
+        
+#         print(polygon_data)
+        
+        
+        height_data = data[0].values.tolist()
+        height_index = list(range(len(height_data)))
+
+        poly_degree = int(self.lineEdit_39.text())
+        window_length = int(self.lineEdit_40.text())//2 *2-1
+        self.widget_29.addLegend()  
+        
+        
+        for i in range(0,sample_size * nrows,sample_size):         
+            self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
+
+                
+        if self.polygon_Smooth_enable.isChecked():
+            if self.polygon_channel_1.isChecked():
+                height_data = savgol_filter(data[0], window_length, poly_degree)
+                pen = pg.mkPen(color=(83, 229, 29), width=2)
+                self.widget_29.plot(height_index,height_data, name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_2.isChecked():
+                height_data = savgol_filter(data[1], window_length, poly_degree)
+                pen = pg.mkPen(color=(238, 17, 47), width=2)
+                self.widget_29.plot(height_index,height_data, name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_3.isChecked():
+                height_data = savgol_filter(data[2], window_length, poly_degree)
+                pen = pg.mkPen(color=(48, 131, 240), width=2)
+                self.widget_29.plot(height_index,height_data, name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_4.isChecked():
+                height_data = savgol_filter(data[3], window_length, poly_degree)
+                pen = pg.mkPen(color=(238, 134, 30), width=2)
+                self.widget_29.plot(height_index,height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+        else:
+            if self.polygon_channel_1.isChecked():
+                pen = pg.mkPen(color=(83, 229, 29), width=2)
+                self.widget_29.plot(height_index,data[0].values.tolist(), name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_2.isChecked():
+                pen = pg.mkPen(color=(238, 17, 47), width=2)
+                self.widget_29.plot(height_index,data[1].values.tolist(), name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_3.isChecked():
+                pen = pg.mkPen(color=(48, 131, 240), width=2)
+                self.widget_29.plot(height_index,data[2].values.tolist(), name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            if self.polygon_channel_4.isChecked():
+                pen = pg.mkPen(color=(238, 134, 30), width=2)
+                self.widget_29.plot(height_index,data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+
+        
+    def polygon_reset_linear_plot(self):
+        self.polygon_linear_plot()
+        self.widget_29.autoRange()
+        
+    def polygon_last_page(self):
+        lower_bond = int(self.lineEdit_36.text())
+        upper_bond = int(self.lineEdit_38.text())
+        nrows = upper_bond - lower_bond        
+        
+        self.lineEdit_36.setText(str(lower_bond - nrows))
+        self.lineEdit_38.setText(str(upper_bond - nrows))
+        
+        self.polygon_linear_plot()
+        
+    def polygon_next_page(self):
+        lower_bond = int(self.lineEdit_36.text())
+        upper_bond = int(self.lineEdit_38.text())
+        nrows = upper_bond - lower_bond        
+        
+        self.lineEdit_36.setText(str(lower_bond + nrows))
+        self.lineEdit_38.setText(str(upper_bond + nrows))
+
+        self.polygon_linear_plot()        
+                
+        
         
     def reset_linear_plot(self):
         self.linear_plot()
         self.widget_28.autoRange()
         
+
     def last_page(self):
         lower_bond = int(self.lineEdit_32.text())
         upper_bond = int(self.lineEdit_31.text())
@@ -2657,8 +3158,8 @@ class Ui_MainWindow(object):
         
         self.lineEdit_32.setText(str(lower_bond + nrows))
         self.lineEdit_31.setText(str(upper_bond + nrows))
-        
-        
+
+            
         self.linear_plot()        
         
     def linear_plot(self):
@@ -2671,8 +3172,9 @@ class Ui_MainWindow(object):
         
         try:
             if int(self.lineEdit_35.text())>0:
-                header = 2
                 sample_size = int(self.lineEdit_35.text())
+                if text1 == "Peak Record":
+                    header = 2
                 print(sample_size)
             else:
                 sample_size = 100
@@ -2807,9 +3309,7 @@ class Ui_MainWindow(object):
             self.peak_width_working_data  = []
             for i in range(4):
                 self.peak_width_working_data.append([])
-            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
-                for i in range(4):
-                    self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
+
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][1][i]
@@ -2828,6 +3328,10 @@ class Ui_MainWindow(object):
             if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][1][i]
+            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                for i in range(4):
+                    self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
+                    
             if len(self.peak_width_working_data) == 0:
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
@@ -2841,9 +3345,7 @@ class Ui_MainWindow(object):
             for i in range(4):
                 self.working_data.append([])
                 self.filtered_working_data.append([])
-            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
-                for i in range(4):
-                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
+
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Ch1 ']][0][i]                  
@@ -2862,6 +3364,9 @@ class Ui_MainWindow(object):
             if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Ch2-3']][0][i]
+            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]                  
             if len(self.working_data) == 0:
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
@@ -3167,7 +3672,7 @@ class Ui_MainWindow(object):
                 if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
                 if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
-                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]  
         range_width = int(max(self.sweep_2_data)) + 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
@@ -3377,9 +3882,9 @@ class Ui_MainWindow(object):
         width_index2 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
 
         
-        self.points_inside_square = list(set(width_index1).intersection(set(width_index2)))
+        points_inside_square = list(set(width_index1).intersection(set(width_index2)))
         
-        self.lineEdit_gatevoltage_5.setText(str(len(self.points_inside_square)))
+        self.lineEdit_gatevoltage_5.setText(str(len(points_inside_square)))
         
         
 
@@ -3481,10 +3986,11 @@ class Ui_MainWindow(object):
 
                 elif self.comboBox_2.currentIndex()==3: 
                     points_inside_square = self.width_index3                   
-                          
+                        
+            self.points_inside_square = points_inside_square
             peak_data_x = self.working_data[self.comboBox.currentIndex()]  
             peak_data_y = self.working_data[self.comboBox_2.currentIndex()] 
-
+        
             
             if len(points_inside_square) !=0:
                 self.filtered_working_data[self.comboBox.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
@@ -3596,6 +4102,7 @@ class Ui_MainWindow(object):
                         blue = 255
                         green = 255
 
+                        
                     self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
                                           symbolSize=5, symbolBrush=(red, blue, green))
 
@@ -3875,10 +4382,11 @@ class Ui_MainWindow(object):
         self.comboBox_2.setItemText(2, _translate("MainWindow", "Ultra Violet"))
         self.comboBox_2.setItemText(3, _translate("MainWindow", "Orange"))
         self.label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))
-        self.radioButton_scatterlinear.setText(_translate("MainWindow", "Linear"))
-        self.radioButton_scatterlog.setText(_translate("MainWindow", "Logarithmic"))
-        self.label_33.setText(_translate("MainWindow", "Scaling"))
-        self.label_35.setText(_translate("MainWindow", "Base"))
+#         self.radioButton_scatterlinear.setText(_translate("MainWindow", "Linear"))
+#         self.radioButton_scatterlog.setText(_translate("MainWindow", "Logarithmic"))
+
+#         self.label_33.setText(_translate("MainWindow", "Scaling"))
+#         self.label_35.setText(_translate("MainWindow", "Base"))
         self.label_36.setText(_translate("MainWindow", "Quadrants"))
         self.label_37.setText(_translate("MainWindow", "X Axis"))
         self.label_38.setText(_translate("MainWindow", "Y Axis"))
@@ -3982,6 +4490,30 @@ class Ui_MainWindow(object):
         self.tab_widget_peak_width.setTabText(self.tab_widget_peak_width.indexOf(self.sub_tab_width_histogram), 
                                               _translate("MainWindow", "Histogram")) 
         self.label_271.setText(_translate("MainWindow", "Channel Selection"))
+        
+        self.label_180.setText(_translate("MainWindow", "Start Peak"))
+        self.label_181.setText(_translate("MainWindow", "Channel Selection"))
+        self.label_182.setText(_translate("MainWindow", "End Peak"))
+        self.label_183.setText(_translate("MainWindow", "*Peak difference < 15"))
+        self.label_184.setText(_translate("MainWindow", "Last/Next"))
+        self.label_185.setText(_translate("MainWindow", "Polynomial Order"))
+        self.label_186.setText(_translate("MainWindow", "Smooth Level"))
+        self.label_187.setText(_translate("MainWindow", "Smoothing"))
+        self.label_188.setText(_translate("MainWindow", "Custom Sample Size"))
+        self.polygon_Smooth_enable.setText(_translate("MainWindow", "Enable smooth?"))
+        self.pushButton_6.setText(_translate("MainWindow", "Generate Plot"))
+        self.pushButton_7.setText(_translate("MainWindow", "Next Page"))
+        self.pushButton_8.setText(_translate("MainWindow", "Last Page"))
+        self.polygon_channel_1.setText(_translate("MainWindow", "Channel 1"))
+        self.polygon_channel_2.setText(_translate("MainWindow", "Channel 2"))
+        self.polygon_channel_3.setText(_translate("MainWindow", "Channel 3"))
+        self.polygon_channel_4.setText(_translate("MainWindow", "Channel 4"))
+        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.tab_4), _translate("MainWindow", "Polygon Linear Graph"))
+                        
+        self.pushButton_9.setText(_translate("MainWindow", "Ploygon"))
+        self.pushButton_10.setText(_translate("MainWindow", "Clean"))
+        self.pushButton_11.setText(_translate("MainWindow", "Plot"))
+        
         self.label_270.setText(_translate("MainWindow", "Start Peak"))
         self.label_272.setText(_translate("MainWindow", "End Peak"))
         self.label_273.setText(_translate("MainWindow", "*Peak difference < 15"))
@@ -4017,6 +4549,7 @@ class Ui_MainWindow(object):
 
     def pressed(self):
         print('pressed')
+        
         # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         self.main_file_select = self.file_list_view.currentRow()
         self.ch1_checkbox = self.checkbox_ch1.isChecked()
@@ -4027,7 +4560,7 @@ class Ui_MainWindow(object):
         self.ch23_checkbox = self.checkbox_ch23.isChecked()
         self.all_checkbox = self.checkBox_7.isChecked()
 
-            
+
             
         self.histo_channel = self.listView_channels.currentRow()
         self.histo_bins = float(self.lineEdit_binwidth.text())
@@ -4134,12 +4667,6 @@ class Ui_MainWindow(object):
         except: reset = False
         
         
-        
-        
-        
-        
-        
-        
 
                 
                 
@@ -4223,6 +4750,9 @@ class Ui_MainWindow(object):
         print("filter condition change check is :",self.filter_update)
         print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
             
+            
+        self.polygon_clean()
+                
         if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
@@ -4241,7 +4771,7 @@ class Ui_MainWindow(object):
         else:
             print("--------------------------------------------------------reset")
             a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, self.chunksize,
-                                                  0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, stats.ch13_hit,
+                                                 0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, stats.ch13_hit,
                                                   stats.ch23_hit, stats.total_sorted)
             
 
@@ -4265,15 +4795,38 @@ class Ui_MainWindow(object):
             
             
             print("complete!")
+            
+                
+                
+        # add item to polygon linear plot tab
+        self.comboBox_14.clear()
+        
+        if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+            self.comboBox_14.addItem("Ch1 ")            
+        if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+            self.comboBox_14.addItem("Ch2 ")
+        if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+            self.comboBox_14.addItem("Ch3 ")
+        if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+            self.comboBox_14.addItem("Ch1-2")
+        if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+            self.comboBox_14.addItem("Ch1-3")
+        if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+            self.comboBox_14.addItem("Ch2-3")
+        if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+            self.comboBox_14.addItem("Peak Record")
+
+        
         ### End
 
     def add(self):
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        self.comboBox_option1.addItem("Current Data")
+        self.comboBox_option2.addItem("Current Data")
         if self.comboBox_option1.count() == 0:
             self.comboBox_option1.addItem("Current Data")
             self.comboBox_option2.addItem("Current Data")
         for f in name:
-            print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
             self.comboBox_option1.addItem(f)
@@ -4289,9 +4842,8 @@ class Ui_MainWindow(object):
         self.comboBox_option1.clear()
         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
-        self.comboBox_option1.addItem("Current Data")
-        self.comboBox_option2.addItem("Current Data")
         for f in name:
+            print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
             self.comboBox_option1.addItem(f)
@@ -4299,7 +4851,6 @@ class Ui_MainWindow(object):
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-
 
 
 
