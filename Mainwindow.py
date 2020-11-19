@@ -4751,7 +4751,7 @@ class Ui_MainWindow(object):
         print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
             
             
-        self.polygon_clean()
+#         self.polygon_clean()
                 
         if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
             print("--------------------------------------------------------not reset")
