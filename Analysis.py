@@ -52,7 +52,7 @@ class file_extracted_data_Qing:
             print("Extracting Ch2-3...")
             list23, width23, num_peaks23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
-
+        """
         print("Extracting Peak... Parallel")
         start = time.time()
         Peaklist, Peakwidth, NumPeaks = self.extract_parallel(current_file_dict["Peak Record"], self.threshold, width_enable,
@@ -61,7 +61,7 @@ class file_extracted_data_Qing:
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
         end = time.time()
         print("parallel extrack time: ", str(start-end))
-
+        """
         print("Extracting Peak...")
         start = time.time()
         Peaklist, Peakwidth, NumPeaks = self.extract(current_file_dict["Peak Record"], self.threshold, width_enable, peak_enable, channel, 1000 , 2, 'Peak Record', total_count, peak_threshold, width_min, width_max)
@@ -84,7 +84,8 @@ class file_extracted_data_Qing:
         row_chunk = 0
         peak_row_count = 0
         row_count = 0
-        for Ch in pd.read_csv(file, chunksize=500000, header=header):
+        for Ch in pd.read_csv(file, chunksize=2000000, header=header):
+            start = time.time()
             Ch.columns =[0,1,2,3]
             row_count += len(Ch)
             progress_percentage = round(((row_count+1)/(float(channel_count)*user_set_chunk_size))*100,2)
@@ -154,11 +155,14 @@ class file_extracted_data_Qing:
                     for skipped_end in range(loop_tracker, len(Ch), user_set_chunk_size):
                         peak_row_count += user_set_chunk_size
                         peak_counts[channel].append(0)
+            end = time.time() - start
+            print("single core execution time: ", str(end))
 
 #             if row_count>=1500000 :
 #                 print('len(peak[0])',len(peak[0]),len(peak[1]),len(peak[2]),len(peak[3]))
 #                 print('len(width[0])',len(width[0]),len(width[1]),len(width[2]),len(width[3]))
 #                 break
+
         for col in range(4):
             peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
 
@@ -177,43 +181,57 @@ class file_extracted_data_Qing:
         row_chunk = 0
         peak_row_count = 0
         row_count = 0
-        for Ch in pd.read_csv(file, chunksize=500000, header=header):
+        for Ch in pd.read_csv(file, chunksize=2000000, header=header):
             Ch.columns =[0,1,2,3]
             row_count += len(Ch)
             progress_percentage = round(((row_count+1)/(float(channel_count)*user_set_chunk_size))*100,2)
             print(channel_name,progress_percentage,"%")
 
             current_row_number = row_chunk + user_set_chunk_size
-            processes = []
+            start = time.time()
             with concurrent.futures.ProcessPoolExecutor() as executor:
-                peak_result = [executor.submit(peak_finder, args=(channel, Ch, user_set_chunk_size)) for channel in range(4)]
-                width_result = [executor.submit(width_finder, args=(channel, Ch, threshold,
+                timer_start = time.time()
+                peak_result = [executor.submit(peak_finder, channel, Ch, user_set_chunk_size) for channel in range(4)]
+                width_result = [executor.submit(width_finder,channel, Ch, threshold,
                                                                                        current_row_number,
-                                                                                       user_set_chunk_size)) for channel in range(4)]
-                num_result = [executor.submit(peak_num_finder, args=(channel, Ch,
-                                                                                        peak_threshold, peak_row_count,
-                                                                                        user_set_chunk_size,
-                                                                                        0, peak_min, peak_max)) for channel in range(4)]
+                                                                                       user_set_chunk_size) for channel in range(4)]
+                num_result = [executor.submit(peak_num_finder, channel, Ch, peak_threshold, peak_row_count, user_set_chunk_size, 0, peak_min, peak_max) for channel in range(4)]
+                timer_end = time.time() - timer_start
+                print("allocation timer: ",str(timer_end))
                 for result in concurrent.futures.as_completed(peak_result):
-                    print(result.result())
+                    holder = result.result()
+                    peak[holder[1]].append(holder[0])
+                for result in concurrent.futures.as_completed(width_result):
+                    holder = result.result()
+                    width[holder[1]].append(holder[0])
+                for result in concurrent.futures.as_completed(num_result):
+                    holder = result.result()
+                    peak_counts[holder[1]].append(holder[0])
 
 #             if row_count>=1500000 :
 #                 print('len(peak[0])',len(peak[0]),len(peak[1]),len(peak[2]),len(peak[3]))
 #                 print('len(width[0])',len(width[0]),len(width[1]),len(width[2]),len(width[3]))
 #                 break
+            end = time.time() - start
+            print("executor timer: ", str(end))
 
         for col in range(4):
             peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
+
         return (peak, width, peak_counts)
 
 
 def peak_finder(channel, Ch, user_set_chunk_size):
+    start = time.time()
+    peak = []
     for row in range(0, len(Ch), user_set_chunk_size):
-        peak = [(round(Ch.iloc[row:(row + user_set_chunk_size), channel].max(), 3))]
-    print("peak finder done")
+        peak.append(round(Ch.iloc[row:(row + user_set_chunk_size), channel].max(),3))
+    end = time.time()-start
+    print("peak finder done, time: ", str(end))
     return peak, channel
 
 def width_finder(channel, Ch, threshold, current_row_number, user_set_chunk_size):
+    start = time.time()
     sign = Ch[channel] - threshold[channel]
     sign[sign > 0] = 1
     sign[sign < 0] = -1
@@ -244,12 +262,15 @@ def width_finder(channel, Ch, threshold, current_row_number, user_set_chunk_size
                                               round((current_row_number - user_set_chunk_size) / user_set_chunk_size))):
         row_chunk += user_set_chunk_size
         width.append(0)
-    print("width finder done")
+    end = time.time() - start
+    print("width finder done, time: ", str(end))
+
     return width, channel
 
 
 def peak_num_finder(channel, Ch, peak_threshold, peak_row_count, user_set_chunk_size, loop_tracker,
                     peak_min, peak_max):
+    start = time.time()
     peak_counts = []
     peaks_signs = Ch[channel] - peak_threshold[channel]
     peaks_signs[peaks_signs > 0] = 1
@@ -274,7 +295,8 @@ def peak_num_finder(channel, Ch, peak_threshold, peak_row_count, user_set_chunk_
     for skipped_end in range(loop_tracker, len(Ch), user_set_chunk_size):
         peak_row_count += user_set_chunk_size
         peak_counts.append(0)
-    print("peak num finder done")
+    end = time.time() - start
+    print("peak num finder done, time: ", str(end))
     return peak_counts, channel
 
 
