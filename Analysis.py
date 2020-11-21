@@ -52,10 +52,10 @@ class file_extracted_data_Qing:
             print("Extracting Ch2-3...")
             list23, width23, num_peaks23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
-        """
+
         print("Extracting Peak... Parallel")
         start = time.time()
-        Peaklist, Peakwidth, NumPeaks = self.extract_parallel(current_file_dict["Peak Record"], self.threshold, width_enable,
+        Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
                                                      peak_enable, channel, 1000, 2, 'Peak Record', total_count,
                                                      peak_threshold, width_min, width_max)
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
@@ -68,7 +68,7 @@ class file_extracted_data_Qing:
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
         end = time.time()
         print("normal extrack time", str(start-end))
-
+        """
 
         print("Done")
 
@@ -84,7 +84,7 @@ class file_extracted_data_Qing:
         row_chunk = 0
         peak_row_count = 0
         row_count = 0
-        for Ch in pd.read_csv(file, chunksize=2000000, header=header):
+        for Ch in pd.read_csv(file, chunksize=20000000, header=header):
             start = time.time()
             Ch.columns =[0,1,2,3]
             row_count += len(Ch)
@@ -213,6 +213,7 @@ class file_extracted_data_Qing:
 #                 print('len(width[0])',len(width[0]),len(width[1]),len(width[2]),len(width[3]))
 #                 break
             end = time.time() - start
+            print("executor timer raw: ", str(time.time()))
             print("executor timer: ", str(end))
 
         for col in range(4):
@@ -220,8 +221,47 @@ class file_extracted_data_Qing:
 
         return (peak, width, peak_counts)
 
+    def extract_parallel2(self, file, threshold,
+                width_enable=True, peak_enable=False, width_channel=0, user_set_chunk_size=100, header=0,
+                channel_name="N/A", channel_count="0", peak_threshold=1, peak_min=0, peak_max=1000):
+
+        # select channel and threshold
+        peak = [[], [], [], []]
+        width = [[], [], [], []]
+        peak_counts = [[], [], [], []]
+        current_row_number = 0
+        row_chunk = 0
+        peak_row_count = 0
+        row_count = 0
+        for Ch in pd.read_csv(file, chunksize=20000000, header=header):
+            start = time.time()
+            Ch.columns = [0, 1, 2, 3]
+            row_count += len(Ch)
+            progress_percentage = round(((row_count + 1) / (float(channel_count) * user_set_chunk_size)) * 100, 2)
+            print(channel_name, progress_percentage, "%")
+
+            current_row_number = row_chunk + user_set_chunk_size
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                extracted_data = [executor.submit(data_extractor, Ch[channel], threshold[channel], peak_threshold[channel], current_row_number, peak_row_count, user_set_chunk_size, peak_max[channel], peak_min[channel], channel) for channel in range(4)]
+                for f in concurrent.futures.as_completed(extracted_data):
+                    holder = f.result()
+                    for x in holder[1]:
+                        peak[holder[0]].append(x)
+                    for x in holder[2]:
+                        width[holder[0]].append(x)
+                    for x in holder[3]:
+                        peak_counts[holder[0]].append(x)
+            print("Parallel execution time", str(time.time()-start))
+
+        """
+        for col in range(4):
+            peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
+        """
+        return peak, width, peak_counts
+
 
 def peak_finder(channel, Ch, user_set_chunk_size):
+    print("Peak Finder Start: ", str(time.time()))
     start = time.time()
     peak = []
     for row in range(0, len(Ch), user_set_chunk_size):
@@ -231,6 +271,7 @@ def peak_finder(channel, Ch, user_set_chunk_size):
     return peak, channel
 
 def width_finder(channel, Ch, threshold, current_row_number, user_set_chunk_size):
+    print("Width Finder Start: ", str(time.time()))
     start = time.time()
     sign = Ch[channel] - threshold[channel]
     sign[sign > 0] = 1
@@ -270,6 +311,7 @@ def width_finder(channel, Ch, threshold, current_row_number, user_set_chunk_size
 
 def peak_num_finder(channel, Ch, peak_threshold, peak_row_count, user_set_chunk_size, loop_tracker,
                     peak_min, peak_max):
+    print("Peak Num Start: ", str(time.time()))
     start = time.time()
     peak_counts = []
     peaks_signs = Ch[channel] - peak_threshold[channel]
@@ -298,6 +340,74 @@ def peak_num_finder(channel, Ch, peak_threshold, peak_row_count, user_set_chunk_
     end = time.time() - start
     print("peak num finder done, time: ", str(end))
     return peak_counts, channel
+
+
+def data_extractor(Ch, threshold, peak_threshold, current_row_number, peak_row_count, user_set_chunk_size, peak_max, peak_min, channel):
+    loop_tracker = 0
+    peak = []
+    width = []
+    peak_counts = []
+    for row in range(0, len(Ch), user_set_chunk_size):
+        peak.append(round(Ch.iloc[row:(row + user_set_chunk_size)].max(), 3))
+
+    sign = Ch - threshold
+    sign[sign > 0] = 1
+    sign[sign < 0] = -1
+    diff1 = sign.diff(periods=1).fillna(0)
+    df1 = sign.loc[diff1[diff1 != 0].index]
+    index_list = df1.index
+    row_chunk = current_row_number
+    current_width = 0
+    for i in range(1, len(index_list)):
+        # 0~99
+        if df1.index[i] > row_chunk:
+            width.append(current_width)
+            current_width = 0
+            for number_of_skip_chunck in range((df1.index[i] - row_chunk) // user_set_chunk_size):
+                width.append(current_width)
+                row_chunk += user_set_chunk_size
+            row_chunk += user_set_chunk_size
+            continue
+        if df1[index_list[i - 1]] >= 0:
+            if df1[index_list[i]] <= 0:
+                current_width = max(index_list[i] - index_list[i - 1], current_width)
+
+    width.append(current_width)
+
+    for number_of_skip_chunck_after in range(round(len(Ch) / user_set_chunk_size) -
+                                             (len(width) -
+                                              round((current_row_number - user_set_chunk_size) / user_set_chunk_size))):
+        row_chunk += user_set_chunk_size
+        width.append(0)
+
+        """Code for peak extraction starts here"""
+
+    peaks_signs = Ch - peak_threshold
+    peaks_signs[peaks_signs > 0] = 1
+    peaks_signs[peaks_signs < 0] = -1
+    edges = peaks_signs.diff(periods=1).fillna(0)
+    edges_index = peaks_signs.loc[edges[edges != 0].index]
+    edges_index_list = edges_index.index
+    number_of_peaks = 0
+    for i in range(1, len(edges_index_list)):  # check for each direction changing index
+        """this case deal with when current edge is in next droplet, return peaks count"""
+        if edges_index.index[i] >= peak_row_count + user_set_chunk_size:
+            peak_counts.append(number_of_peaks)
+            number_of_peaks = 0
+            peak_row_count += user_set_chunk_size
+            loop_tracker += user_set_chunk_size
+            """this case deal with when direction change is with the next dorplet"""
+        elif edges_index[edges_index_list[i - 1]] >= 0 and edges_index_list[i - 1] >= peak_row_count:
+            if edges_index[edges_index_list[i]] <= 0:
+                peak_width = edges_index_list[i] - edges_index_list[i - 1]
+                if peak_min <= peak_width <= peak_max:
+                    number_of_peaks += 1
+    for skipped_end in range(loop_tracker, len(Ch), user_set_chunk_size):
+        peak_row_count += user_set_chunk_size
+        peak_counts.append(0)
+    return channel, peak, width, peak_counts
+
+
 
 
 class file_extracted_data:
