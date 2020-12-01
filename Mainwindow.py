@@ -3918,34 +3918,43 @@ class Ui_MainWindow(object):
         
         if self.update or self.filter_update or self.reanalysis:
             self.peak_width_working_data  = []
+            self.peak_num_working_data = []
             for i in range(4):
                 self.peak_width_working_data.append([])
 
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][2][i]
             if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][2][i]
             if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][2][i]
             if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][2][i]
             if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][2][i]
             if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
                     
             if len(self.peak_width_working_data) == 0:
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
             print("self.peak_width_working_data under working data",len(self.peak_width_working_data[0]),len(self.peak_width_working_data))        
             self.draw_peak_width(True)
             self.draw_peak_width_2(True)
@@ -5535,8 +5544,25 @@ class Ui_MainWindow(object):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
-
-
+    def peak_num_comparison(self, mode, channel, index, number):
+        """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
+        if mode == 0:
+            if self.peak_num_working_data[channel][index] >= number:
+                return True
+            else:
+                return False
+        elif mode == 1:
+            if self.peak_num_working_data[channel][index] == number:
+                return True
+            else:
+                return False
+        elif mode == 2:
+            if self.peak_num_working_data[channel][index] <= number:
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
 if __name__ == "__main__":
