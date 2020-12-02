@@ -3658,7 +3658,7 @@ class Ui_MainWindow(object):
             
     def polygon_linear_plot(self):
             
-        if self.polygon_trigger == True:
+        if self.subgating_polygon_trigger == True:
             try:
                 path = mpltPath.Path(self.subgating_polygon)
                 self.subgating_inside2 = path.contains_points(self.subgating_points)
@@ -3678,16 +3678,12 @@ class Ui_MainWindow(object):
             self.polygon_trigger == False
         
             try:
-                self.subgating_graphWidget.removeItem(self.polygon_points)
+                self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
                 for i in range(len(self.subgating_polygon_lines)):
                     self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
             except:
                 print("no subgating polygon drawed")
-                
-                
-        print("self.points_inside_square after subgating",self.points_inside_square)
-        print("self.subgating_inside2 after subgating",self.subgating_inside2)
-        print("self.subgating_points_inside after subgating",self.subgating_points_inside)
+
         
         self.widget_29.clear()
 #         text1 = self.comboBox.currentText()
@@ -4020,31 +4016,31 @@ class Ui_MainWindow(object):
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][2][i]
             if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][2][i]
             if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][2][i]
             if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][2][i]
             if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][2][i]
             if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
-                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
+#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
 
             if len(self.peak_width_working_data) == 0:
                 for i in range(4):
