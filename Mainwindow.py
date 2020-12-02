@@ -3392,6 +3392,7 @@ class Ui_MainWindow(object):
 
       
     def subgating_scatter(self):
+        self.tab_widgets_main.setCurrentIndex(3)
         if self.polygon_trigger == True:
             try:
                 path = mpltPath.Path(self.polygon)
@@ -3657,7 +3658,13 @@ class Ui_MainWindow(object):
 
             
     def polygon_linear_plot(self):
-            
+#         self.tab_widgets_main.setCurrentIndex(2)
+        
+                    
+#         self.tab_widgets_main.addTab(self.tab_subgating, "")
+#         self.subgating_verticalLayout_4.addWidget(self.tab_widgets_subgating)
+#         self.tab_widgets_subgating.addTab(self.subgating_subtab_scatter, "")
+
         if self.subgating_polygon_trigger == True:
             try:
                 path = mpltPath.Path(self.subgating_polygon)
