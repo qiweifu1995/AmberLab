@@ -779,8 +779,8 @@ class Ui_MainWindow(object):
         self.gridLayout_13.addWidget(self.lineEdit_8, 2, 2, 1, 1)
         self.lineEdit_5.setText("-1")
         self.lineEdit_6.setText("-1")
-        self.lineEdit_7.setText("100")
-        self.lineEdit_8.setText("100")
+        self.lineEdit_7.setText("1000")
+        self.lineEdit_8.setText("1000")
         self.label_91 = QtWidgets.QLabel(self.sub_tab_width_scatter)
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -2530,11 +2530,9 @@ class Ui_MainWindow(object):
         self.lineEdit_38.setObjectName("lineEdit_38")
         self.gridLayout_42.addWidget(self.lineEdit_38, 5, 1, 1, 1)
         
-#         self.lineEdit_32.setText("0")
-#         self.lineEdit_31.setText("15")
-#         self.lineEdit_35.setText("0")
+
         self.lineEdit_36.setText("0")
-        self.lineEdit_38.setText("15")
+        self.lineEdit_38.setText("5")
         self.lineEdit_37.setText("0")
         
         
@@ -3403,7 +3401,7 @@ class Ui_MainWindow(object):
                 print("points extracted")
 
             # reset polygon upperbond
-            self.lineEdit_38.setText(str(15))
+            self.lineEdit_38.setText(str(5))
             # reset points count
             points_inside = 'Inside: 0'
             self.polygon_inside_label_29.setText(points_inside) 
@@ -3483,8 +3481,7 @@ class Ui_MainWindow(object):
                 # checking for density, the value divided by steps serves as the index
                 density = histo[a][b]
                 percentage = density / max_density * 100
-#                 if i % 10000 == 0:
-#                     print(i)
+
                 if 20 > percentage >= 0:
                     density_listx[0].append(x)
                     density_listy[0].append(y)
@@ -3555,13 +3552,9 @@ class Ui_MainWindow(object):
             # show the dots have index before the first filter
             self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
             
-            print("self.points_inside_square before subgating",self.points_inside_square)
-            print("self.inside2 before subgating",self.inside2)
-            print("self.points_inside before subgating",self.points_inside)
             points_inside = 'Inside: ' + str(len(self.points_inside))
             self.polygon_inside_label_29.setText(points_inside) 
-            # reset polygon upperbond
-#             self.lineEdit_38.setText(str(15))      
+     
             self.polygon = []
             self.x = []
             self.y = []
@@ -3576,24 +3569,24 @@ class Ui_MainWindow(object):
             self.subgating_points_inside = []
             self.subgating_polygon = []
         else:
-            path = mpltPath.Path(self.subgating_polygon)
-            self.subgating_inside2 = path.contains_points(self.subgating_points)
+            if self.subgating_polygon != []:
+                path = mpltPath.Path(self.subgating_polygon)
+                self.subgating_inside2 = path.contains_points(self.subgating_points)
 
-            start_end_dot_x = [self.subgating_x[0],self.subgating_x[-1]]
-            start_end_dot_y = [self.subgating_y[0],self.subgating_y[-1]]            
-            self.subgating_polygon_lines.append(self.subgating_graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
-            
-            
-            # find the dots are circled
-            self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
-            
-            points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
-            self.subgating_polygon_inside_label_29.setText(points_inside) 
-            # reset polygon upperbond
-            self.lineEdit_38.setText(str(15))      
-            self.subgating_polygon = []
-            self.subgating_x = []
-            self.subgating_y = []
+                start_end_dot_x = [self.subgating_x[0],self.subgating_x[-1]]
+                start_end_dot_y = [self.subgating_y[0],self.subgating_y[-1]]            
+                self.subgating_polygon_lines.append(self.subgating_graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+
+
+                # find the dots are circled
+                self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
+
+                points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
+                self.subgating_polygon_inside_label_29.setText(points_inside) 
+      
+                self.subgating_polygon = []
+                self.subgating_x = []
+                self.subgating_y = []
         
     def subgating_polygon_clean(self):
         self.subgating_polygon_inside_label_29.setText('Inside: 0') 
@@ -3665,31 +3658,34 @@ class Ui_MainWindow(object):
 #         self.subgating_verticalLayout_4.addWidget(self.tab_widgets_subgating)
 #         self.tab_widgets_subgating.addTab(self.subgating_subtab_scatter, "")
 
-        if self.subgating_polygon_trigger == True:
-            try:
-                path = mpltPath.Path(self.subgating_polygon)
-                self.subgating_inside2 = path.contains_points(self.subgating_points)
-                # find which dots are circled    
-                self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
-            except:
-                print("points extracted")
+        self.subgating_polygon_triggering()
+    
+
+#         try:
+#             path = mpltPath.Path(self.subgating_polygon)
+#             self.subgating_inside2 = path.contains_points(self.subgating_points)
+#             # find which dots are circled    
+#             self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
+#         except:
+#             print("points extracted")
             
-            points_inside = 'Inside: 0'
-            self.subgating_polygon_inside_label_29.setText(points_inside)                 
-            # reset polygon upperbond
-            self.lineEdit_38.setText(str(15))  
-            
-            self.subgating_polygon = []
-            self.subgating_x = []
-            self.subgating_y = []     
-            self.polygon_trigger == False
+#         points_inside = 'Inside: 0'
+#         self.subgating_polygon_inside_label_29.setText(points_inside)                 
+        # reset linear plot bond
+#         self.lineEdit_36.setText(str(0))  
+#         self.lineEdit_38.setText(str(5))  
+
+#         self.subgating_polygon = []
+#         self.subgating_x = []
+#         self.subgating_y = []     
+        self.polygon_trigger == False
         
-            try:
-                self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
-                for i in range(len(self.subgating_polygon_lines)):
-                    self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
-            except:
-                print("no subgating polygon drawed")
+#             try:
+#                 self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
+#                 for i in range(len(self.subgating_polygon_lines)):
+#                     self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
+#             except:
+#                 print("no subgating polygon drawed")
 
         
         self.widget_29.clear()
@@ -3701,7 +3697,6 @@ class Ui_MainWindow(object):
         polygon_length = 0
         
         for i in range(polygon_index):
-            print(self.comboBox_14.itemText(i))
             polygon_length += len(self.analog[self.current_file_dict[self.comboBox_14.itemText(i)]][0][0])
                
         polygon_length_end = polygon_length + len(self.analog[self.current_file_dict[polygon_text]][0][0])
@@ -3722,104 +3717,97 @@ class Ui_MainWindow(object):
                 sample_size = int(self.lineEdit_37.text())
                 if text1 == "Peak Record":
                     header = 2
-                print(sample_size)
             else:
                 sample_size = 100
                 if text1 == "Peak Record":
                     header = 2
                     sample_size = 1000
-                    print(sample_size)
         except:
             sample_size = 100
             if text1 == "Peak Record":
                 header = 2
                 sample_size = 1000
-                print(sample_size)
-                
+    
 
-        lower_bond = int(self.lineEdit_36.text())
         upper_bond = int(self.lineEdit_38.text())
-        nrows = upper_bond - lower_bond
-        if nrows>15:
-            self.lineEdit_38.setText(str(lower_bond + 15))
-            nrows = 15
-
-        print("upper_bond",upper_bond)
-        
-        if len(index_in_current_channel) < upper_bond :
-            upper_bond  = len(index_in_current_channel)
-#             self.lineEdit_38.setText(str(upper_bond))
+        lower_bond = int(self.lineEdit_36.text())
+        if lower_bond < len(index_in_current_channel):
+            
+            # fix exceeded upper bond
+            if len(index_in_current_channel) < upper_bond :
+                upper_bond  = len(index_in_current_channel)
+                self.lineEdit_38.setText(str(upper_bond))
             nrows = upper_bond - lower_bond
-#         else:
-#             upper_bond  = len(index_in_current_channel)
-#             self.lineEdit_38.setText(str(upper_bond))
-#             nrows = upper_bond - lower_bond           
+            
+            if nrows>15:
+                self.lineEdit_38.setText(str(lower_bond + 15))
+                nrows = 15        
+            self.main_file_select = self.file_list_view.currentRow()
+            self.current_file_dict = self.file_dict_list[self.main_file_select]
+            os.chdir(self.current_file_dict["Root Folder"])
+            file = self.current_file_dict[text1]    
 
-        
-        self.main_file_select = self.file_list_view.currentRow()
-        self.current_file_dict = self.file_dict_list[self.main_file_select]
-        os.chdir(self.current_file_dict["Root Folder"])
-        file = self.current_file_dict[text1]    
-        
-        
-        
-        data = pd.DataFrame({0: [],1: [], 2: [],3: []},)
 
-        for x in range(lower_bond,upper_bond):
-#             print(x)
-            i = index_in_current_channel[x]
-            skip_rows = i * sample_size 
-            polygon_data = pd.read_csv(file, skiprows = skip_rows, nrows=sample_size, header=header) 
-            length = len(polygon_data.columns) 
-            polygon_data.columns = list(range(0,length))
-            data = pd.concat([data,polygon_data])
-        
-#         print(polygon_data)
-        
-        
-        height_data = data[0].values.tolist()
-        height_index = list(range(len(height_data)))
 
-        poly_degree = int(self.lineEdit_39.text())
-        window_length = int(self.lineEdit_40.text())//2 *2-1
-        self.widget_29.addLegend()  
-        
-        
-        for i in range(0,sample_size * nrows,sample_size):         
-            self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
+            data = pd.DataFrame({0: [],1: [], 2: [],3: []},)
 
-                
-        if self.polygon_Smooth_enable.isChecked():
-            if self.polygon_channel_1.isChecked():
-                height_data = savgol_filter(data[0], window_length, poly_degree)
-                pen = pg.mkPen(color=(83, 229, 29), width=2)
-                self.widget_29.plot(height_index,height_data, name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_2.isChecked():
-                height_data = savgol_filter(data[1], window_length, poly_degree)
-                pen = pg.mkPen(color=(238, 17, 47), width=2)
-                self.widget_29.plot(height_index,height_data, name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_3.isChecked():
-                height_data = savgol_filter(data[2], window_length, poly_degree)
-                pen = pg.mkPen(color=(48, 131, 240), width=2)
-                self.widget_29.plot(height_index,height_data, name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_4.isChecked():
-                height_data = savgol_filter(data[3], window_length, poly_degree)
-                pen = pg.mkPen(color=(238, 134, 30), width=2)
-                self.widget_29.plot(height_index,height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-        else:
-            if self.polygon_channel_1.isChecked():
-                pen = pg.mkPen(color=(83, 229, 29), width=2)
-                self.widget_29.plot(height_index,data[0].values.tolist(), name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_2.isChecked():
-                pen = pg.mkPen(color=(238, 17, 47), width=2)
-                self.widget_29.plot(height_index,data[1].values.tolist(), name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_3.isChecked():
-                pen = pg.mkPen(color=(48, 131, 240), width=2)
-                self.widget_29.plot(height_index,data[2].values.tolist(), name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
-            if self.polygon_channel_4.isChecked():
-                pen = pg.mkPen(color=(238, 134, 30), width=2)
-                self.widget_29.plot(height_index,data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            print("index_in_current_channel",index_in_current_channel)
 
+            for x in range(lower_bond,upper_bond):
+                i = index_in_current_channel[x]
+                skip_rows = i * sample_size 
+                polygon_data = pd.read_csv(file, skiprows = skip_rows, nrows=sample_size, header=header) 
+                length = len(polygon_data.columns) 
+                polygon_data.columns = list(range(0,length))
+                data = pd.concat([data,polygon_data])
+
+    #         print(polygon_data)
+
+
+            height_data = data[0].values.tolist()
+            height_index = list(range(len(height_data)))
+
+            poly_degree = int(self.lineEdit_39.text())
+            window_length = int(self.lineEdit_40.text())//2 *2-1
+            self.widget_29.addLegend()  
+
+
+            for i in range(0,sample_size * nrows,sample_size):         
+                self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
+
+
+            if self.polygon_Smooth_enable.isChecked():
+                if self.polygon_channel_1.isChecked():
+                    height_data = savgol_filter(data[0], window_length, poly_degree)
+                    pen = pg.mkPen(color=(83, 229, 29), width=2)
+                    self.widget_29.plot(height_index,height_data, name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_2.isChecked():
+                    height_data = savgol_filter(data[1], window_length, poly_degree)
+                    pen = pg.mkPen(color=(238, 17, 47), width=2)
+                    self.widget_29.plot(height_index,height_data, name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_3.isChecked():
+                    height_data = savgol_filter(data[2], window_length, poly_degree)
+                    pen = pg.mkPen(color=(48, 131, 240), width=2)
+                    self.widget_29.plot(height_index,height_data, name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_4.isChecked():
+                    height_data = savgol_filter(data[3], window_length, poly_degree)
+                    pen = pg.mkPen(color=(238, 134, 30), width=2)
+                    self.widget_29.plot(height_index,height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+            else:
+                if self.polygon_channel_1.isChecked():
+                    pen = pg.mkPen(color=(83, 229, 29), width=2)
+                    self.widget_29.plot(height_index,data[0].values.tolist(), name='Channel_1', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_2.isChecked():
+                    pen = pg.mkPen(color=(238, 17, 47), width=2)
+                    self.widget_29.plot(height_index,data[1].values.tolist(), name='Channel_2', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_3.isChecked():
+                    pen = pg.mkPen(color=(48, 131, 240), width=2)
+                    self.widget_29.plot(height_index,data[2].values.tolist(), name='Channel_3', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_4.isChecked():
+                    pen = pg.mkPen(color=(238, 134, 30), width=2)
+                    self.widget_29.plot(height_index,data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
+        else: 
+            print("Enter a new lower bond value")
         self.widget_29.autoRange()
         
     def polygon_reset_linear_plot(self):
@@ -4091,12 +4079,12 @@ class Ui_MainWindow(object):
             print("self.working_data",len(self.working_data),len(self.working_data[0]),len(self.working_data[1]),len(self.working_data[2]),len(self.working_data[3]))        
 
         ### filter data by using min and max width
-        
+
         if self.filtered_working_data[3] == [] or self.filtered_working_data[2] == []:
-            self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= -1 and x <= 100]
-            self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= -1 and x <= 100]
-            self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= -1 and x <= 100]
-            self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= -1 and x <= 100]
+            self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0])]
+            self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1])]
+            self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2])]
+            self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3])]
             self.filtered_working_data[0] = self.working_data[0]
             self.filtered_working_data[1] = self.working_data[1]
             self.filtered_working_data[2] = self.working_data[2]
@@ -4156,25 +4144,6 @@ class Ui_MainWindow(object):
                 elif self.comboBox_6.currentIndex()==3:
                     self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= max(float(self.lineEdit_5.text()),float(self.lineEdit_6.text())) 
                                          and x <= min(float(self.lineEdit_7.text()),float(self.lineEdit_8.text()))]                        
-
-                    
-#                 width_data = self.peak_width_working_data[self.comboBox_5.currentIndex()]
-#                 width_index1 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-
-#                 ## y-axis
-#                 width_data = self.peak_width_working_data[self.comboBox_6.currentIndex()]
-#                 width_index2 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-
-#                 points_inside_square = [value for value in width_index1 if value in width_index2]
-
-#             peak_data_x = self.working_data[self.comboBox_5.currentIndex()]  
-#             peak_data_y = self.working_data[self.comboBox_6.currentIndex()] 
-    
-
-
-#             self.filtered_working_data[self.comboBox_5.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
-#             self.filtered_working_data[self.comboBox_6.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
-            
             
             self.recalculate_peak_dataset = False
      
@@ -4302,22 +4271,6 @@ class Ui_MainWindow(object):
         
 
 
-#     def thresholdUpdated_peak_width(self):
-#         width_count = len(self.peak_width)
-#         self.lineEdit_percentage.setText(str(width_count))
-
-#         text_x = float(self.lineEdit_gatevoltage_2.text())
-#         # x
-#         line_xx = [text_x, text_x]
-#         line_yy = [0, 200]
-
-#         self.data_line_peak_width.setData(line_xx, line_yy)
-
-#         filtered_gate_voltage_x = [x for x in self.peak_width if x > text_x]
-        
-
-#         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.peak_width), 2)
-#         self.lineEdit_percentage.setText(str(percentage))
         
     def update_sweep_graphs(self, bypass=False):
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
@@ -4390,6 +4343,7 @@ class Ui_MainWindow(object):
             else:
                 if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
                     self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
+                    print("self.analog[self.sweep_2_dict['Peak Record']][0][channel]",self.analog[self.sweep_2_dict['Peak Record']][0][channel])
                 if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
                 if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
@@ -5304,7 +5258,7 @@ class Ui_MainWindow(object):
         self.polygon_channel_2.setText(_translate("MainWindow", "Channel 2"))
         self.polygon_channel_3.setText(_translate("MainWindow", "Channel 3"))
         self.polygon_channel_4.setText(_translate("MainWindow", "Channel 4"))
-        self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_4), _translate("MainWindow", "Polygon Linear Graph"))
+        self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_4), _translate("MainWindow", "User defined linear graph"))
                         
         self.pushButton_9.setText(_translate("MainWindow", "Ploygon"))
         self.pushButton_10.setText(_translate("MainWindow", "Clean"))
