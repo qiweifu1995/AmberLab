@@ -8,7 +8,8 @@
 
 from PyQt5 import QtGui  # Place this at the top of your file.
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QLineEdit
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, \
+    QWidget, QLineEdit
 
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.Point import Point
@@ -19,7 +20,7 @@ import os
 import Helper
 import Analysis
 import time
-from itertools import islice,compress
+from itertools import islice, compress
 from pyqtgraph import PlotWidget
 import numpy as np
 
@@ -799,9 +800,7 @@ class Ui_MainWindow(object):
         self.label_95.setFont(font)
         self.label_95.setObjectName("label_95")
         self.verticalLayout_16.addWidget(self.label_95)
-                
-        
-      
+
         self.gridLayout_16 = QtWidgets.QGridLayout()
         self.gridLayout_16.setContentsMargins(-1, 0, -1, -1)
         self.gridLayout_16.setObjectName("gridLayout_16")
@@ -877,12 +876,10 @@ class Ui_MainWindow(object):
         self.label_93.setObjectName("label_93")
         self.verticalLayout_16.addWidget(self.label_93)
 
-        
-        self.lineEdit_9.setText("default")
-        self.lineEdit_10.setText("default")
-        self.lineEdit_11.setText("default")
-        self.lineEdit_12.setText("default")
-        
+        self.lineEdit_9.setText("0")
+        self.lineEdit_10.setText("0")
+        self.lineEdit_11.setText("0")
+        self.lineEdit_12.setText("0")
 
         self.horizontalLayout_49 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_49.setObjectName("horizontalLayout_41")
@@ -920,11 +917,11 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltage_6.setMaximumSize(QtCore.QSize(100, 16777215))
         self.lineEdit_gatevoltage_6.setObjectName("lineEdit_gatevoltage_6")
         self.horizontalLayout_49.addWidget(self.lineEdit_gatevoltage_6)
-        
+
         spacerItem21 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_49.addItem(spacerItem21)
         self.verticalLayout_16.addLayout(self.horizontalLayout_49)
-        
+
         self.layout_horizontal_update_2 = QtWidgets.QHBoxLayout()
         self.layout_horizontal_update_2.setObjectName("layout_horizontal_update_2")
         self.button_update_2 = QtWidgets.QPushButton(self.sub_tab_width_scatter)
@@ -933,13 +930,10 @@ class Ui_MainWindow(object):
         self.button_update_2.setObjectName("button_update_2")
         self.layout_horizontal_update_2.addWidget(self.button_update_2)
         self.verticalLayout_16.addLayout(self.layout_horizontal_update_2)
-        
 
+        ####### multipeak
 
-####### multipeak
-
-
-        #Peak Num Updater
+        # Peak Num Updater
         self.line_peak_num = QtWidgets.QFrame(self.sub_tab_width_scatter)
         self.line_peak_num.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_peak_num.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -1606,8 +1600,9 @@ class Ui_MainWindow(object):
         # set row count
         self.tableView_scatterquadrants.setRowCount(4)
         # set column count
-        self.tableView_scatterquadrants.setColumnCount(3)
-        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '%', '% Total Droplets'))
+        self.tableView_scatterquadrants.setColumnCount(7)
+        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '%', '% Total Droplets', 'X Single Peak %',
+                                                                   'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
         self.tableView_scatterquadrants.setVerticalHeaderLabels(
             ('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
 
@@ -2162,9 +2157,8 @@ class Ui_MainWindow(object):
         self.subgating_verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab_subgating)
         self.subgating_verticalLayout_4.setObjectName("subgating_verticalLayout_4")
         self.tab_widgets_subgating = QtWidgets.QTabWidget(self.tab_subgating)
-        self.tab_widgets_subgating.setObjectName("tab_widgets_subgating")        
-        
-        
+        self.tab_widgets_subgating.setObjectName("tab_widgets_subgating")
+
         self.subgating_subtab_scatter = QtWidgets.QWidget()
         self.subgating_subtab_scatter.setObjectName("subgating_subtab_scatter")
         self.subgating_horizontalLayout_29 = QtWidgets.QHBoxLayout(self.subgating_subtab_scatter)
@@ -4003,58 +3997,63 @@ class Ui_MainWindow(object):
         
         
         if self.update or self.filter_update or self.reanalysis:
-            self.peak_width_working_data  = []
+            self.peak_width_working_data = []
             self.peak_num_working_data = []
             for i in range(4):
                 self.peak_width_working_data.append([])
+                self.peak_num_working_data.append([])
 
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1 ']][2][i]
             if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2 ']][2][i]
             if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch3 ']][2][i]
             if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-2']][2][i]
             if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch1-3']][2][i]
             if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
-#                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
 
             if len(self.peak_width_working_data) == 0:
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
-            print("self.peak_width_working_data under working data",len(self.peak_width_working_data[0]),len(self.peak_width_working_data))        
+            self.peak_num_filter()
+            print("self.peak_width_working_data under working data", len(self.peak_width_working_data[0]),
+                  len(self.peak_width_working_data))
             self.draw_peak_width(True)
             self.draw_peak_width_2(True)
-            
+
         if self.update:
             self.working_data = []
             self.filtered_working_data = []
+            self.filtered_peak_num_working_data = []
             for i in range(4):
                 self.working_data.append([])
                 self.filtered_working_data.append([])
+                self.filtered_peak_num_working_data.append([])
 
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 for i in range(4):
-                    self.working_data[i] += self.analog[self.current_file_dict['Ch1 ']][0][i]                  
+                    self.working_data[i] += self.analog[self.current_file_dict['Ch1 ']][0][i]
             if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Ch2 ']][0][i]
@@ -4072,13 +4071,14 @@ class Ui_MainWindow(object):
                     self.working_data[i] += self.analog[self.current_file_dict['Ch2-3']][0][i]
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
-                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]                  
+                    self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
             if len(self.working_data) == 0:
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
-            print("self.working_data",len(self.working_data),len(self.working_data[0]),len(self.working_data[1]),len(self.working_data[2]),len(self.working_data[3]))        
+            print("self.working_data", len(self.working_data), len(self.working_data[0]), len(self.working_data[1]),
+                  len(self.working_data[2]), len(self.working_data[3]))
 
-        ### filter data by using min and max width
+            ### filter data by using min and max width
 
         if self.filtered_working_data[3] == [] or self.filtered_working_data[2] == []:
             self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0])]
@@ -4089,64 +4089,99 @@ class Ui_MainWindow(object):
             self.filtered_working_data[1] = self.working_data[1]
             self.filtered_working_data[2] = self.working_data[2]
             self.filtered_working_data[3] = self.working_data[3]
-            
+            self.filtered_peak_num_working_data = self.peak_num_working_data.copy()
 
                         
 
             
             
         if self.recalculate_peak_dataset == True:
-                ## x-axis
-            if self.comboBox_5.currentIndex()==0:
-                self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex()==0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= max(float(self.lineEdit_5.text()),float(self.lineEdit_6.text())) 
-                                         and x <= min(float(self.lineEdit_7.text()),float(self.lineEdit_8.text()))]
-                elif self.comboBox_6.currentIndex()==1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-  
-            elif self.comboBox_5.currentIndex()==1:
-                self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex()==0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= max(float(self.lineEdit_5.text()),float(self.lineEdit_6.text())) 
-                                         and x <= min(float(self.lineEdit_7.text()),float(self.lineEdit_8.text()))]                    
-                elif self.comboBox_6.currentIndex()==2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                  
-            elif self.comboBox_5.currentIndex()==2:                        
-                self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex()==0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= max(float(self.lineEdit_5.text()),float(self.lineEdit_6.text())) 
-                                         and x <= min(float(self.lineEdit_7.text()),float(self.lineEdit_8.text()))]                    
-                elif self.comboBox_6.currentIndex()==3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+            ## x-axis
+            if self.comboBox_5.currentIndex() == 0:
+                self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
+                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
+                if self.comboBox_6.currentIndex() == 0:
+                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
+                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
+                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
+                elif self.comboBox_6.currentIndex() == 1:
+                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 2:
+                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 3:
+                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
 
-            elif self.comboBox_5.currentIndex()==3:
-                self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex()==0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex()==3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if x >= max(float(self.lineEdit_5.text()),float(self.lineEdit_6.text())) 
-                                         and x <= min(float(self.lineEdit_7.text()),float(self.lineEdit_8.text()))]                        
-            
+            elif self.comboBox_5.currentIndex() == 1:
+                self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
+                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
+                if self.comboBox_6.currentIndex() == 0:
+                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 1:
+                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
+                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
+                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
+                elif self.comboBox_6.currentIndex() == 2:
+                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 3:
+                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+
+            elif self.comboBox_5.currentIndex() == 2:
+                self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
+                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
+                if self.comboBox_6.currentIndex() == 0:
+                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 1:
+                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 2:
+                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
+                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
+                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
+                elif self.comboBox_6.currentIndex() == 3:
+                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+
+            elif self.comboBox_5.currentIndex() == 3:
+                self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
+                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
+                if self.comboBox_6.currentIndex() == 0:
+                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 1:
+                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 2:
+                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
+                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+                elif self.comboBox_6.currentIndex() == 3:
+                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
+                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
+                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
+
+                #                 width_data = self.peak_width_working_data[self.comboBox_5.currentIndex()]
+            #                 width_index1 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
+
+            #                 ## y-axis
+            #                 width_data = self.peak_width_working_data[self.comboBox_6.currentIndex()]
+            #                 width_index2 = [i for i, x in enumerate(width_data) if x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
+
+            #                 points_inside_square = [value for value in width_index1 if value in width_index2]
+
+            #             peak_data_x = self.working_data[self.comboBox_5.currentIndex()]
+            #             peak_data_y = self.working_data[self.comboBox_6.currentIndex()]
+
+            #             self.filtered_working_data[self.comboBox_5.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
+            #             self.filtered_working_data[self.comboBox_6.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
+
             self.recalculate_peak_dataset = False
-     
+
             self.draw(True)
             self.draw_2(True)
             self.update_sweep_graphs(True)
@@ -4315,7 +4350,10 @@ class Ui_MainWindow(object):
                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
                 if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
-        range_width = int(max(self.sweep_1_data)) + 1
+        try:
+            range_width = int(max(self.sweep_1_data)) + 1
+        except:
+            range_width = 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
         separate_y = [0] * len(y)
@@ -4336,7 +4374,7 @@ class Ui_MainWindow(object):
         r, g, b = Helper.rgb_select(channel)
         print("update sweep 2")
         if data_updated:
-            #self.sweep_2_data = self.working_data[channel]
+            # self.sweep_2_data = self.working_data[channel]
             self.sweep_2_data = []
             if self.comboBox_option2.currentIndex() == 0:
                 self.sweep_2_data = self.filtered_working_data[channel]
@@ -4355,8 +4393,11 @@ class Ui_MainWindow(object):
                 if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
                 if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
-                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]  
-        range_width = int(max(self.sweep_2_data)) + 1
+                    self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
+        try:
+            range_width = int(max(self.sweep_2_data)) + 1
+        except:
+            range_width = 1
         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
         separate_y = [0] * len(y)
@@ -4366,8 +4407,8 @@ class Ui_MainWindow(object):
             self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
-        
-    def draw_peak_width(self,data_updated=False):
+
+    def draw_peak_width(self, data_updated=False):
         self.histo_bins_peak_width = float(self.lineEdit_binwidth_3.text())
 
         if self.filter_update or data_updated or self.width_update:
@@ -4380,14 +4421,14 @@ class Ui_MainWindow(object):
             styles = {"color": "r", "font-size": "20px"}
             axis_name = self.listView_channels_3.currentItem().text()
             self.histogram_graphWidget_3.setLabel('bottom', axis_name, **styles)
-            
-            self.full_peak_width = self.peak_width_working_data[self.listView_channels_3.currentRow()] 
-            
+
+            self.full_peak_width = self.peak_width_working_data[self.listView_channels_3.currentRow()]
+
             x_low = float(self.lineEdit_gatevoltage_2.text())
             x_high = float(self.lineEdit_gatevoltage_4.text())
-            
-            self.peak_width = [x for x in self.full_peak_width if x >= x_low and x <=x_high]
-            
+
+            self.peak_width = [x for x in self.full_peak_width if x >= x_low and x <= x_high]
+
             try:
                 range_width = int(max(self.peak_width)) + 1
             except:
@@ -4613,74 +4654,84 @@ class Ui_MainWindow(object):
                 self.thresholdUpdated()
 
     def draw_2(self, data_updated=False):
-
+        """first layer of filter"""
         update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
         if update or data_updated:
             print("update draw2")
 
-            if self.comboBox.currentIndex()==0:
-                if self.comboBox_2.currentIndex()==0:
+            if self.comboBox.currentIndex() == 0:
+                if self.comboBox_2.currentIndex() == 0:
                     points_inside_square = self.width_index0
-                elif self.comboBox_2.currentIndex()==1:
+                elif self.comboBox_2.currentIndex() == 1:
                     points_inside_square = list(set(self.width_index0).intersection(set(self.width_index1)))
-                    
-                elif self.comboBox_2.currentIndex()==2:
+
+                elif self.comboBox_2.currentIndex() == 2:
                     points_inside_square = list(set(self.width_index0).intersection(set(self.width_index2)))
-                    
-                elif self.comboBox_2.currentIndex()==3: 
+
+                elif self.comboBox_2.currentIndex() == 3:
                     points_inside_square = list(set(self.width_index0).intersection(set(self.width_index3)))
-                    
-                    
-            elif self.comboBox.currentIndex()==1:
-                if self.comboBox_2.currentIndex()==0:
+
+
+            elif self.comboBox.currentIndex() == 1:
+                if self.comboBox_2.currentIndex() == 0:
                     points_inside_square = list(set(self.width_index1).intersection(set(self.width_index0)))
-                    
-                elif self.comboBox_2.currentIndex()==1:
+
+                elif self.comboBox_2.currentIndex() == 1:
                     points_inside_square = self.width_index1
-                elif self.comboBox_2.currentIndex()==2:
+                elif self.comboBox_2.currentIndex() == 2:
                     points_inside_square = list(set(self.width_index1).intersection(set(self.width_index2)))
-                    
-                elif self.comboBox_2.currentIndex()==3: 
+
+                elif self.comboBox_2.currentIndex() == 3:
                     points_inside_square = list(set(self.width_index1).intersection(set(self.width_index3)))
-                    
-                    
-            elif self.comboBox.currentIndex()==2:
-                if self.comboBox_2.currentIndex()==0:
+
+
+            elif self.comboBox.currentIndex() == 2:
+                if self.comboBox_2.currentIndex() == 0:
                     points_inside_square = list(set(self.width_index2).intersection(set(self.width_index0)))
 
-                    
-                elif self.comboBox_2.currentIndex()==1:
+
+                elif self.comboBox_2.currentIndex() == 1:
                     points_inside_square = list(set(self.width_index2).intersection(set(self.width_index1)))
-                    
-                elif self.comboBox_2.currentIndex()==2:
+
+                elif self.comboBox_2.currentIndex() == 2:
                     points_inside_square = self.width_index2
-                elif self.comboBox_2.currentIndex()==3: 
+                elif self.comboBox_2.currentIndex() == 3:
                     points_inside_square = list(set(self.width_index2).intersection(set(self.width_index3)))
-                    
-            elif self.comboBox.currentIndex()==3:
-                if self.comboBox_2.currentIndex()==0:
+
+            elif self.comboBox.currentIndex() == 3:
+                if self.comboBox_2.currentIndex() == 0:
                     points_inside_square = list(set(self.width_index3).intersection(set(self.width_index0)))
- 
-                elif self.comboBox_2.currentIndex()==1:
+
+                elif self.comboBox_2.currentIndex() == 1:
                     points_inside_square = list(set(self.width_index3).intersection(set(self.width_index1)))
-            
-                elif self.comboBox_2.currentIndex()==2:
+
+                elif self.comboBox_2.currentIndex() == 2:
                     points_inside_square = list(set(self.width_index3).intersection(set(self.width_index2)))
 
-                elif self.comboBox_2.currentIndex()==3: 
-                    points_inside_square = self.width_index3                   
-                        
+                elif self.comboBox_2.currentIndex() == 3:
+                    points_inside_square = self.width_index3
+            points_inside_square = list(set(points_inside_square).intersection(set(self.peak_num_filtered_index)))
             self.points_inside_square = points_inside_square
-            peak_data_x = self.working_data[self.comboBox.currentIndex()]  
-            peak_data_y = self.working_data[self.comboBox_2.currentIndex()] 
-        
-            
-            if len(points_inside_square) !=0:
-                self.filtered_working_data[self.comboBox.currentIndex()] = [ peak_data_x[i] for i in points_inside_square]
-                self.filtered_working_data[self.comboBox_2.currentIndex()] = [ peak_data_y[i] for i in points_inside_square]
+            peak_data_x = self.working_data[self.comboBox.currentIndex()]
+            peak_data_y = self.working_data[self.comboBox_2.currentIndex()]
+            peak_num_data_x = self.peak_num_working_data[self.comboBox.currentIndex()]
+            peak_num_data_y = self.peak_num_working_data[self.comboBox_2.currentIndex()]
+
+            if len(points_inside_square) != 0:
+                self.filtered_working_data[self.comboBox.currentIndex()] = [peak_data_x[i] for i in
+                                                                            points_inside_square]
+                self.filtered_working_data[self.comboBox_2.currentIndex()] = [peak_data_y[i] for i in
+                                                                              points_inside_square]
+                self.filtered_peak_num_working_data[self.comboBox.currentIndex()]= [peak_num_data_x[i]
+                                                                                    for i in points_inside_square]
+                self.filtered_peak_num_working_data[self.comboBox_2.currentIndex()] = [peak_num_data_y[i]
+                                                                                     for i in points_inside_square]
+
             else:
                 self.filtered_working_data[self.comboBox.currentIndex()] = []
                 self.filtered_working_data[self.comboBox_2.currentIndex()] = []
+                self.filtered_peak_num_working_data[self.comboBox.currentIndex()] = []
+                self.filtered_peak_num_working_data[self.comboBox_2.currentIndex()] = []
 
             
             x_axis_channel = self.comboBox.currentIndex()
@@ -4690,21 +4741,24 @@ class Ui_MainWindow(object):
 
 
             try:
-                print("x",len(self.filtered_working_data[x_axis_channel]),"y",len(self.filtered_working_data[y_axis_channel]))
+                print("x", len(self.filtered_working_data[x_axis_channel]), "y",
+                      len(self.filtered_working_data[y_axis_channel]))
             except:
-                print("x",0,"y",0)
-                
+                print("x", 0, "y", 0)
+
             self.graphWidget.clear()
-            
-            
-#             print("no dots inside the square!!!")
-            if len(self.filtered_working_data[x_axis_channel]) !=0 and len(self.filtered_working_data[y_axis_channel])!=0:
+
+            #             print("no dots inside the square!!!")
+            if len(self.filtered_working_data[x_axis_channel]) != 0 and len(
+                    self.filtered_working_data[y_axis_channel]) != 0:
 
                 self.graphWidget.setLabel('left', y_axis_name, color='b')
                 self.graphWidget.setLabel('bottom', x_axis_name, color='b')
 
                 self.Ch1_channel0 = self.filtered_working_data[x_axis_channel]
                 self.Ch1_channel1 = self.filtered_working_data[y_axis_channel]
+                self.Ch1_channel0_peak_num = self.filtered_peak_num_working_data[x_axis_channel]
+                self.Ch1_channel1_peak_num = self.filtered_peak_num_working_data[y_axis_channel]
 
                 max_voltage = 12
                 bins = 1000
@@ -4742,8 +4796,8 @@ class Ui_MainWindow(object):
                     # checking for density, the value divided by steps serves as the index
                     density = histo[a][b]
                     percentage = density / max_density * 100
-    #                 if i % 10000 == 0:
-    #                     print(i)
+                    #                 if i % 10000 == 0:
+                    #                     print(i)
                     if 20 > percentage >= 0:
                         density_listx[0].append(x)
                         density_listy[0].append(y)
@@ -4800,6 +4854,12 @@ class Ui_MainWindow(object):
                 print("draw2 end")
                 # threshold
                 self.thresholdUpdated_2()
+            else:
+                self.Ch1_channel0 = []
+                self.Ch1_channel1 = []
+                self.Ch1_channel0_peak_num = []
+                self.Ch1_channel1_peak_num = []
+                self.thresholdUpdated_2()
 
     def thresholdUpdated_2(self):
         self.graphWidget.removeItem(self.data_line_y)
@@ -4810,7 +4870,7 @@ class Ui_MainWindow(object):
 
         # x
         line_xx = [text_x, text_x]
-        
+
         try:
             line_yy = [0, max(self.Ch1_channel1)]
         except:
@@ -4821,7 +4881,7 @@ class Ui_MainWindow(object):
         try:
             line_x = [0, max(self.Ch1_channel0)]
         except:
-            line_x = [0, 1]       
+            line_x = [0, 1]
 
         line_y = [text_y, text_y]
 
@@ -4842,10 +4902,19 @@ class Ui_MainWindow(object):
         c = (np.array(self.Ch1_channel1) > text_y).tolist()
         d = (np.array(self.Ch1_channel1) < text_y).tolist()
 
+        # filter peak number into single peak, multipeak
+        multipeak = [x for x in self.Ch1_channel0_peak_num]
+
         count_quadrant1 = 0
         count_quadrant2 = 0
         count_quadrant3 = 0
         count_quadrant4 = 0
+
+        #peak count for the two selected channel will be stored in an array, array holds q1 - q4
+        single_peak_count_channel0 = [0, 0, 0, 0]
+        single_peak_count_channel1 = [0, 0, 0, 0]
+        multi_peak_count_channel0 = [0, 0, 0, 0]
+        multi_peak_count_channel1 = [0, 0, 0, 0]
 
         channel0_list_quadrant1 = []
         channel1_list_quadrant1 = []
@@ -4861,18 +4930,52 @@ class Ui_MainWindow(object):
                 channel0_list_quadrant1.append(self.Ch1_channel0[i])
                 channel1_list_quadrant1.append(self.Ch1_channel1[i])
                 count_quadrant1 += 1
+                if self.Ch1_channel0_peak_num[i] == 1:
+                    single_peak_count_channel0[0] += 1
+                elif self.Ch1_channel0_peak_num[i] > 1:
+                    multi_peak_count_channel0[0] += 1
+                if self.Ch1_channel1_peak_num[i] == 1:
+                    single_peak_count_channel1[0] += 1
+                elif self.Ch1_channel1_peak_num[i] > 1:
+                    multi_peak_count_channel1[0] += 1
+
+
             elif not a[i] and c[i]:
                 channel0_list_quadrant2.append(self.Ch1_channel0[i])
                 channel1_list_quadrant2.append(self.Ch1_channel1[i])
                 count_quadrant2 += 1
+                if self.Ch1_channel0_peak_num[i] == 1:
+                    single_peak_count_channel0[1] += 1
+                elif self.Ch1_channel0_peak_num[i] > 1:
+                    multi_peak_count_channel0[1] += 1
+                if self.Ch1_channel1_peak_num[i] == 1:
+                    single_peak_count_channel1[1] += 1
+                elif self.Ch1_channel1_peak_num[i] > 1:
+                    multi_peak_count_channel1[1] += 1
             elif not a[i] and not c[i]:
                 channel0_list_quadrant3.append(self.Ch1_channel0[i])
                 channel1_list_quadrant3.append(self.Ch1_channel1[i])
                 count_quadrant3 += 1
+                if self.Ch1_channel0_peak_num[i] == 1:
+                    single_peak_count_channel0[2] += 1
+                elif self.Ch1_channel0_peak_num[i] > 1:
+                    multi_peak_count_channel0[2] += 1
+                if self.Ch1_channel1_peak_num[i] == 1:
+                    single_peak_count_channel1[2] += 1
+                elif self.Ch1_channel1_peak_num[i] > 1:
+                    multi_peak_count_channel1[2] += 1
             elif a[i] and not c[i]:
                 channel0_list_quadrant4.append(self.Ch1_channel0[i])
                 channel1_list_quadrant4.append(self.Ch1_channel1[i])
                 count_quadrant4 += 1
+                if self.Ch1_channel0_peak_num[i] == 1:
+                    single_peak_count_channel0[3] += 1
+                elif self.Ch1_channel0_peak_num[i] > 1:
+                    multi_peak_count_channel0[3] += 1
+                if self.Ch1_channel1_peak_num[i] == 1:
+                    single_peak_count_channel1[3] += 1
+                elif self.Ch1_channel1_peak_num[i] > 1:
+                    multi_peak_count_channel1[3] += 1
 
             
         try:
@@ -4892,59 +4995,144 @@ class Ui_MainWindow(object):
             view2 = str(round(100 * count_quadrant2 / len(self.Ch1_channel0), 2))
             view3 = str(round(100 * count_quadrant3 / len(self.Ch1_channel0), 2))
             view4 = str(round(100 * count_quadrant4 / len(self.Ch1_channel0), 2))
+            if count_quadrant1 > 0:
+                x_single_1 = str(round(100 * single_peak_count_channel0[0] / count_quadrant1, 2))
+                y_single_1 = str(round(100 * single_peak_count_channel1[0] / count_quadrant1, 2))
+                x_multi_1 = str(round(100 * multi_peak_count_channel0[0] / count_quadrant1, 2))
+                y_multi_1 = str(round(100 * multi_peak_count_channel1[0] / count_quadrant1, 2))
+            else:
+                x_single_1 = '0'
+                y_single_1 = '0'
+                x_multi_1 = '0'
+                y_multi_1 = '0'
+            if count_quadrant2 > 0:
+                x_single_2 = str(round(100 * single_peak_count_channel0[1] / count_quadrant2, 2))
+                y_single_2 = str(round(100 * single_peak_count_channel1[1] / count_quadrant2, 2))
+                x_multi_2 = str(round(100 * multi_peak_count_channel0[1] / count_quadrant2, 2))
+                y_multi_2 = str(round(100 * multi_peak_count_channel1[1] / count_quadrant2, 2))
+            else:
+                x_single_2 = '0'
+                y_single_2 = '0'
+                x_multi_2 = '0'
+                y_multi_2 = '0'
+            if count_quadrant3 > 0:
+                x_single_3 = str(round(100 * single_peak_count_channel0[2] / count_quadrant3, 2))
+                y_single_3 = str(round(100 * single_peak_count_channel1[2] / count_quadrant3, 2))
+                x_multi_3 = str(round(100 * multi_peak_count_channel0[2] / count_quadrant3, 2))
+                y_multi_3 = str(round(100 * multi_peak_count_channel1[2] / count_quadrant3, 2))
+            else:
+                x_single_3 = '0'
+                y_single_3 = '0'
+                x_multi_3 = '0'
+                y_multi_3 = '0'
+            if count_quadrant4 > 0:
+                x_single_4 = str(round(100 * single_peak_count_channel0[3] / count_quadrant4, 2))
+                y_single_4 = str(round(100 * single_peak_count_channel1[3] / count_quadrant4, 2))
+                x_multi_4 = str(round(100 * multi_peak_count_channel0[3] / count_quadrant4, 2))
+                y_multi_4 = str(round(100 * multi_peak_count_channel1[3] / count_quadrant4, 2))
+            else:
+                x_single_4 = '0'
+                y_single_4 = '0'
+                x_multi_4 = '0'
+                y_multi_4 = '0'
+
         else:
             view1 = 0
             view2 = 0
             view3 = 0
             view4 = 0
+            x_single_1 = '0'
+            x_single_2 = '0'
+            x_single_3 = '0'
+            x_single_4 = '0'
+            y_single_1 = '0'
+            y_single_2 = '0'
+            y_single_3 = '0'
+            y_single_4 = '0'
+            x_multi_1 = '0'
+            x_multi_2 = '0'
+            x_multi_3 = '0'
+            x_multi_4 = '0'
+            y_multi_1 = '0'
+            y_multi_2 = '0'
+            y_multi_3 = '0'
+            y_multi_4 = '0'
+
 
         self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
         self.tableView_scatterquadrants.setItem(0, 1, QTableWidgetItem(view1))
         self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
+        self.tableView_scatterquadrants.setItem(0, 3, QTableWidgetItem(x_single_1))
+        self.tableView_scatterquadrants.setItem(0, 4, QTableWidgetItem(y_single_1))
+        self.tableView_scatterquadrants.setItem(0, 5, QTableWidgetItem(x_multi_1))
+        self.tableView_scatterquadrants.setItem(0, 6, QTableWidgetItem(y_multi_1))
         self.tableView_scatterquadrants.setItem(1, 0, QTableWidgetItem(str(count_quadrant2)))
         self.tableView_scatterquadrants.setItem(1, 1, QTableWidgetItem(view2))
         self.tableView_scatterquadrants.setItem(1, 2, QTableWidgetItem(str(totalpercent2)))
+        self.tableView_scatterquadrants.setItem(1, 3, QTableWidgetItem(x_single_2))
+        self.tableView_scatterquadrants.setItem(1, 4, QTableWidgetItem(y_single_2))
+        self.tableView_scatterquadrants.setItem(1, 5, QTableWidgetItem(x_multi_2))
+        self.tableView_scatterquadrants.setItem(1, 6, QTableWidgetItem(y_multi_2))
         self.tableView_scatterquadrants.setItem(2, 0, QTableWidgetItem(str(count_quadrant3)))
         self.tableView_scatterquadrants.setItem(2, 1, QTableWidgetItem(view3))
         self.tableView_scatterquadrants.setItem(2, 2, QTableWidgetItem(str(totalpercent3)))
+        self.tableView_scatterquadrants.setItem(2, 3, QTableWidgetItem(x_single_3))
+        self.tableView_scatterquadrants.setItem(2, 4, QTableWidgetItem(y_single_3))
+        self.tableView_scatterquadrants.setItem(2, 5, QTableWidgetItem(x_multi_3))
+        self.tableView_scatterquadrants.setItem(2, 6, QTableWidgetItem(y_multi_3))
         self.tableView_scatterquadrants.setItem(3, 0, QTableWidgetItem(str(count_quadrant4)))
         self.tableView_scatterquadrants.setItem(3, 1, QTableWidgetItem(view4))
         self.tableView_scatterquadrants.setItem(3, 2, QTableWidgetItem(str(totalpercent4)))
-        
-        
+        self.tableView_scatterquadrants.setItem(3, 3, QTableWidgetItem(x_single_4))
+        self.tableView_scatterquadrants.setItem(3, 4, QTableWidgetItem(y_single_4))
+        self.tableView_scatterquadrants.setItem(3, 5, QTableWidgetItem(x_multi_4))
+        self.tableView_scatterquadrants.setItem(3, 6, QTableWidgetItem(y_multi_4))
+
         ### mid table
 
         try:
-            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant1),2))))
-            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant1),2))))
-            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant1),2))))
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant1), 2))))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant1), 2))))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant1), 2))))
         except:
             self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant2),2))))
-            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant2),2))))
-            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant2),2))))
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant2), 2))))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant2), 2))))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant2), 2))))
         except:
             self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant3),2))))
-            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant3),2))))
-            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant3),2))))
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant3), 2))))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant3), 2))))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant3), 2))))
         except:
             self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel0_list_quadrant4),2))))
-            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel0_list_quadrant4),2))))
-            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel0_list_quadrant4),2))))
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant4), 2))))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant4), 2))))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant4), 2))))
         except:
             self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem('NaN'))
             self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem('NaN'))
@@ -4953,36 +5141,48 @@ class Ui_MainWindow(object):
         # bottom
 
         try:
-            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant1),2))))
-            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant1),2))))
-            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant1),2))))
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant1), 2))))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant1), 2))))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant1), 2))))
         except:
             self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant2),2))))
-            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant2),2))))
-            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant2),2))))
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant2), 2))))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant2), 2))))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant2), 2))))
         except:
             self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant3),2))))
-            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant3),2))))
-            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant3),2))))
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant3), 2))))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant3), 2))))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant3), 2))))
         except:
             self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
         try:
-            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(str(round(statistics.mean(channel1_list_quadrant4),2))))
-            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(str(round(statistics.stdev(channel1_list_quadrant4),2))))
-            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(str(round(statistics.median(channel1_list_quadrant4),2))))
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant4), 2))))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant4), 2))))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant4), 2))))
         except:
             self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem('NaN'))
             self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
@@ -5319,8 +5519,18 @@ class Ui_MainWindow(object):
         self.scatter_channelx = self.comboBox.currentIndex()
         self.scatter_channely = self.comboBox_2.currentIndex()
         self.width_scatter_channelx = self.comboBox_5.currentIndex()
-        self.width_scatter_channely = self.comboBox_6.currentIndex()        
-        
+        self.width_scatter_channely = self.comboBox_6.currentIndex()
+        self.peak_num_mode = []
+        self.peak_num_in = []
+        self.peak_num_mode.append(self.comboBox_peak_num_1.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_2.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_3.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_4.currentIndex())
+        self.peak_num_in.append(int(self.lineEdit_peak_num_1.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_2.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_3.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_4.text()))
+
         self.sweep_channel = self.listView_channels_2.currentRow()
         if self.comboBox_option1.currentIndex() > 0:
             self.sweep_file_1 = self.comboBox_option1.currentIndex() - 1
@@ -5391,11 +5601,12 @@ class Ui_MainWindow(object):
         
         channel = self.peak_width_channel
         width_enable = True
-        
-        try: self.chunksize = self.chunk_resample
-        except: self.chunksize = int(1000 / float(under_sample))
-            
-        
+
+        try:
+            self.chunksize = self.chunk_resample
+        except:
+            self.chunksize = int(1000 / float(under_sample))
+
         ### Qiwei's extraction code
         ### Call stats_Ch1 ~ stats_Ch23 to extract
         #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
@@ -5457,40 +5668,38 @@ class Ui_MainWindow(object):
         self.lineEdit_11.setText(str(threshold[2]))
         self.lineEdit_12.setText(str(threshold[3]))    
 
-        
-        self.width_update,self.reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel, 
-                                                                       bins=self.peak_width_bins,
-                                                                       peak_width_threshold = self.lineEdit_gatevoltage_2.text(),
-                                                                       voltage_threshold = threshold )
- 
-        
-        
+        self.width_update, self.reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel,
+                                                                             bins=self.peak_width_bins,
+                                                                             peak_width_threshold=self.lineEdit_gatevoltage_2.text(),
+                                                                             voltage_threshold=threshold)
+
         ### check end
         
         
         
         try:
             self.update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
-                                                         ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
-                                                         ch3=self.ch3_checkbox,
-                                                         ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
-                                                         ch2_3=self.ch23_checkbox, reset = Ui_MainWindow.reset)
-            
+                                                                  ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                                  ch3=self.ch3_checkbox,
+                                                                  ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                                  ch2_3=self.ch23_checkbox, reset=Ui_MainWindow.reset)
+
         except:
             self.update = self.ui_state.working_file_update_check(file=self.main_file_select, chall=self.all_checkbox,
-                                                         ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
-                                                         ch3=self.ch3_checkbox,
-                                                         ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
-                                                         ch2_3=self.ch23_checkbox)            
-        
-        self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number = int(self.comboBox_5.currentIndex()), 
-                                                              y_axis_channel_number = int(self.comboBox_6.currentIndex()), 
-                                                              x_axis_channel_min = float(self.lineEdit_5.text()), 
-                                                              x_axis_channel_max = float(self.lineEdit_7.text()), 
-                                                              y_axis_channel_min = float(self.lineEdit_6.text()), 
-                                                              y_axis_channel_max = float(self.lineEdit_8.text()))
-            
-        
+                                                                  ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                                  ch3=self.ch3_checkbox,
+                                                                  ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                                  ch2_3=self.ch23_checkbox)
+
+        self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number=int(self.comboBox_5.currentIndex()),
+                                                              y_axis_channel_number=int(self.comboBox_6.currentIndex()),
+                                                              x_axis_channel_min=float(self.lineEdit_5.text()),
+                                                              x_axis_channel_max=float(self.lineEdit_7.text()),
+                                                              y_axis_channel_min=float(self.lineEdit_6.text()),
+                                                              y_axis_channel_max=float(self.lineEdit_8.text()),
+                                                              peak_num_in=self.peak_num_in,
+                                                              peak_num_mode=self.peak_num_mode)
+
         if self.update:
             peak_enable =True
         else:
@@ -5602,26 +5811,33 @@ class Ui_MainWindow(object):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
-    def peak_num_comparison(self, mode, channel, index, number):
-        """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
+    def peak_num_comp(self, number_of_peak, mode, num_in):
+        """function to do comparison for peak number filter"""
         if mode == 0:
-            if self.peak_num_working_data[channel][index] >= number:
+            if number_of_peak >= num_in:
                 return True
             else:
                 return False
         elif mode == 1:
-            if self.peak_num_working_data[channel][index] == number:
+            if number_of_peak == num_in:
                 return True
             else:
                 return False
         elif mode == 2:
-            if self.peak_num_working_data[channel][index] <= number:
+            if number_of_peak <= num_in:
                 return True
             else:
                 return False
-        else:
-            return False
+        return False
 
+    def peak_num_filter(self):
+        """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
+        self.peak_num_filtered_index = []
+        holder = [[],[],[],[]]
+        for ch in range(4):
+            holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
+                          if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
+        self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
 
 
 if __name__ == "__main__":

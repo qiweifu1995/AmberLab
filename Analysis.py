@@ -138,16 +138,17 @@ class file_extracted_data_Qing:
                     edges = peaks_signs.diff(periods=1).fillna(0)
                     edges_index = peaks_signs.loc[edges[edges != 0].index]
                     edges_index_list = edges_index.index
+                    peak_row_count = current_row_number-user_set_chunk_size
                     number_of_peaks = 0
                     for i in range(1,len(edges_index_list)): #check for each direction changing index
                         """this case deal with when current edge is in next droplet, return peaks count"""
-                        if edges_index.index[i] >= peak_row_count + user_set_chunk_size:
+                        while edges_index.index[i] >= peak_row_count + user_set_chunk_size:
                             peak_counts[channel].append(number_of_peaks)
                             number_of_peaks = 0
                             peak_row_count += user_set_chunk_size
                             loop_tracker += user_set_chunk_size
                             """this case deal with when direction change is with the next dorplet"""
-                        elif edges_index[edges_index_list[i-1]] >= 0 and edges_index_list[i-1] >= peak_row_count:
+                        if edges_index[edges_index_list[i-1]] >= 0 and edges_index_list[i-1] >= peak_row_count:
                             if edges_index[edges_index_list[i]] <= 0:
                                 peak_width = edges_index_list[i] - edges_index_list[i-1]
                                 if peak_min[channel] <= peak_width <= peak_max[channel]:
