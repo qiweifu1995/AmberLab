@@ -69,7 +69,10 @@ class file_extracted_data_Qing:
         end = time.time()
         print("normal extrack time", str(start-end))
         """
-
+        for i in range(4):
+            print("ch", i, " Peaklist len: ", len(Peaklist[i]))
+            print("ch", i, "Peakwidth len: ", len(Peakwidth[i]))
+            print("ch", i, "NumPeak len: ", len(NumPeaks[i]))
         print("Done")
 
     def extract(self, file, threshold,
@@ -243,7 +246,7 @@ class file_extracted_data_Qing:
 
             current_row_number = row_chunk + user_set_chunk_size
             with concurrent.futures.ProcessPoolExecutor() as executor:
-                extracted_data = [executor.submit(data_extractor, Ch[channel], threshold[channel], peak_threshold[channel], current_row_number, peak_row_count, user_set_chunk_size, peak_max[channel], peak_min[channel], channel) for channel in range(4)]
+                extracted_data = [executor.submit(data_extractor, Ch[channel], threshold[channel], peak_threshold[channel], current_row_number, user_set_chunk_size, peak_max[channel], peak_min[channel], channel) for channel in range(4)]
                 for f in concurrent.futures.as_completed(extracted_data):
                     holder = f.result()
                     for x in holder[1]:
@@ -252,6 +255,7 @@ class file_extracted_data_Qing:
                         width[holder[0]].append(x)
                     for x in holder[3]:
                         peak_counts[holder[0]].append(x)
+                    row_chunk = holder[4]
             print("Parallel execution time", str(time.time()-start))
 
         """
@@ -343,7 +347,7 @@ def peak_num_finder(channel, Ch, peak_threshold, peak_row_count, user_set_chunk_
     return peak_counts, channel
 
 
-def data_extractor(Ch, threshold, peak_threshold, current_row_number, peak_row_count, user_set_chunk_size, peak_max, peak_min, channel):
+def data_extractor(Ch, threshold, peak_threshold, current_row_number, user_set_chunk_size, peak_max, peak_min, channel):
     loop_tracker = 0
     peak = []
     width = []
@@ -359,46 +363,39 @@ def data_extractor(Ch, threshold, peak_threshold, current_row_number, peak_row_c
     index_list = df1.index
     row_chunk = current_row_number
     current_width = 0
+
     for i in range(1, len(index_list)):
         # 0~99
-        if df1.index[i] > row_chunk:
+        while df1.index[i] >= row_chunk:
             width.append(current_width)
             current_width = 0
-            for number_of_skip_chunck in range((df1.index[i] - row_chunk) // user_set_chunk_size):
-                width.append(current_width)
-                row_chunk += user_set_chunk_size
             row_chunk += user_set_chunk_size
-            continue
-        if df1[index_list[i - 1]] >= 0:
-            if df1[index_list[i]] <= 0:
-                current_width = max(index_list[i] - index_list[i - 1], current_width)
+            loop_tracker += user_set_chunk_size
+        if df1[index_list[i - 1]] >= 0 >= df1[index_list[i]]:
+            current_width = max(index_list[i] - index_list[i - 1], current_width)
 
-    width.append(current_width)
-
-    for number_of_skip_chunck_after in range(round(len(Ch) / user_set_chunk_size) -
-                                             (len(width) -
-                                              round((current_row_number - user_set_chunk_size) / user_set_chunk_size))):
-        row_chunk += user_set_chunk_size
+    for number_of_skip_chunck_after in range(loop_tracker, len(Ch), user_set_chunk_size):
         width.append(0)
 
         """Code for peak extraction starts here"""
-
+    loop_tracker = 0
     peaks_signs = Ch - peak_threshold
     peaks_signs[peaks_signs > 0] = 1
     peaks_signs[peaks_signs < 0] = -1
     edges = peaks_signs.diff(periods=1).fillna(0)
     edges_index = peaks_signs.loc[edges[edges != 0].index]
     edges_index_list = edges_index.index
+    peak_row_count = current_row_number - user_set_chunk_size
     number_of_peaks = 0
     for i in range(1, len(edges_index_list)):  # check for each direction changing index
         """this case deal with when current edge is in next droplet, return peaks count"""
-        if edges_index.index[i] >= peak_row_count + user_set_chunk_size:
+        while edges_index.index[i] >= peak_row_count + user_set_chunk_size:
             peak_counts.append(number_of_peaks)
             number_of_peaks = 0
             peak_row_count += user_set_chunk_size
             loop_tracker += user_set_chunk_size
             """this case deal with when direction change is with the next dorplet"""
-        elif edges_index[edges_index_list[i - 1]] >= 0 and edges_index_list[i - 1] >= peak_row_count:
+        if edges_index[edges_index_list[i - 1]] >= 0 and edges_index_list[i - 1] >= peak_row_count:
             if edges_index[edges_index_list[i]] <= 0:
                 peak_width = edges_index_list[i] - edges_index_list[i - 1]
                 if peak_min <= peak_width <= peak_max:
@@ -406,7 +403,7 @@ def data_extractor(Ch, threshold, peak_threshold, current_row_number, peak_row_c
     for skipped_end in range(loop_tracker, len(Ch), user_set_chunk_size):
         peak_row_count += user_set_chunk_size
         peak_counts.append(0)
-    return channel, peak, width, peak_counts
+    return channel, peak, width, peak_counts, peak_row_count
 
 
 
