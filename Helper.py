@@ -173,7 +173,16 @@ class ui_state:
         self.peak_num_mode = []
         self.peak_num = []
 
+        self.threshold = [-1,-1,-1,-1]
         
+    def threshold_check(self, threshold=None):
+        changed = False
+        if threshold is not None and self.threshold != threshold:
+            changed = True  
+        if threshold is not None:
+            self.threshold = threshold            
+        return changed
+    
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
                                   ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, reset=None):
         """checks if checkbox are updated and needs to be refreshed"""
