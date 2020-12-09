@@ -876,10 +876,10 @@ class Ui_MainWindow(object):
         self.label_93.setObjectName("label_93")
         self.verticalLayout_16.addWidget(self.label_93)
 
-        self.lineEdit_9.setText("0")
-        self.lineEdit_10.setText("0")
-        self.lineEdit_11.setText("0")
-        self.lineEdit_12.setText("0")
+        self.lineEdit_9.setText("Default")
+        self.lineEdit_10.setText("Default")
+        self.lineEdit_11.setText("Default")
+        self.lineEdit_12.setText("Default")
 
         self.horizontalLayout_49 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_49.setObjectName("horizontalLayout_41")
@@ -3385,6 +3385,7 @@ class Ui_MainWindow(object):
       
     def subgating_scatter(self):
         self.tab_widgets_main.setCurrentIndex(3)
+        self.tab_widgets_subgating.setCurrentIndex(0)
         if self.polygon_trigger == True:
             try:
                 path = mpltPath.Path(self.polygon)
@@ -3520,7 +3521,7 @@ class Ui_MainWindow(object):
 
                 self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
                                       symbolSize=5, symbolBrush=(red, blue, green))
-
+                self.subgating_graphWidget.autoRange()
         elif len(self.points_inside) ==0:
             self.subgating_Ch1_channel0  = []
             self.subgating_Ch1_channel1 = []
@@ -3645,45 +3646,11 @@ class Ui_MainWindow(object):
 
             
     def polygon_linear_plot(self):
-#         self.tab_widgets_main.setCurrentIndex(2)
-        
-                    
-#         self.tab_widgets_main.addTab(self.tab_subgating, "")
-#         self.subgating_verticalLayout_4.addWidget(self.tab_widgets_subgating)
-#         self.tab_widgets_subgating.addTab(self.subgating_subtab_scatter, "")
-
-        self.subgating_polygon_triggering()
-    
-
-#         try:
-#             path = mpltPath.Path(self.subgating_polygon)
-#             self.subgating_inside2 = path.contains_points(self.subgating_points)
-#             # find which dots are circled    
-#             self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
-#         except:
-#             print("points extracted")
-            
-#         points_inside = 'Inside: 0'
-#         self.subgating_polygon_inside_label_29.setText(points_inside)                 
-        # reset linear plot bond
-#         self.lineEdit_36.setText(str(0))  
-#         self.lineEdit_38.setText(str(5))  
-
-#         self.subgating_polygon = []
-#         self.subgating_x = []
-#         self.subgating_y = []     
+        self.tab_widgets_subgating.setCurrentIndex(1)
+        self.subgating_polygon_triggering() 
         self.polygon_trigger == False
         
-#             try:
-#                 self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
-#                 for i in range(len(self.subgating_polygon_lines)):
-#                     self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
-#             except:
-#                 print("no subgating polygon drawed")
-
-        
         self.widget_29.clear()
-#         text1 = self.comboBox.currentText()
 
         polygon_text = self.comboBox_14.currentText()
 
@@ -3737,9 +3704,9 @@ class Ui_MainWindow(object):
                 self.lineEdit_38.setText(str(lower_bond + 15))
                 nrows = 15        
             self.main_file_select = self.file_list_view.currentRow()
-            self.current_file_dict = self.file_dict_list[self.main_file_select]
-            os.chdir(self.current_file_dict["Root Folder"])
-            file = self.current_file_dict[text1]    
+            self.subgating_file_dict = self.file_dict_list[self.main_file_select]
+            os.chdir(self.subgating_file_dict["Root Folder"])
+            file = self.subgating_file_dict[text1]    
 
 
 
@@ -3802,6 +3769,9 @@ class Ui_MainWindow(object):
                     self.widget_29.plot(height_index,data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o', symbolSize=0, symbolBrush=('m'))
         else: 
             print("Enter a new lower bond value")
+            
+            
+
         self.widget_29.autoRange()
         
     def polygon_reset_linear_plot(self):
@@ -3891,9 +3861,9 @@ class Ui_MainWindow(object):
             
         
         self.main_file_select = self.file_list_view.currentRow()
-        self.current_file_dict = self.file_dict_list[self.main_file_select]
-        os.chdir(self.current_file_dict["Root Folder"])
-        file = self.current_file_dict[text1]    
+        self.polygon_file_dict = self.file_dict_list[self.main_file_select]
+        os.chdir(self.polygon_file_dict["Root Folder"])
+        file = self.polygon_file_dict[text1]      
         
 
         data = pd.read_csv(file, skiprows = sample_size * lower_bond, nrows=sample_size * nrows, header=header)  
@@ -4781,7 +4751,6 @@ class Ui_MainWindow(object):
                     """legend_range = 0.07
                     aa = [ii for ii, e in enumerate(self.Ch1_channel0) if (self.Ch1_channel0[i] + legend_range) > e > (self.Ch1_channel0[i] - legend_range)]
                     bb = [ii for ii, e in enumerate(self.Ch1_channel1) if (self.Ch1_channel1[i] + legend_range) > e > (self.Ch1_channel1[i] - legend_range)]
-
                     ab_set = len(set(aa) & set(bb))   
                     """
                     x = self.Ch1_channel0[i]
@@ -5566,32 +5535,6 @@ class Ui_MainWindow(object):
 
 
 
-        # parameter
-        """
-        df_parameter = pd.read_csv(current_file_dict["Param"], header=None, sep='\n')
-        Parameter = df_parameter[0].str.split(',', expand=True)
-        
-        Laser_Setting_and_Gains =  Parameter.iloc[7:11,0:3]
-        Laser_Setting_and_Gains.columns = Parameter.iloc[6,0:3]
-        Laser_Setting_and_Gains.index = ['1', '2', '3', '4'] 
-        
-        Fluidic_Settings =  Parameter.iloc[14:15,0:4]
-        Fluidic_Settings.columns = Parameter.iloc[13,0:4]
-        Fluidic_Settings.index = ['1']     
-        
-        Sorting_Parameter1 =  Parameter.iloc[18:19,0:4]
-        Sorting_Parameter1.columns = Parameter.iloc[17,0:4]
-        Sorting_Parameter1.index = ['1']   
-        
-        Sorting_Parameter2 =  Parameter.iloc[20:24,0:11]
-        Sorting_Parameter2.columns = Parameter.iloc[19,0:11]
-        Sorting_Parameter2.index = ['1','2','3','4']          
-        
-        Sorting_Parameter3 =  Parameter.iloc[25:26,0:5]
-        Sorting_Parameter3.columns = Parameter.iloc[24,0:5]
-        Sorting_Parameter3.index = ['1']   
-        
-        """
         
         #         start = time.time()
         if stats.under_sample_factor == "":
@@ -5700,7 +5643,9 @@ class Ui_MainWindow(object):
                                                               peak_num_in=self.peak_num_in,
                                                               peak_num_mode=self.peak_num_mode)
 
-        if self.update:
+        threshold_check = self.ui_state.threshold_check(threshold = threshold)
+
+        if self.update or threshold_check:
             peak_enable =True
         else:
             peak_enable = False
