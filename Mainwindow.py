@@ -30,6 +30,8 @@ from scipy.signal import savgol_filter
 import csv
 
 import matplotlib.path as mpltPath
+import concurrent.futures
+from multiprocessing import freeze_support
 
 class OtherWindow(QWidget):
     def __init__(self,parent = None):
@@ -5960,6 +5962,7 @@ class Ui_MainWindow(object):
 
 
 if __name__ == "__main__":
+    freeze_support()
     import sys
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
