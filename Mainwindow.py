@@ -876,10 +876,10 @@ class Ui_MainWindow(object):
         self.label_93.setObjectName("label_93")
         self.verticalLayout_16.addWidget(self.label_93)
 
-        self.lineEdit_9.setText("Default")
-        self.lineEdit_10.setText("Default")
-        self.lineEdit_11.setText("Default")
-        self.lineEdit_12.setText("Default")
+        self.lineEdit_9.setText("default")
+        self.lineEdit_10.setText("default")
+        self.lineEdit_11.setText("default")
+        self.lineEdit_12.setText("default")
 
         self.horizontalLayout_49 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_49.setObjectName("horizontalLayout_41")
@@ -3427,8 +3427,8 @@ class Ui_MainWindow(object):
         x_axis_channel = self.subgating_comboBox.currentIndex()
         y_axis_channel = self.subgating_comboBox_2.currentIndex()
         x_axis_name = self.subgating_preselect_comboBox.currentText() + " " + self.subgating_comboBox.currentText()
-        y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()  
-            
+        y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()
+        self.subgating_sweep_data = [[], [], [], []]
         if len(self.points_inside) !=0:
             self.subgating_graphWidget.clear()
             
@@ -3444,7 +3444,9 @@ class Ui_MainWindow(object):
 
             self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
             self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
-            
+
+            for ch in range(len(self.working_data)):
+                self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
             
             max_voltage = 12
             bins = 1000
@@ -3956,6 +3958,10 @@ class Ui_MainWindow(object):
         self.comboBox_option2.clear()
         self.comboBox_option1.addItem("Current Data")
         self.comboBox_option2.addItem("Current Data")
+        self.comboBox_option1.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option2.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option1.addItem("Current Data post 2nd Filter")
+        self.comboBox_option2.addItem("Current Data post 2nd Filter")
         for i in range(self.file_list_view.count()):
             self.comboBox_option1.addItem(self.file_list_view.item(i).text())
             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
@@ -4305,6 +4311,10 @@ class Ui_MainWindow(object):
             self.sweep_1_data = []
             if self.comboBox_option1.currentIndex() == 0:
                 self.sweep_1_data = self.filtered_working_data[channel]
+            elif self.comboBox_option1.currentIndex() == 1:
+                self.sweep_1_data = self.filtered_working_data[channel]
+            elif self.comboBox_option1.currentIndex() == 2:
+                self.sweep_1_data = self.subgating_sweep_data[channel]
             else:
                 if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
                     self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
@@ -4333,6 +4343,7 @@ class Ui_MainWindow(object):
             self.widget_sweepparam2.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam2.setXRange(0, max(x), padding=0)
         self.widget_sweepparam2.setYRange(0, max(y), padding=0)
+        self.label_39.setText(self.comboBox_option1.currentText())
 
     def update_sweep_2(self, data_updated=False):
         self.widget_sweepparam1.clear()
@@ -4348,6 +4359,10 @@ class Ui_MainWindow(object):
             self.sweep_2_data = []
             if self.comboBox_option2.currentIndex() == 0:
                 self.sweep_2_data = self.filtered_working_data[channel]
+            elif self.comboBox_option2.currentIndex() == 1:
+                self.sweep_2_data = self.filtered_working_data[channel]
+            elif self.comboBox_option2.currentIndex() == 2:
+                self.sweep_2_data = self.subgating_sweep_data[channel]
             else:
                 if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
                     self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
@@ -4377,6 +4392,8 @@ class Ui_MainWindow(object):
             self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
+        self.label_65.setText(self.comboBox_option2.currentText())
+
 
     def draw_peak_width(self, data_updated=False):
         self.histo_bins_peak_width = float(self.lineEdit_binwidth_3.text())
@@ -5501,18 +5518,20 @@ class Ui_MainWindow(object):
         self.peak_num_in.append(int(self.lineEdit_peak_num_4.text()))
 
         self.sweep_channel = self.listView_channels_2.currentRow()
-        if self.comboBox_option1.currentIndex() > 0:
-            self.sweep_file_1 = self.comboBox_option1.currentIndex() - 1
+        if self.comboBox_option1.currentIndex() > 2:
+            self.sweep_file_1 = self.comboBox_option1.currentIndex() - 3
+            self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
         else:
             self.sweep_file_1 = self.comboBox_option1.currentIndex()
-        if self.comboBox_option2.currentIndex() > 0:
-            self.sweep_file_2 = self.comboBox_option2.currentIndex() - 1
+        if self.comboBox_option2.currentIndex() > 2:
+            self.sweep_file_2 = self.comboBox_option2.currentIndex() - 3
+            self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
         else:
             self.sweep_file_2 = self.comboBox_option2.currentIndex()
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         self.current_file_dict = self.file_dict_list[self.main_file_select]
-        self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
-        self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
+
+
 
         os.chdir(self.current_file_dict["Root Folder"])
         # summary
@@ -5569,42 +5588,47 @@ class Ui_MainWindow(object):
             else:
                 reset = False
         except: reset = False
-        
-        
 
-                
-                
         ### check Voltage threshold(V)  
         threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
-        peaks_threshold = [1,1,1,1]
+        peaks_threshold = []
+        width_threshold = []
         width_min = [0,0,0,0]
         width_max = [500,500,500,500]
-        
+
+        if self.current_file_dict["Param"] != "":
+            with open(self.current_file_dict["Param"]) as param_file:
+                stats_reader = csv.reader(param_file, delimiter=",")
+                location = [[0,0],[0,0]]
+                param_holder = []
+                for x, lines in enumerate(stats_reader):
+                    param_holder.append(lines)
+                    for y, field in enumerate(lines):
+                        if field == "Peak Threshold (V)":
+                            location[0] = [x,y]
+                        if field == "BG Threshold (V)":
+                            location[1] = [x, y]
+                try:
+                    for i in range(1,5):
+                        peaks_threshold.append(float(param_holder[location[0][0]+i][location[0][1]]))
+                        width_threshold.append(float(param_holder[location[1][0]+i][location[1][1]]))
+                        print("Peaks Threshold Found: ", peaks_threshold)
+                        print("Width Threshold Found: ", width_threshold)
+                except:
+                    print("Peaks Threshold Not Found")
+        if len(peaks_threshold) == 0:
+            peaks_threshold = [1, 1, 1, 1]
+
         try:
-            # test if numbers entered in threshold 
+            # test if numbers entered in threshold
             for i in range(4):
                 threshold[i] = float(threshold[i])
         except:
             # if not, find in parameter file
-            if self.current_file_dict["Param"] != "":
-                stats_reader = csv.reader(open(self.current_file_dict["Param"]), delimiter=",")
-                in_file_threshold = []
-                record_threshold = False
-                for lines in stats_reader: 
-                    if record_threshold == True:
-                        in_file_threshold.append(lines[line_check])
-                        continue
-                    count_field = 0
-                    for field in lines:
-                        if field == "BG Threshold (V)":
-                            line_check = count_field
-                            record_threshold = True
-                        count_field +=1  
-
-                for i in range(4):
-                    threshold[i] = float(in_file_threshold[i])
+            if len(width_threshold) == 0:
+                threshold = [1, 1, 1, 1]
             else:
-                threshold = [2,2,2,2]
+                threshold = width_threshold
                 
         self.lineEdit_9.setText(str(threshold[0]))
         self.lineEdit_10.setText(str(threshold[1]))
@@ -5727,6 +5751,10 @@ class Ui_MainWindow(object):
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
         self.comboBox_option1.addItem("Current Data")
         self.comboBox_option2.addItem("Current Data")
+        self.comboBox_option1.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option2.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option1.addItem("Current Data post 2nd Filter")
+        self.comboBox_option2.addItem("Current Data post 2nd Filter")
         if self.comboBox_option1.count() == 0:
             self.comboBox_option1.addItem("Current Data")
             self.comboBox_option2.addItem("Current Data")

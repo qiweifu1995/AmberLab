@@ -371,7 +371,7 @@ def data_extractor(Ch, threshold, peak_threshold, current_row_number, user_set_c
             current_width = 0
             row_chunk += user_set_chunk_size
             loop_tracker += user_set_chunk_size
-        if df1[index_list[i - 1]] >= 0 >= df1[index_list[i]]:
+        if df1[index_list[i - 1]] >= 0 >= df1[index_list[i]] and 0 < index_list[i] - index_list[i - 1] < user_set_chunk_size:
             current_width = max(index_list[i] - index_list[i - 1], current_width)
 
     for number_of_skip_chunck_after in range(loop_tracker, len(Ch), user_set_chunk_size):
