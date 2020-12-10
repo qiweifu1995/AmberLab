@@ -1426,8 +1426,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_scatterxvoltage.sizePolicy().hasHeightForWidth())
         self.lineEdit_scatterxvoltage.setSizePolicy(sizePolicy)
-        self.lineEdit_scatterxvoltage.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_scatterxvoltage.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.lineEdit_scatterxvoltage.setMinimumSize(QtCore.QSize(110, 0))
+        self.lineEdit_scatterxvoltage.setMaximumSize(QtCore.QSize(80, 16777215)) 
         self.lineEdit_scatterxvoltage.setObjectName("lineEdit_scatterxvoltage")
         self.gridLayout_6.addWidget(self.lineEdit_scatterxvoltage, 1, 1, 1, 1)
         self.lineEdit_scatteryvoltage = QtWidgets.QLineEdit(self.subtab_scatter)
@@ -1436,10 +1436,20 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_scatteryvoltage.sizePolicy().hasHeightForWidth())
         self.lineEdit_scatteryvoltage.setSizePolicy(sizePolicy)
-        self.lineEdit_scatteryvoltage.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_scatteryvoltage.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.lineEdit_scatteryvoltage.setMinimumSize(QtCore.QSize(110, 0))
+        self.lineEdit_scatteryvoltage.setMaximumSize(QtCore.QSize(80, 16777215)) 
         self.lineEdit_scatteryvoltage.setObjectName("lineEdit_scatteryvoltage")
         self.gridLayout_6.addWidget(self.lineEdit_scatteryvoltage, 2, 1, 1, 1)
+        
+        ### threshold subgating        
+        self.scatter_button_subgating = QtWidgets.QPushButton(self.subtab_scatter)
+        self.scatter_button_subgating.setMinimumSize(QtCore.QSize(110, 0))
+        self.scatter_button_subgating.setMaximumSize(QtCore.QSize(80, 16777215))      
+        self.scatter_button_subgating.setObjectName("scatter_button_subgating")
+
+        self.gridLayout_6.addWidget(self.scatter_button_subgating, 3, 1, 1, 1)
+        
+        
         self.horizontalLayout_31 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_31.setObjectName("horizontalLayout_31")
         self.label_32 = QtWidgets.QLabel(self.subtab_scatter)
@@ -3380,9 +3390,138 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_12.clicked.connect(self.polygon_linear_plot)
 #         self.pushButton_11.clicked.connect(self.subgating_scatter)     
 
+        self.scatter_button_subgating.clicked.connect(self.subgating_scatter_by_threshold)
 
 
-      
+    def subgating_scatter_by_threshold(self):
+        self.tab_widgets_main.setCurrentIndex(3)
+        self.tab_widgets_subgating.setCurrentIndex(0)        
+
+        self.points_inside.extend(list(compress(self.points_inside_square, self.quadrant1_list)))
+        
+        #rest are same as the polygon subgating
+        
+        # reset polygon upperbond
+        self.lineEdit_38.setText(str(5))        
+        
+   
+        if self.subgating_preselect_comboBox.currentIndex() == 0:
+            data_in_subgating_x = self.working_data[self.subgating_comboBox.currentIndex()]  
+        else:
+            data_in_subgating_x = self.peak_width_working_data[self.subgating_comboBox.currentIndex()]             
+            
+        if self.subgating_preselect_comboBox_2.currentIndex() == 0:
+            data_in_subgating_y = self.working_data[self.subgating_comboBox_2.currentIndex()] 
+        else:
+            data_in_subgating_y = self.peak_width_working_data[self.subgating_comboBox_2.currentIndex()] 
+
+
+        x_axis_channel = self.subgating_comboBox.currentIndex()
+        y_axis_channel = self.subgating_comboBox_2.currentIndex()
+        x_axis_name = self.subgating_preselect_comboBox.currentText() + " " + self.subgating_comboBox.currentText()
+        y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()
+        self.subgating_sweep_data = [[], [], [], []]
+        if len(self.points_inside) !=0:
+            self.subgating_graphWidget.clear()
+            
+#             subgating_data[x_axis_channel] = [ data_in_subgating_x[i] for i in self.points_inside]
+#             subgating_data[y_axis_channel] = [ data_in_subgating_y[i] for i in self.points_inside]
+            
+            
+            self.subgating_graphWidget.setLabel('left', y_axis_name, color='b')
+            self.subgating_graphWidget.setLabel('bottom', x_axis_name, color='b')
+
+#             self.subgating_Ch1_channel0 = subgating_data[x_axis_channel]
+#             self.subgating_Ch1_channel1 = subgating_data[y_axis_channel]
+
+            self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
+            self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
+
+            for ch in range(len(self.working_data)):
+                self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
+            
+            max_voltage = 12
+            bins = 1000
+            steps = max_voltage / bins
+
+            # all data is first sorted into a histogram
+            histo, _, _ = np.histogram2d(self.subgating_Ch1_channel0, self.subgating_Ch1_channel1, bins,
+                                         [[0, max_voltage], [0, max_voltage]],
+                                         density=True)
+            max_density = histo.max()
+
+            # made empty array to hold the sorted data according to density
+            density_listx = []
+            density_listy = []
+            for i in range(6):
+                density_listx.append([])
+                density_listy.append([])
+
+            for i in range(len(self.subgating_Ch1_channel0)):
+                x = self.subgating_Ch1_channel0[i]
+                y = self.subgating_Ch1_channel1[i]
+                a = int(x / steps)
+                b = int(y / steps)
+                if a >= 1000:
+                    a = 999
+                if b >= 1000:
+                    b = 999
+
+                # checking for density, the value divided by steps serves as the index
+                density = histo[a][b]
+                percentage = density / max_density * 100
+
+                if 20 > percentage >= 0:
+                    density_listx[0].append(x)
+                    density_listy[0].append(y)
+                elif 40 > percentage >= 20:
+                    density_listx[1].append(x)
+                    density_listy[1].append(y)
+                elif 60 > percentage >= 40:
+                    density_listx[2].append(x)
+                    density_listy[2].append(y)
+                elif 80 > percentage >= 60:
+                    density_listx[3].append(x)
+                    density_listy[3].append(y)
+                else:
+                    density_listx[4].append(x)
+                    density_listy[4].append(y)
+            for i in range(5):
+                if i == 0:
+                    red = 0
+                    blue = 255 / 15
+                    green = 255
+                elif i == 1:
+                    red = 0
+                    blue = 255
+                    green = 255 - 255 / 15
+                elif i == 2:
+                    red = 255 / 15
+                    blue = 255
+                    green = 0
+                elif i == 3:
+                    red = 255
+                    blue = 255 - 255 / 15
+                    green = 0
+                elif i == 4:
+                    red = 255
+                    blue = 255 / 15
+                    green = 255 / 15
+                else:
+                    red = 255
+                    blue = 255
+                    green = 255
+
+
+                self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+                                      symbolSize=5, symbolBrush=(red, blue, green))
+                self.subgating_graphWidget.autoRange()
+        elif len(self.points_inside) ==0:
+            self.subgating_Ch1_channel0  = []
+            self.subgating_Ch1_channel1 = []
+
+                
+            
     def subgating_scatter(self):
         self.tab_widgets_main.setCurrentIndex(3)
         self.tab_widgets_subgating.setCurrentIndex(0)
@@ -4887,7 +5026,7 @@ class Ui_MainWindow(object):
         # filter x axis
         c = (np.array(self.Ch1_channel1) > text_y).tolist()
         d = (np.array(self.Ch1_channel1) < text_y).tolist()
-
+            
         # filter peak number into single peak, multipeak
         multipeak = [x for x in self.Ch1_channel0_peak_num]
 
@@ -4911,8 +5050,15 @@ class Ui_MainWindow(object):
         channel0_list_quadrant4 = []
         channel1_list_quadrant4 = []
 
+        
+        
+        
+        self.quadrant1_list = [False] * len(a)
+
+        
         for i in range(len(a)):
             if a[i] and c[i]:
+                self.quadrant1_list[i] = True
                 channel0_list_quadrant1.append(self.Ch1_channel0[i])
                 channel1_list_quadrant1.append(self.Ch1_channel1[i])
                 count_quadrant1 += 1
@@ -4962,8 +5108,7 @@ class Ui_MainWindow(object):
                     single_peak_count_channel1[3] += 1
                 elif self.Ch1_channel1_peak_num[i] > 1:
                     multi_peak_count_channel1[3] += 1
-
-            
+  
         try:
             droplets = float(self.lineEdit_totaldroplets.text())
             totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
@@ -5310,6 +5455,7 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_11.setText(_translate("MainWindow", "Plot"))
         self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract"))
         
+        self.scatter_button_subgating.setText(_translate("MainWindow", "Extract"))
         
         self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
         self.comboBox_option2.setItemText(0, _translate("MainWindow", "Option 2"))
