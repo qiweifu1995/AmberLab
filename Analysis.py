@@ -237,7 +237,7 @@ class file_extracted_data_Qing:
         row_chunk = 0
         peak_row_count = 0
         row_count = 0
-        for Ch in pd.read_csv(file, chunksize=20000000, header=header):
+        for Ch in pd.read_csv(file, chunksize=2000000, header=header):
             start = time.time()
             Ch.columns = [0, 1, 2, 3]
             row_count += len(Ch)
