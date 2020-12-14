@@ -666,6 +666,209 @@ class Ui_MainWindow(object):
         self.line_12.setObjectName("line_12")
         self.gridLayout_2.addWidget(self.line_12, 7, 2, 1, 1)
         self.tab_widgets_main.addTab(self.tab_statistic, "")
+
+        #### subtab peak linear graph
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setObjectName("tab_3")
+        self.horizontalLayout_150 = QtWidgets.QHBoxLayout(self.tab_3)
+        self.horizontalLayout_150.setObjectName("horizontalLayout_150")
+        self.verticalLayout_51 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_51.setContentsMargins(5, -1, 5, -1)
+        self.verticalLayout_51.setObjectName("verticalLayout_51")
+        self.gridLayout_41 = QtWidgets.QGridLayout()
+        self.gridLayout_41.setContentsMargins(10, -1, 10, -1)
+        self.gridLayout_41.setObjectName("gridLayout_41")
+        self.label_271 = QtWidgets.QLabel(self.tab_3)
+        self.label_271.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_271.setObjectName("label_271")
+        self.gridLayout_41.addWidget(self.label_271, 0, 0, 1, 2)
+        self.label_273 = QtWidgets.QLabel(self.tab_3)
+        self.label_273.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_273.setObjectName("label_273")
+        self.gridLayout_41.addWidget(self.label_273, 7, 0, 1, 2)
+        self.pushButton_5 = QtWidgets.QPushButton(self.tab_3)
+        self.pushButton_5.setObjectName("pushButton_5")
+        self.gridLayout_41.addWidget(self.pushButton_5, 8, 0, 1, 2)
+        self.pushButton_3 = QtWidgets.QPushButton(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_3.sizePolicy().hasHeightForWidth())
+        self.pushButton_3.setSizePolicy(sizePolicy)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.gridLayout_41.addWidget(self.pushButton_3, 12, 0, 1, 2)
+        self.label_270 = QtWidgets.QLabel(self.tab_3)
+        self.label_270.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_270.setObjectName("label_270")
+        self.gridLayout_41.addWidget(self.label_270, 3, 0, 1, 1)
+        self.label_272 = QtWidgets.QLabel(self.tab_3)
+        self.label_272.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_272.setObjectName("label_272")
+        self.gridLayout_41.addWidget(self.label_272, 5, 0, 1, 1)
+        self.pushButton_4 = QtWidgets.QPushButton(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
+        self.pushButton_4.setSizePolicy(sizePolicy)
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.gridLayout_41.addWidget(self.pushButton_4, 11, 0, 1, 2)
+        self.lineEdit_32 = QtWidgets.QLineEdit(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_32.sizePolicy().hasHeightForWidth())
+        self.lineEdit_32.setSizePolicy(sizePolicy)
+        self.lineEdit_32.setObjectName("lineEdit_32")
+        self.gridLayout_41.addWidget(self.lineEdit_32, 3, 1, 1, 1)
+
+        self.lineEdit_35 = QtWidgets.QLineEdit(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_35.sizePolicy().hasHeightForWidth())
+        self.lineEdit_35.setSizePolicy(sizePolicy)
+        self.lineEdit_35.setObjectName("lineEdit_35")
+        self.gridLayout_41.addWidget(self.lineEdit_35, 6, 1, 1, 1)
+
+        self.label_278 = QtWidgets.QLabel(self.tab_3)
+        self.label_278.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_278.setObjectName("label_278")
+        self.gridLayout_41.addWidget(self.label_278, 6, 0, 1, 1)
+
+        self.comboBox_13 = QtWidgets.QComboBox(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox_13.sizePolicy().hasHeightForWidth())
+        self.comboBox_13.setSizePolicy(sizePolicy)
+        self.comboBox_13.setObjectName("comboBox_13")
+        self.comboBox_13.addItem("Ch1 ")
+        self.comboBox_13.addItem("Ch2 ")
+        self.comboBox_13.addItem("Ch3 ")
+        self.comboBox_13.addItem("Ch1-2")
+        self.comboBox_13.addItem("Ch1-3")
+        self.comboBox_13.addItem("Ch2-3")
+        self.comboBox_13.addItem("Peak Record")
+
+        self.gridLayout_41.addWidget(self.comboBox_13, 1, 0, 1, 2)
+        self.lineEdit_31 = QtWidgets.QLineEdit(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_31.sizePolicy().hasHeightForWidth())
+        self.lineEdit_31.setSizePolicy(sizePolicy)
+        self.lineEdit_31.setObjectName("lineEdit_31")
+        self.gridLayout_41.addWidget(self.lineEdit_31, 5, 1, 1, 1)
+
+        self.lineEdit_32.setText("0")
+        self.lineEdit_31.setText("15")
+        self.lineEdit_35.setText("0")
+
+        self.layout_vertical_checkbox_2 = QtWidgets.QVBoxLayout()
+        self.layout_vertical_checkbox_2.setObjectName("layout_vertical_checkbox_2")
+
+        self.channel_1 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_1.setObjectName("self.channel_1")
+
+        self.channel_2 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_2.setObjectName("self.channel_2")
+
+        self.channel_3 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_3.setObjectName("self.channel_3")
+
+        self.channel_4 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_4.setObjectName("self.channel_4")
+
+        self.layout_vertical_checkbox_2.addWidget(self.channel_1)
+        self.layout_vertical_checkbox_2.addWidget(self.channel_2)
+        self.layout_vertical_checkbox_2.addWidget(self.channel_3)
+        self.layout_vertical_checkbox_2.addWidget(self.channel_4)
+
+        self.channel_1.setChecked(True)
+        self.channel_2.setChecked(True)
+        self.channel_3.setChecked(True)
+        self.channel_4.setChecked(True)
+
+        self.gridLayout_41.addItem(self.layout_vertical_checkbox_2, 14, 0, 1, 2)
+
+        self.label_277 = QtWidgets.QLabel(self.tab_3)
+        self.label_277.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_277.setObjectName("label_277")
+        self.gridLayout_41.addWidget(self.label_277, 15, 0, 1, 2)
+
+        self.Smooth_enable = QtWidgets.QCheckBox(self.tab_3)
+        self.Smooth_enable.setObjectName("Smooth_enable")
+        self.gridLayout_41.addWidget(self.Smooth_enable, 16, 0, 1, 2)
+
+        self.lineEdit_33 = QtWidgets.QLineEdit(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_33.sizePolicy().hasHeightForWidth())
+        self.lineEdit_33.setSizePolicy(sizePolicy)
+        self.lineEdit_33.setObjectName("lineEdit_33")
+        self.gridLayout_41.addWidget(self.lineEdit_33, 17, 1, 1, 1)
+
+        self.lineEdit_34 = QtWidgets.QLineEdit(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_34.sizePolicy().hasHeightForWidth())
+        self.lineEdit_34.setSizePolicy(sizePolicy)
+        self.lineEdit_34.setObjectName("lineEdit_34")
+        self.gridLayout_41.addWidget(self.lineEdit_34, 18, 1, 1, 1)
+
+        self.lineEdit_33.setText("7")
+        self.lineEdit_34.setText("29")
+
+        self.label_275 = QtWidgets.QLabel(self.tab_3)
+        self.label_275.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_275.setObjectName("label_275")
+        self.gridLayout_41.addWidget(self.label_275, 17, 0, 1, 1)
+        self.label_276 = QtWidgets.QLabel(self.tab_3)
+        self.label_276.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_276.setObjectName("label_276")
+        self.gridLayout_41.addWidget(self.label_276, 18, 0, 1, 1)
+
+        spacerItem26 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_41.addItem(spacerItem26, 13, 0, 1, 2)
+
+        spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_41.addItem(spacerItem25, 9, 0, 1, 2)
+        self.label_274 = QtWidgets.QLabel(self.tab_3)
+        self.label_274.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_274.setObjectName("label_274")
+        self.gridLayout_41.addWidget(self.label_274, 10, 0, 1, 2)
+        self.verticalLayout_51.addLayout(self.gridLayout_41)
+        spacerItem26 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_51.addItem(spacerItem26)
+        self.horizontalLayout_150.addLayout(self.verticalLayout_51)
+        self.line_100 = QtWidgets.QFrame(self.tab_3)
+        self.line_100.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_100.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_100.setObjectName("line_100")
+        self.horizontalLayout_150.addWidget(self.line_100)
+
+        self.widget_28 = PlotWidget(self.tab_3)
+
+        #         self.widget_28 = QtWidgets.QWidget(self.tab_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_28.sizePolicy().hasHeightForWidth())
+        self.widget_28.setSizePolicy(sizePolicy)
+        self.widget_28.setMinimumSize(QtCore.QSize(500, 500))
+        self.widget_28.setObjectName("widget_28")
+        self.horizontalLayout_150.addWidget(self.widget_28)
+
+        styles = {"color": "r", "font-size": "20px"}
+        self.widget_28.setLabel('left', 'Height', **styles)
+        self.widget_28.setBackground('w')
+
+        self.tab_widgets_main.addTab(self.tab_3, "")
+        ### peak leanear end
         
         
 ### Peak Width
@@ -1524,7 +1727,14 @@ class Ui_MainWindow(object):
 
 #         self.gridLayout_4.addLayout(self.horizontalLayout_32, 0, 1, 1, 1)
 
-        self.polygon_inside_label_29 = QtWidgets.QLabel(self.subtab_scatter)
+        self.polygon_gating_label = QtWidgets.QLabel(self.subtab_scatter)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.polygon_gating_label.setFont(font)
+        self.polygon_gating_label.setObjectName("polygon_gating_label")
+        self.verticalLayout_9.addWidget(self.polygon_gating_label)
+
+        self.polygon_inside_label_29 = QtWidgets.QLabel(self.polygon_gating_label)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.polygon_inside_label_29.setFont(font)
@@ -1611,7 +1821,7 @@ class Ui_MainWindow(object):
         self.tableView_scatterquadrants.setRowCount(4)
         # set column count
         self.tableView_scatterquadrants.setColumnCount(7)
-        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '%', '% Total Droplets', 'X Single Peak %',
+        self.tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '% Total Peaks', '% Total Droplets', 'X Single Peak %',
                                                                    'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
         self.tableView_scatterquadrants.setVerticalHeaderLabels(
             ('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
@@ -1932,231 +2142,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.tab_widgets_scatter)
         self.tab_widgets_main.addTab(self.tab_scatter, "")
 
-#### subtab peak linear graph
-        self.tab_3 = QtWidgets.QWidget()
-        self.tab_3.setObjectName("tab_3")
-        self.horizontalLayout_150 = QtWidgets.QHBoxLayout(self.tab_3)
-        self.horizontalLayout_150.setObjectName("horizontalLayout_150")
-        self.verticalLayout_51 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_51.setContentsMargins(5, -1, 5, -1)
-        self.verticalLayout_51.setObjectName("verticalLayout_51")
-        self.gridLayout_41 = QtWidgets.QGridLayout()
-        self.gridLayout_41.setContentsMargins(10, -1, 10, -1)
-        self.gridLayout_41.setObjectName("gridLayout_41")
-        self.label_271 = QtWidgets.QLabel(self.tab_3)
-        self.label_271.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_271.setObjectName("label_271")
-        self.gridLayout_41.addWidget(self.label_271, 0, 0, 1, 2)
-        self.label_273 = QtWidgets.QLabel(self.tab_3)
-        self.label_273.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_273.setObjectName("label_273")
-        self.gridLayout_41.addWidget(self.label_273, 7, 0, 1, 2)
-        self.pushButton_5 = QtWidgets.QPushButton(self.tab_3)
-        self.pushButton_5.setObjectName("pushButton_5")
-        self.gridLayout_41.addWidget(self.pushButton_5, 8, 0, 1, 2)
-        self.pushButton_3 = QtWidgets.QPushButton(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_3.sizePolicy().hasHeightForWidth())
-        self.pushButton_3.setSizePolicy(sizePolicy)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout_41.addWidget(self.pushButton_3, 12, 0, 1, 2)
-        self.label_270 = QtWidgets.QLabel(self.tab_3)
-        self.label_270.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_270.setObjectName("label_270")
-        self.gridLayout_41.addWidget(self.label_270, 3, 0, 1, 1)
-        self.label_272 = QtWidgets.QLabel(self.tab_3)
-        self.label_272.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_272.setObjectName("label_272")
-        self.gridLayout_41.addWidget(self.label_272, 5, 0, 1, 1)
-        self.pushButton_4 = QtWidgets.QPushButton(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
-        self.pushButton_4.setSizePolicy(sizePolicy)
-        self.pushButton_4.setObjectName("pushButton_4")
-        self.gridLayout_41.addWidget(self.pushButton_4, 11, 0, 1, 2)
-        self.lineEdit_32 = QtWidgets.QLineEdit(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_32.sizePolicy().hasHeightForWidth())
-        self.lineEdit_32.setSizePolicy(sizePolicy)
-        self.lineEdit_32.setObjectName("lineEdit_32")
-        self.gridLayout_41.addWidget(self.lineEdit_32, 3, 1, 1, 1)
-        
-        
-        
-        
-        self.lineEdit_35 = QtWidgets.QLineEdit(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_35.sizePolicy().hasHeightForWidth())
-        self.lineEdit_35.setSizePolicy(sizePolicy)
-        self.lineEdit_35.setObjectName("lineEdit_35")
-        self.gridLayout_41.addWidget(self.lineEdit_35, 6, 1, 1, 1)
-        
-        self.label_278 = QtWidgets.QLabel(self.tab_3)
-        self.label_278.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_278.setObjectName("label_278")
-        self.gridLayout_41.addWidget(self.label_278, 6, 0, 1, 1)
-        
-        
-        
-        
-        self.comboBox_13 = QtWidgets.QComboBox(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_13.sizePolicy().hasHeightForWidth())
-        self.comboBox_13.setSizePolicy(sizePolicy)
-        self.comboBox_13.setObjectName("comboBox_13")
-        self.comboBox_13.addItem("Ch1 ")
-        self.comboBox_13.addItem("Ch2 ")
-        self.comboBox_13.addItem("Ch3 ")
-        self.comboBox_13.addItem("Ch1-2")
-        self.comboBox_13.addItem("Ch1-3")
-        self.comboBox_13.addItem("Ch2-3")
-        self.comboBox_13.addItem("Peak Record")
-        
 
-        
-        
-        self.gridLayout_41.addWidget(self.comboBox_13, 1, 0, 1, 2)
-        self.lineEdit_31 = QtWidgets.QLineEdit(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_31.sizePolicy().hasHeightForWidth())
-        self.lineEdit_31.setSizePolicy(sizePolicy)
-        self.lineEdit_31.setObjectName("lineEdit_31")
-        self.gridLayout_41.addWidget(self.lineEdit_31, 5, 1, 1, 1)
-        
-        self.lineEdit_32.setText("0")
-        self.lineEdit_31.setText("15")
-        self.lineEdit_35.setText("0")
-        
-        
-        
-        self.layout_vertical_checkbox_2 = QtWidgets.QVBoxLayout()
-        self.layout_vertical_checkbox_2.setObjectName("layout_vertical_checkbox_2")
-        
-        self.channel_1 = QtWidgets.QCheckBox(self.centralwidget)
-        self.channel_1.setObjectName("self.channel_1")
-        
-        self.channel_2 = QtWidgets.QCheckBox(self.centralwidget)
-        self.channel_2.setObjectName("self.channel_2")
-  
-        self.channel_3 = QtWidgets.QCheckBox(self.centralwidget)
-        self.channel_3.setObjectName("self.channel_3")
-        
-        self.channel_4 = QtWidgets.QCheckBox(self.centralwidget)
-        self.channel_4.setObjectName("self.channel_4")
-        
-        self.layout_vertical_checkbox_2.addWidget(self.channel_1)
-        self.layout_vertical_checkbox_2.addWidget(self.channel_2)
-        self.layout_vertical_checkbox_2.addWidget(self.channel_3)
-        self.layout_vertical_checkbox_2.addWidget(self.channel_4)
-
-        self.channel_1.setChecked(True)
-        self.channel_2.setChecked(True)
-        self.channel_3.setChecked(True)
-        self.channel_4.setChecked(True)
-
-        self.gridLayout_41.addItem(self.layout_vertical_checkbox_2, 14, 0, 1,2 )
-        
-        
-        self.label_277 = QtWidgets.QLabel(self.tab_3)
-        self.label_277.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_277.setObjectName("label_277")
-        self.gridLayout_41.addWidget(self.label_277, 15, 0, 1, 2)
-        
-        self.Smooth_enable = QtWidgets.QCheckBox(self.tab_3)
-        self.Smooth_enable.setObjectName("Smooth_enable")
-        self.gridLayout_41.addWidget(self.Smooth_enable, 16, 0, 1, 2)        
-        
-        
-        self.lineEdit_33 = QtWidgets.QLineEdit(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_33.sizePolicy().hasHeightForWidth())
-        self.lineEdit_33.setSizePolicy(sizePolicy)
-        self.lineEdit_33.setObjectName("lineEdit_33")
-        self.gridLayout_41.addWidget(self.lineEdit_33, 17, 1, 1, 1)
-
-        
-
-        self.lineEdit_34 = QtWidgets.QLineEdit(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_34.sizePolicy().hasHeightForWidth())
-        self.lineEdit_34.setSizePolicy(sizePolicy)
-        self.lineEdit_34.setObjectName("lineEdit_34")
-        self.gridLayout_41.addWidget(self.lineEdit_34, 18, 1, 1, 1)
-
-        
-        self.lineEdit_33.setText("7")
-        self.lineEdit_34.setText("29")
-        
-        
-        self.label_275 = QtWidgets.QLabel(self.tab_3)
-        self.label_275.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_275.setObjectName("label_275")
-        self.gridLayout_41.addWidget(self.label_275, 17, 0, 1, 1)
-        self.label_276 = QtWidgets.QLabel(self.tab_3)
-        self.label_276.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_276.setObjectName("label_276")
-        self.gridLayout_41.addWidget(self.label_276, 18, 0, 1, 1)  
-
-        
-        
-        spacerItem26 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_41.addItem(spacerItem26, 13, 0, 1, 2)        
-        
-        spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_41.addItem(spacerItem25, 9, 0, 1, 2)
-        self.label_274 = QtWidgets.QLabel(self.tab_3)
-        self.label_274.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_274.setObjectName("label_274")
-        self.gridLayout_41.addWidget(self.label_274, 10, 0, 1, 2)
-        self.verticalLayout_51.addLayout(self.gridLayout_41)
-        spacerItem26 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_51.addItem(spacerItem26)
-        self.horizontalLayout_150.addLayout(self.verticalLayout_51)
-        self.line_100 = QtWidgets.QFrame(self.tab_3)
-        self.line_100.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line_100.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_100.setObjectName("line_100")
-        self.horizontalLayout_150.addWidget(self.line_100)
-        
-        self.widget_28 = PlotWidget(self.tab_3)
-
-        
-        
-        
-#         self.widget_28 = QtWidgets.QWidget(self.tab_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_28.sizePolicy().hasHeightForWidth())
-        self.widget_28.setSizePolicy(sizePolicy)
-        self.widget_28.setMinimumSize(QtCore.QSize(500, 500))
-        self.widget_28.setObjectName("widget_28")
-        self.horizontalLayout_150.addWidget(self.widget_28)
-        
-        
-
-        styles = {"color": "r", "font-size": "20px"}
-        self.widget_28.setLabel('left', 'Height', **styles)
-        self.widget_28.setBackground('w')
-        
-        self.tab_widgets_scatter.addTab(self.tab_3, "")
-### peak leanear end
 
 
 ### subgating
@@ -5395,8 +5381,9 @@ class Ui_MainWindow(object):
         self.comboBox_2.setItemText(1, _translate("MainWindow", "Far Red"))
         self.comboBox_2.setItemText(2, _translate("MainWindow", "Ultra Violet"))
         self.comboBox_2.setItemText(3, _translate("MainWindow", "Orange"))
-        self.label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))
+        self.label_29.setText(_translate("MainWindow", "Quadrant Gating"))
         self.polygon_inside_label_29.setText(_translate("MainWindow", "Inside: 0"))
+        self.polygon_gating_label.setText(_translate("MainWindow", "Polygonal Gating"))
 #         self.radioButton_scatterlinear.setText(_translate("MainWindow", "Linear"))
 #         self.radioButton_scatterlog.setText(_translate("MainWindow", "Logarithmic"))
 
@@ -5414,13 +5401,13 @@ class Ui_MainWindow(object):
 
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_scatter),
-                                         _translate("MainWindow", "Peak Height"))
+                                         _translate("MainWindow", "Peak Height Subgating"))
         
         
         
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_subgating),
-                                         _translate("MainWindow", "Subgating"))        
+                                         _translate("MainWindow", "Subgating Results"))
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.subgating_subtab_scatter),
                                             _translate("MainWindow", "Scatter"))        
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_sweep), 
@@ -5451,7 +5438,7 @@ class Ui_MainWindow(object):
         self.subgating_label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))        
         
         self.subgating_pushButton_9.setText(_translate("MainWindow", "Ploygon"))
-        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clean"))
+        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clear"))
         self.subgating_pushButton_11.setText(_translate("MainWindow", "Plot"))
         self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract"))
         
@@ -5518,7 +5505,7 @@ class Ui_MainWindow(object):
                                          _translate("MainWindow", "Peak Maxes Log"))
         
         self.label_82.setText(_translate("MainWindow", "Max Width"))
-        self.label_84.setText(_translate("MainWindow", "Mid Points"))
+        self.label_84.setText(_translate("MainWindow", "Selected/Total"))
         self.label_85.setText(_translate("MainWindow", "/"))
         self.button_update_2.setText(_translate("MainWindow", "Quadrants"))
         self.label_87.setText(_translate("MainWindow", "Min"))
@@ -5539,9 +5526,8 @@ class Ui_MainWindow(object):
         self.label_96.setText(_translate("MainWindow", "Far Red"))
         self.label_97.setText(_translate("MainWindow", "Ultra Vio"))
         self.label_98.setText(_translate("MainWindow", "Orange"))
-        self.label_93.setText(_translate("MainWindow", "Quadrants")) 
+        self.label_93.setText(_translate("MainWindow", "Selected Data"))
 
-        self.label_93.setText(_translate("MainWindow", "Quadrants"))
         self.label_num_peak_1.setText(_translate("MainWindow", "Channel"))
         self.label_num_peak_2.setText(_translate("MainWindow", "Condition"))
         self.label_num_peak_3.setText(_translate("MainWindow", "# of Peaks"))
@@ -5593,8 +5579,8 @@ class Ui_MainWindow(object):
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_4), _translate("MainWindow", "User defined linear graph"))
                         
         self.pushButton_9.setText(_translate("MainWindow", "Ploygon"))
-        self.pushButton_10.setText(_translate("MainWindow", "Clean"))
-        self.pushButton_11.setText(_translate("MainWindow", "Plot"))
+        self.pushButton_10.setText(_translate("MainWindow", "Clear"))
+        self.pushButton_11.setText(_translate("MainWindow", "Extract"))
         
         self.label_270.setText(_translate("MainWindow", "Start Peak"))
         self.label_272.setText(_translate("MainWindow", "End Peak"))
@@ -5608,11 +5594,11 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(_translate("MainWindow", "Generate Plot"))
         self.pushButton_3.setText(_translate("MainWindow", "Next Page"))
         self.pushButton_4.setText(_translate("MainWindow", "Last Page"))
-        self.tab_widgets_scatter.setTabText(self.tab_widgets_scatter.indexOf(self.tab_3), _translate("MainWindow", "Linear Graph"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_3), _translate("MainWindow", "Raw Data Viewer"))
                 
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
-                                         _translate("MainWindow", "Peak Width"))
+                                         _translate("MainWindow", "Peak Width/Number Subgating"))
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
                                          _translate("MainWindow", "Report"))
