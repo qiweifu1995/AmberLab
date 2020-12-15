@@ -27,37 +27,43 @@ class file_extracted_data_Qing:
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
             list1, width1, num_peaks1 = self.extract(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1', ch1_count, peak_threshold, width_min, width_max)
-            width1 = [i*factor for i in width1]
+            for x in range(len(width1)):
+                width1[x] = [i*factor for i in width1[x]]
             self.analog_file[current_file_dict["Ch1 "]] = [list1, width1, num_peaks1]
 
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
             list2, width2, num_peaks2 = self.extract(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2', ch2_count, peak_threshold, width_min, width_max)
-            width2 = [i * factor for i in width2]
+            for x in range(len(width2)):
+                width2[x] = [i * factor for i in width2[x]]
             self.analog_file[current_file_dict["Ch2 "]] = [list2, width2, num_peaks2]
 
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
             list3, width3, num_peaks3 = self.extract(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch3', ch3_count, peak_threshold, width_min, width_max)
-            width3 = [i * factor for i in width3]
+            for x in range(len(width3)):
+                width3[x] = [i * factor for i in width3[x]]
             self.analog_file[current_file_dict["Ch3 "]] = [list3, width3, num_peaks3]
 
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
             list12, width12, num_peaks12 = self.extract(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_2', ch12_count, peak_threshold, width_min, width_max)
-            width12 = [i * factor for i in width12]
+            for x in range(len(width12)):
+                width12[x] = [i * factor for i in width12[x]]
             self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]
 
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
             list13, width13, num_peaks13 = self.extract(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_3', ch13_count, peak_threshold, width_min, width_max)
-            width13 = [i * factor for i in width13]
+            for x in range(len(width13)):
+                width13[x] = [i * factor for i in width13[x]]
             self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13, num_peaks13]
 
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
             list23, width23, num_peaks23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
-            width23 = [i * factor for i in width23]
+            for x in range(len(width23)):
+                width23[x] = [i * factor for i in width23[x]]
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
 
         print("Extracting Peak... Parallel")
