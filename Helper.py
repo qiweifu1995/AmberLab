@@ -283,7 +283,7 @@ class ui_state:
                 self.channel_0_min = x_axis_channel_min
             if x_axis_channel_max is not None and x_axis_channel_max != self.channel_0_max:
                 refilter = True
-                self.channel_0_min = x_axis_channel_max
+                self.channel_0_max = x_axis_channel_max
 
         elif x_axis_channel_number == 1:
             if x_axis_channel_min is not None and x_axis_channel_min != self.channel_1_min:
@@ -291,7 +291,7 @@ class ui_state:
                 self.channel_1_min = x_axis_channel_min
             if x_axis_channel_max is not None and x_axis_channel_max != self.channel_1_max:
                 refilter = True
-                self.channel_1_min = x_axis_channel_max
+                self.channel_1_max = x_axis_channel_max
 
         elif x_axis_channel_number == 2:
             if x_axis_channel_min is not None and x_axis_channel_min != self.channel_2_min:
@@ -299,7 +299,7 @@ class ui_state:
                 self.channel_2_min = x_axis_channel_min
             if x_axis_channel_max is not None and x_axis_channel_max != self.channel_2_max:
                 refilter = True
-                self.channel_2_min = x_axis_channel_max
+                self.channel_2_max = x_axis_channel_max
 
         elif x_axis_channel_number == 3:
             if x_axis_channel_min is not None and x_axis_channel_min != self.channel_3_min:
@@ -310,36 +310,36 @@ class ui_state:
                 self.channel_3_min = x_axis_channel_max
 
         if y_axis_channel_number == 0:
-            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_0_min:
+            if y_axis_channel_min is not None and y_axis_channel_min != self.channel_0_min:
                 refilter = True
                 self.channel_0_min = y_axis_channel_min
-            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_0_max:
+            if y_axis_channel_max is not None and y_axis_channel_max != self.channel_0_max:
                 refilter = True
-                self.channel_0_min = y_axis_channel_max
+                self.channel_0_max = y_axis_channel_max
 
         elif y_axis_channel_number == 1:
-            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_1_min:
+            if y_axis_channel_min is not None and y_axis_channel_min != self.channel_1_min:
                 refilter = True
                 self.channel_1_min = y_axis_channel_min
-            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_1_max:
+            if y_axis_channel_max is not None and y_axis_channel_max != self.channel_1_max:
                 refilter = True
-                self.channel_1_min = y_axis_channel_max
+                self.channel_1_max = y_axis_channel_max
 
         elif y_axis_channel_number == 2:
-            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_2_min:
+            if y_axis_channel_min is not None and y_axis_channel_min != self.channel_2_min:
                 refilter = True
                 self.channel_2_min = y_axis_channel_min
-            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_2_max:
+            if y_axis_channel_max is not None and y_axis_channel_max != self.channel_2_max:
                 refilter = True
-                self.channel_2_min = y_axis_channel_max
+                self.channel_2_max = y_axis_channel_max
 
         elif y_axis_channel_number == 3:
-            if y_axis_channel_min is not None and x_axis_channel_min != self.channel_3_min:
+            if y_axis_channel_min is not None and y_axis_channel_min != self.channel_3_min:
                 refilter = True
                 self.channel_3_min = y_axis_channel_min
-            if y_axis_channel_max is not None and x_axis_channel_max != self.channel_3_max:
+            if y_axis_channel_max is not None and y_axis_channel_max != self.channel_3_max:
                 refilter = True
-                self.channel_3_min = y_axis_channel_max
+                self.channel_3_max = y_axis_channel_max
 
         if self.peak_num != peak_num_in and peak_num_in is not None:
             refilter = True
