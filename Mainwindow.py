@@ -13,6 +13,8 @@ from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWi
 
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.Point import Point
+import pyqtgraph as pg
+
 import pandas as pd
 import os
 import Helper
@@ -666,6 +668,7 @@ class Ui_MainWindow(object):
         self.line_12.setObjectName("line_12")
         self.gridLayout_2.addWidget(self.line_12, 7, 2, 1, 1)
         self.tab_widgets_main.addTab(self.tab_statistic, "")
+        
 
         #### subtab peak linear graph
         self.tab_3 = QtWidgets.QWidget()
@@ -721,7 +724,10 @@ class Ui_MainWindow(object):
         self.lineEdit_32.setSizePolicy(sizePolicy)
         self.lineEdit_32.setObjectName("lineEdit_32")
         self.gridLayout_41.addWidget(self.lineEdit_32, 3, 1, 1, 1)
-
+        
+        
+        
+        
         self.lineEdit_35 = QtWidgets.QLineEdit(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -730,12 +736,15 @@ class Ui_MainWindow(object):
         self.lineEdit_35.setSizePolicy(sizePolicy)
         self.lineEdit_35.setObjectName("lineEdit_35")
         self.gridLayout_41.addWidget(self.lineEdit_35, 6, 1, 1, 1)
-
+        
         self.label_278 = QtWidgets.QLabel(self.tab_3)
         self.label_278.setAlignment(QtCore.Qt.AlignCenter)
         self.label_278.setObjectName("label_278")
         self.gridLayout_41.addWidget(self.label_278, 6, 0, 1, 1)
-
+        
+        
+        
+        
         self.comboBox_13 = QtWidgets.QComboBox(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -750,7 +759,10 @@ class Ui_MainWindow(object):
         self.comboBox_13.addItem("Ch1-3")
         self.comboBox_13.addItem("Ch2-3")
         self.comboBox_13.addItem("Peak Record")
+        
 
+        
+        
         self.gridLayout_41.addWidget(self.comboBox_13, 1, 0, 1, 2)
         self.lineEdit_31 = QtWidgets.QLineEdit(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
@@ -760,47 +772,50 @@ class Ui_MainWindow(object):
         self.lineEdit_31.setSizePolicy(sizePolicy)
         self.lineEdit_31.setObjectName("lineEdit_31")
         self.gridLayout_41.addWidget(self.lineEdit_31, 5, 1, 1, 1)
-
+        
         self.lineEdit_32.setText("0")
         self.lineEdit_31.setText("15")
         self.lineEdit_35.setText("0")
-
+        
+        
+        
         self.layout_vertical_checkbox_2 = QtWidgets.QVBoxLayout()
         self.layout_vertical_checkbox_2.setObjectName("layout_vertical_checkbox_2")
-
+        
         self.channel_1 = QtWidgets.QCheckBox(self.centralwidget)
         self.channel_1.setObjectName("self.channel_1")
-
+        
         self.channel_2 = QtWidgets.QCheckBox(self.centralwidget)
         self.channel_2.setObjectName("self.channel_2")
-
+        
         self.channel_3 = QtWidgets.QCheckBox(self.centralwidget)
         self.channel_3.setObjectName("self.channel_3")
-
+        
         self.channel_4 = QtWidgets.QCheckBox(self.centralwidget)
         self.channel_4.setObjectName("self.channel_4")
-
+        
         self.layout_vertical_checkbox_2.addWidget(self.channel_1)
         self.layout_vertical_checkbox_2.addWidget(self.channel_2)
         self.layout_vertical_checkbox_2.addWidget(self.channel_3)
         self.layout_vertical_checkbox_2.addWidget(self.channel_4)
-
+        
         self.channel_1.setChecked(True)
         self.channel_2.setChecked(True)
         self.channel_3.setChecked(True)
         self.channel_4.setChecked(True)
 
-        self.gridLayout_41.addItem(self.layout_vertical_checkbox_2, 14, 0, 1, 2)
-
+        self.gridLayout_41.addItem(self.layout_vertical_checkbox_2, 14, 0, 1, 2 )
+        
+        
         self.label_277 = QtWidgets.QLabel(self.tab_3)
         self.label_277.setAlignment(QtCore.Qt.AlignCenter)
         self.label_277.setObjectName("label_277")
         self.gridLayout_41.addWidget(self.label_277, 15, 0, 1, 2)
-
+        
         self.Smooth_enable = QtWidgets.QCheckBox(self.tab_3)
         self.Smooth_enable.setObjectName("Smooth_enable")
-        self.gridLayout_41.addWidget(self.Smooth_enable, 16, 0, 1, 2)
-
+        self.gridLayout_41.addWidget(self.Smooth_enable, 16, 0, 1, 2)        
+        
         self.lineEdit_33 = QtWidgets.QLineEdit(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -821,7 +836,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_33.setText("7")
         self.lineEdit_34.setText("29")
-
+        
         self.label_275 = QtWidgets.QLabel(self.tab_3)
         self.label_275.setAlignment(QtCore.Qt.AlignCenter)
         self.label_275.setObjectName("label_275")
@@ -832,8 +847,8 @@ class Ui_MainWindow(object):
         self.gridLayout_41.addWidget(self.label_276, 18, 0, 1, 1)
 
         spacerItem26 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_41.addItem(spacerItem26, 13, 0, 1, 2)
-
+        self.gridLayout_41.addItem(spacerItem26, 13, 0, 1, 2)        
+        
         spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_41.addItem(spacerItem25, 9, 0, 1, 2)
         self.label_274 = QtWidgets.QLabel(self.tab_3)
@@ -849,12 +864,13 @@ class Ui_MainWindow(object):
         self.line_100.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_100.setObjectName("line_100")
         self.horizontalLayout_150.addWidget(self.line_100)
-
+        
         self.widget_28 = PlotWidget(self.tab_3)
 
         #         self.widget_28 = QtWidgets.QWidget(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
+        
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_28.sizePolicy().hasHeightForWidth())
@@ -866,7 +882,7 @@ class Ui_MainWindow(object):
         styles = {"color": "r", "font-size": "20px"}
         self.widget_28.setLabel('left', 'Height', **styles)
         self.widget_28.setBackground('w')
-
+        
         self.tab_widgets_main.addTab(self.tab_3, "")
         ### peak leanear end
         
@@ -1336,7 +1352,7 @@ class Ui_MainWindow(object):
         
         
         self.lr_x_axis = pg.LinearRegionItem([1,1])
-        self.lr_y_axis = pg.LinearRegionItem([1,1], orientation=1)
+        self.lr_y_axis = pg.LinearRegionItem([1,1], orientation = 1)
         self.graphWidget_width_scatter.addItem(self.lr_x_axis)
         self.graphWidget_width_scatter.addItem(self.lr_y_axis)  
         
@@ -1595,7 +1611,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.setContentsMargins(10, -1, -1, -1)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.gridLayout_6 = QtWidgets.QGridLayout()
-        self.gridLayout_6.setContentsMargins(10, 10, -1, 10)
+#         self.gridLayout_6.setContentsMargins(10, 10, -1, 10)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.label_30 = QtWidgets.QLabel(self.subtab_scatter)
         font = QtGui.QFont()
@@ -1644,14 +1660,7 @@ class Ui_MainWindow(object):
         self.lineEdit_scatteryvoltage.setObjectName("lineEdit_scatteryvoltage")
         self.gridLayout_6.addWidget(self.lineEdit_scatteryvoltage, 2, 1, 1, 1)
         
-        ### threshold subgating        
-        self.scatter_button_subgating = QtWidgets.QPushButton(self.subtab_scatter)
-        self.scatter_button_subgating.setMinimumSize(QtCore.QSize(110, 0))
-        self.scatter_button_subgating.setMaximumSize(QtCore.QSize(80, 16777215))      
-        self.scatter_button_subgating.setObjectName("scatter_button_subgating")
-
-        self.gridLayout_6.addWidget(self.scatter_button_subgating, 3, 1, 1, 1)
-        
+        ### threshold subgating               
         
         self.horizontalLayout_31 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_31.setObjectName("horizontalLayout_31")
@@ -1690,62 +1699,24 @@ class Ui_MainWindow(object):
         spacerItem20 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_4.addItem(spacerItem20, 0, 2, 1, 1)
         
-#         self.radioButton_scatterlinear = QtWidgets.QRadioButton(self.subtab_scatter)
-#         self.radioButton_scatterlinear.setChecked(True)
-#         self.radioButton_scatterlinear.setObjectName("radioButton_scatterlinear")
-#         self.gridLayout_4.addWidget(self.radioButton_scatterlinear, 1, 0, 1, 1)
-#         self.radioButton_scatterlog = QtWidgets.QRadioButton(self.subtab_scatter)
-#         self.radioButton_scatterlog.setObjectName("radioButton_scatterlog")
-#         self.gridLayout_4.addWidget(self.radioButton_scatterlog, 1, 1, 1, 1)
+
+        self.polygon_inside_label_30 = QtWidgets.QLabel(self.subtab_scatter)
+        self.polygon_inside_label_30.setFont(font)
+        self.polygon_inside_label_30.setObjectName("polygon_inside_label_30")
+        self.gridLayout_4.addWidget(self.polygon_inside_label_30, 0, 0, 1, 1)
         
-        
-#         self.label_33 = QtWidgets.QLabel(self.subtab_scatter)
-#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-#         sizePolicy.setHorizontalStretch(0)
-#         sizePolicy.setVerticalStretch(0)
-#         sizePolicy.setHeightForWidth(self.label_33.sizePolicy().hasHeightForWidth())
-#         self.label_33.setSizePolicy(sizePolicy)
-#         self.label_33.setMinimumSize(QtCore.QSize(60, 0))
-#         font = QtGui.QFont()
-#         font.setPointSize(9)
-#         self.label_33.setFont(font)
-#         self.label_33.setObjectName("label_33")
-#         self.gridLayout_4.addWidget(self.label_33, 0, 0, 1, 1)
-
-#         self.label_35 = QtWidgets.QLabel(self.subtab_scatter)
-#         self.label_35.setObjectName("label_35")
-#         self.horizontalLayout_32.addWidget(self.label_35)
-
-#         self.horizontalLayout_32 = QtWidgets.QHBoxLayout()
-#         self.horizontalLayout_32.setObjectName("horizontalLayout_32")        
-        
-#         self.spinBox_scatterscaling = QtWidgets.QSpinBox(self.subtab_scatter)
-#         self.spinBox_scatterscaling.setMinimum(2)
-#         self.spinBox_scatterscaling.setMaximum(10)
-#         self.spinBox_scatterscaling.setObjectName("spinBox_scatterscaling")
-#         self.horizontalLayout_32.addWidget(self.spinBox_scatterscaling)
-
-#         self.gridLayout_4.addLayout(self.horizontalLayout_32, 0, 1, 1, 1)
-
-        self.polygon_gating_label = QtWidgets.QLabel(self.subtab_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.polygon_gating_label.setFont(font)
-        self.polygon_gating_label.setObjectName("polygon_gating_label")
-        self.verticalLayout_9.addWidget(self.polygon_gating_label)
-
-        self.polygon_inside_label_29 = QtWidgets.QLabel(self.polygon_gating_label)
+        self.polygon_inside_label_29 = QtWidgets.QLabel(self.subtab_scatter)
         font = QtGui.QFont()
         font.setPointSize(9)
         self.polygon_inside_label_29.setFont(font)
         self.polygon_inside_label_29.setObjectName("polygon_inside_label_29")
-        self.gridLayout_4.addWidget(self.polygon_inside_label_29, 0, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.polygon_inside_label_29, 1, 0, 1, 1)
     
         self.pushButton_9 = QtWidgets.QPushButton(self.subtab_scatter)
         self.pushButton_9.setMinimumSize(QtCore.QSize(110, 0))
         self.pushButton_9.setMaximumSize(QtCore.QSize(80, 16777215))
         self.pushButton_9.setObjectName("pushButton_9")
-        self.gridLayout_4.addWidget(self.pushButton_9, 0, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.pushButton_9, 1, 1, 1, 1)
 #         self.horizontalLayout_32.addWidget(self.pushButton_9)
         
 
@@ -1753,20 +1724,28 @@ class Ui_MainWindow(object):
         self.pushButton_10.setMinimumSize(QtCore.QSize(110, 0))
         self.pushButton_10.setMaximumSize(QtCore.QSize(80, 16777215))
         self.pushButton_10.setObjectName("pushButton_10")
-        self.gridLayout_4.addWidget(self.pushButton_10, 0, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.pushButton_10, 1, 2, 1, 1)
        
-        self.pushButton_11 = QtWidgets.QPushButton(self.subtab_scatter)
-        self.pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
-        self.pushButton_11.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.pushButton_11.setObjectName("pushButton_11")
-        self.gridLayout_4.addWidget(self.pushButton_11, 0, 3, 1, 1)
-        
-        self.verticalLayout_9.addLayout(self.gridLayout_4)
         self.line_13 = QtWidgets.QFrame(self.subtab_scatter)
         self.line_13.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_13.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_13.setObjectName("line_13")
-        self.verticalLayout_9.addWidget(self.line_13)
+        self.gridLayout_4.addWidget(self.line_13, 2, 0, 1, 3)
+        
+        self.pushButton_11 = QtWidgets.QPushButton(self.subtab_scatter)
+        self.pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
+        self.pushButton_11.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.pushButton_11.setObjectName("pushButton_11")
+        self.gridLayout_4.addWidget(self.pushButton_11, 3, 2, 1, 1)
+        
+        
+        self.verticalLayout_9.addLayout(self.gridLayout_4)
+        
+
+                
+               
+
+        
         self.label_36 = QtWidgets.QLabel(self.subtab_scatter)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -2143,8 +2122,6 @@ class Ui_MainWindow(object):
         self.tab_widgets_main.addTab(self.tab_scatter, "")
 
 
-
-
 ### subgating
         self.tab_subgating = QtWidgets.QWidget()
         self.tab_subgating.setObjectName("tab_subgating")
@@ -2163,7 +2140,7 @@ class Ui_MainWindow(object):
         self.subgating_verticalLayout_9.setContentsMargins(10, -1, -1, -1)
         self.subgating_verticalLayout_9.setObjectName("subgating_verticalLayout_9")
         self.subgating_gridLayout_6 = QtWidgets.QGridLayout()
-        self.subgating_gridLayout_6.setContentsMargins(10, 10, -1, 10)
+#         self.subgating_gridLayout_6.setContentsMargins(10, 10, -1, 10)
         self.subgating_gridLayout_6.setObjectName("subgating_gridLayout_6")
         self.subgating_label_30 = QtWidgets.QLabel(self.subgating_subtab_scatter)
         font = QtGui.QFont()
@@ -2281,6 +2258,11 @@ class Ui_MainWindow(object):
         subgating_spacerItem20 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.subgating_gridLayout_4.addItem(subgating_spacerItem20, 0, 2, 1, 1)
                 
+ 
+        self.subgating_polygon_inside_label_30 = QtWidgets.QLabel(self.subgating_subtab_scatter)
+        self.subgating_polygon_inside_label_30.setFont(font)
+        self.subgating_polygon_inside_label_30.setObjectName("polygon_inside_label_30")
+        self.subgating_gridLayout_4.addWidget(self.subgating_polygon_inside_label_30, 0, 0, 1, 1)  
         
         self.subgating_polygon_inside_label_29 = QtWidgets.QLabel(self.subgating_subtab_scatter)
         font = QtGui.QFont()
@@ -2293,7 +2275,7 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_9.setMinimumSize(QtCore.QSize(110, 0))
         self.subgating_pushButton_9.setMaximumSize(QtCore.QSize(80, 16777215))
         self.subgating_pushButton_9.setObjectName("subgating_pushButton_9")
-        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_9, 0, 0, 1, 1)
+        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_9, 1, 1, 1, 1)
 #         self.horizontalLayout_32.addWidget(self.pushButton_9)
         
 
@@ -2301,26 +2283,22 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_10.setMinimumSize(QtCore.QSize(110, 0))
         self.subgating_pushButton_10.setMaximumSize(QtCore.QSize(80, 16777215))
         self.subgating_pushButton_10.setObjectName("subgating_pushButton_10")
-        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_10, 0, 1, 1, 1)
-       
-        self.subgating_pushButton_11 = QtWidgets.QPushButton(self.subgating_subtab_scatter)
-        self.subgating_pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
-        self.subgating_pushButton_11.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.subgating_pushButton_11.setObjectName("subgating_pushButton_11")
-        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_11, 0, 2, 1, 1)
+        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_10, 1, 2, 1, 1)
         
-        self.subgating_pushButton_12 = QtWidgets.QPushButton(self.subgating_subtab_scatter)
-        self.subgating_pushButton_12.setMinimumSize(QtCore.QSize(110, 0))
-        self.subgating_pushButton_12.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.subgating_pushButton_12.setObjectName("subgating_pushButton_11")
-        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_12, 0, 3, 1, 1)        
-        
-        self.subgating_verticalLayout_9.addLayout(self.subgating_gridLayout_4)
         self.subgating_line_13 = QtWidgets.QFrame(self.subgating_subtab_scatter)
         self.subgating_line_13.setFrameShape(QtWidgets.QFrame.HLine)
         self.subgating_line_13.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.subgating_line_13.setObjectName("subgating_line_13")
-        self.subgating_verticalLayout_9.addWidget(self.subgating_line_13)
+        self.subgating_gridLayout_4.addWidget(self.subgating_line_13, 2, 0, 1, 3)
+        
+        self.subgating_pushButton_12 = QtWidgets.QPushButton(self.subgating_subtab_scatter)
+#         self.subgating_pushButton_12.setMinimumSize(QtCore.QSize(110, 0))
+#         self.subgating_pushButton_12.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.subgating_pushButton_12.setObjectName("subgating_pushButton_11")
+        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_12, 3, 1, 1, 2)        
+        
+        self.subgating_verticalLayout_9.addLayout(self.subgating_gridLayout_4)
+
         
         self.subgating_label_36 = QtWidgets.QLabel(self.subgating_subtab_scatter)
         font = QtGui.QFont()
@@ -3354,13 +3332,14 @@ class Ui_MainWindow(object):
         self.x = []
         self.y = []
         self.polygon = []
+        self.points_inside = []
         self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved) 
         
         self.subgating_x = []
         self.subgating_y = []
         self.subgating_polygon = []
         self.final_subgating_sweep_data = [[], [], [], []]
-        self.subgating_sweep_data = [[], [], [], []]
+        self.subgating_sweep_data = [[], [], [], []]        
         self.subgating_graphWidget.scene().sigMouseClicked.connect(self.subgating_onMouseMoved) 
         
         self.polygon_trigger = False
@@ -3368,152 +3347,26 @@ class Ui_MainWindow(object):
         
         self.pushButton_9.clicked.connect(self.polygon_triggering)
         self.pushButton_10.clicked.connect(self.polygon_clean)
-        self.pushButton_11.clicked.connect(self.subgating_scatter)
+        self.pushButton_11.clicked.connect(lambda:self.subgating_scatter(True))
         
-        
-        self.subgating_pushButton_11.clicked.connect(self.subgating_scatter)
         
         self.subgating_pushButton_9.clicked.connect(self.subgating_polygon_triggering)
         self.subgating_pushButton_10.clicked.connect(self.subgating_polygon_clean)
-        self.subgating_pushButton_12.clicked.connect(self.polygon_linear_plot)
-#         self.pushButton_11.clicked.connect(self.subgating_scatter)     
-
-        self.scatter_button_subgating.clicked.connect(self.subgating_scatter_by_threshold)
+        self.subgating_pushButton_12.clicked.connect(self.polygon_linear_plot_triggered_from_scatter_subtab)
 
 
-    def subgating_scatter_by_threshold(self):
-        self.tab_widgets_main.setCurrentIndex(3)
-        self.tab_widgets_subgating.setCurrentIndex(0)        
 
-        self.points_inside.extend(list(compress(self.points_inside_square, self.quadrant1_list)))
-        
-        #rest are same as the polygon subgating
-        
-        # reset polygon upperbond
-        self.lineEdit_38.setText(str(5))        
-        
-   
-        if self.subgating_preselect_comboBox.currentIndex() == 0:
-            data_in_subgating_x = self.working_data[self.subgating_comboBox.currentIndex()]  
+    def subgating_scatter(self,switch_tab = False):
+        if switch_tab == True:
+            self.tab_widgets_main.setCurrentIndex(4)
+            self.tab_widgets_subgating.setCurrentIndex(0)
+        if self.polygon_trigger == False:
+            try:
+                self.points_inside.extend(list(compress(self.points_inside_square, self.quadrant1_list)))
+            except:
+                print("no points extracted")
         else:
-            data_in_subgating_x = self.peak_width_working_data[self.subgating_comboBox.currentIndex()]             
-            
-        if self.subgating_preselect_comboBox_2.currentIndex() == 0:
-            data_in_subgating_y = self.working_data[self.subgating_comboBox_2.currentIndex()] 
-        else:
-            data_in_subgating_y = self.peak_width_working_data[self.subgating_comboBox_2.currentIndex()] 
-
-
-        x_axis_channel = self.subgating_comboBox.currentIndex()
-        y_axis_channel = self.subgating_comboBox_2.currentIndex()
-        x_axis_name = self.subgating_preselect_comboBox.currentText() + " " + self.subgating_comboBox.currentText()
-        y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()
-        self.subgating_sweep_data = [[], [], [], []]
-        if len(self.points_inside) !=0:
-            self.subgating_graphWidget.clear()
-            
-#             subgating_data[x_axis_channel] = [ data_in_subgating_x[i] for i in self.points_inside]
-#             subgating_data[y_axis_channel] = [ data_in_subgating_y[i] for i in self.points_inside]
-            
-            
-            self.subgating_graphWidget.setLabel('left', y_axis_name, color='b')
-            self.subgating_graphWidget.setLabel('bottom', x_axis_name, color='b')
-
-#             self.subgating_Ch1_channel0 = subgating_data[x_axis_channel]
-#             self.subgating_Ch1_channel1 = subgating_data[y_axis_channel]
-
-            self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
-            self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
-
-            for ch in range(len(self.working_data)):
-                self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
-            
-            max_voltage = 12
-            bins = 1000
-            steps = max_voltage / bins
-
-            # all data is first sorted into a histogram
-            histo, _, _ = np.histogram2d(self.subgating_Ch1_channel0, self.subgating_Ch1_channel1, bins,
-                                         [[0, max_voltage], [0, max_voltage]],
-                                         density=True)
-            max_density = histo.max()
-
-            # made empty array to hold the sorted data according to density
-            density_listx = []
-            density_listy = []
-            for i in range(6):
-                density_listx.append([])
-                density_listy.append([])
-
-            for i in range(len(self.subgating_Ch1_channel0)):
-                x = self.subgating_Ch1_channel0[i]
-                y = self.subgating_Ch1_channel1[i]
-                a = int(x / steps)
-                b = int(y / steps)
-                if a >= 1000:
-                    a = 999
-                if b >= 1000:
-                    b = 999
-
-                # checking for density, the value divided by steps serves as the index
-                density = histo[a][b]
-                percentage = density / max_density * 100
-
-                if 20 > percentage >= 0:
-                    density_listx[0].append(x)
-                    density_listy[0].append(y)
-                elif 40 > percentage >= 20:
-                    density_listx[1].append(x)
-                    density_listy[1].append(y)
-                elif 60 > percentage >= 40:
-                    density_listx[2].append(x)
-                    density_listy[2].append(y)
-                elif 80 > percentage >= 60:
-                    density_listx[3].append(x)
-                    density_listy[3].append(y)
-                else:
-                    density_listx[4].append(x)
-                    density_listy[4].append(y)
-            for i in range(5):
-                if i == 0:
-                    red = 0
-                    blue = 255 / 15
-                    green = 255
-                elif i == 1:
-                    red = 0
-                    blue = 255
-                    green = 255 - 255 / 15
-                elif i == 2:
-                    red = 255 / 15
-                    blue = 255
-                    green = 0
-                elif i == 3:
-                    red = 255
-                    blue = 255 - 255 / 15
-                    green = 0
-                elif i == 4:
-                    red = 255
-                    blue = 255 / 15
-                    green = 255 / 15
-                else:
-                    red = 255
-                    blue = 255
-                    green = 255
-
-
-                self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-                                      symbolSize=5, symbolBrush=(red, blue, green))
-                self.subgating_graphWidget.autoRange()
-        elif len(self.points_inside) ==0:
-            self.subgating_Ch1_channel0  = []
-            self.subgating_Ch1_channel1 = []
-
-                
-            
-    def subgating_scatter(self):
-        self.tab_widgets_main.setCurrentIndex(3)
-        self.tab_widgets_subgating.setCurrentIndex(0)
-        if self.polygon_trigger == True:
+            self.polygon_triggering()
             try:
                 path = mpltPath.Path(self.polygon)
                 self.inside2 = path.contains_points(self.points)
@@ -3522,23 +3375,25 @@ class Ui_MainWindow(object):
             except:
                 print("points extracted")
 
-            # reset polygon upperbond
-            self.lineEdit_38.setText(str(5))
+
             # reset points count
-            points_inside = 'Inside: 0'
-            self.polygon_inside_label_29.setText(points_inside) 
-            self.polygon = []
-            self.x = []
-            self.y = []     
-            try:
-                self.graphWidget.removeItem(self.polygon_points)
-                for i in range(len(self.polygon_lines)):
-                    self.graphWidget.removeItem(self.polygon_lines[i])
-            except:
-                print("no polygon drawed")
+#             points_inside = 'Inside: 0'
+#             self.polygon_inside_label_29.setText(points_inside) 
+#             self.polygon = []
+#             self.x = []
+#             self.y = []     
+#             try:
+#                 self.graphWidget.removeItem(self.polygon_points)
+#                 for i in range(len(self.polygon_lines)):
+#                     self.graphWidget.removeItem(self.polygon_lines[i])
+#             except:
+#                 print("polygon drawed")
             
-            self.polygon_trigger = False  
+#             self.polygon_trigger = False  
             
+        # reset polygon upperbond
+        self.lineEdit_38.setText(str(5)) 
+        
         
         if self.subgating_preselect_comboBox.currentIndex() == 0:
             data_in_subgating_x = self.working_data[self.subgating_comboBox.currentIndex()]  
@@ -3652,6 +3507,7 @@ class Ui_MainWindow(object):
                                       symbolSize=5, symbolBrush=(red, blue, green))
                 self.subgating_graphWidget.autoRange()
         elif len(self.points_inside) ==0:
+            self.subgating_graphWidget.clear()
             self.subgating_Ch1_channel0  = []
             self.subgating_Ch1_channel1 = []
 
@@ -3664,6 +3520,8 @@ class Ui_MainWindow(object):
             self.polygon_lines = []
             self.points_inside = []
             self.polygon = []
+        elif self.polygon == [] and self.x == []:
+            print("Polygon button clicked")
         else:
             path = mpltPath.Path(self.polygon)
             self.inside2 = path.contains_points(self.points)
@@ -3684,7 +3542,6 @@ class Ui_MainWindow(object):
             self.y = []
  
     def subgating_polygon_triggering(self):
-        
 #         self.polygon_trigger = True
         if self.subgating_polygon_trigger == False:
             self.subgating_polygon_trigger = True
@@ -3776,7 +3633,10 @@ class Ui_MainWindow(object):
             self.polygon.append([p.x(),p.y()])
 
 
-            
+    def polygon_linear_plot_triggered_from_scatter_subtab(self):
+        self.reset_comboBox = True
+        self.polygon_linear_plot()
+        
     def polygon_linear_plot(self):
         self.tab_widgets_subgating.setCurrentIndex(1)
         self.subgating_polygon_triggering() 
@@ -3784,21 +3644,45 @@ class Ui_MainWindow(object):
         
         self.widget_29.clear()
 
-        polygon_text = self.comboBox_14.currentText()
+        ## add item only contain points inside, into the combobox in polygon filtered linear plot
+        if self.reset_comboBox == True:
+            self.comboBox_14.clear() 
+            for list_index in self.comboBox_14_list:
+                list_text = self.comboBox_14_list[list_index]
+                
+                polygon_length = 0
+                for i in range(list_index):
+                    polygon_length += len(self.analog[self.current_file_dict[self.comboBox_14_list[i]]][0][0])
 
-        polygon_index = int(self.comboBox_14.currentIndex())
+                polygon_length_end = polygon_length + len(self.analog[self.current_file_dict[list_text]][0][0])
+                index_in_all_selected_channel = [x for x, x in enumerate(self.subgating_points_inside) if x > polygon_length and x <= polygon_length_end]
+
+                if index_in_all_selected_channel != []:
+                    self.comboBox_14.addItem(str(list_text))    
+            
+        self.reset_comboBox = False
+        ## end
+        
+        
+        key_list = list(self.comboBox_14_list.keys())
+        val_list = list(self.comboBox_14_list.values())
+
+        # print key with val 100
+        position = val_list.index(self.comboBox_14.currentText())
+        polygon_index = key_list[position]
+        polygon_text = self.comboBox_14.currentText()
+        
         polygon_length = 0
         
         for i in range(polygon_index):
-            polygon_length += len(self.analog[self.current_file_dict[self.comboBox_14.itemText(i)]][0][0])
+            polygon_length += len(self.analog[self.current_file_dict[self.comboBox_14_list[i]]][0][0])
                
         polygon_length_end = polygon_length + len(self.analog[self.current_file_dict[polygon_text]][0][0])
         
         index_in_all_selected_channel = [x for x, x in enumerate(self.subgating_points_inside) if x > polygon_length and x <= polygon_length_end]
-        
-        
+
         index_in_current_channel = [x - polygon_length for x in index_in_all_selected_channel]
-        
+
         
         # find data in csv file
         text1 = self.comboBox_14.currentText()
@@ -4694,7 +4578,7 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltage_4.setText(str(round(x_high,2)))
         
         self.lr_x_axis = pg.LinearRegionItem([x_low,x_high])
-        self.lr_y_axis = pg.LinearRegionItem([y_low,y_high], orientation =1)
+        self.lr_y_axis = pg.LinearRegionItem([y_low,y_high], orientation = 1)
         self.graphWidget_width_scatter.addItem(self.lr_x_axis)
         self.graphWidget_width_scatter.addItem(self.lr_y_axis)        
 
@@ -5393,13 +5277,11 @@ class Ui_MainWindow(object):
         self.comboBox_2.setItemText(2, _translate("MainWindow", "Ultra Violet"))
         self.comboBox_2.setItemText(3, _translate("MainWindow", "Orange"))
         self.label_29.setText(_translate("MainWindow", "Quadrant Gating"))
+        
         self.polygon_inside_label_29.setText(_translate("MainWindow", "Inside: 0"))
-        self.polygon_gating_label.setText(_translate("MainWindow", "Polygonal Gating"))
-#         self.radioButton_scatterlinear.setText(_translate("MainWindow", "Linear"))
-#         self.radioButton_scatterlog.setText(_translate("MainWindow", "Logarithmic"))
-
-#         self.label_33.setText(_translate("MainWindow", "Scaling"))
-#         self.label_35.setText(_translate("MainWindow", "Base"))
+        self.polygon_inside_label_30.setText(_translate("MainWindow", "Polygonal Gating"))
+        
+        
         self.label_36.setText(_translate("MainWindow", "Quadrants"))
         self.label_37.setText(_translate("MainWindow", "X Axis"))
         self.label_38.setText(_translate("MainWindow", "Y Axis"))
@@ -5418,7 +5300,7 @@ class Ui_MainWindow(object):
         
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_subgating),
-                                         _translate("MainWindow", "Subgating Results"))
+                                         _translate("MainWindow", "Subgating Results"))        
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.subgating_subtab_scatter),
                                             _translate("MainWindow", "Scatter"))        
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_sweep), 
@@ -5436,6 +5318,8 @@ class Ui_MainWindow(object):
 
         
         self.subgating_polygon_inside_label_29.setText(_translate("MainWindow", "Inside: 0"))
+        self.subgating_polygon_inside_label_30.setText(_translate("MainWindow", "Linear Plot Selection"))
+        
         self.subgating_label_32.setText(_translate("MainWindow", "Y-Axis"))
 
         self.subgating_preselect_comboBox_2.setItemText(0, _translate("MainWindow", "Height"))
@@ -5449,11 +5333,10 @@ class Ui_MainWindow(object):
         self.subgating_label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))        
         
         self.subgating_pushButton_9.setText(_translate("MainWindow", "Ploygon"))
-        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clear"))
-        self.subgating_pushButton_11.setText(_translate("MainWindow", "Plot"))
-        self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract"))
-        
-        self.scatter_button_subgating.setText(_translate("MainWindow", "Extract"))
+        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clean"))
+        self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract Linear Plot"))
+
+        self.pushButton_11.setText(_translate("MainWindow", "Extract"))
         
         self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
         self.comboBox_option2.setItemText(0, _translate("MainWindow", "Option 2"))
@@ -5538,7 +5421,7 @@ class Ui_MainWindow(object):
         self.label_97.setText(_translate("MainWindow", "Ultra Vio"))
         self.label_98.setText(_translate("MainWindow", "Orange"))
         self.label_93.setText(_translate("MainWindow", "Selected Data"))
-
+        
         self.label_num_peak_1.setText(_translate("MainWindow", "Channel"))
         self.label_num_peak_2.setText(_translate("MainWindow", "Condition"))
         self.label_num_peak_3.setText(_translate("MainWindow", "# of Peaks"))
@@ -5591,7 +5474,7 @@ class Ui_MainWindow(object):
                         
         self.pushButton_9.setText(_translate("MainWindow", "Ploygon"))
         self.pushButton_10.setText(_translate("MainWindow", "Clear"))
-        self.pushButton_11.setText(_translate("MainWindow", "Extract"))
+
         
         self.label_270.setText(_translate("MainWindow", "Start Peak"))
         self.label_272.setText(_translate("MainWindow", "End Peak"))
@@ -5605,8 +5488,8 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(_translate("MainWindow", "Generate Plot"))
         self.pushButton_3.setText(_translate("MainWindow", "Next Page"))
         self.pushButton_4.setText(_translate("MainWindow", "Last Page"))
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_3), _translate("MainWindow", "Raw Data Viewer"))
-                
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_3), _translate("MainWindow", "Raw Data Viewer"))               
+        
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
                                          _translate("MainWindow", "Peak Width/Number Subgating"))
@@ -5822,7 +5705,7 @@ class Ui_MainWindow(object):
         print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
             
             
-        self.polygon_clean()
+        
                 
         if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
             print("--------------------------------------------------------not reset")
@@ -5861,33 +5744,29 @@ class Ui_MainWindow(object):
             self.update_statistic()
             self.update_sampling_Rate()
             Ui_MainWindow.reset = False
-            
-
-            
+            self.subgating_polygon_clean()
+            self.polygon_clean()
             
             print("complete!")
-            
-                
+
+        self.subgating_scatter()        
                 
         # add item to polygon linear plot tab
-        self.comboBox_14.clear()
-        
+        self.comboBox_14_list = {}
         if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
-            self.comboBox_14.addItem("Ch1 ")            
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
         if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
-            self.comboBox_14.addItem("Ch2 ")
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
         if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
-            self.comboBox_14.addItem("Ch3 ")
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
         if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
-            self.comboBox_14.addItem("Ch1-2")
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
         if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
-            self.comboBox_14.addItem("Ch1-3")
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
         if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
-            self.comboBox_14.addItem("Ch2-3")
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
         if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
-            self.comboBox_14.addItem("Peak Record")
-
-        
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
         ### End
 
     def add(self):
