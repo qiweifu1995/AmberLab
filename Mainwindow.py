@@ -13,8 +13,6 @@ from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWi
 
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.Point import Point
-import pyqtgraph as pg
-
 import pandas as pd
 import os
 import Helper
@@ -1338,7 +1336,7 @@ class Ui_MainWindow(object):
         
         
         self.lr_x_axis = pg.LinearRegionItem([1,1])
-        self.lr_y_axis = pg.LinearRegionItem([1,1], orientation = 'horizontal')
+        self.lr_y_axis = pg.LinearRegionItem([1,1], orientation=1)
         self.graphWidget_width_scatter.addItem(self.lr_x_axis)
         self.graphWidget_width_scatter.addItem(self.lr_y_axis)  
         
@@ -3361,6 +3359,8 @@ class Ui_MainWindow(object):
         self.subgating_x = []
         self.subgating_y = []
         self.subgating_polygon = []
+        self.final_subgating_sweep_data = [[], [], [], []]
+        self.subgating_sweep_data = [[], [], [], []]
         self.subgating_graphWidget.scene().sigMouseClicked.connect(self.subgating_onMouseMoved) 
         
         self.polygon_trigger = False
@@ -3692,6 +3692,7 @@ class Ui_MainWindow(object):
             self.subgating_polygon_lines = []
             self.subgating_points_inside = []
             self.subgating_polygon = []
+            self.final_subgating_sweep_data = [[],[],[],[]]
         else:
             if self.subgating_polygon != []:
                 path = mpltPath.Path(self.subgating_polygon)
@@ -3706,7 +3707,9 @@ class Ui_MainWindow(object):
                 self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
 
                 points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
-                self.subgating_polygon_inside_label_29.setText(points_inside) 
+                self.subgating_polygon_inside_label_29.setText(points_inside)
+                for ch in range(len(self.working_data)):
+                    self.final_subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.subgating_points_inside]
       
                 self.subgating_polygon = []
                 self.subgating_x = []
@@ -4437,7 +4440,10 @@ class Ui_MainWindow(object):
             #self.sweep_1_data = self.working_data[channel]
             self.sweep_1_data = []
             if self.comboBox_option1.currentIndex() == 0:
-                self.sweep_1_data = self.filtered_working_data[channel]
+                try:
+                    self.sweep_1_data = self.final_subgating_sweep_data[channel]
+                except:
+                    self.sweep_1_data = [[], [], [], []]
             elif self.comboBox_option1.currentIndex() == 1:
                 self.sweep_1_data = self.filtered_working_data[channel]
             elif self.comboBox_option1.currentIndex() == 2:
@@ -4484,8 +4490,11 @@ class Ui_MainWindow(object):
         if data_updated:
             # self.sweep_2_data = self.working_data[channel]
             self.sweep_2_data = []
-            if self.comboBox_option2.currentIndex() == 0:
-                self.sweep_2_data = self.filtered_working_data[channel]
+            if self.comboBox_option2.currentIndex() == 0 and len(self.final_subgating_sweep_data) > 0:
+                try:
+                    self.sweep_2_data = self.final_subgating_sweep_data[channel]
+                except:
+                    self.sweep_2_data = [[],[],[],[]]
             elif self.comboBox_option2.currentIndex() == 1:
                 self.sweep_2_data = self.filtered_working_data[channel]
             elif self.comboBox_option2.currentIndex() == 2:
@@ -4685,7 +4694,7 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltage_4.setText(str(round(x_high,2)))
         
         self.lr_x_axis = pg.LinearRegionItem([x_low,x_high])
-        self.lr_y_axis = pg.LinearRegionItem([y_low,y_high], orientation = 'horizontal')
+        self.lr_y_axis = pg.LinearRegionItem([y_low,y_high], orientation =1)
         self.graphWidget_width_scatter.addItem(self.lr_x_axis)
         self.graphWidget_width_scatter.addItem(self.lr_y_axis)        
 

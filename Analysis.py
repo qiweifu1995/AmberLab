@@ -20,37 +20,44 @@ class Droplet:
 class file_extracted_data_Qing:
     def __init__(self, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", total_count="1"):
         self.analog_file = {}
-
+        peak_file_chunksize = 1000
+        factor = int(peak_file_chunksize / chunksize)
         self.threshold = threshold
 
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
             list1, width1, num_peaks1 = self.extract(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1', ch1_count, peak_threshold, width_min, width_max)
+            width1 = [i*factor for i in width1]
             self.analog_file[current_file_dict["Ch1 "]] = [list1, width1, num_peaks1]
 
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
             list2, width2, num_peaks2 = self.extract(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2', ch2_count, peak_threshold, width_min, width_max)
+            width2 = [i * factor for i in width2]
             self.analog_file[current_file_dict["Ch2 "]] = [list2, width2, num_peaks2]
 
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
             list3, width3, num_peaks3 = self.extract(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch3', ch3_count, peak_threshold, width_min, width_max)
+            width3 = [i * factor for i in width3]
             self.analog_file[current_file_dict["Ch3 "]] = [list3, width3, num_peaks3]
 
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
             list12, width12, num_peaks12 = self.extract(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_2', ch12_count, peak_threshold, width_min, width_max)
+            width12 = [i * factor for i in width12]
             self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]
 
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
             list13, width13, num_peaks13 = self.extract(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_3', ch13_count, peak_threshold, width_min, width_max)
+            width13 = [i * factor for i in width13]
             self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13, num_peaks13]
 
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
             list23, width23, num_peaks23 = self.extract(current_file_dict["Ch2-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
+            width23 = [i * factor for i in width23]
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
 
         print("Extracting Peak... Parallel")
@@ -237,7 +244,7 @@ class file_extracted_data_Qing:
         row_chunk = 0
         peak_row_count = 0
         row_count = 0
-        for Ch in pd.read_csv(file, chunksize=2000000, header=header):
+        for Ch in pd.read_csv(file, chunksize=20000000, header=header):
             start = time.time()
             Ch.columns = [0, 1, 2, 3]
             row_count += len(Ch)
