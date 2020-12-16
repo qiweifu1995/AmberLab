@@ -175,6 +175,46 @@ class ui_state:
 
         self.threshold = [-1,-1,-1,-1]
         
+        self.points_inside_square = 0
+        self.points_inside_or_quadrant = 0
+        self.subgating_comboBox = 0
+        self.subgating_comboBox2 = 0
+        self.subgating_preselect_comboBox = 0
+        self.subgating_preselect_comboBox2 = 0
+        
+     
+    def subgating_replot_check(self, points_inside_square, points_inside_or_quadrant, subgating_comboBox, subgating_comboBox2, 
+                              subgating_preselect_comboBox, subgating_preselect_comboBox2 ):
+        change = False
+        
+        if points_inside_square is not None and self.points_inside_square != points_inside_square:
+            change = True
+            self.points_inside_square = points_inside_square
+            
+        if points_inside_or_quadrant is not None and self.points_inside_or_quadrant != points_inside_or_quadrant:
+            change = True
+            self.points_inside_or_quadrant = points_inside_or_quadrant
+            
+        if subgating_comboBox is not None and self.subgating_comboBox != subgating_comboBox:
+            change = True
+            self.subgating_comboBox = subgating_comboBox
+            
+        if subgating_comboBox2 is not None and self.subgating_comboBox2 != subgating_comboBox2:
+            change = True
+            self.subgating_comboBox2 = subgating_comboBox2
+            
+        if subgating_preselect_comboBox is not None and self.subgating_preselect_comboBox != subgating_preselect_comboBox:
+            change = True
+            self.subgating_preselect_comboBox = subgating_preselect_comboBox
+            
+        if subgating_preselect_comboBox2 is not None and self.subgating_preselect_comboBox2 != subgating_preselect_comboBox2:
+            change = True
+            self.subgating_preselect_comboBox2 = subgating_preselect_comboBox2
+
+        return change
+        
+        
+        
     def threshold_check(self, threshold=None):
         changed = False
         if threshold is not None and self.threshold != threshold:
