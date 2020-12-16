@@ -4320,7 +4320,7 @@ class Ui_MainWindow(object):
         self.widget_sweepparam2.setLabel('bottom', axis_name)
         print("update sweep 1")
         r, g, b = Helper.rgb_select(channel)
-        if data_updated:
+        if data_updated or len(self.sweep_1_data) == 0:
             #self.sweep_1_data = self.working_data[channel]
             self.sweep_1_data = []
             if self.comboBox_option1.currentIndex() == 0:
@@ -4371,7 +4371,7 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setLabel('bottom', axis_name)
         r, g, b = Helper.rgb_select(channel)
         print("update sweep 2")
-        if data_updated:
+        if data_updated or len(self.sweep_2_data) == 0:
             # self.sweep_2_data = self.working_data[channel]
             self.sweep_2_data = []
             if self.comboBox_option2.currentIndex() == 0 and len(self.final_subgating_sweep_data) > 0:
