@@ -3347,7 +3347,7 @@ class Ui_MainWindow(object):
         
         self.pushButton_9.clicked.connect(self.polygon_triggering)
         self.pushButton_10.clicked.connect(self.polygon_clean)
-        self.pushButton_11.clicked.connect(lambda:self.subgating_scatter(True))
+        self.pushButton_11.clicked.connect(lambda:self.subgating_scatter(switch_tab = True))
         
         
         self.subgating_pushButton_9.clicked.connect(self.subgating_polygon_triggering)
@@ -3356,160 +3356,161 @@ class Ui_MainWindow(object):
 
 
 
-    def subgating_scatter(self,switch_tab = False):
+    def subgating_scatter(self,switch_tab = False, pressed_function_redo = False):
+        if pressed_function_redo == True:
+            self.subgating_polygon_clean()
+            self.polygon_clean()    
+                
         if switch_tab == True:
             self.tab_widgets_main.setCurrentIndex(4)
             self.tab_widgets_subgating.setCurrentIndex(0)
+            
         if self.polygon_trigger == False:
+            subgating_plot_update = self.ui_state.subgating_replot_check(self.points_inside_square, self.quadrant1_list,
+                                                             self.subgating_comboBox.currentText(), 
+                                                             self.subgating_comboBox_2.currentText(), 
+                                                             self.subgating_preselect_comboBox.currentText(), 
+                                                             self.subgating_preselect_comboBox_2.currentText())
             try:
-                self.points_inside.extend(list(compress(self.points_inside_square, self.quadrant1_list)))
+                if subgating_plot_update:
+                    self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
             except:
+                subgating_plot_update = False
                 print("no points extracted")
         else:
             self.polygon_triggering()
-            try:
-                path = mpltPath.Path(self.polygon)
-                self.inside2 = path.contains_points(self.points)
-                            # show the dots have index before the first filter
-                self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
-            except:
-                print("points extracted")
+            subgating_plot_update = self.ui_state.subgating_replot_check(self.points_inside_square, self.points_inside,
+                                             self.subgating_comboBox.currentText(), 
+                                             self.subgating_comboBox_2.currentText(), 
+                                             self.subgating_preselect_comboBox.currentText(), 
+                                             self.subgating_preselect_comboBox_2.currentText())
+        print("subgating_plot_update",subgating_plot_update)
+        print("pressed_function_redo",pressed_function_redo)
+        if subgating_plot_update or pressed_function_redo:
+    #             try:
+    #                 path = mpltPath.Path(self.polygon)
+    #                 self.inside2 = path.contains_points(self.points)
+    #                             # show the dots have index before the first filter
+    #                 self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
+    #             except:
+    #                 print("points extracted")
+
+            self.lineEdit_38.setText(str(5)) 
 
 
-            # reset points count
-#             points_inside = 'Inside: 0'
-#             self.polygon_inside_label_29.setText(points_inside) 
-#             self.polygon = []
-#             self.x = []
-#             self.y = []     
-#             try:
-#                 self.graphWidget.removeItem(self.polygon_points)
-#                 for i in range(len(self.polygon_lines)):
-#                     self.graphWidget.removeItem(self.polygon_lines[i])
-#             except:
-#                 print("polygon drawed")
-            
-#             self.polygon_trigger = False  
-            
-        # reset polygon upperbond
-        self.lineEdit_38.setText(str(5)) 
-        
-        
-        if self.subgating_preselect_comboBox.currentIndex() == 0:
-            data_in_subgating_x = self.working_data[self.subgating_comboBox.currentIndex()]  
-        else:
-            data_in_subgating_x = self.peak_width_working_data[self.subgating_comboBox.currentIndex()]             
-            
-        if self.subgating_preselect_comboBox_2.currentIndex() == 0:
-            data_in_subgating_y = self.working_data[self.subgating_comboBox_2.currentIndex()] 
-        else:
-            data_in_subgating_y = self.peak_width_working_data[self.subgating_comboBox_2.currentIndex()] 
+            if self.subgating_preselect_comboBox.currentIndex() == 0:
+                data_in_subgating_x = self.working_data[self.subgating_comboBox.currentIndex()]  
+            else:
+                data_in_subgating_x = self.peak_width_working_data[self.subgating_comboBox.currentIndex()]             
+
+            if self.subgating_preselect_comboBox_2.currentIndex() == 0:
+                data_in_subgating_y = self.working_data[self.subgating_comboBox_2.currentIndex()] 
+            else:
+                data_in_subgating_y = self.peak_width_working_data[self.subgating_comboBox_2.currentIndex()] 
 
 
-        x_axis_channel = self.subgating_comboBox.currentIndex()
-        y_axis_channel = self.subgating_comboBox_2.currentIndex()
-        x_axis_name = self.subgating_preselect_comboBox.currentText() + " " + self.subgating_comboBox.currentText()
-        y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()
-        self.subgating_sweep_data = [[], [], [], []]
-        if len(self.points_inside) !=0:
-            self.subgating_graphWidget.clear()
-            
-#             subgating_data[x_axis_channel] = [ data_in_subgating_x[i] for i in self.points_inside]
-#             subgating_data[y_axis_channel] = [ data_in_subgating_y[i] for i in self.points_inside]
-            
-            
-            self.subgating_graphWidget.setLabel('left', y_axis_name, color='b')
-            self.subgating_graphWidget.setLabel('bottom', x_axis_name, color='b')
-
-#             self.subgating_Ch1_channel0 = subgating_data[x_axis_channel]
-#             self.subgating_Ch1_channel1 = subgating_data[y_axis_channel]
-
-            self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
-            self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
-
-            for ch in range(len(self.working_data)):
-                self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
-            
-            max_voltage = 12
-            bins = 1000
-            steps = max_voltage / bins
-
-            # all data is first sorted into a histogram
-            histo, _, _ = np.histogram2d(self.subgating_Ch1_channel0, self.subgating_Ch1_channel1, bins,
-                                         [[0, max_voltage], [0, max_voltage]],
-                                         density=True)
-            max_density = histo.max()
-
-            # made empty array to hold the sorted data according to density
-            density_listx = []
-            density_listy = []
-            for i in range(6):
-                density_listx.append([])
-                density_listy.append([])
-
-            for i in range(len(self.subgating_Ch1_channel0)):
-                x = self.subgating_Ch1_channel0[i]
-                y = self.subgating_Ch1_channel1[i]
-                a = int(x / steps)
-                b = int(y / steps)
-                if a >= 1000:
-                    a = 999
-                if b >= 1000:
-                    b = 999
-
-                # checking for density, the value divided by steps serves as the index
-                density = histo[a][b]
-                percentage = density / max_density * 100
-
-                if 20 > percentage >= 0:
-                    density_listx[0].append(x)
-                    density_listy[0].append(y)
-                elif 40 > percentage >= 20:
-                    density_listx[1].append(x)
-                    density_listy[1].append(y)
-                elif 60 > percentage >= 40:
-                    density_listx[2].append(x)
-                    density_listy[2].append(y)
-                elif 80 > percentage >= 60:
-                    density_listx[3].append(x)
-                    density_listy[3].append(y)
-                else:
-                    density_listx[4].append(x)
-                    density_listy[4].append(y)
-            for i in range(5):
-                if i == 0:
-                    red = 0
-                    blue = 255 / 15
-                    green = 255
-                elif i == 1:
-                    red = 0
-                    blue = 255
-                    green = 255 - 255 / 15
-                elif i == 2:
-                    red = 255 / 15
-                    blue = 255
-                    green = 0
-                elif i == 3:
-                    red = 255
-                    blue = 255 - 255 / 15
-                    green = 0
-                elif i == 4:
-                    red = 255
-                    blue = 255 / 15
-                    green = 255 / 15
-                else:
-                    red = 255
-                    blue = 255
-                    green = 255
+            x_axis_channel = self.subgating_comboBox.currentIndex()
+            y_axis_channel = self.subgating_comboBox_2.currentIndex()
+            x_axis_name = self.subgating_preselect_comboBox.currentText() + " " + self.subgating_comboBox.currentText()
+            y_axis_name = self.subgating_preselect_comboBox_2.currentText() + " " + self.subgating_comboBox_2.currentText()
+            self.subgating_sweep_data = [[], [], [], []]
 
 
-                self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-                                      symbolSize=5, symbolBrush=(red, blue, green))
-                self.subgating_graphWidget.autoRange()
-        elif len(self.points_inside) ==0:
-            self.subgating_graphWidget.clear()
-            self.subgating_Ch1_channel0  = []
-            self.subgating_Ch1_channel1 = []
+            if len(self.points_inside) !=0:
+                self.subgating_graphWidget.clear()
+
+                self.subgating_graphWidget.setLabel('left', y_axis_name, color='b')
+                self.subgating_graphWidget.setLabel('bottom', x_axis_name, color='b')
+
+    #             self.subgating_Ch1_channel0 = subgating_data[x_axis_channel]
+    #             self.subgating_Ch1_channel1 = subgating_data[y_axis_channel]
+
+                self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
+                self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
+
+                for ch in range(len(self.working_data)):
+                    self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
+
+                max_voltage = 12
+                bins = 1000
+                steps = max_voltage / bins
+
+                # all data is first sorted into a histogram
+                histo, _, _ = np.histogram2d(self.subgating_Ch1_channel0, self.subgating_Ch1_channel1, bins,
+                                             [[0, max_voltage], [0, max_voltage]],
+                                             density=True)
+                max_density = histo.max()
+
+                # made empty array to hold the sorted data according to density
+                density_listx = []
+                density_listy = []
+                for i in range(6):
+                    density_listx.append([])
+                    density_listy.append([])
+
+                for i in range(len(self.subgating_Ch1_channel0)):
+                    x = self.subgating_Ch1_channel0[i]
+                    y = self.subgating_Ch1_channel1[i]
+                    a = int(x / steps)
+                    b = int(y / steps)
+                    if a >= 1000:
+                        a = 999
+                    if b >= 1000:
+                        b = 999
+
+                    # checking for density, the value divided by steps serves as the index
+                    density = histo[a][b]
+                    percentage = density / max_density * 100
+
+                    if 20 > percentage >= 0:
+                        density_listx[0].append(x)
+                        density_listy[0].append(y)
+                    elif 40 > percentage >= 20:
+                        density_listx[1].append(x)
+                        density_listy[1].append(y)
+                    elif 60 > percentage >= 40:
+                        density_listx[2].append(x)
+                        density_listy[2].append(y)
+                    elif 80 > percentage >= 60:
+                        density_listx[3].append(x)
+                        density_listy[3].append(y)
+                    else:
+                        density_listx[4].append(x)
+                        density_listy[4].append(y)
+                for i in range(5):
+                    if i == 0:
+                        red = 0
+                        blue = 255 / 15
+                        green = 255
+                    elif i == 1:
+                        red = 0
+                        blue = 255
+                        green = 255 - 255 / 15
+                    elif i == 2:
+                        red = 255 / 15
+                        blue = 255
+                        green = 0
+                    elif i == 3:
+                        red = 255
+                        blue = 255 - 255 / 15
+                        green = 0
+                    elif i == 4:
+                        red = 255
+                        blue = 255 / 15
+                        green = 255 / 15
+                    else:
+                        red = 255
+                        blue = 255
+                        green = 255
+
+
+                    self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+                                          symbolSize=5, symbolBrush=(red, blue, green))
+                    self.subgating_graphWidget.autoRange()
+            elif len(self.points_inside) ==0:
+                self.subgating_graphWidget.clear()
+                self.subgating_Ch1_channel0  = []
+                self.subgating_Ch1_channel1 = []
 
     
         
@@ -4172,9 +4173,8 @@ class Ui_MainWindow(object):
 
             self.recalculate_peak_dataset = False
 
-            self.draw(True)
-            self.draw_2(True)
-            self.update_sweep_graphs(True)
+            self.data_updated = True
+
             
 
             
@@ -4662,8 +4662,8 @@ class Ui_MainWindow(object):
 
     def draw_2(self, data_updated=False):
         """first layer of filter"""
-        update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
-        if update or data_updated:
+        self.draw_2_update = self.ui_state.scatter_update(x_select=self.scatter_channelx, y_select=self.scatter_channely)
+        if self.draw_2_update or data_updated:
             print("update draw2")
 
             if self.comboBox.currentIndex() == 0:
@@ -5705,15 +5705,22 @@ class Ui_MainWindow(object):
         print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
             
             
-        
+        self.data_updated = False
                 
         if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
+            
             self.update_working_data()
-            self.draw()
+            if self.data_updated == True:
+                self.draw(True)
+                self.draw_2(True)
+                self.update_sweep_graphs(True)
+            else:
+                self.draw()
+                self.draw_2()
+                
             self.draw_peak_width()
-            self.draw_2()
             self.draw_peak_width_2()
             self.update_sweep_graphs()
             self.sweep_update_high()
@@ -5721,6 +5728,7 @@ class Ui_MainWindow(object):
             self.sweep_update()
             self.update_statistic()
             self.update_sampling_Rate()
+            self.subgating_scatter(pressed_function_redo = self.draw_2_update)
 
         else:
             print("--------------------------------------------------------reset")
@@ -5732,10 +5740,17 @@ class Ui_MainWindow(object):
             print("data extration complete, drawing....")
             
             self.analog.update(a.analog_file)
+            
             self.update_working_data()
-            self.draw()
+            if self.data_updated == True:
+                self.draw(True)
+                self.draw_2(True)
+                self.update_sweep_graphs(True)
+            else:
+                self.draw()
+                self.draw_2()
+                
             self.draw_peak_width()
-            self.draw_2()
             self.draw_peak_width_2()
             self.update_sweep_graphs()
             self.sweep_update_high()
@@ -5746,10 +5761,10 @@ class Ui_MainWindow(object):
             Ui_MainWindow.reset = False
             self.subgating_polygon_clean()
             self.polygon_clean()
-            
+            self.subgating_scatter(pressed_function_redo = True) 
             print("complete!")
 
-        self.subgating_scatter()        
+               
                 
         # add item to polygon linear plot tab
         self.comboBox_14_list = {}
