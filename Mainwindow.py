@@ -32,6 +32,7 @@ import csv
 import matplotlib.path as mpltPath
 import concurrent.futures
 from multiprocessing import freeze_support
+from math import sqrt
 
 class OtherWindow(QWidget):
     def __init__(self,parent = None):
@@ -1726,11 +1727,17 @@ class Ui_MainWindow(object):
         self.pushButton_10.setObjectName("pushButton_10")
         self.gridLayout_4.addWidget(self.pushButton_10, 1, 2, 1, 1)
        
+        self.pushButton_12 = QtWidgets.QPushButton(self.subtab_scatter)
+        self.pushButton_12.setMinimumSize(QtCore.QSize(110, 0))
+        self.pushButton_12.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.pushButton_12.setObjectName("pushButton_12")
+        self.gridLayout_4.addWidget(self.pushButton_12, 1, 3, 1, 1)    
+    
         self.line_13 = QtWidgets.QFrame(self.subtab_scatter)
         self.line_13.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_13.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_13.setObjectName("line_13")
-        self.gridLayout_4.addWidget(self.line_13, 2, 0, 1, 3)
+        self.gridLayout_4.addWidget(self.line_13, 2, 0, 1, 4)
         
         self.pushButton_11 = QtWidgets.QPushButton(self.subtab_scatter)
         self.pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
@@ -2284,12 +2291,18 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_10.setMaximumSize(QtCore.QSize(80, 16777215))
         self.subgating_pushButton_10.setObjectName("subgating_pushButton_10")
         self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_10, 1, 2, 1, 1)
+   
+        self.subgating_pushButton_11 = QtWidgets.QPushButton(self.subgating_subtab_scatter)
+        self.subgating_pushButton_11.setMinimumSize(QtCore.QSize(110, 0))
+        self.subgating_pushButton_11.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.subgating_pushButton_11.setObjectName("subgating_pushButton_11")
+        self.subgating_gridLayout_4.addWidget(self.subgating_pushButton_11, 1, 3, 1, 1)
         
         self.subgating_line_13 = QtWidgets.QFrame(self.subgating_subtab_scatter)
         self.subgating_line_13.setFrameShape(QtWidgets.QFrame.HLine)
         self.subgating_line_13.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.subgating_line_13.setObjectName("subgating_line_13")
-        self.subgating_gridLayout_4.addWidget(self.subgating_line_13, 2, 0, 1, 3)
+        self.subgating_gridLayout_4.addWidget(self.subgating_line_13, 2, 0, 1, 4)
         
         self.subgating_pushButton_12 = QtWidgets.QPushButton(self.subgating_subtab_scatter)
 #         self.subgating_pushButton_12.setMinimumSize(QtCore.QSize(110, 0))
@@ -3354,8 +3367,12 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_10.clicked.connect(self.subgating_polygon_clean)
         self.subgating_pushButton_12.clicked.connect(self.polygon_linear_plot_triggered_from_scatter_subtab)
 
-
-
+        self.pushButton_12.clicked.connect(self.edit_polygon_shape)
+        self.stop_edit_trigger = True
+        
+        self.subgating_pushButton_11.clicked.connect(self.subgating_edit_polygon_shape)
+        self.subgating_stop_edit_trigger = True
+        
     def subgating_scatter(self,switch_tab = False, pressed_function_redo = False):
         if pressed_function_redo == True:
             self.subgating_polygon_clean()
@@ -3518,27 +3535,45 @@ class Ui_MainWindow(object):
         if self.polygon_trigger == False:
             self.polygon_trigger = True
             self.points = list(zip(self.Ch1_channel0,self.Ch1_channel1))
-            self.polygon_lines = []
+
+            self.polygon_points = [[]]
+            self.polygon_lines = [[]]
             self.points_inside = []
-            self.polygon = []
-        elif self.polygon == [] and self.x == []:
+            self.polygon = [[]]
+            self.polygon_for_edit = [[]]
+            self.points_inside_list = []
+        elif self.polygon[-1] == [] and self.x == []:
             print("Polygon button clicked")
         else:
-            path = mpltPath.Path(self.polygon)
+            path = mpltPath.Path(self.polygon[-1])
             self.inside2 = path.contains_points(self.points)
 
             start_end_dot_x = [self.x[0],self.x[-1]]
             start_end_dot_y = [self.y[0],self.y[-1]]            
-            self.polygon_lines.append(self.graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+            self.polygon_lines[-1].append(self.graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+            self.polygon_points[-1].append(self.graphWidget.plot(start_end_dot_x, start_end_dot_y, pen=None, symbol='o'))
             
             
             # show the dots have index before the first filter
-            self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
-            
+#             self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
+
+            self.points_inside_list.append(list(compress(self.points_inside_square, self.inside2)))
+
+            arr = []
+            for i in self.points_inside_list:
+                for ii in i:
+                    arr.append(ii)
+            # remove duplicate points
+            rem_duplicate_func=lambda arr:set(arr) 
+            self.points_inside = list(rem_duplicate_func(arr))
+
             points_inside = 'Inside: ' + str(len(self.points_inside))
             self.polygon_inside_label_29.setText(points_inside) 
      
-            self.polygon = []
+            self.polygon.append([])
+            self.polygon_points.append([])
+            self.polygon_lines.append([])
+            self.polygon_for_edit.append([])
             self.x = []
             self.y = []
  
@@ -3547,29 +3582,57 @@ class Ui_MainWindow(object):
         if self.subgating_polygon_trigger == False:
             self.subgating_polygon_trigger = True
             self.subgating_points = list(zip(self.subgating_Ch1_channel0,self.subgating_Ch1_channel1))
-            self.subgating_polygon_lines = []
-            self.subgating_points_inside = []
-            self.subgating_polygon = []
+            
+            self.subgating_polygon_points = [[]]
+            self.subgating_polygon_for_edit = [[]]
+            self.subgating_points_inside_list = []
+            
+            
+            self.subgating_polygon_lines = [[]]
+            self.subgating_points_inside = [[]]
+            self.subgating_polygon = [[]]
+            
             self.final_subgating_sweep_data = [[],[],[],[]]
+            
+        elif self.subgating_polygon[-1] == [] and self.x == []:
+            print("Polygon button clicked")
         else:
             if self.subgating_polygon != []:
-                path = mpltPath.Path(self.subgating_polygon)
+                path = mpltPath.Path(self.subgating_polygon[-1])
                 self.subgating_inside2 = path.contains_points(self.subgating_points)
 
                 start_end_dot_x = [self.subgating_x[0],self.subgating_x[-1]]
-                start_end_dot_y = [self.subgating_y[0],self.subgating_y[-1]]            
-                self.subgating_polygon_lines.append(self.subgating_graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+                start_end_dot_y = [self.subgating_y[0],self.subgating_y[-1]]  
+                
+                self.subgating_polygon_lines[-1].append(self.subgating_graphWidget.plot(start_end_dot_x, start_end_dot_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+                self.subgating_polygon_points[-1].append(self.subgating_graphWidget.plot(start_end_dot_x, start_end_dot_y, pen=None, symbol='o'))
+           
+                # show the dots have index before the first filter
+#                 self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
 
+                self.subgating_points_inside_list.append(list(compress(self.points_inside_square, self.subgating_inside2)))
 
-                # find the dots are circled
-                self.subgating_points_inside.extend(list(compress(self.points_inside, self.subgating_inside2)))
+                arr = []
+                for i in self.subgating_points_inside_list:
+                    for ii in i:
+                        arr.append(ii)
+                # remove duplicate points
+                rem_duplicate_func=lambda arr:set(arr) 
+                self.subgating_points_inside = list(rem_duplicate_func(arr))
+
 
                 points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
                 self.subgating_polygon_inside_label_29.setText(points_inside)
+     
+
+
                 for ch in range(len(self.working_data)):
                     self.final_subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.subgating_points_inside]
-      
-                self.subgating_polygon = []
+
+                self.subgating_polygon.append([])
+                self.subgating_polygon_points.append([])
+                self.subgating_polygon_lines.append([])
+                self.subgating_polygon_for_edit.append([])
                 self.subgating_x = []
                 self.subgating_y = []
         
@@ -3577,63 +3640,366 @@ class Ui_MainWindow(object):
         self.subgating_polygon_inside_label_29.setText('Inside: 0') 
         self.subgating_x = []
         self.subgating_y = []
-        self.subgating_polygon = []
-        self.subgating_points_inside = []
-        try:
-            self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
+        self.subgating_polygon = [[]]
+        self.subgating_points_inside = [[]]
+#         try:
+#             self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
             
-            for i in range(len(self.subgating_polygon_lines)):
-                self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
+#             for i in range(len(self.subgating_polygon_lines)):
+#                 self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i])
+
+#         except:
+#             print("no subgating_polygon drawed")
+#         self.subgating_polygon_trigger = False 
+        try:
+            for i_list in range(len(self.subgating_polygon_points)):
+                for i in range(len(self.subgating_polygon_points[i_list])):
+                    self.subgating_graphWidget.removeItem(self.subgating_polygon_points[i_list][i])
+                    self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[i_list][i])
 
         except:
             print("no subgating_polygon drawed")
-        self.subgating_polygon_trigger = False        
+        self.subgating_polygon_trigger = False
+                
 
-    def subgating_onMouseMoved(self,point):
-        if self.subgating_polygon_trigger:
-            try:            
-                self.subgating_graphWidget.removeItem(self.subgating_polygon_points)
-#                 self.graphWidget.removeItem(self.polygon_lines)
-            except:
-                print("Start Polygon")
-            p = self.subgating_graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
 
-            self.subgating_x.append(p.x())
-            self.subgating_y.append(p.y())
-            self.subgating_polygon_points = self.subgating_graphWidget.plot(self.subgating_x, self.subgating_y, pen=None, symbol='o')
-            self.subgating_polygon_lines.append(self.subgating_graphWidget.plot(self.subgating_x, self.subgating_y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
-            self.subgating_polygon.append([p.x(),p.y()])
-            
     def polygon_clean(self):
         self.polygon_inside_label_29.setText('Inside: 0') 
         self.x = []
         self.y = []
-        self.polygon = []
-        self.points_inside = []
+        self.polygon = [[]]
+        self.points_inside = [[]]
         try:
-            self.graphWidget.removeItem(self.polygon_points)
-            for i in range(len(self.polygon_lines)):
-                self.graphWidget.removeItem(self.polygon_lines[i])
+            for i_list in range(len(self.polygon_points)):
+                for i in range(len(self.polygon_points[i_list])):
+                    self.graphWidget.removeItem(self.polygon_points[i_list][i])
+                    self.graphWidget.removeItem(self.polygon_lines[i_list][i])
+
         except:
             print("no polygon drawed")
         self.polygon_trigger = False
+
         
+    def subgating_onMouseMoved(self,point):
+        if self.subgating_stop_edit_trigger and self.subgating_polygon_trigger:
+
+            p = self.subgating_graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
+
+            self.subgating_x.append(p.x())
+            self.subgating_y.append(p.y())
+            
+            self.subgating_polygon_points[-1].append(self.subgating_graphWidget.plot(self.subgating_x[-2:len(self.subgating_x)], self.subgating_y[-2:len(self.subgating_y)], pen=None, symbol='o'))
+            self.subgating_polygon_lines[-1].append(self.subgating_graphWidget.plot(self.subgating_x[-2:len(self.subgating_x)], self.subgating_y[-2:len(self.subgating_y)],pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+            self.subgating_polygon[-1].append([p.x(),p.y()])
+            self.subgating_polygon_for_edit[-1].append([p.x(),p.y()])
+ 
+
+        elif self.subgating_stop_edit_trigger == False:
+            p = self.subgating_graphWidget.plotItem.vb.mapSceneToView(point.scenePos())     
+            
+            nearest_distance = 20
+            
+            
+            nearest_index = 0
+            nearest_list = 0
+            
+            list_count = 0
+            for i_list in self.subgating_polygon_for_edit:
+                count = 0
+                for i in i_list:
+                    diff_x = abs(i[0] - p.x())
+                    diff_y = abs(i[1] - p.y())
+                    diff_total = sqrt(diff_x*diff_x + diff_y*diff_y)
+                    if diff_total < nearest_distance:           
+                        nearest_distance = diff_total
+                        nearest_index = count
+                        nearest_list = list_count
+                    count += 1
+                list_count += 1
+
+
+            # remove points
+
+            if nearest_index == 0:
+                self.subgating_graphWidget.removeItem(self.subgating_polygon_points[nearest_list][-1])
+            
+
+            self.subgating_graphWidget.removeItem(self.subgating_polygon_points[nearest_list][nearest_index])
+            self.subgating_graphWidget.removeItem(self.subgating_polygon_points[nearest_list][nearest_index+1])
+            # change points  
+            # bug: when use in unfinished polygon, line will couse error
+            self.subgating_polygon_for_edit[nearest_list][nearest_index] = [p.x(),p.y()]
+            
+
+
+
+                          
+            if nearest_index == 0:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][1],p.y()]
+
+                self.subgating_polygon_points[nearest_list][nearest_index-1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+            
+                edit_x = [p.x(),p.x()]
+                edit_y = [p.y(), p.y()]
+                
+                self.subgating_polygon_points[nearest_list][nearest_index] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o') 
+            else:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][1],p.y()]
+
+                self.subgating_polygon_points[nearest_list][nearest_index] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')                
+                
+            if nearest_index == len(self.subgating_polygon_for_edit[nearest_list])-1:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][0][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][0][1], p.y()]
+
+                self.subgating_polygon_points[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+            else:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][1], p.y()]
+
+                self.subgating_polygon_points[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+
+
+
+
+
+            # remove lines
+            if nearest_index == 0:
+                self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[nearest_list][-1])
+            self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[nearest_list][nearest_index])
+            self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[nearest_list][nearest_index+1])
+            
+            # change lines  
+            # bug: when use in unfinished polygon, line will couse error
+            
+            if nearest_index == 0:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
+
+                self.subgating_polygon_lines[nearest_list][nearest_index-1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+                
+            else:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
+
+                self.subgating_polygon_lines[nearest_list][nearest_index] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+            
+
+            if nearest_index == len(self.subgating_polygon_for_edit[nearest_list])-1:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][0][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][0][1], p.y()]
+
+                self.subgating_polygon_lines[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+            else:
+                edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][0],p.x()]
+                edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][1], p.y()]
+
+                self.subgating_polygon_lines[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+
+            self.subgating_nearest_list = nearest_list
+            
+            
+    def subgating_edit_polygon_shape(self):
+        
+        print("subgating_edit_polygon_shape activate")
+        if self.subgating_stop_edit_trigger == True:
+            self.subgating_polygon_triggering()
+            self.subgating_stop_edit_trigger = False
+        else:
+            self.subgating_stop_edit_trigger = True
+            path = mpltPath.Path(self.subgating_polygon_for_edit[self.nearest_list])
+            self.subgating_inside2 = path.contains_points(self.subgating_points)
+
+            # show the dots have index before the first filter
+            self.subgating_points_inside = list(compress(self.points_inside_square, self.subgating_inside2))
+            
+
+            self.subgating_points_inside_list.append(list(compress(self.points_inside_square, self.subgating_inside2)))
+
+            arr = []
+            for i in self.subgating_points_inside_list:
+                for ii in i:
+                    arr.append(ii)
+            # remove duplicate points
+            rem_duplicate_func=lambda arr:set(arr) 
+            self.subgating_points_inside = list(rem_duplicate_func(arr))
+
+            points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
+            self.subgating_polygon_inside_label_29.setText(points_inside)
+     
+
+            for ch in range(len(self.working_data)):
+                self.final_subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.subgating_points_inside]
+
+
+            
     def onMouseMoved(self,point):
-        if self.polygon_trigger:
-            try:            
-                self.graphWidget.removeItem(self.polygon_points)
-#                 self.graphWidget.removeItem(self.polygon_lines)
-            except:
-                print("Start Polygon")
+        if self.stop_edit_trigger and self.polygon_trigger:
+
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
 
             self.x.append(p.x())
             self.y.append(p.y())
-            self.polygon_points = self.graphWidget.plot(self.x, self.y, pen=None, symbol='o')
-            self.polygon_lines.append(self.graphWidget.plot(self.x, self.y,pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
-            self.polygon.append([p.x(),p.y()])
+
+            self.polygon_points[-1].append(self.graphWidget.plot(self.x[-2:len(self.x)], self.y[-2:len(self.y)], pen=None, symbol='o'))
+            self.polygon_lines[-1].append(self.graphWidget.plot(self.x[-2:len(self.x)], self.y[-2:len(self.y)],pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)))
+            self.polygon[-1].append([p.x(),p.y()])
+            self.polygon_for_edit[-1].append([p.x(),p.y()])
+
+        elif self.stop_edit_trigger == False:
+            p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())     
+            
+            nearest_distance = 20
+            
+            
+            nearest_index = 0
+            nearest_list = 0
+            
+            list_count = 0
+            for i_list in self.polygon_for_edit:
+                count = 0
+                for i in i_list:
+                    diff_x = abs(i[0] - p.x())
+                    diff_y = abs(i[1] - p.y())
+                    diff_total = sqrt(diff_x*diff_x + diff_y*diff_y)
+                    if diff_total < nearest_distance:           
+                        nearest_distance = diff_total
+                        nearest_index = count
+                        nearest_list = list_count
+                    count += 1
+                list_count += 1
+
+            # remove points
+
+            if nearest_index == 0:
+                self.graphWidget.removeItem(self.polygon_points[nearest_list][-1])
+            
+
+            self.graphWidget.removeItem(self.polygon_points[nearest_list][nearest_index])
+            self.graphWidget.removeItem(self.polygon_points[nearest_list][nearest_index+1])
+            # change points  
+            # bug: when use in unfinished polygon, line will couse error
+            self.polygon_for_edit[nearest_list][nearest_index] = [p.x(),p.y()]
+            
 
 
+
+                          
+            if nearest_index == 0:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index-1][1],p.y()]
+
+                self.polygon_points[nearest_list][nearest_index-1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+            
+                edit_x = [p.x(),p.x()]
+                edit_y = [p.y(), p.y()]
+                
+                self.polygon_points[nearest_list][nearest_index] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o') 
+            else:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index-1][1],p.y()]
+
+                self.polygon_points[nearest_list][nearest_index] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')                
+                
+            if nearest_index == len(self.polygon_for_edit[nearest_list])-1:
+                edit_x = [self.polygon_for_edit[nearest_list][0][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][0][1], p.y()]
+
+                self.polygon_points[nearest_list][nearest_index+1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+            else:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index+1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index+1][1], p.y()]
+
+                self.polygon_points[nearest_list][nearest_index+1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=None, symbol='o')
+
+
+
+
+
+            # remove lines
+            if nearest_index == 0:
+                self.graphWidget.removeItem(self.polygon_lines[nearest_list][-1])
+            self.graphWidget.removeItem(self.polygon_lines[nearest_list][nearest_index])
+            self.graphWidget.removeItem(self.polygon_lines[nearest_list][nearest_index+1])
+            
+            # change lines  
+            # bug: when use in unfinished polygon, line will couse error
+            
+            if nearest_index == 0:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
+
+                self.polygon_lines[nearest_list][nearest_index-1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+                
+            else:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
+
+                self.polygon_lines[nearest_list][nearest_index] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+            
+
+            if nearest_index == len(self.polygon_for_edit[nearest_list])-1:
+                edit_x = [self.polygon_for_edit[nearest_list][0][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][0][1], p.y()]
+
+                self.polygon_lines[nearest_list][nearest_index+1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+            else:
+                edit_x = [self.polygon_for_edit[nearest_list][nearest_index+1][0],p.x()]
+                edit_y = [self.polygon_for_edit[nearest_list][nearest_index+1][1], p.y()]
+
+                self.polygon_lines[nearest_list][nearest_index+1] = self.graphWidget.plot(edit_x, edit_y,
+                                      pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+
+            self.nearest_list = nearest_list
+    def edit_polygon_shape(self):
+        
+        print("edit_polygon_shape activate")
+        if self.stop_edit_trigger == True:
+            self.polygon_triggering()
+            self.stop_edit_trigger = False
+        else:
+            self.stop_edit_trigger = True
+            path = mpltPath.Path(self.polygon_for_edit[self.nearest_list])
+            self.inside2 = path.contains_points(self.points)
+
+            # show the dots have index before the first filter
+            self.points_inside = list(compress(self.points_inside_square, self.inside2))
+            
+            self.points_inside_list[self.nearest_list] = list(compress(self.points_inside_square, self.inside2))
+
+            arr = []
+            for i in self.points_inside_list:
+                for ii in i:
+                    arr.append(ii)
+            # remove duplicate points
+            rem_duplicate_func=lambda arr:set(arr) 
+            self.points_inside = list(rem_duplicate_func(arr))
+
+            points_inside = 'Inside: ' + str(len(self.points_inside))
+            self.polygon_inside_label_29.setText(points_inside)         
+        
+        
+        
+        
     def polygon_linear_plot_triggered_from_scatter_subtab(self):
         self.reset_comboBox = True
         self.polygon_linear_plot()
@@ -5332,10 +5698,13 @@ class Ui_MainWindow(object):
         self.subgating_comboBox_2.setItemText(3, _translate("MainWindow", "Orange"))
         self.subgating_label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))        
         
-        self.subgating_pushButton_9.setText(_translate("MainWindow", "Ploygon"))
-        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clean"))
+        self.subgating_pushButton_9.setText(_translate("MainWindow", "Polygon"))
+        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clear"))
         self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract Linear Plot"))
 
+        self.pushButton_12.setText(_translate("MainWindow", "Shape Edit"))
+        self.subgating_pushButton_11.setText(_translate("MainWindow", "Shape Edit"))
+        
         self.pushButton_11.setText(_translate("MainWindow", "Extract"))
         
         self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
@@ -5472,7 +5841,7 @@ class Ui_MainWindow(object):
         self.polygon_channel_4.setText(_translate("MainWindow", "Channel 4"))
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_4), _translate("MainWindow", "User defined linear graph"))
                         
-        self.pushButton_9.setText(_translate("MainWindow", "Ploygon"))
+        self.pushButton_9.setText(_translate("MainWindow", "Polygon"))
         self.pushButton_10.setText(_translate("MainWindow", "Clear"))
 
         
