@@ -9,7 +9,7 @@
 from PyQt5 import QtGui  # Place this at the top of your file.
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, \
-    QWidget, QLineEdit
+    QWidget, QLineEdit, QTextEdit
 
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.Point import Point
@@ -54,6 +54,11 @@ class OtherWindow(QWidget):
     def ok_clicked(self):
         self.hide() 
         Ui_MainWindow.OtherWindow_Button_ok_clicked(Ui_MainWindow,self.lineEdit.text())
+
+        ui.textbox = ui.textbox + "\n" + "Resamole set to " +  str(self.lineEdit.text())        
+        ui.textEdit.setPlainText(ui.textbox) 
+        
+        
     def close_clicked(self):
         self.hide()      
         ###
@@ -1333,17 +1338,25 @@ class Ui_MainWindow(object):
 #         self.widget_9.setObjectName("widget_9")
 #         self.gridLayout_15.addWidget(self.widget_9, 0, 2, 1, 1)
 
-        self.graphWidget_width_scatter = PlotWidget(self.sub_tab_width_scatter)
+
+        # may fix a potential bug, leave it here for now
+        self.graphWidget_width_scatter = PlotWidget(title='I0-Normalised reflectivity')
+    
+
+               
+            
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.graphWidget_width_scatter.sizePolicy().hasHeightForWidth())
+    
         self.graphWidget_width_scatter.setSizePolicy(sizePolicy)
         self.graphWidget_width_scatter.setMinimumSize(QtCore.QSize(500, 500))
         self.graphWidget_width_scatter.setObjectName("graphWidget_width_scatter")
         self.gridLayout_15.addWidget(self.graphWidget_width_scatter, 0, 2, 1, 1)
         
+
         self.graphWidget_width_scatter.setTitle("test scatter plot", color="w", size="30pt")
         styles = {"color": "r", "font-size": "20px"}
         self.graphWidget_width_scatter.setBackground('w')
@@ -1351,18 +1364,16 @@ class Ui_MainWindow(object):
         self.graphWidget_width_scatter.setLabel('left', 'Green', **styles)
         self.graphWidget_width_scatter.setLabel('bottom', 'Far Red', **styles)
         
-        
+ 
         self.lr_x_axis = pg.LinearRegionItem([1,1])
         self.lr_y_axis = pg.LinearRegionItem([1,1], orientation = 1)
         self.graphWidget_width_scatter.addItem(self.lr_x_axis)
         self.graphWidget_width_scatter.addItem(self.lr_y_axis)  
         
-        
+
         self.tab_widget_peak_width.addTab(self.sub_tab_width_scatter, "")
 
-    
-    
-        
+
         self.sub_tab_width_histogram = QtWidgets.QWidget()
         self.sub_tab_width_histogram.setObjectName("sub_tab_width_histogram")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.sub_tab_width_histogram)
@@ -3243,9 +3254,29 @@ class Ui_MainWindow(object):
         
 
 
+        # report tab
+
         self.tab_report = QtWidgets.QWidget()
         self.tab_report.setObjectName("tab_report")
-        self.tab_widgets_main.addTab(self.tab_report, "")
+        
+        self.horizontalLayout_report_tab = QtWidgets.QHBoxLayout(self.tab_report)
+        self.horizontalLayout_report_tab.setObjectName("horizontalLayout_report_tab")
+
+        self.textEdit = QtWidgets.QTextEdit(self.tab_report)
+        self.textEdit.setObjectName("textEdit")
+
+        self.horizontalLayout_report_tab.addWidget(self.textEdit)
+        self.tab_widgets_main.addTab(self.tab_report, "")  
+        
+        self.textbox = "Current version: Amberlab V1.23" + "\n" + "you can find logs here:"
+        self.textEdit.setPlainText(self.textbox)
+        
+     
+        
+        ### tab end
+        
+
+        
         self.horizontalLayout_4.addWidget(self.tab_widgets_main)
         self.horizontalLayout_15.addLayout(self.horizontalLayout_4)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -3337,6 +3368,7 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltage_2.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
         self.lineEdit_gatevoltage_4.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
         
+        
         self.w = OtherWindow(self)
         self.pushButton_resample.clicked.connect(self.openWindow)
         
@@ -3347,6 +3379,8 @@ class Ui_MainWindow(object):
         self.polygon = []
         self.points_inside = []
         self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved) 
+
+
         
         self.subgating_x = []
         self.subgating_y = []
@@ -3373,6 +3407,158 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_11.clicked.connect(self.subgating_edit_polygon_shape)
         self.subgating_stop_edit_trigger = True
         
+    # check box trigger
+        self.checkbox_ch1.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 1 state changed to ", 
+                                                                           afterchange = self.checkbox_ch1.isChecked()))
+        self.checkbox_ch2.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 2 state changed to ", 
+                                                                           afterchange = self.checkbox_ch2.isChecked()))
+        self.checkbox_ch3.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 3 state changed to ", 
+                                                                           afterchange = self.checkbox_ch3.isChecked()))
+        self.checkbox_ch12.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 1-2 state changed to ", 
+                                                                           afterchange = self.checkbox_ch12.isChecked()))
+        self.checkbox_ch13.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 1-3 state changed to ", 
+                                                                           afterchange = self.checkbox_ch13.isChecked()))
+        self.checkbox_ch23.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 2-3 state changed to ", 
+                                                                           afterchange = self.checkbox_ch23.isChecked()))
+        self.checkBox_7.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox All Channel state changed to ", 
+                                                                           afterchange = self.checkBox_7.isChecked()))
+
+        self.channel_1.stateChanged.connect(lambda:self.textbox_trigger(change = "Raw data viewer channel_1 state changed to ", 
+                                                                           afterchange = self.channel_1.isChecked()))
+        self.channel_2.stateChanged.connect(lambda:self.textbox_trigger(change = "Raw data viewer channel_2 state changed to ", 
+                                                                           afterchange = self.channel_2.isChecked()))
+        self.channel_3.stateChanged.connect(lambda:self.textbox_trigger(change = "Raw data viewer channel_3 state changed to ", 
+                                                                           afterchange = self.channel_3.isChecked()))
+        self.channel_4.stateChanged.connect(lambda:self.textbox_trigger(change = "Raw data viewer channel_4 state changed to ", 
+                                                                           afterchange = self.channel_4.isChecked()))
+
+        self.polygon_channel_1.stateChanged.connect(lambda:self.textbox_trigger(change = "User define linear graph channel_1 state changed to ", 
+                                                                           afterchange = self.polygon_channel_1.isChecked()))
+        self.polygon_channel_2.stateChanged.connect(lambda:self.textbox_trigger(change = "User define linear graph channel_2 state changed to ", 
+                                                                           afterchange = self.polygon_channel_2.isChecked()))
+        self.polygon_channel_3.stateChanged.connect(lambda:self.textbox_trigger(change = "User define linear graph channel_3 state changed to ", 
+                                                                           afterchange = self.polygon_channel_3.isChecked()))
+        self.polygon_channel_4.stateChanged.connect(lambda:self.textbox_trigger(change = "User define linear graph channel_4 state changed to ", 
+                                                                           afterchange = self.polygon_channel_4.isChecked()))
+        
+    # combobox trigger
+        self.comboBox_5.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter scatter plot x-axis changed to ", 
+                                                                           afterchange = self.comboBox_5.currentText()))
+
+        self.comboBox_6.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter scatter plot y-axis changed to ", 
+                                                                           afterchange = self.comboBox_6.currentText())) 
+        
+        self.comboBox_peak_num_1.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating channel Green condition changed to ", 
+                                                                           afterchange = self.comboBox_peak_num_1.currentText())) 
+        self.comboBox_peak_num_2.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating channel Red condition changed to ", 
+                                                                           afterchange = self.comboBox_peak_num_2.currentText()))  
+        self.comboBox_peak_num_3.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating channel Blue condition changed to ", 
+                                                                           afterchange = self.comboBox_peak_num_3.currentText())) 
+        self.comboBox_peak_num_4.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating channel Orange condition changed to ", 
+                                                                           afterchange = self.comboBox_peak_num_4.currentText())) 
+
+        self.comboBox.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "2nd filter Quadrant Gating x-axis channel changed to ", 
+                                                                           afterchange = self.comboBox.currentText()))
+        self.comboBox_2.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "2nd filter Quadrant Gating y-axis channel changed to ", 
+                                                                           afterchange = self.comboBox_2.currentText()))
+
+        self.subgating_comboBox.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "3rd filter scatter plot x-axis channel changed to ", 
+                                                                           afterchange = self.subgating_comboBox.currentText()))
+        self.subgating_comboBox_2.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "3rd filter scatter plot y-axis channel changed to ", 
+                                                                           afterchange = self.subgating_comboBox_2.currentText()))
+        self.subgating_preselect_comboBox.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "3rd filter scatter plot x-axis arrtibute changed to ", 
+                                                                           afterchange = self.subgating_preselect_comboBox.currentText()))
+        self.subgating_preselect_comboBox_2.currentIndexChanged.connect(lambda:self.textbox_trigger(change = "3rd filter scatter plot y-axis arrtibute changed to ", 
+                                                                           afterchange = self.subgating_preselect_comboBox_2.currentText()))
+                        
+    # listview trigger
+        self.listView_channels_2.currentItemChanged.connect(lambda:self.textbox_trigger(change = "Sweept channel selection changed to ", 
+                                                                           afterchange = self.listView_channels_2.currentItem().text()))
+    
+        self.listView_channels_3.currentItemChanged.connect(lambda:self.textbox_trigger(change = "1st filter histogram channel selection changed to ", 
+                                                                           afterchange = self.listView_channels_3.currentItem().text()))
+
+        self.listView_channels.currentItemChanged.connect(lambda:self.textbox_trigger(change = "2nd filter histogram channel selection changed to ", 
+                                                                           afterchange = self.listView_channels.currentItem().text()))
+
+        self.file_list_view.currentItemChanged.connect(lambda:self.textbox_trigger(change = "loading file changed to ", 
+                                                                           afterchange = self.file_list_view.currentItem().text()))
+
+        
+    # lineedit trigger (editingFinished or textChanged)
+        self.lineEdit_gatevoltage_2.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter histogram Min Width threshold changed to ", 
+                                                                           afterchange = self.lineEdit_gatevoltage_2.text()))  
+        self.lineEdit_gatevoltage_4.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter histogram Max Width threshold changed to ", 
+                                                                           afterchange = self.lineEdit_gatevoltage_4.text()))   
+        
+        self.lineEdit_gatevoltagemaximum.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold voltage maximum changed to ", 
+                                                                           afterchange = self.lineEdit_gatevoltagmaximum.text())) 
+        self.lineEdit_gatevoltageminimum.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold voltage minimum change to ", 
+                                                                           afterchange = self.lineEdit_gatevoltageminimum.text())) 
+        self.lineEdit_increments.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold increments changed to ", 
+                                                                           afterchange = self.lineEdit_increments.text()))       
+
+        
+
+        self.lineEdit_binwidth_2.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep tab bin width changed to ", 
+                                                                           afterchange = self.lineEdit_binwidth_2.text()))
+        self.lineEdit_binwidth_3.textChanged.connect(lambda:self.textbox_trigger(change = "1nd filter histogram bin width changed to ", 
+                                                                           afterchange = self.lineEdit_binwidth_3.text()))
+        self.lineEdit_binwidth.textChanged.connect(lambda:self.textbox_trigger(change = "2nd filter histogram bin width changed to ", 
+                                                                           afterchange = self.lineEdit_binwidth.text())) 
+        self.lineEdit_gatevoltage.textChanged.connect(lambda:self.textbox_trigger(change = "2nd filter histogram gate voltage changed to ", 
+                                                                                   afterchange = self.lineEdit_gatevoltage.text())) 
+        
+
+        
+        self.lineEdit_5.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter Scatter plot x-axis min changed to ", 
+                                                                           afterchange = self.lineEdit_5.text())) 
+        self.lineEdit_6.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter Scatter plot y-axis min changed to ", 
+                                                                           afterchange = self.lineEdit_6.text())) 
+        self.lineEdit_7.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter Scatter plot x-axis max changed to ", 
+                                                                           afterchange = self.lineEdit_7.text())) 
+        self.lineEdit_8.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter Scatter plot y-axis max changed to ", 
+                                                                           afterchange = self.lineEdit_8.text())) 
+       
+        self.lineEdit_9.textChanged.connect(lambda:self.textbox_trigger(change = "Voltage Threshold Green(V) changed to ", 
+                                                                           afterchange = self.lineEdit_9.text())) 
+        self.lineEdit_10.textChanged.connect(lambda:self.textbox_trigger(change = "Voltage Threshold Far Red(V) changed to ", 
+                                                                           afterchange = self.lineEdit_10.text()))
+        self.lineEdit_11.textChanged.connect(lambda:self.textbox_trigger(change = "Voltage Threshold Ultra Violet(V) changed to ", 
+                                                                           afterchange = self.lineEdit_11.text()))
+        self.lineEdit_12.textChanged.connect(lambda:self.textbox_trigger(change = "Voltage Threshold Orange(V) changed to ", 
+                                                                           afterchange = self.lineEdit_12.text()))
+        
+        self.lineEdit_peak_num_1.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating # of peaks in channel Orange changed to ", 
+                                                                           afterchange = self.lineEdit_peak_num_1.text()))
+        self.lineEdit_peak_num_2.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating # of peaks in channel Orange changed to ", 
+                                                                           afterchange = self.lineEdit_peak_num_2.text()))
+        self.lineEdit_peak_num_3.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating # of peaks in channel Orange changed to ", 
+                                                                           afterchange = self.lineEdit_peak_num_3.text()))
+        self.lineEdit_peak_num_4.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter multi peaks gating # of peaks in channel Orange changed to ", 
+                                                                           afterchange = self.lineEdit_peak_num_4.text()))
+        
+        self.lineEdit_scatterxvoltage.textChanged.connect(lambda:self.textbox_trigger(change = "2nd filter quadrant gating x-axis gate voltage changed to ", 
+                                                                           afterchange = self.lineEdit_scatterxvoltage.text()))
+        self.lineEdit_scatteryvoltage.textChanged.connect(lambda:self.textbox_trigger(change = "2nd filter quadrant gating y-axis gate voltage changed to ", 
+                                                                           afterchange = self.lineEdit_scatteryvoltage.text()))
+        
+        
+    def textbox_trigger(self,change, afterchange):
+        # record change in the log
+        self.textbox = self.textbox + "\n" + str(change) +  str(afterchange)
+#         self.textbox = self.textbox + "\n" + "ch2_checkbox: " + str(self.ch2_checkbox) 
+#         self.textbox = self.textbox + "\n" + "ch3_checkbox: " + str(self.ch3_checkbox) 
+#         self.textbox = self.textbox + "\n" + "ch12_checkbox: " + str(self.ch12_checkbox) 
+#         self.textbox = self.textbox + "\n" + "ch13_checkbox: " + str(self.ch13_checkbox) 
+#         self.textbox = self.textbox + "\n" + "ch23_checkbox: " + str(self.ch23_checkbox) 
+#         self.textbox = self.textbox + "\n" + "chall_checkbox: " + str(self.all_checkbox) 
+        
+        self.textEdit.setPlainText(self.textbox)   
+        # done
+        
+        
+        
     def subgating_scatter(self,switch_tab = False, pressed_function_redo = False):
         if pressed_function_redo == True:
             self.subgating_polygon_clean()
@@ -3383,11 +3569,12 @@ class Ui_MainWindow(object):
             self.tab_widgets_subgating.setCurrentIndex(0)
             
         if self.polygon_trigger == False:
-            subgating_plot_update = self.ui_state.subgating_replot_check(self.points_inside_square, self.quadrant1_list,
+            subgating_plot_update, self.textbox = self.ui_state.subgating_replot_check(self.points_inside_square, self.quadrant1_list,
                                                              self.subgating_comboBox.currentText(), 
                                                              self.subgating_comboBox_2.currentText(), 
                                                              self.subgating_preselect_comboBox.currentText(), 
-                                                             self.subgating_preselect_comboBox_2.currentText())
+                                                             self.subgating_preselect_comboBox_2.currentText(),
+                                                             self.textbox)
             try:
                 if subgating_plot_update:
                     self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
@@ -3396,11 +3583,16 @@ class Ui_MainWindow(object):
                 print("no points extracted")
         else:
             self.polygon_triggering()
-            subgating_plot_update = self.ui_state.subgating_replot_check(self.points_inside_square, self.points_inside,
+            subgating_plot_update, self.textbox = self.ui_state.subgating_replot_check(self.points_inside_square, self.points_inside,
                                              self.subgating_comboBox.currentText(), 
                                              self.subgating_comboBox_2.currentText(), 
                                              self.subgating_preselect_comboBox.currentText(), 
-                                             self.subgating_preselect_comboBox_2.currentText())
+                                             self.subgating_preselect_comboBox_2.currentText(),
+                                             self.textbox)
+#         # record change in the log
+#         self.textEdit.setPlainText(self.textbox)  
+#         # done
+
         print("subgating_plot_update",subgating_plot_update)
         print("pressed_function_redo",pressed_function_redo)
         if subgating_plot_update or pressed_function_redo:
@@ -3545,6 +3737,7 @@ class Ui_MainWindow(object):
         elif self.polygon[-1] == [] and self.x == []:
             print("Polygon button clicked")
         else:
+                                
             path = mpltPath.Path(self.polygon[-1])
             self.inside2 = path.contains_points(self.points)
 
@@ -3594,7 +3787,7 @@ class Ui_MainWindow(object):
             
             self.final_subgating_sweep_data = [[],[],[],[]]
             
-        elif self.subgating_polygon[-1] == [] and self.x == []:
+        elif self.subgating_polygon[-1] == [] and self.subgating_x == []:
             print("Polygon button clicked")
         else:
             if self.subgating_polygon != []:
@@ -3786,13 +3979,14 @@ class Ui_MainWindow(object):
                 self.subgating_polygon_lines[nearest_list][nearest_index-1] = self.subgating_graphWidget.plot(edit_x, edit_y,
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
                 
+                
             else:
                 edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
                 edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
 
                 self.subgating_polygon_lines[nearest_list][nearest_index] = self.subgating_graphWidget.plot(edit_x, edit_y,
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
-            
+                          
 
             if nearest_index == len(self.subgating_polygon_for_edit[nearest_list])-1:
                 edit_x = [self.subgating_polygon_for_edit[nearest_list][0][0],p.x()]
@@ -3800,47 +3994,18 @@ class Ui_MainWindow(object):
 
                 self.subgating_polygon_lines[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+
+                
             else:
                 edit_x = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][0],p.x()]
                 edit_y = [self.subgating_polygon_for_edit[nearest_list][nearest_index+1][1], p.y()]
 
                 self.subgating_polygon_lines[nearest_list][nearest_index+1] = self.subgating_graphWidget.plot(edit_x, edit_y,
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
+                
 
             self.subgating_nearest_list = nearest_list
             
-            
-    def subgating_edit_polygon_shape(self):
-        
-        print("subgating_edit_polygon_shape activate")
-        if self.subgating_stop_edit_trigger == True:
-            self.subgating_polygon_triggering()
-            self.subgating_stop_edit_trigger = False
-        else:
-            self.subgating_stop_edit_trigger = True
-            path = mpltPath.Path(self.subgating_polygon_for_edit[self.nearest_list])
-            self.subgating_inside2 = path.contains_points(self.subgating_points)
-
-            # show the dots have index before the first filter
-            self.subgating_points_inside = list(compress(self.points_inside_square, self.subgating_inside2))
-            
-
-            self.subgating_points_inside_list.append(list(compress(self.points_inside_square, self.subgating_inside2)))
-
-            arr = []
-            for i in self.subgating_points_inside_list:
-                for ii in i:
-                    arr.append(ii)
-            # remove duplicate points
-            rem_duplicate_func=lambda arr:set(arr) 
-            self.subgating_points_inside = list(rem_duplicate_func(arr))
-
-            points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
-            self.subgating_polygon_inside_label_29.setText(points_inside)
-     
-
-            for ch in range(len(self.working_data)):
-                self.final_subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.subgating_points_inside]
 
 
             
@@ -3948,6 +4113,7 @@ class Ui_MainWindow(object):
                 self.polygon_lines[nearest_list][nearest_index-1] = self.graphWidget.plot(edit_x, edit_y,
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
                 
+
             else:
                 edit_x = [self.polygon_for_edit[nearest_list][nearest_index-1][0],p.x()]
                 edit_y = [self.polygon_for_edit[nearest_list][nearest_index-1][1], p.y()]
@@ -3970,6 +4136,68 @@ class Ui_MainWindow(object):
                                       pen=pg.mkPen(color=('b'), width=5, style=QtCore.Qt.DashLine))
 
             self.nearest_list = nearest_list
+            
+            
+    def subgating_edit_polygon_shape(self):
+        
+        print("subgating_edit_polygon_shape activate")
+        if self.subgating_stop_edit_trigger == True:
+            self.subgating_polygon_triggering()
+            self.subgating_stop_edit_trigger = False
+            self.subgating_polygon_temp = []
+#             self.polygon_temp = []
+#             self.subgating_polygon_temp = self.subgating_polygon_lines
+        else:
+        
+                
+            self.subgating_stop_edit_trigger = True
+            
+            for ii in range(len(self.subgating_polygon_lines)):
+                for i in range(len(self.subgating_polygon_lines[ii])):
+                    self.subgating_graphWidget.removeItem(self.subgating_polygon_lines[ii][i])     
+                    
+            for ii in range(len(self.subgating_polygon_lines)-1):
+                for i in range(1,len(self.subgating_polygon_lines[ii])-1):
+                    list_x = [self.subgating_polygon_for_edit[ii][i][0],self.subgating_polygon_for_edit[ii][i-1][0]]
+                    list_y = [self.subgating_polygon_for_edit[ii][i][1],self.subgating_polygon_for_edit[ii][i-1][1]]
+                    self.subgating_polygon_lines[ii][i] = self.subgating_graphWidget.plot(list_x, 
+                                                                      list_y,
+                                                                      pen=pg.mkPen(color=('r'), 
+                                                                                   width=5, 
+                                                                                   style=QtCore.Qt.DashLine)) 
+
+            for ii in range(len(self.subgating_polygon_lines)-1):
+                list_x = [self.subgating_polygon_for_edit[ii][0][0],self.subgating_polygon_for_edit[ii][-1][0]]
+                list_y = [self.subgating_polygon_for_edit[ii][0][1],self.subgating_polygon_for_edit[ii][-1][1]]                    
+                self.subgating_polygon_lines[ii][-1] = self.subgating_graphWidget.plot(list_x, list_y,
+                                                                  pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)) 
+
+                
+                    
+            for i in range(len(self.subgating_polygon_for_edit)-1):
+                path = mpltPath.Path(self.subgating_polygon_for_edit[i])
+                self.subgating_inside2 = path.contains_points(self.subgating_points)
+                # show the dots have index before the first filter
+                self.subgating_points_inside = list(compress(self.points_inside_square, self.subgating_inside2))
+                self.subgating_points_inside_list[i] = list(compress(self.points_inside_square, self.subgating_inside2))
+
+                
+
+            arr = []
+            for i in self.subgating_points_inside_list:
+                for ii in i:
+                    arr.append(ii)
+            # remove duplicate points
+            rem_duplicate_func=lambda arr:set(arr) 
+            self.subgating_points_inside = list(rem_duplicate_func(arr))
+
+            points_inside = 'Inside: ' + str(len(self.subgating_points_inside))
+            self.subgating_polygon_inside_label_29.setText(points_inside)
+     
+            
+            for ch in range(len(self.working_data)):
+                self.final_subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.subgating_points_inside]
+
     def edit_polygon_shape(self):
         
         print("edit_polygon_shape activate")
@@ -3978,13 +4206,41 @@ class Ui_MainWindow(object):
             self.stop_edit_trigger = False
         else:
             self.stop_edit_trigger = True
-            path = mpltPath.Path(self.polygon_for_edit[self.nearest_list])
-            self.inside2 = path.contains_points(self.points)
-
-            # show the dots have index before the first filter
-            self.points_inside = list(compress(self.points_inside_square, self.inside2))
             
-            self.points_inside_list[self.nearest_list] = list(compress(self.points_inside_square, self.inside2))
+            
+            
+            for ii in range(len(self.polygon_lines)):
+                for i in range(len(self.polygon_lines[ii])):
+                    self.graphWidget.removeItem(self.polygon_lines[ii][i])     
+                    
+            for ii in range(len(self.polygon_lines)-1):
+                for i in range(1,len(self.polygon_lines[ii])-1):
+                    list_x = [self.polygon_for_edit[ii][i][0],self.polygon_for_edit[ii][i-1][0]]
+                    list_y = [self.polygon_for_edit[ii][i][1],self.polygon_for_edit[ii][i-1][1]]
+                    self.polygon_lines[ii][i] = self.graphWidget.plot(list_x, list_y,
+                                                                      pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)) 
+                    
+            for ii in range(len(self.polygon_lines)-1):
+                list_x = [self.polygon_for_edit[ii][0][0],self.polygon_for_edit[ii][-1][0]]
+                list_y = [self.polygon_for_edit[ii][0][1],self.polygon_for_edit[ii][-1][1]]                    
+                self.polygon_lines[ii][-1] = self.graphWidget.plot(list_x, list_y,
+                                                                  pen=pg.mkPen(color=('r'), width=5, style=QtCore.Qt.DashLine)) 
+
+
+                    
+            for i in range(len(self.polygon_for_edit)-1):
+                path = mpltPath.Path(self.polygon_for_edit[i])
+                self.inside2 = path.contains_points(self.points)
+                self.points_inside = list(compress(self.points_inside_square, self.inside2))
+                self.points_inside_list[i] = list(compress(self.points_inside_square, self.inside2))
+                
+#                 path = mpltPath.Path(self.polygon_for_edit[self.nearest_list])
+#                 self.inside2 = path.contains_points(self.points)
+                
+            # show the dots have index before the first filter
+#             self.points_inside = list(compress(self.points_inside_square, self.inside2))
+            
+#             self.points_inside_list[self.nearest_list] = list(compress(self.points_inside_square, self.inside2))
 
             arr = []
             for i in self.points_inside_list:
@@ -4927,7 +5183,9 @@ class Ui_MainWindow(object):
                 self.graphWidget_width_scatter.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
                                       symbolSize=5, symbolBrush=(red, blue, green))
  
+
             self.lr_peak_width_plot()    
+
             # threshold
 #             self.thresholdUpdated_2() 
 
@@ -4953,6 +5211,8 @@ class Ui_MainWindow(object):
         
         self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
         self.lr_y_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
+        
+
     
         
     def lr_peak_width_change(self):
@@ -4969,7 +5229,8 @@ class Ui_MainWindow(object):
         
 #         self.filter_width_table()
         self.recalculate_peak_dataset = True
-        
+    
+
     def filter_width_table(self):
                 ## x-axis
         width_data = self.peak_width_working_data[self.comboBox_5.currentIndex()]
@@ -5864,7 +6125,7 @@ class Ui_MainWindow(object):
                                          _translate("MainWindow", "Peak Width/Number Subgating"))
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
-                                         _translate("MainWindow", "Report"))
+                                         _translate("MainWindow", "Log"))
         self.label_54.setText(_translate("MainWindow", "Channels"))
         self.pushButton_saveplot_2.setText(_translate("MainWindow", "Save Plot"))
         self.label_59.setText(_translate("MainWindow", "Peak Width Threshold"))
@@ -5881,6 +6142,8 @@ class Ui_MainWindow(object):
     def pressed(self):
         print('pressed')
         
+
+        
         # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         self.main_file_select = self.file_list_view.currentRow()
         self.ch1_checkbox = self.checkbox_ch1.isChecked()
@@ -5891,6 +6154,7 @@ class Ui_MainWindow(object):
         self.ch23_checkbox = self.checkbox_ch23.isChecked()
         self.all_checkbox = self.checkBox_7.isChecked()
 
+        
 
             
         self.histo_channel = self.listView_channels.currentRow()
@@ -6186,10 +6450,18 @@ class Ui_MainWindow(object):
             self.file_list_view.addItem(f)
             self.comboBox_option1.addItem(f)
             self.comboBox_option2.addItem(f)
+            
+            # record change in the log
+            self.textbox = self.textbox + "\n" + "open file:" + str(f)
+            self.textEdit.setPlainText(self.textbox)   
+            
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
+
+
+        
     def peak_num_comp(self, number_of_peak, mode, num_in):
         """function to do comparison for peak number filter"""
         if mode == 0:
