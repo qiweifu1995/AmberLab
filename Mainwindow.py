@@ -34,6 +34,8 @@ import concurrent.futures
 from multiprocessing import freeze_support
 from math import sqrt
 
+import pickle
+
 class OtherWindow(QWidget):
     def __init__(self,parent = None):
         super().__init__()
@@ -160,45 +162,47 @@ class Ui_MainWindow(object):
         self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_3.setObjectName("line_3")
         self.layout_vertical_filecontrol.addWidget(self.line_3)
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_2.setObjectName("label_2")
-        self.layout_vertical_filecontrol.addWidget(self.label_2)
-        self.listView = QtWidgets.QListView(self.centralwidget)
-        self.listView.setObjectName("listView")
-        self.layout_vertical_filecontrol.addWidget(self.listView)
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.button_copy = QtWidgets.QPushButton(self.centralwidget)
-        self.button_copy.setMinimumSize(QtCore.QSize(50, 0))
-        self.button_copy.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.button_copy.setObjectName("button_copy")
-        self.horizontalLayout.addWidget(self.button_copy)
-        self.button_paste = QtWidgets.QPushButton(self.centralwidget)
-        self.button_paste.setMinimumSize(QtCore.QSize(50, 0))
-        self.button_paste.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.button_paste.setObjectName("button_paste")
-        self.horizontalLayout.addWidget(self.button_paste)
-        self.layout_vertical_filecontrol.addLayout(self.horizontalLayout)
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.button_screenshot = QtWidgets.QPushButton(self.centralwidget)
-        self.button_screenshot.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.button_screenshot.setObjectName("button_screenshot")
-        self.horizontalLayout_2.addWidget(self.button_screenshot)
-        self.layout_vertical_filecontrol.addLayout(self.horizontalLayout_2)
+        
+#         self.label_2 = QtWidgets.QLabel(self.centralwidget)
+#         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+#         self.label_2.setObjectName("label_2")
+#         self.layout_vertical_filecontrol.addWidget(self.label_2)
+#         self.listView = QtWidgets.QListView(self.centralwidget)
+#         self.listView.setObjectName("listView")
+#         self.layout_vertical_filecontrol.addWidget(self.listView)
+#         self.horizontalLayout = QtWidgets.QHBoxLayout()
+#         self.horizontalLayout.setObjectName("horizontalLayout")
+#         self.button_copy = QtWidgets.QPushButton(self.centralwidget)
+#         self.button_copy.setMinimumSize(QtCore.QSize(50, 0))
+#         self.button_copy.setMaximumSize(QtCore.QSize(80, 16777215))
+#         self.button_copy.setObjectName("button_copy")
+#         self.horizontalLayout.addWidget(self.button_copy)
+#         self.button_paste = QtWidgets.QPushButton(self.centralwidget)
+#         self.button_paste.setMinimumSize(QtCore.QSize(50, 0))
+#         self.button_paste.setMaximumSize(QtCore.QSize(80, 16777215))
+#         self.button_paste.setObjectName("button_paste")
+#         self.horizontalLayout.addWidget(self.button_paste)
+#         self.layout_vertical_filecontrol.addLayout(self.horizontalLayout)
+#         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+#         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+#         self.button_screenshot = QtWidgets.QPushButton(self.centralwidget)
+#         self.button_screenshot.setMaximumSize(QtCore.QSize(100, 16777215))
+#         self.button_screenshot.setObjectName("button_screenshot")
+#         self.horizontalLayout_2.addWidget(self.button_screenshot)      
+#         self.layout_vertical_filecontrol.addLayout(self.horizontalLayout_2)
+
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setMinimumSize(QtCore.QSize(50, 0))
-        self.pushButton_2.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout_3.addWidget(self.pushButton_2)
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setMinimumSize(QtCore.QSize(50, 0))
-        self.pushButton.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout_3.addWidget(self.pushButton)
+#         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+#         self.pushButton_2.setMinimumSize(QtCore.QSize(50, 0))
+#         self.pushButton_2.setMaximumSize(QtCore.QSize(80, 16777215))
+#         self.pushButton_2.setObjectName("pushButton_2")
+#         self.horizontalLayout_3.addWidget(self.pushButton_2)
+#         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+#         self.pushButton.setMinimumSize(QtCore.QSize(50, 0))
+#         self.pushButton.setMaximumSize(QtCore.QSize(80, 16777215))
+#         self.pushButton.setObjectName("pushButton")
+#         self.horizontalLayout_3.addWidget(self.pushButton)
         self.layout_vertical_filecontrol.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_4.addLayout(self.layout_vertical_filecontrol)
         self.line = QtWidgets.QFrame(self.centralwidget)
@@ -1340,7 +1344,7 @@ class Ui_MainWindow(object):
 
 
         # may fix a potential bug, leave it here for now
-        self.graphWidget_width_scatter = PlotWidget(title='I0-Normalised reflectivity')
+        self.graphWidget_width_scatter = PlotWidget(title=' ')
     
 
                
@@ -1357,12 +1361,13 @@ class Ui_MainWindow(object):
         self.gridLayout_15.addWidget(self.graphWidget_width_scatter, 0, 2, 1, 1)
         
 
-        self.graphWidget_width_scatter.setTitle("test scatter plot", color="w", size="30pt")
-        styles = {"color": "r", "font-size": "20px"}
+#         self.graphWidget_width_scatter.setTitle("test scatter plot", color="w", size="30pt")
+#         styles = {"color": "r", "font-size": "20px"}
         self.graphWidget_width_scatter.setBackground('w')
 
         self.graphWidget_width_scatter.setLabel('left', 'Green', **styles)
         self.graphWidget_width_scatter.setLabel('bottom', 'Far Red', **styles)
+#         self.graphWidget_width_scatter.setTitle("Your Title Here", color="b", size="10pt")
         
  
         self.lr_x_axis = pg.LinearRegionItem([1,1])
@@ -2332,7 +2337,7 @@ class Ui_MainWindow(object):
         self.subgating_verticalLayout_9.addWidget(self.subgating_label_36)
         self.subgating_tableView_scatterquadrants = QtWidgets.QTableWidget(self.subgating_subtab_scatter)
         self.subgating_tableView_scatterquadrants.setObjectName("subgating_tableView_scatterquadrants")
-        self.subgating_tableView_scatterquadrants.setMinimumSize(QtCore.QSize(500, 100))
+        self.subgating_tableView_scatterquadrants.setMinimumSize(QtCore.QSize(20, 20))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -2341,7 +2346,14 @@ class Ui_MainWindow(object):
         
         self.subgating_verticalLayout_9.addWidget(self.subgating_tableView_scatterquadrants)
         
-        
+                ### Quadrants table
+        # set row count
+        self.subgating_tableView_scatterquadrants.setRowCount(1)
+        # set column count
+        self.subgating_tableView_scatterquadrants.setColumnCount(7)
+        self.subgating_tableView_scatterquadrants.setHorizontalHeaderLabels(('Count', '% Total Peaks', '% Total Droplets', 'X Single Peak %',
+                                                                   'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
+
 #         self.subgating_label_37 = QtWidgets.QLabel(self.subgating_subtab_scatter)
 #         font = QtGui.QFont()
 #         font.setPointSize(10)
@@ -3297,12 +3309,28 @@ class Ui_MainWindow(object):
         self.actionClose.setObjectName("actionClose")
         self.menuFiles.addAction(self.actionImport)
         self.menuFiles.addAction(self.actionAdd_New)
+        
+
+        self.actionAdd_Save = QtWidgets.QAction(MainWindow)
+        self.actionAdd_Save.setObjectName("actionAdd_Save")
+        self.actionAdd_Load = QtWidgets.QAction(MainWindow)
+        self.actionAdd_Load.setObjectName("actionAdd_Load")
+        
+        self.menuFiles.addAction(self.actionAdd_Save)
+        self.menuFiles.addAction(self.actionAdd_Load)
+
+        
+#         self.menuFiles.addAction(self.Save)
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
 
         # list of all connected functions
         self.actionImport.triggered.connect(self.openfolder)
         self.actionAdd_New.triggered.connect(self.add)
+        self.actionAdd_Save.triggered.connect(self.save)
+        self.actionAdd_Load.triggered.connect(self.load)
+        
+        
         self.button_update.clicked.connect(self.pressed)
         self.button_update_2.clicked.connect(self.filter_width_table)
         self.pushButton_5.clicked.connect(self.reset_linear_plot)
@@ -3484,7 +3512,7 @@ class Ui_MainWindow(object):
         self.file_list_view.currentItemChanged.connect(lambda:self.textbox_trigger(change = "loading file changed to ", 
                                                                            afterchange = self.file_list_view.currentItem().text()))
 
-        
+
     # lineedit trigger (editingFinished or textChanged)
         self.lineEdit_gatevoltage_2.textChanged.connect(lambda:self.textbox_trigger(change = "1st filter histogram Min Width threshold changed to ", 
                                                                            afterchange = self.lineEdit_gatevoltage_2.text()))  
@@ -3492,7 +3520,7 @@ class Ui_MainWindow(object):
                                                                            afterchange = self.lineEdit_gatevoltage_4.text()))   
         
         self.lineEdit_gatevoltagemaximum.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold voltage maximum changed to ", 
-                                                                           afterchange = self.lineEdit_gatevoltagmaximum.text())) 
+                                                                           afterchange = self.lineEdit_gatevoltagemaximum.text())) 
         self.lineEdit_gatevoltageminimum.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold voltage minimum change to ", 
                                                                            afterchange = self.lineEdit_gatevoltageminimum.text())) 
         self.lineEdit_increments.textChanged.connect(lambda:self.textbox_trigger(change = "Sweep gating threshold increments changed to ", 
@@ -3544,15 +3572,31 @@ class Ui_MainWindow(object):
                                                                            afterchange = self.lineEdit_scatteryvoltage.text()))
         
         
+        
+
+        self.file_list_view.itemChanged.connect(lambda:self.chart_title_change(change = self.file_list_view.currentItem().text()))
+
+        self.load = False
+
+    def chart_title_change(self, change):
+        if len(str(change)) > 30:
+            change = str(change)[0:30]
+            
+        self.graphWidget.setTitle(str(change), color="b", size="10pt")
+        self.graphWidget_width_scatter.setTitle(str(change), color="b", size="10pt")
+        self.widget_28.setTitle(str(change), color="b", size="10pt")
+        self.histogram_graphWidget_3.setTitle(str(change), color="b", size="10pt")
+        self.histogram_graphWidget.setTitle(str(change), color="b", size="10pt")
+        self.subgating_graphWidget.setTitle(str(change), color="b", size="10pt")
+        self.widget_29.setTitle(str(change), color="b", size="10pt")
+        
+        
+#         = PlotWidget(self.tab_gating)
+
     def textbox_trigger(self,change, afterchange):
         # record change in the log
         self.textbox = self.textbox + "\n" + str(change) +  str(afterchange)
-#         self.textbox = self.textbox + "\n" + "ch2_checkbox: " + str(self.ch2_checkbox) 
-#         self.textbox = self.textbox + "\n" + "ch3_checkbox: " + str(self.ch3_checkbox) 
-#         self.textbox = self.textbox + "\n" + "ch12_checkbox: " + str(self.ch12_checkbox) 
-#         self.textbox = self.textbox + "\n" + "ch13_checkbox: " + str(self.ch13_checkbox) 
-#         self.textbox = self.textbox + "\n" + "ch23_checkbox: " + str(self.ch23_checkbox) 
-#         self.textbox = self.textbox + "\n" + "chall_checkbox: " + str(self.all_checkbox) 
+
         
         self.textEdit.setPlainText(self.textbox)   
         # done
@@ -3589,20 +3633,11 @@ class Ui_MainWindow(object):
                                              self.subgating_preselect_comboBox.currentText(), 
                                              self.subgating_preselect_comboBox_2.currentText(),
                                              self.textbox)
-#         # record change in the log
-#         self.textEdit.setPlainText(self.textbox)  
-#         # done
 
         print("subgating_plot_update",subgating_plot_update)
         print("pressed_function_redo",pressed_function_redo)
         if subgating_plot_update or pressed_function_redo:
-    #             try:
-    #                 path = mpltPath.Path(self.polygon)
-    #                 self.inside2 = path.contains_points(self.points)
-    #                             # show the dots have index before the first filter
-    #                 self.points_inside.extend(list(compress(self.points_inside_square, self.inside2)))
-    #             except:
-    #                 print("points extracted")
+
 
             self.lineEdit_38.setText(str(5)) 
 
@@ -3637,6 +3672,7 @@ class Ui_MainWindow(object):
                 self.subgating_Ch1_channel0 = [ data_in_subgating_x[i] for i in self.points_inside]
                 self.subgating_Ch1_channel1 = [ data_in_subgating_y[i] for i in self.points_inside]
 
+                
                 for ch in range(len(self.working_data)):
                     self.subgating_sweep_data[ch] = [self.working_data[ch][i] for i in self.points_inside]
 
@@ -3716,12 +3752,56 @@ class Ui_MainWindow(object):
                     self.subgating_graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
                                           symbolSize=5, symbolBrush=(red, blue, green))
                     self.subgating_graphWidget.autoRange()
+                    
+                # fill quadrant table
+                try:
+                    droplets = float(self.lineEdit_totaldroplets.text())
+                    totalpercent1 = round(len(self.Ch1_channel0) / droplets * 100, 2)
+                except:
+                    totalpercent1 = 0
+
+                view1 = str(round(100 * len(self.points_inside) / len(self.Ch1_channel0), 2))
+                single_peak_count_channel0 = 0
+                multi_peak_count_channel0 = 0
+                single_peak_count_channel1 = 0
+                multi_peak_count_channel1 = 0
+                
+                print("self.points_inside",self.points_inside)
+                print('self.Ch1_channel0_peak_num',self.Ch1_channel0_peak_num)
+                
+
+                a = [x in self.points_inside for x in self.points_inside_square]
+                print(a)
+                for i in range(len(a)):
+                    if a[i]:
+                        if self.Ch1_channel0_peak_num[i] == 1:
+                            single_peak_count_channel0 += 1
+                        elif self.Ch1_channel0_peak_num[i] > 1:
+                            multi_peak_count_channel0 += 1
+                        if self.Ch1_channel1_peak_num[i] == 1:
+                            single_peak_count_channel1 += 1
+                        elif self.Ch1_channel1_peak_num[i] > 1:
+                            multi_peak_count_channel1 += 1
+                        
+                x_single_1 = str(round(100 * single_peak_count_channel0 / len(self.points_inside), 2))
+                y_single_1 = str(round(100 * single_peak_count_channel1 / len(self.points_inside), 2))
+                x_multi_1 = str(round(100 * multi_peak_count_channel0 / len(self.points_inside), 2))
+                y_multi_1 = str(round(100 * multi_peak_count_channel1 / len(self.points_inside), 2))
+                
+                self.subgating_tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(len(self.points_inside))))
+                self.subgating_tableView_scatterquadrants.setItem(0, 1, QTableWidgetItem(view1))
+                self.subgating_tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
+                self.subgating_tableView_scatterquadrants.setItem(0, 3, QTableWidgetItem(x_single_1))
+                self.subgating_tableView_scatterquadrants.setItem(0, 4, QTableWidgetItem(y_single_1))
+                self.subgating_tableView_scatterquadrants.setItem(0, 5, QTableWidgetItem(x_multi_1))
+                self.subgating_tableView_scatterquadrants.setItem(0, 6, QTableWidgetItem(y_multi_1))
+
             elif len(self.points_inside) ==0:
                 self.subgating_graphWidget.clear()
                 self.subgating_Ch1_channel0  = []
                 self.subgating_Ch1_channel1 = []
 
-    
+
         
     def polygon_triggering(self):
         if self.polygon_trigger == False:
@@ -5563,7 +5643,8 @@ class Ui_MainWindow(object):
         
         self.quadrant1_list = [False] * len(a)
 
-        
+        print('a',a)
+
         for i in range(len(a)):
             if a[i] and c[i]:
                 self.quadrant1_list[i] = True
@@ -5852,12 +5933,12 @@ class Ui_MainWindow(object):
         
         
         self.button_update.setText(_translate("MainWindow", "Update"))
-        self.label_2.setText(_translate("MainWindow", "Gate Voltages"))
-        self.button_copy.setText(_translate("MainWindow", "Copy"))
-        self.button_paste.setText(_translate("MainWindow", "Paste"))
-        self.button_screenshot.setText(_translate("MainWindow", "Screenshot"))
-        self.pushButton_2.setText(_translate("MainWindow", "Save"))
-        self.pushButton.setText(_translate("MainWindow", "Load"))
+#         self.label_2.setText(_translate("MainWindow", "Gate Voltages"))
+#         self.button_copy.setText(_translate("MainWindow", "Copy"))
+#         self.button_paste.setText(_translate("MainWindow", "Paste"))
+#         self.button_screenshot.setText(_translate("MainWindow", "Screenshot"))
+#         self.pushButton_2.setText(_translate("MainWindow", "Save"))
+#         self.pushButton.setText(_translate("MainWindow", "Load"))
         self.label_8.setText(_translate("MainWindow", "Total Runtime"))
         self.label_3.setText(_translate("MainWindow", "Sampling Rate"))
         self.pushButton_resample.setText(_translate("MainWindow", "Resample"))
@@ -6137,11 +6218,83 @@ class Ui_MainWindow(object):
         self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
+        self.actionAdd_Save.setText(_translate("MainWindow", "Save"))
+        self.actionAdd_Load.setText(_translate("MainWindow", "Load"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     def pressed(self):
         print('pressed')
         
+        
+        # load parameters
+        if self.load ==True:
+            with open(str(self.loadname + ".parameters"), 'rb') as filehandle:
+                # read the data as binary data stream
+                parameters = pickle.load(filehandle)
+
+            # check box
+            self.checkbox_ch1.setChecked(parameters[0])
+            self.checkbox_ch2.setChecked(parameters[1])
+            self.checkbox_ch3.setChecked(parameters[2])
+            self.checkbox_ch12.setChecked(parameters[3])
+            self.checkbox_ch13.setChecked(parameters[4])
+            self.checkbox_ch23.setChecked(parameters[5])
+            self.checkBox_7.setChecked(parameters[6])
+            self.channel_1.setChecked(parameters[7])
+            self.channel_2.setChecked(parameters[8])
+            self.channel_3.setChecked(parameters[9])
+            self.channel_4.setChecked(parameters[10])
+            self.polygon_channel_1.setChecked(parameters[11])
+            self.polygon_channel_2.setChecked(parameters[12])
+            self.polygon_channel_3.setChecked(parameters[13])
+            self.polygon_channel_4.setChecked(parameters[14])
+
+            # combobox 
+            self.comboBox_5.setCurrentIndex(parameters[15]) 
+            self.comboBox_6.setCurrentIndex(parameters[16])
+            self.comboBox_peak_num_1.setCurrentIndex(parameters[17])
+            self.comboBox_peak_num_2.setCurrentIndex(parameters[18])
+            self.comboBox_peak_num_3.setCurrentIndex(parameters[19])
+            self.comboBox_peak_num_4.setCurrentIndex(parameters[20])
+            self.comboBox.setCurrentIndex(parameters[21])
+            self.comboBox_2.setCurrentIndex(parameters[22])
+            self.subgating_comboBox.setCurrentIndex(parameters[23])
+            self.subgating_comboBox_2.setCurrentIndex(parameters[24])
+            self.subgating_preselect_comboBox.setCurrentIndex(parameters[25])
+            self.subgating_preselect_comboBox_2.setCurrentIndex(parameters[26])
+
+            # lineedit 
+            self.lineEdit_gatevoltage_2.setText(parameters[27])
+            self.lineEdit_gatevoltage_4.setText(parameters[28])
+            self.lineEdit_gatevoltagemaximum.setText(parameters[29])
+            self.lineEdit_gatevoltageminimum.setText(parameters[30])
+            self.lineEdit_increments.setText(parameters[31])
+            self.lineEdit_binwidth_2.setText(parameters[32])
+            self.lineEdit_binwidth_3.setText(parameters[33])
+            self.lineEdit_binwidth.setText(parameters[34])
+            self.lineEdit_gatevoltage.setText(parameters[35])
+            self.lineEdit_5.setText(parameters[36])
+            self.lineEdit_6.setText(parameters[37])
+            self.lineEdit_7.setText(parameters[38])
+            self.lineEdit_8.setText(parameters[39])
+            self.lineEdit_9.setText(parameters[40])
+            self.lineEdit_10.setText(parameters[41])
+            self.lineEdit_11.setText(parameters[42])
+            self.lineEdit_12.setText(parameters[43])
+            self.lineEdit_peak_num_1.setText(parameters[44])
+            self.lineEdit_peak_num_2.setText(parameters[45])
+            self.lineEdit_peak_num_3.setText(parameters[46])
+            self.lineEdit_peak_num_4.setText(parameters[47])
+            self.lineEdit_scatterxvoltage.setText(parameters[48])
+            self.lineEdit_scatteryvoltage.setText(parameters[49])
+        
+        
+
+        
+        
+        
+        self.chart_title_change(change = self.file_list_view.currentItem().text())
+
 
         
         # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
@@ -6340,7 +6493,7 @@ class Ui_MainWindow(object):
             
         self.data_updated = False
                 
-        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis:
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis and not self.load:
             print("--------------------------------------------------------not reset")
             self.tab_widgets_main.currentIndex
             
@@ -6365,14 +6518,21 @@ class Ui_MainWindow(object):
 
         else:
             print("--------------------------------------------------------reset")
-            a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, self.chunksize,
-                                                 0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, stats.ch13_hit,
-                                                  stats.ch23_hit, stats.total_sorted)
-            
-
+            if self.load == False:
+                a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, self.chunksize,
+                                                     0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, stats.ch13_hit,
+                                                      stats.ch23_hit, stats.total_sorted)
+                self.save_a = a
+            else:
+                # load
+                with open(self.loadname, 'rb') as filehandle:
+                    self.save_a = pickle.load(filehandle) 
+                a = self.save_a
+                self.load = False
+                
             print("data extration complete, drawing....")
-            
             self.analog.update(a.analog_file)
+            
             
             self.update_working_data()
             if self.data_updated == True:
@@ -6459,8 +6619,66 @@ class Ui_MainWindow(object):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
+    def save(self):
+        
+        name,_ = QtGui.QFileDialog.getSaveFileName(self.mainwindow, 'Save File')
 
+        with open(name.split("/")[-1], 'wb') as filehandle:
+            pickle.dump(self.save_a, filehandle)
 
+        parameters = [self.checkbox_ch1.isChecked(), self.checkbox_ch2.isChecked(), self.checkbox_ch3.isChecked(),
+                     self.checkbox_ch12.isChecked(), self.checkbox_ch13.isChecked(), self.checkbox_ch23.isChecked(),
+                     self.checkBox_7.isChecked(), self.channel_1.isChecked(), self.channel_2.isChecked(), 
+                      self.channel_3.isChecked(), 
+                     self.channel_4.isChecked(), self.polygon_channel_1.isChecked(), self.polygon_channel_2.isChecked(),
+                     self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
+                      self.comboBox_5.currentIndex(),
+                    self.comboBox_6.currentIndex(),
+                    self.comboBox_peak_num_1.currentIndex(),
+                    self.comboBox_peak_num_2.currentIndex(),
+                    self.comboBox_peak_num_3.currentIndex(),
+                    self.comboBox_peak_num_4.currentIndex(),
+                    self.comboBox.currentIndex(),
+                    self.comboBox_2.currentIndex(),
+                    self.subgating_comboBox.currentIndex(),
+                    self.subgating_comboBox_2.currentIndex(),
+                    self.subgating_preselect_comboBox.currentIndex(),
+                    self.subgating_preselect_comboBox_2.currentIndex(),
+                    self.lineEdit_gatevoltage_2.text(),
+                    self.lineEdit_gatevoltage_4.text(),
+                    self.lineEdit_gatevoltagemaximum.text(),
+                    self.lineEdit_gatevoltageminimum.text(),
+                    self.lineEdit_increments.text(),
+                    self.lineEdit_binwidth_2.text(),
+                    self.lineEdit_binwidth_3.text(),
+                    self.lineEdit_binwidth.text(),
+                    self.lineEdit_gatevoltage.text(),
+                    self.lineEdit_5.text(),
+                    self.lineEdit_6.text(),
+                    self.lineEdit_7.text(),
+                    self.lineEdit_8.text(),
+                    self.lineEdit_9.text(),
+                    self.lineEdit_10.text(),
+                    self.lineEdit_11.text(),
+                    self.lineEdit_12.text(),
+                    self.lineEdit_peak_num_1.text(),
+                    self.lineEdit_peak_num_2.text(),
+                    self.lineEdit_peak_num_3.text(),
+                    self.lineEdit_peak_num_4.text(),
+                    self.lineEdit_scatterxvoltage.text(),
+                    self.lineEdit_scatteryvoltage.text()]
+    
+        
+        with open(str(name.split("/")[-1] + ".parameters"), 'wb') as filehandle:
+            pickle.dump(parameters, filehandle)
+            
+    def load(self):
+        name,_= QFileDialog.getOpenFileNames(self.mainwindow, 'Open File')
+        if name != []:
+            self.load = True
+            self.loadname = name[0].split("/")[-1]
+            self.pressed()
+    
         
     def peak_num_comp(self, number_of_peak, mode, num_in):
         """function to do comparison for peak number filter"""
