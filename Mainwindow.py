@@ -94,7 +94,7 @@ class window_filter(QWidget):
         if self.tree_index != (0,):
             parent_index = self.tree_index[1:]
             self.quadrant1_list_or_polygon = ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
-            
+            print('self.quadrant1_list_or_polygon',self.quadrant1_list_or_polygon)
         ### layout setup
         outter_layout = QtWidgets.QHBoxLayout()
 #         layout = QVBoxLayout()
@@ -320,142 +320,69 @@ class window_filter(QWidget):
                                      
     def draw_graphwidget(self):
 
-        if self.comboBox_3.currentIndex() == 0:
-            if self.comboBox_4.currentIndex() == 0:
-                points_inside_square = ui.width_index0
-            elif self.comboBox_4.currentIndex() == 1:
-                points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index1)))
-            elif self.comboBox_4.currentIndex() == 2:
-                points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index2)))
-            elif self.comboBox_4.currentIndex() == 3:
-                points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index3)))                
-            
-
-
-
-        elif self.comboBox_3.currentIndex() == 1:
-            if self.comboBox_4.currentIndex() == 0:
-                points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index0)))
-            elif self.comboBox_4.currentIndex() == 1:
-                points_inside_square = ui.width_index1
-            elif self.comboBox_4.currentIndex() == 2:
-                points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index2)))
-            elif self.comboBox_4.currentIndex() == 3:
-                points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index3)))
-
-
-
-        elif self.comboBox_3.currentIndex() == 2:
-            if self.comboBox_4.currentIndex() == 0:
-                points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index0)))
-            elif self.comboBox_4.currentIndex() == 1:
-                points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index1)))
-            elif self.comboBox_4.currentIndex() == 2:
-                points_inside_square = ui.width_index2
-            elif self.comboBox_4.currentIndex() == 3:
-                points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index3)))
-
-
-
-        elif self.comboBox_3.currentIndex() == 3:
-            if self.comboBox_4.currentIndex() == 0:
-                points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index0)))
-            elif self.comboBox_4.currentIndex() == 1:
-                points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index1)))
-            elif self.comboBox_4.currentIndex() == 2:
-                points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index2)))
-            elif self.comboBox_4.currentIndex() == 3:
-                points_inside_square = ui.width_index3
-                
-                
-#         if self.checkbox3.isChecked():
-#             x_axis_channel = 0
-#             x_axis_name = 'Green'
-#             if self.checkbox_r3.isChecked():
-#                 y_axis_channel = 0
-#                 y_axis_name = 'Green'
+#         if self.comboBox_3.currentIndex() == 0:
+#             if self.comboBox_4.currentIndex() == 0:
 #                 points_inside_square = ui.width_index0
-#             elif self.checkbox_r4.isChecked():
-#                 y_axis_channel = 1
-#                 y_axis_name = 'Far Red'
+#             elif self.comboBox_4.currentIndex() == 1:
 #                 points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index1)))
-#             elif self.checkbox_r5.isChecked():
-#                 y_axis_channel = 2
-#                 y_axis_name = 'Ultra Violet'
+#             elif self.comboBox_4.currentIndex() == 2:
 #                 points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index2)))
-#             elif self.checkbox_r6.isChecked():
-#                 y_axis_channel = 3
-#                 y_axis_name = 'Orange'
+#             elif self.comboBox_4.currentIndex() == 3:
 #                 points_inside_square = list(set(ui.width_index0).intersection(set(ui.width_index3)))                
             
 
-#         elif self.checkbox4.isChecked():
-#             x_axis_channel = 1
-#             x_axis_name = 'Far Red'
-#             if self.checkbox_r3.isChecked():
-#                 y_axis_channel = 0
-#                 y_axis_name = 'Green'
+
+
+#         elif self.comboBox_3.currentIndex() == 1:
+#             if self.comboBox_4.currentIndex() == 0:
 #                 points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index0)))
-#             elif self.checkbox_r4.isChecked():
-#                 y_axis_channel = 1
-#                 y_axis_name = 'Far Red'
+#             elif self.comboBox_4.currentIndex() == 1:
 #                 points_inside_square = ui.width_index1
-#             elif self.checkbox_r5.isChecked():
-#                 y_axis_channel = 2
-#                 y_axis_name = 'Ultra Violet'
+#             elif self.comboBox_4.currentIndex() == 2:
 #                 points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index2)))
-#             elif self.checkbox_r6.isChecked():
-#                 y_axis_channel = 3
-#                 y_axis_name = 'Orange'
+#             elif self.comboBox_4.currentIndex() == 3:
 #                 points_inside_square = list(set(ui.width_index1).intersection(set(ui.width_index3)))
 
 
-#         elif self.checkbox5.isChecked():
-#             x_axis_channel = 2
-#             x_axis_name = 'Ultra Violet'
-#             if self.checkbox_r3.isChecked():
-#                 y_axis_channel = 0
-#                 y_axis_name = 'Green'
+
+#         elif self.comboBox_3.currentIndex() == 2:
+#             if self.comboBox_4.currentIndex() == 0:
 #                 points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index0)))
-#             elif self.checkbox_r4.isChecked():
-#                 y_axis_channel = 1
-#                 y_axis_name = 'Far Red'
+#             elif self.comboBox_4.currentIndex() == 1:
 #                 points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index1)))
-#             elif self.checkbox_r5.isChecked():
-#                 y_axis_channel = 2
-#                 y_axis_name = 'Ultra Violet'
+#             elif self.comboBox_4.currentIndex() == 2:
 #                 points_inside_square = ui.width_index2
-#             elif self.checkbox_r6.isChecked():
-#                 y_axis_channel = 3
-#                 y_axis_name = 'Orange'
+#             elif self.comboBox_4.currentIndex() == 3:
 #                 points_inside_square = list(set(ui.width_index2).intersection(set(ui.width_index3)))
 
-#         elif self.checkbox6.isChecked():
-#             x_axis_channel = 3
-#             x_axis_name = 'Orange'
-#             if self.checkbox_r3.isChecked():
-#                 y_axis_channel = 0
-#                 y_axis_name = 'Green'
+
+
+#         elif self.comboBox_3.currentIndex() == 3:
+#             if self.comboBox_4.currentIndex() == 0:
 #                 points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index0)))
-#             elif self.checkbox_r4.isChecked():
-#                 y_axis_channel = 1
-#                 y_axis_name = 'Far Red'
+#             elif self.comboBox_4.currentIndex() == 1:
 #                 points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index1)))
-#             elif self.checkbox_r5.isChecked():
-#                 y_axis_channel = 2
-#                 y_axis_name = 'Ultra Violet'
+#             elif self.comboBox_4.currentIndex() == 2:
 #                 points_inside_square = list(set(ui.width_index3).intersection(set(ui.width_index2)))
-#             elif self.checkbox_r6.isChecked():
-#                 y_axis_channel = 3
-#                 y_axis_name = 'Orange'
+#             elif self.comboBox_4.currentIndex() == 3:
 #                 points_inside_square = ui.width_index3
+                
+
 
 # test remove intersection
 #         points_inside_square = list(set(points_inside_square).intersection(set(ui.peak_num_filtered_index)))
-        if self.quadrant1_list_or_polygon != []:
-            points_inside_square = list(compress(points_inside_square, self.quadrant1_list_or_polygon))
-        
+#         if self.quadrant1_list_or_polygon != []:
+#             points_inside_square = list(compress(points_inside_square, self.quadrant1_list_or_polygon))
+#         else:
+#             points_inside_square = ui.width_index3
+            
+        if self.quadrant1_list_or_polygon == []:
+            points_inside_square = ui.width_index0
+        else:
+            points_inside_square = self.quadrant1_list_or_polygon
+            
         self.points_inside_square = points_inside_square
+        
 #         # retrive filtered_working_data from main window
 #         self.filtered_working_data = ui.filtered_working_data
             
@@ -862,7 +789,7 @@ class window_filter(QWidget):
         
     def ok_clicked(self):
         # incase user forgot to click polygon again
-        self.polygon_triggering()
+        
         
         
         if self.polygon_trigger == False:
@@ -873,16 +800,19 @@ class window_filter(QWidget):
             c = (np.array(self.Ch1_channel1) > text_y).tolist()
 
 
-            self.quadrant1_list_or_polygon = [False] * len(a)
+            self.quadrant1_list = [False] * len(a)
 
             for i in range(len(a)):
                 if a[i] and c[i]:
-                    self.quadrant1_list_or_polygon[i] = True
+                    self.quadrant1_list[i] = True
+                    
+            self.quadrant1_list_or_polygon = list(compress(self.points_inside_square, self.quadrant1_list))
         else:
+            # run trigger again incase user forgot to finish the shape
+            self.polygon_triggering()
             # pass polygon value to next window
             self.quadrant1_list_or_polygon = self.points_inside
 
-            
         # use self.tree_index instead ui to prevent potential bugs
 
         find_a_key = False
@@ -908,7 +838,7 @@ class window_filter(QWidget):
         ui.tree_dic[new_index]['tree_standarditem'] = StandardItem('New graph', 12 - len(new_index))
         ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(ui.tree_dic[new_index]['tree_standarditem'])
         ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.quadrant1_list_or_polygon 
-
+        print('self.quadrant1_list_or_polygon',self.quadrant1_list_or_polygon)
         ui.treeView.expandAll()
 
         # reassign tree_index, new window need this index to create child branch
@@ -7462,6 +7392,1036 @@ class Ui_MainWindow(object):
         self.subgating_polygon_inside_label_30.setText(_translate("MainWindow", "Linear Plot Selection"))
         
         self.subgating_label_32.setText(_translate("MainWindow", "Y-Axis"))
+
+        self.subgating_preselect_comboBox_2.setItemText(0, _translate("MainWindow", "Height"))
+        self.subgating_preselect_comboBox_2.setItemText(1, _translate("MainWindow", "Width"))
+
+        
+        self.subgating_comboBox_2.setItemText(0, _translate("MainWindow", "Green"))
+        self.subgating_comboBox_2.setItemText(1, _translate("MainWindow", "Far Red"))
+        self.subgating_comboBox_2.setItemText(2, _translate("MainWindow", "Ultra Violet"))
+        self.subgating_comboBox_2.setItemText(3, _translate("MainWindow", "Orange"))
+        self.subgating_label_29.setText(_translate("MainWindow", "Scatter Plot Axes"))        
+        
+        self.subgating_pushButton_9.setText(_translate("MainWindow", "Polygon"))
+        self.subgating_pushButton_10.setText(_translate("MainWindow", "Clear"))
+        self.subgating_pushButton_12.setText(_translate("MainWindow", "Extract Linear Plot"))
+
+        self.pushButton_12.setText(_translate("MainWindow", "Shape Edit"))
+        self.subgating_pushButton_11.setText(_translate("MainWindow", "Shape Edit"))
+        
+        self.pushButton_11.setText(_translate("MainWindow", "Extract"))
+        
+        self.comboBox_option1.setItemText(0, _translate("MainWindow", "Option 1"))
+        self.comboBox_option2.setItemText(0, _translate("MainWindow", "Option 2"))
+        self.label_41.setText(_translate("MainWindow", "Percentage Low"))
+        self.lineEdit_percentagelow1.setText(_translate("MainWindow", "0"))
+        self.label_43.setText(_translate("MainWindow", "%"))
+        self.label_45.setText(_translate("MainWindow", "Percentage High"))
+        self.lineEdit_percentagehigh1.setText(_translate("MainWindow", "0"))
+        self.label_46.setText(_translate("MainWindow", "%"))
+        self.label_44.setText(_translate("MainWindow", "Percentage Low"))
+        self.lineEdit_percentagelow2.setText(_translate("MainWindow", "0"))
+        self.label_47.setText(_translate("MainWindow", "%"))
+        self.label_42.setText(_translate("MainWindow", "Percentage High"))
+        self.lineEdit_percentagehigh2.setText(_translate("MainWindow", "0"))
+        self.label_48.setText(_translate("MainWindow", "%"))
+        self.lineEdit_binwidth_2.setText(_translate("MainWindow", "0.1"))
+        self.label_56.setText(_translate("MainWindow", "Bin Width"))
+#         self.label_57
+        self.label_55.setText(_translate("MainWindow", "Channels"))
+        self.label_49.setText(_translate("MainWindow", "Gating Thresholds"))
+        self.label_50.setText(_translate("MainWindow", "Gate Voltage Minimum"))
+        self.label_61.setText(_translate("MainWindow", "Increments"))
+        self.lineEdit_increments.setText(_translate("MainWindow", "0"))
+        self.lineEdit_gatevoltagemaximum.setText(_translate("MainWindow", "0.5"))
+        self.lineEdit_gatevoltageminimum.setText(_translate("MainWindow", "0"))
+        self.label_62.setText(_translate("MainWindow", "Gate Voltage Maximum"))
+        self.label_63.setText(_translate("MainWindow", "V"))
+        self.label_64.setText(_translate("MainWindow", "V"))
+        self.label_66.setText(_translate("MainWindow", "V"))
+        self.label_68.setText(_translate("MainWindow", "Axis Limits"))
+        self.lineEdit_sweepxlimits1.setText(_translate("MainWindow", "0,10"))
+        self.label_71.setText(_translate("MainWindow", "Y-Limits"))
+        self.label_69.setText(_translate("MainWindow", "X-Limits"))
+        self.label_70.setText(_translate("MainWindow", "X-Limits"))
+        self.pushButton_relimit2.setText(_translate("MainWindow", "Re-Limit"))
+        self.lineEdit_sweepylimits1.setText(_translate("MainWindow", "0,10"))
+        self.lineEdit_sweepylimits2.setText(_translate("MainWindow", "0,10"))
+        self.pushButton_relimit1.setText(_translate("MainWindow", "Re-Limit"))
+        self.label_72.setText(_translate("MainWindow", "Y-Limits"))
+        self.lineEdit_sweepxlimits2.setText(_translate("MainWindow", "0,10"))
+        self.pushButton_auto1.setText(_translate("MainWindow", "Auto"))
+        self.pushButton_auto2.setText(_translate("MainWindow", "Auto"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.subtab_parameter), _translate("MainWindow", "Parameter"))
+        self.label_39.setText(_translate("MainWindow", "Population 1"))
+        self.label_40.setText(_translate("MainWindow", "Voltage"))
+        self.label_51.setText(_translate("MainWindow", "Counts Above Thresh"))
+        self.label_52.setText(_translate("MainWindow", "Total Events"))
+        self.label_53.setText(_translate("MainWindow", "%"))
+        self.label_65.setText(_translate("MainWindow", "Population 2"))
+        self.label_67.setText(_translate("MainWindow", "Voltage"))
+        self.label_73.setText(_translate("MainWindow", "Counts Above Thresh"))
+        self.label_74.setText(_translate("MainWindow", "Total Events"))
+        self.label_75.setText(_translate("MainWindow", "%"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.subtab_result), 
+                                  _translate("MainWindow", "Result"))
+
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_timelog),
+                                         _translate("MainWindow", "Time Log"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakmax),
+                                         _translate("MainWindow", "Peak Maxes Log"))
+        
+        self.label_82.setText(_translate("MainWindow", "Max Width"))
+        self.label_84.setText(_translate("MainWindow", "Selected/Total"))
+        self.label_85.setText(_translate("MainWindow", "/"))
+        self.button_update_2.setText(_translate("MainWindow", "Quadrants"))
+        self.label_87.setText(_translate("MainWindow", "Min"))
+        self.label_88.setText(_translate("MainWindow", "X-Axis"))
+        self.comboBox_5.setItemText(0, _translate("MainWindow", "Green"))
+        self.comboBox_5.setItemText(1, _translate("MainWindow", "Far Red"))
+        self.comboBox_5.setItemText(2, _translate("MainWindow", "Ultra Violet"))
+        self.comboBox_5.setItemText(3, _translate("MainWindow", "Orange"))
+        self.label_89.setText(_translate("MainWindow", "Y-Axis"))
+        self.comboBox_6.setItemText(0, _translate("MainWindow", "Green"))
+        self.comboBox_6.setItemText(1, _translate("MainWindow", "Far Red"))
+        self.comboBox_6.setItemText(2, _translate("MainWindow", "Ultra Violet"))
+        self.comboBox_6.setItemText(3, _translate("MainWindow", "Orange"))
+        self.label_90.setText(_translate("MainWindow", "Scatter Plot Axes"))
+        self.label_91.setText(_translate("MainWindow", "Max"))
+        self.label_95.setText(_translate("MainWindow", "Voltage Threshold (V)"))
+        self.label_92.setText(_translate("MainWindow", "Green"))
+        self.label_96.setText(_translate("MainWindow", "Far Red"))
+        self.label_97.setText(_translate("MainWindow", "Ultra Vio"))
+        self.label_98.setText(_translate("MainWindow", "Orange"))
+        self.label_93.setText(_translate("MainWindow", "Selected Data"))
+        
+        self.label_num_peak_1.setText(_translate("MainWindow", "Channel"))
+        self.label_num_peak_2.setText(_translate("MainWindow", "Condition"))
+        self.label_num_peak_3.setText(_translate("MainWindow", "# of Peaks"))
+        self.label_num_peak_4.setText(_translate("MainWindow", "Green"))
+        self.label_num_peak_5.setText(_translate("MainWindow", "Red"))
+        self.label_num_peak_6.setText(_translate("MainWindow", "Blue"))
+        self.label_num_peak_7.setText(_translate("MainWindow", "Orange"))
+        self.label_num_peak_title.setText(_translate("MainWindow", "Multi Peaks Gating"))
+        self.comboBox_peak_num_1.setItemText(0, _translate("MainWindow", ">="))
+        self.comboBox_peak_num_1.setItemText(1, _translate("MainWindow", "=="))
+        self.comboBox_peak_num_1.setItemText(2, _translate("MainWindow", "<="))
+        self.comboBox_peak_num_2.setItemText(0, _translate("MainWindow", ">="))
+        self.comboBox_peak_num_2.setItemText(1, _translate("MainWindow", "=="))
+        self.comboBox_peak_num_2.setItemText(2, _translate("MainWindow", "<="))
+        self.comboBox_peak_num_3.setItemText(0, _translate("MainWindow", ">="))
+        self.comboBox_peak_num_3.setItemText(1, _translate("MainWindow", "=="))
+        self.comboBox_peak_num_3.setItemText(2, _translate("MainWindow", "<="))
+        self.comboBox_peak_num_4.setItemText(0, _translate("MainWindow", ">="))
+        self.comboBox_peak_num_4.setItemText(1, _translate("MainWindow", "=="))
+        self.comboBox_peak_num_4.setItemText(2, _translate("MainWindow", "<="))
+        self.lineEdit_peak_num_1.setText("0")
+        self.lineEdit_peak_num_2.setText("0")
+        self.lineEdit_peak_num_3.setText("0")
+        self.lineEdit_peak_num_4.setText("0")
+
+        self.tab_widget_peak_width.setTabText(self.tab_widget_peak_width.indexOf(self.sub_tab_width_scatter), 
+                                              _translate("MainWindow", "Scatter"))
+        self.tab_widget_peak_width.setTabText(self.tab_widget_peak_width.indexOf(self.sub_tab_width_histogram), 
+                                              _translate("MainWindow", "Histogram")) 
+        self.label_271.setText(_translate("MainWindow", "Channel Selection"))
+        
+        self.label_180.setText(_translate("MainWindow", "Start Peak"))
+        self.label_181.setText(_translate("MainWindow", "Channel Selection"))
+        self.label_182.setText(_translate("MainWindow", "End Peak"))
+        self.label_183.setText(_translate("MainWindow", "*Peak difference < 15"))
+        self.label_184.setText(_translate("MainWindow", "Last/Next"))
+        self.label_185.setText(_translate("MainWindow", "Polynomial Order"))
+        self.label_186.setText(_translate("MainWindow", "Smooth Level"))
+        self.label_187.setText(_translate("MainWindow", "Smoothing"))
+        self.label_188.setText(_translate("MainWindow", "Custom Sample Size"))
+        self.polygon_Smooth_enable.setText(_translate("MainWindow", "Enable smooth?"))
+        self.pushButton_6.setText(_translate("MainWindow", "Generate Plot"))
+        self.pushButton_7.setText(_translate("MainWindow", "Next Page"))
+        self.pushButton_8.setText(_translate("MainWindow", "Last Page"))
+        self.polygon_channel_1.setText(_translate("MainWindow", "Channel 1"))
+        self.polygon_channel_2.setText(_translate("MainWindow", "Channel 2"))
+        self.polygon_channel_3.setText(_translate("MainWindow", "Channel 3"))
+        self.polygon_channel_4.setText(_translate("MainWindow", "Channel 4"))
+        self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_4), _translate("MainWindow", "User defined linear graph"))
+                        
+        self.pushButton_9.setText(_translate("MainWindow", "Polygon"))
+        self.pushButton_10.setText(_translate("MainWindow", "Clear"))
+
+        
+        self.label_270.setText(_translate("MainWindow", "Start Peak"))
+        self.label_272.setText(_translate("MainWindow", "End Peak"))
+        self.label_273.setText(_translate("MainWindow", "*Peak difference < 15"))
+        self.label_274.setText(_translate("MainWindow", "Last/Next"))
+        self.label_275.setText(_translate("MainWindow", "Polynomial Order"))
+        self.label_276.setText(_translate("MainWindow", "Smooth Level"))
+        self.label_277.setText(_translate("MainWindow", "Smoothing"))
+        self.label_278.setText(_translate("MainWindow", "Custom Sample Size"))
+        self.Smooth_enable.setText(_translate("MainWindow", "Enable smooth?"))
+        self.pushButton_5.setText(_translate("MainWindow", "Generate Plot"))
+        self.pushButton_3.setText(_translate("MainWindow", "Next Page"))
+        self.pushButton_4.setText(_translate("MainWindow", "Last Page"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_3), _translate("MainWindow", "Raw Data Viewer"))               
+        
+        
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
+                                         _translate("MainWindow", "Peak Width/Number Subgating"))
+        
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
+                                         _translate("MainWindow", "Log"))
+        self.label_54.setText(_translate("MainWindow", "Channels"))
+        self.pushButton_saveplot_2.setText(_translate("MainWindow", "Save Plot"))
+        self.label_59.setText(_translate("MainWindow", "Peak Width Threshold"))
+        self.label_60.setText(_translate("MainWindow", "Min Width"))
+#         self.label_76.setText(_translate("MainWindow", "V"))
+        self.label_77.setText(_translate("MainWindow", "Percentage"))
+        self.label_78.setText(_translate("MainWindow", "%"))
+        self.label_79.setText(_translate("MainWindow", "Bin Width"))
+        self.label_density_adjust1.setText(_translate("MainWindow", "Density Level"))
+        self.label_density_adjust2.setText(_translate("MainWindow", "Density Level"))
+        self.label_density_adjust3.setText(_translate("MainWindow", "Density Level"))
+        
+        self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
+        self.actionImport.setText(_translate("MainWindow", "Import"))
+        self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
+        self.actionAdd_Save.setText(_translate("MainWindow", "Save"))
+        self.actionAdd_Load.setText(_translate("MainWindow", "Load"))
+        self.actionAdd_SaveSingleFile.setText(_translate("MainWindow", "Save Single File"))
+        self.actionAdd_SaveParameters.setText(_translate("MainWindow", "Save Parameters"))
+        self.actionAdd_LoadParameters.setText(_translate("MainWindow", "Load Parameters"))
+        self.actionClose.setText(_translate("MainWindow", "Close"))
+        
+        self.label_filter.setText(_translate("MainWindow", "test"))
+
+    def pressed(self):
+        print('pressed')
+        check0 = time.time()
+        
+        
+        # load parameters
+        if self.load ==True:
+            with open(str(self.loadname), 'rb') as filehandle:
+                # read the data as binary data stream
+                parameters = pickle.load(filehandle)
+
+            # check box
+            self.checkbox_ch1.setChecked(parameters[0])
+            self.checkbox_ch2.setChecked(parameters[1])
+            self.checkbox_ch3.setChecked(parameters[2])
+            self.checkbox_ch12.setChecked(parameters[3])
+            self.checkbox_ch13.setChecked(parameters[4])
+            self.checkbox_ch23.setChecked(parameters[5])
+            self.checkBox_7.setChecked(parameters[6])
+            self.channel_1.setChecked(parameters[7])
+            self.channel_2.setChecked(parameters[8])
+            self.channel_3.setChecked(parameters[9])
+            self.channel_4.setChecked(parameters[10])
+            self.polygon_channel_1.setChecked(parameters[11])
+            self.polygon_channel_2.setChecked(parameters[12])
+            self.polygon_channel_3.setChecked(parameters[13])
+            self.polygon_channel_4.setChecked(parameters[14])
+
+            # combobox 
+            self.comboBox_5.setCurrentIndex(parameters[15]) 
+            self.comboBox_6.setCurrentIndex(parameters[16])
+            self.comboBox_peak_num_1.setCurrentIndex(parameters[17])
+            self.comboBox_peak_num_2.setCurrentIndex(parameters[18])
+            self.comboBox_peak_num_3.setCurrentIndex(parameters[19])
+            self.comboBox_peak_num_4.setCurrentIndex(parameters[20])
+            self.comboBox.setCurrentIndex(parameters[21])
+            self.comboBox_2.setCurrentIndex(parameters[22])
+            self.subgating_comboBox.setCurrentIndex(parameters[23])
+            self.subgating_comboBox_2.setCurrentIndex(parameters[24])
+            self.subgating_preselect_comboBox.setCurrentIndex(parameters[25])
+            self.subgating_preselect_comboBox_2.setCurrentIndex(parameters[26])
+
+            # lineedit 
+            self.lineEdit_gatevoltage_2.setText(parameters[27])
+            self.lineEdit_gatevoltage_4.setText(parameters[28])
+            self.lineEdit_gatevoltagemaximum.setText(parameters[29])
+            self.lineEdit_gatevoltageminimum.setText(parameters[30])
+            self.lineEdit_increments.setText(parameters[31])
+            self.lineEdit_binwidth_2.setText(parameters[32])
+            self.lineEdit_binwidth_3.setText(parameters[33])
+            self.lineEdit_binwidth.setText(parameters[34])
+            self.lineEdit_gatevoltage.setText(parameters[35])
+            self.lineEdit_5.setText(parameters[36])
+            self.lineEdit_6.setText(parameters[37])
+            self.lineEdit_7.setText(parameters[38])
+            self.lineEdit_8.setText(parameters[39])
+            self.lineEdit_9.setText(parameters[40])
+            self.lineEdit_10.setText(parameters[41])
+            self.lineEdit_11.setText(parameters[42])
+            self.lineEdit_12.setText(parameters[43])
+            self.lineEdit_peak_num_1.setText(parameters[44])
+            self.lineEdit_peak_num_2.setText(parameters[45])
+            self.lineEdit_peak_num_3.setText(parameters[46])
+            self.lineEdit_peak_num_4.setText(parameters[47])
+            self.lineEdit_scatterxvoltage.setText(parameters[48])
+            self.lineEdit_scatteryvoltage.setText(parameters[49])
+            self.file_dict_list = parameters[50]
+            list_name = parameters[51]
+            self.save_a = parameters[52]
+            self.checkbox_Droplet_Record.setChecked(parameters[69])
+
+            # reset file list box on left top
+            self.analog = {}
+            self.file_list_view.clear()
+            self.comboBox_option1.clear()
+            self.comboBox_option2.clear()
+
+            for i in range(len(list_name)):
+                f = list_name[i]
+                # for i in range
+                self.file_list_view.addItem(f)
+                self.comboBox_option1.addItem(f)
+                self.comboBox_option2.addItem(f)
+
+                # record change in the log
+                self.textbox = self.textbox + "\n" + "open file:" + str(f)
+                self.textEdit.setPlainText(self.textbox)  
+
+            for i in range(self.file_list_view.count()):
+                item = self.file_list_view.item(i)
+                item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            self.file_list_view.setCurrentRow(0)  
+            
+#             self.thresholdUpdated()
+            try:
+                self.thresholdUpdated_2()
+            except:
+                print("threshold_2 updated")
+        
+        
+        elif self.load_parameters == True:
+            with open(str(self.loadname), 'rb') as filehandle:
+                # read the data as binary data stream
+                parameters = pickle.load(filehandle)
+
+            # check box
+            self.checkbox_ch1.setChecked(parameters[0])
+            self.checkbox_ch2.setChecked(parameters[1])
+            self.checkbox_ch3.setChecked(parameters[2])
+            self.checkbox_ch12.setChecked(parameters[3])
+            self.checkbox_ch13.setChecked(parameters[4])
+            self.checkbox_ch23.setChecked(parameters[5])
+            self.checkBox_7.setChecked(parameters[6])
+            self.channel_1.setChecked(parameters[7])
+            self.channel_2.setChecked(parameters[8])
+            self.channel_3.setChecked(parameters[9])
+            self.channel_4.setChecked(parameters[10])
+            self.polygon_channel_1.setChecked(parameters[11])
+            self.polygon_channel_2.setChecked(parameters[12])
+            self.polygon_channel_3.setChecked(parameters[13])
+            self.polygon_channel_4.setChecked(parameters[14])
+
+            # combobox 
+            self.comboBox_5.setCurrentIndex(parameters[15]) 
+            self.comboBox_6.setCurrentIndex(parameters[16])
+            self.comboBox_peak_num_1.setCurrentIndex(parameters[17])
+            self.comboBox_peak_num_2.setCurrentIndex(parameters[18])
+            self.comboBox_peak_num_3.setCurrentIndex(parameters[19])
+            self.comboBox_peak_num_4.setCurrentIndex(parameters[20])
+            self.comboBox.setCurrentIndex(parameters[21])
+            self.comboBox_2.setCurrentIndex(parameters[22])
+            self.subgating_comboBox.setCurrentIndex(parameters[23])
+            self.subgating_comboBox_2.setCurrentIndex(parameters[24])
+            self.subgating_preselect_comboBox.setCurrentIndex(parameters[25])
+            self.subgating_preselect_comboBox_2.setCurrentIndex(parameters[26])
+
+            # lineedit 
+            self.lineEdit_gatevoltage_2.setText(parameters[27])
+            self.lineEdit_gatevoltage_4.setText(parameters[28])
+            self.lineEdit_gatevoltagemaximum.setText(parameters[29])
+            self.lineEdit_gatevoltageminimum.setText(parameters[30])
+            self.lineEdit_increments.setText(parameters[31])
+            self.lineEdit_binwidth_2.setText(parameters[32])
+            self.lineEdit_binwidth_3.setText(parameters[33])
+            self.lineEdit_binwidth.setText(parameters[34])
+            self.lineEdit_gatevoltage.setText(parameters[35])
+            self.lineEdit_5.setText(parameters[36])
+            self.lineEdit_6.setText(parameters[37])
+            self.lineEdit_7.setText(parameters[38])
+            self.lineEdit_8.setText(parameters[39])
+            self.lineEdit_9.setText(parameters[40])
+            self.lineEdit_10.setText(parameters[41])
+            self.lineEdit_11.setText(parameters[42])
+            self.lineEdit_12.setText(parameters[43])
+            self.lineEdit_peak_num_1.setText(parameters[44])
+            self.lineEdit_peak_num_2.setText(parameters[45])
+            self.lineEdit_peak_num_3.setText(parameters[46])
+            self.lineEdit_peak_num_4.setText(parameters[47])
+            self.lineEdit_scatterxvoltage.setText(parameters[48])
+            self.lineEdit_scatteryvoltage.setText(parameters[49])
+            self.checkbox_Droplet_Record(parameters[50])
+            
+            
+        
+        
+
+        try:
+            self.chart_title_change(change = self.file_list_view.currentItem().text())
+        except:
+            self.file_list_view.setCurrentRow(0)
+            self.chart_title_change(change = self.file_list_view.currentItem().text())     
+        
+        # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
+        self.main_file_select = self.file_list_view.currentRow()
+        self.ch1_checkbox = self.checkbox_ch1.isChecked()
+        self.ch2_checkbox = self.checkbox_ch2.isChecked()
+        self.ch3_checkbox = self.checkbox_ch3.isChecked()
+        self.ch12_checkbox = self.checkbox_ch12.isChecked()
+        self.ch13_checkbox = self.checkbox_ch13.isChecked()
+        self.ch23_checkbox = self.checkbox_ch23.isChecked()
+        self.Droplet_Record_checkbox = self.checkbox_Droplet_Record.isChecked()
+        self.all_checkbox = self.checkBox_7.isChecked()
+
+        
+
+            
+        self.histo_channel = self.listView_channels.currentRow()
+        self.histo_bins = float(self.lineEdit_binwidth.text())
+        self.peak_width_channel = self.listView_channels_3.currentRow()
+        self.peak_width_bins = float(self.lineEdit_binwidth_3.text())
+        self.scatter_channelx = self.comboBox.currentIndex()
+        self.scatter_channely = self.comboBox_2.currentIndex()
+        self.width_scatter_channelx = self.comboBox_5.currentIndex()
+        self.width_scatter_channely = self.comboBox_6.currentIndex()
+        self.peak_num_mode = []
+        self.peak_num_in = []
+        self.peak_num_mode.append(self.comboBox_peak_num_1.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_2.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_3.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_4.currentIndex())
+        self.peak_num_in.append(int(self.lineEdit_peak_num_1.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_2.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_3.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_4.text()))
+
+        self.sweep_channel = self.listView_channels_2.currentRow()
+        if self.comboBox_option1.currentIndex() > 2:
+            self.sweep_file_1 = self.comboBox_option1.currentIndex() - 3
+            self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]
+        else:
+            self.sweep_file_1 = self.comboBox_option1.currentIndex()
+        if self.comboBox_option2.currentIndex() > 2:
+            self.sweep_file_2 = self.comboBox_option2.currentIndex() - 3
+            self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
+        else:
+            self.sweep_file_2 = self.comboBox_option2.currentIndex()
+        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        self.current_file_dict = self.file_dict_list[self.main_file_select]
+
+
+
+        os.chdir(self.current_file_dict["Root Folder"])
+        # summary
+        if self.current_file_dict["Summary"] != "":
+            stats = Helper.Stats(self.current_file_dict["Summary"])
+            self.lineEdit_startingtime.setText(stats.start_time)
+            self.lineEdit_endingtime.setText(stats.end_time)
+            self.lineEdit_runtime.setText(stats.total_runtime)
+            self.lineEdit_totalsorted.setText(stats.total_sorted)
+            self.lineEdit_totallost.setText(stats.total_lost)
+            self.lineEdit_totaldispensed.setText(stats.total_dispensed)
+            self.lineEdit_totaldroplets.setText(stats.total_droplets)
+            self.lineEdit_dispensemissed.setText(stats.dispense_missed)
+            self.lineEdit_ch1hit.setText(stats.ch1_hit)
+            self.lineEdit_ch2hit.setText(stats.ch2_hit)
+            self.lineEdit_ch3hit.setText(stats.ch3_hit)
+            self.lineEdit_ch12hit.setText(stats.ch12_hit)
+            self.lineEdit_ch13hit.setText(stats.ch13_hit)
+            self.lineEdit_ch23hit.setText(stats.ch23_hit)
+
+
+
+        
+        #         start = time.time()
+        if stats.under_sample_factor == "":
+            under_sample = 1
+        else:
+            under_sample = stats.under_sample_factor
+        
+        channel = self.peak_width_channel
+        width_enable = True
+
+        try:
+            self.chunksize = self.chunk_resample
+        except:
+#             self.chunksize = int(1000 / float(under_sample))
+            self.chunksize = 200
+
+        ### Qiwei's extraction code
+        ### Call stats_Ch1 ~ stats_Ch23 to extract
+        #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
+        #         self.analog.update(a.analog_file)
+        #         print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
+        ### End
+
+        ### Qing's extraction code
+        ### call Ch1list ~Ch23list to extract
+
+            
+            
+            
+        try: 
+            if self.reset == True:
+                reset = True
+            else:
+                reset = False
+        except: reset = False
+
+        ### check Voltage threshold(V)  
+        threshold = [self.lineEdit_9.text(),self.lineEdit_10.text(),self.lineEdit_11.text(),self.lineEdit_12.text()]
+        peaks_threshold = []
+        width_threshold = []
+        width_min = [0,0,0,0]
+        width_max = [500,500,500,500]
+
+        if self.current_file_dict["Param"] != "":
+            with open(self.current_file_dict["Param"]) as param_file:
+                stats_reader = csv.reader(param_file, delimiter=",")
+                location = [[0,0],[0,0]]
+                param_holder = []
+                for x, lines in enumerate(stats_reader):
+                    param_holder.append(lines)
+                    for y, field in enumerate(lines):
+                        if field == "Peak Threshold (V)":
+                            location[0] = [x,y]
+                        if field == "BG Threshold (V)":
+                            location[1] = [x, y]
+                try:
+                    for i in range(1,5):
+                        peaks_threshold.append(float(param_holder[location[0][0]+i][location[0][1]]))
+                        width_threshold.append(float(param_holder[location[1][0]+i][location[1][1]]))
+                        print("Peaks Threshold Found: ", peaks_threshold)
+                        print("Width Threshold Found: ", width_threshold)
+                except:
+                    print("Peaks Threshold Not Found")
+        if len(peaks_threshold) == 0:
+            peaks_threshold = [1, 1, 1, 1]
+
+        try:
+            # test if numbers entered in threshold
+            for i in range(4):
+                threshold[i] = float(threshold[i])
+        except:
+            # if not, find in parameter file
+            if len(width_threshold) == 0:
+                threshold = [1, 1, 1, 1]
+            else:
+                threshold = width_threshold
+                
+        self.lineEdit_9.setText(str(threshold[0]))
+        self.lineEdit_10.setText(str(threshold[1]))
+        self.lineEdit_11.setText(str(threshold[2]))
+        self.lineEdit_12.setText(str(threshold[3]))    
+
+        self.width_update, self.reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel,
+                                                                             bins=self.peak_width_bins,
+                                                                             peak_width_threshold=self.lineEdit_gatevoltage_2.text(),
+                                                                             voltage_threshold=threshold)
+
+        ### check end
+        
+        
+        
+        try:
+            self.update = self.ui_state.working_file_update_check(file=self.current_file_dict, chall=self.all_checkbox,
+                                                                  ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                                  ch3=self.ch3_checkbox,
+                                                                  ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                                  ch2_3=self.ch23_checkbox, Droplet_Record=self.Droplet_Record_checkbox,
+                                                                  reset=Ui_MainWindow.reset)
+            print('file',self.main_file_select)
+        except:
+            self.update = self.ui_state.working_file_update_check(file=self.current_file_dict, chall=self.all_checkbox,
+                                                                  ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
+                                                                  ch3=self.ch3_checkbox,
+                                                                  ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
+                                                                  ch2_3=self.ch23_checkbox, Droplet_Record=self.Droplet_Record_checkbox)
+            print('file',self.main_file_select)
+        self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number=int(self.comboBox_5.currentIndex()),
+                                                              y_axis_channel_number=int(self.comboBox_6.currentIndex()),
+                                                              x_axis_channel_min=float(self.lineEdit_5.text()),
+                                                              x_axis_channel_max=float(self.lineEdit_7.text()),
+                                                              y_axis_channel_min=float(self.lineEdit_6.text()),
+                                                              y_axis_channel_max=float(self.lineEdit_8.text()),
+                                                              peak_num_in=self.peak_num_in,
+                                                              peak_num_mode=self.peak_num_mode)
+
+        threshold_check = self.ui_state.threshold_check(threshold = threshold)
+
+        if self.update or threshold_check:
+            peak_enable =True
+        else:
+            peak_enable = False
+        print("peak recalculate enable check is :",peak_enable) 
+        print("resample parameter self.reset check is :",reset) 
+        print("filter condition change check is :",self.filter_update)
+        print("threshold check is:",self.reanalysis, ", current threshold is:", threshold)
+            
+            
+        self.data_updated = False
+               
+            
+        check1 = time.time()
+        
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis and not self.load:
+            print("--------------------------------------------------------not reset")
+            self.tab_widgets_main.currentIndex
+            
+            check2 = time.time()
+            self.update_working_data()
+            check2A = time.time()
+            if self.data_updated == True:
+                self.draw(True)
+                check3 = time.time()
+                self.draw_2(True)
+                check3A = time.time()
+                self.update_sweep_graphs(True)
+            else:
+                self.draw()
+                check3 = time.time()
+                self.draw_2()
+                
+            check4 = time.time()
+            
+            self.draw_peak_width()
+            check4A = time.time()
+            self.draw_peak_width_2()
+            check4B = time.time()
+            
+            self.update_sweep_graphs()
+            check4C = time.time()
+            self.sweep_update_high()
+            check4D = time.time()
+            self.sweep_update_low()
+            check4E = time.time()
+            self.sweep_update()
+            check4F = time.time()
+            
+            self.update_statistic()
+            check4G = time.time()
+            self.update_sampling_Rate()
+            check5 = time.time()
+            
+            self.subgating_scatter(pressed_function_redo = self.draw_2_update)
+
+        else:
+            print("--------------------------------------------------------reset")
+            if self.load == False:
+
+                a = Analysis.file_extracted_data_Qing(self.current_file_dict,threshold, 
+                                                      peaks_threshold, width_min, width_max, 
+                                                      width_enable, peak_enable, channel, self.chunksize,
+                                                     0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit, 
+                                                      stats.ch13_hit,
+                                                      stats.ch23_hit, stats.Droplet_Record_hit,
+                                                      stats.total_sorted)
+                
+                print("data extration complete, drawing....")
+    
+                self.analog.update(a.analog_file)
+
+                self.save_a = self.analog
+            else:
+                # load
+                self.analog = self.save_a
+                print("data loading complete, drawing....")
+            
+            check2 = time.time()
+            
+            self.update_working_data()
+            
+            # direct everything into window filters
+            # self.draw is histogram
+            # self.draw_2 triggers 2nd and 3rd filter
+            if self.data_updated == True:
+#                 self.draw(True)
+                self.draw_2(True)
+#                 self.update_sweep_graphs(True)
+            else:   
+#                 self.draw()
+                self.draw_2()
+                
+            
+#             check4 = time.time()
+            
+#             self.draw_peak_width()
+#             check4A = time.time()
+#             self.draw_peak_width_2()
+#             check4B = time.time()
+            
+#             self.update_sweep_graphs()
+#             check4C = time.time()
+#             self.sweep_update_high()
+#             check4D = time.time()
+#             self.sweep_update_low()
+#             check4E = time.time()
+#             self.sweep_update()
+#             check4F = time.time()
+            
+#             self.update_statistic()
+#             check4G = time.time()
+#             self.update_sampling_Rate()
+            
+#             check5 = time.time()
+#             Ui_MainWindow.reset = False
+            
+                    # add item to polygon linear plot tab
+            self.comboBox_14_list = {}
+            if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
+            if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
+            if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
+            if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
+            if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
+            if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
+            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"                
+            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
+            ### End
+            
+            self.subgating_scatter(pressed_function_redo = True) 
+            print("complete!")
+        check6 = time.time()
+
+               
+                
+
+
+    def add(self):
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        self.comboBox_option1.addItem("Current Data")
+        self.comboBox_option2.addItem("Current Data")
+        self.comboBox_option1.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option2.addItem("Current Data post Width/Peaks # Filter")
+        self.comboBox_option1.addItem("Current Data post 2nd Filter")
+        self.comboBox_option2.addItem("Current Data post 2nd Filter")
+        if self.comboBox_option1.count() == 0:
+            self.comboBox_option1.addItem("Current Data")
+            self.comboBox_option2.addItem("Current Data")
+        for f in name:
+            self.file_dict_list.append(Helper.project_namelist(f))
+            self.file_list_view.addItem(f)
+            self.comboBox_option1.addItem(f)
+            self.comboBox_option2.addItem(f)
+        for i in range(self.file_list_view.count()):
+            item = self.file_list_view.item(i)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+    def openfolder(self):
+        self.analog = {}
+        self.file_list_view.clear()
+        self.file_dict_list.clear()
+        self.comboBox_option1.clear()
+        self.comboBox_option2.clear()
+        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        for f in name:
+            print(f)
+            self.file_dict_list.append(Helper.project_namelist(f))
+            self.file_list_view.addItem(f)
+            self.comboBox_option1.addItem(f)
+            self.comboBox_option2.addItem(f)
+            
+            # record change in the log
+            self.textbox = self.textbox + "\n" + "open file:" + str(f)
+            self.textEdit.setPlainText(self.textbox)   
+            
+        for i in range(self.file_list_view.count()):
+            item = self.file_list_view.item(i)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+    def save(self):
+        
+        name,_ = QtGui.QFileDialog.getSaveFileName(self.mainwindow, 'Save File')
+        try: 
+            list_name = []
+            for i in range(self.file_list_view.count()):
+                self.file_list_view.setCurrentRow(i)
+                list_name.append(self.file_list_view.currentItem().text())
+                
+            dict_list = self.file_dict_list
+            parameters = [self.checkbox_ch1.isChecked(), self.checkbox_ch2.isChecked(), self.checkbox_ch3.isChecked(),
+                         self.checkbox_ch12.isChecked(), self.checkbox_ch13.isChecked(), self.checkbox_ch23.isChecked(),
+                         self.checkBox_7.isChecked(), self.channel_1.isChecked(), self.channel_2.isChecked(), 
+                          self.channel_3.isChecked(), 
+                         self.channel_4.isChecked(), self.polygon_channel_1.isChecked(), self.polygon_channel_2.isChecked(),
+                         self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
+                          self.comboBox_5.currentIndex(),
+                        self.comboBox_6.currentIndex(),
+                        self.comboBox_peak_num_1.currentIndex(),
+                        self.comboBox_peak_num_2.currentIndex(),
+                        self.comboBox_peak_num_3.currentIndex(),
+                        self.comboBox_peak_num_4.currentIndex(),
+                        self.comboBox.currentIndex(),
+                        self.comboBox_2.currentIndex(),
+                        self.subgating_comboBox.currentIndex(),
+                        self.subgating_comboBox_2.currentIndex(),
+                        self.subgating_preselect_comboBox.currentIndex(),
+                        self.subgating_preselect_comboBox_2.currentIndex(),
+                        self.lineEdit_gatevoltage_2.text(),
+                        self.lineEdit_gatevoltage_4.text(),
+                        self.lineEdit_gatevoltagemaximum.text(),
+                        self.lineEdit_gatevoltageminimum.text(),
+                        self.lineEdit_increments.text(),
+                        self.lineEdit_binwidth_2.text(),
+                        self.lineEdit_binwidth_3.text(),
+                        self.lineEdit_binwidth.text(),
+                        self.lineEdit_gatevoltage.text(),
+                        self.lineEdit_5.text(),
+                        self.lineEdit_6.text(),
+                        self.lineEdit_7.text(),
+                        self.lineEdit_8.text(),
+                        self.lineEdit_9.text(),
+                        self.lineEdit_10.text(),
+                        self.lineEdit_11.text(),
+                        self.lineEdit_12.text(),
+                        self.lineEdit_peak_num_1.text(),
+                        self.lineEdit_peak_num_2.text(),
+                        self.lineEdit_peak_num_3.text(),
+                        self.lineEdit_peak_num_4.text(),
+                        self.lineEdit_scatterxvoltage.text(),
+                        self.lineEdit_scatteryvoltage.text(),
+                        # file list
+                        dict_list,
+                        list_name,
+                        self.save_a,
+                        # polygon 
+                        self.inside2,
+                        self.points_inside,
+                        self.polygon_inside_label_29.text(),
+                        self.polygon,
+                        self.polygon_for_edit,
+                        self.polygon_trigger,
+                        self.points,
+                        self.points_inside_list,
+                         #subgating polygon
+                        self.subgating_inside2,
+                        self.subgating_points_inside,
+                        self.subgating_polygon_inside_label_29.text(),
+                        self.subgating_polygon,
+                        self.subgating_polygon_for_edit,
+                        self.subgating_polygon_trigger,
+                        self.subgating_points,
+                        self.subgating_points_inside_list,
+                        self.checkbox_Droplet_Record.isChecked()]
+
+
+            with open(str(name.split("/")[-1]), 'wb') as filehandle:
+                pickle.dump(parameters, filehandle)
+          
+        except:
+            print("nothing to save")
+            
+    def load(self):
+        name,_= QFileDialog.getOpenFileNames(self.mainwindow, 'Open File')
+        if name != []:
+            b = ''
+            for i in name[0].split("/")[0:-1]:
+                b = b + i + "/"
+            os.chdir(str(b[0:-1]))
+            self.load = True
+            self.loadname = name[0].split("/")[-1]
+            self.pressed()
+    
+    def save_single(self):
+        
+        name,_ = QtGui.QFileDialog.getSaveFileName(self.mainwindow, 'Save File')
+
+        list_name = []
+        list_name.append(self.file_list_view.currentItem().text())
+        
+        dict_list = []
+        row = self.file_list_view.currentRow() 
+        dict_list.append(self.file_dict_list[row])
+
+        
+        parameters = [self.checkbox_ch1.isChecked(), self.checkbox_ch2.isChecked(), self.checkbox_ch3.isChecked(),
+                     self.checkbox_ch12.isChecked(), self.checkbox_ch13.isChecked(), self.checkbox_ch23.isChecked(),
+                     self.checkBox_7.isChecked(), self.channel_1.isChecked(), self.channel_2.isChecked(), 
+                      self.channel_3.isChecked(), 
+                     self.channel_4.isChecked(), self.polygon_channel_1.isChecked(), self.polygon_channel_2.isChecked(),
+                     self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
+                      self.comboBox_5.currentIndex(),
+                    self.comboBox_6.currentIndex(),
+                    self.comboBox_peak_num_1.currentIndex(),
+                    self.comboBox_peak_num_2.currentIndex(),
+                    self.comboBox_peak_num_3.currentIndex(),
+                    self.comboBox_peak_num_4.currentIndex(),
+                    self.comboBox.currentIndex(),
+                    self.comboBox_2.currentIndex(),
+                    self.subgating_comboBox.currentIndex(),
+                    self.subgating_comboBox_2.currentIndex(),
+                    self.subgating_preselect_comboBox.currentIndex(),
+                    self.subgating_preselect_comboBox_2.currentIndex(),
+                    self.lineEdit_gatevoltage_2.text(),
+                    self.lineEdit_gatevoltage_4.text(),
+                    self.lineEdit_gatevoltagemaximum.text(),
+                    self.lineEdit_gatevoltageminimum.text(),
+                    self.lineEdit_increments.text(),
+                    self.lineEdit_binwidth_2.text(),
+                    self.lineEdit_binwidth_3.text(),
+                    self.lineEdit_binwidth.text(),
+                    self.lineEdit_gatevoltage.text(),
+                    self.lineEdit_5.text(),
+                    self.lineEdit_6.text(),
+                    self.lineEdit_7.text(),
+                    self.lineEdit_8.text(),
+                    self.lineEdit_9.text(),
+                    self.lineEdit_10.text(),
+                    self.lineEdit_11.text(),
+                    self.lineEdit_12.text(),
+                    self.lineEdit_peak_num_1.text(),
+                    self.lineEdit_peak_num_2.text(),
+                    self.lineEdit_peak_num_3.text(),
+                    self.lineEdit_peak_num_4.text(),
+                    self.lineEdit_scatterxvoltage.text(),
+                    self.lineEdit_scatteryvoltage.text(),
+                    # file list
+                    dict_list,
+                    list_name,
+                    self.save_a,
+                    # polygon 
+                    self.inside2,
+                    self.points_inside,
+                    self.polygon_inside_label_29.text(),
+                    self.polygon,
+                    self.polygon_for_edit,
+                    self.polygon_trigger,
+                    self.points,
+                    self.points_inside_list,
+                     #subgating polygon
+                    self.subgating_inside2,
+                    self.subgating_points_inside,
+                    self.subgating_polygon_inside_label_29.text(),
+                    self.subgating_polygon,
+                    self.subgating_polygon_for_edit,
+                    self.subgating_polygon_trigger,
+                    self.subgating_points,
+                    self.subgating_points_inside_list,
+                    self.checkbox_Droplet_Record.isChecked()]
+
+        print("save Location:", name)
+        with open(str(name.split("/")[-1]), 'wb') as filehandle:
+            pickle.dump(parameters, filehandle)
+          
+#         except:
+#             print("nothing to save")
+     
+    def load_parameters(self):
+        name,_= QFileDialog.getOpenFileNames(self.mainwindow, 'Open File')
+        if name != []:
+            b = ''
+            for i in name[0].split("/")[0:-1]:
+                b = b + i + "/"
+            os.chdir(str(b[0:-1]))
+            self.load_parameters = True
+            self.loadname = name[0].split("/")[-1]
+            self.pressed()
+            
+    def save_parameters(self):
+        name,_ = QtGui.QFileDialog.getSaveFileName(self.mainwindow, 'Save File')
+        try: 
+            parameters = [self.checkbox_ch1.isChecked(), self.checkbox_ch2.isChecked(), self.checkbox_ch3.isChecked(),
+                         self.checkbox_ch12.isChecked(), self.checkbox_ch13.isChecked(), self.checkbox_ch23.isChecked(),
+                         self.checkBox_7.isChecked(), self.channel_1.isChecked(), self.channel_2.isChecked(), 
+                          self.channel_3.isChecked(), 
+                         self.channel_4.isChecked(), self.polygon_channel_1.isChecked(), self.polygon_channel_2.isChecked(),
+                         self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
+                          self.comboBox_5.currentIndex(),
+                        self.comboBox_6.currentIndex(),
+                        self.comboBox_peak_num_1.currentIndex(),
+                        self.comboBox_peak_num_2.currentIndex(),
+                        self.comboBox_peak_num_3.currentIndex(),
+                        self.comboBox_peak_num_4.currentIndex(),
+                        self.comboBox.currentIndex(),
+                        self.comboBox_2.currentIndex(),
+                        self.subgating_comboBox.currentIndex(),
+                        self.subgating_comboBox_2.currentIndex(),
+                        self.subgating_preselect_comboBox.currentIndex(),
+                        self.subgating_preselect_comboBox_2.currentIndex(),
+                        self.lineEdit_gatevoltage_2.text(),
+                        self.lineEdit_gatevoltage_4.text(),
+                        self.lineEdit_gatevoltagemaximum.text(),
+                        self.lineEdit_gatevoltageminimum.text(),
+                        self.lineEdit_increments.text(),
+                        self.lineEdit_binwidth_2.text(),
+                        self.lineEdit_binwidth_3.text(),
+                        self.lineEdit_binwidth.text(),
+                        self.lineEdit_gatevoltage.text(),
+                        self.lineEdit_5.text(),
+                        self.lineEdit_6.text(),
+                        self.lineEdit_7.text(),
+                        self.lineEdit_8.text(),
+                        self.lineEdit_9.text(),
+                        self.lineEdit_10.text(),
+                        self.lineEdit_11.text(),
+                        self.lineEdit_12.text(),
+                        self.lineEdit_peak_num_1.text(),
+                        self.lineEdit_peak_num_2.text(),
+                        self.lineEdit_peak_num_3.text(),
+                        self.lineEdit_peak_num_4.text(),
+                        self.lineEdit_scatterxvoltage.text(),
+                        self.lineEdit_scatteryvoltage.text(),
+                        self.checkbox_Droplet_Record.isChecked()]
+
+
+            with open(str(name.split("/")[-1]), 'wb') as filehandle:
+                pickle.dump(parameters, filehandle)
+          
+        except:
+            print("nothing to save")
+            
+    def peak_num_comp(self, number_of_peak, mode, num_in):
+        """function to do comparison for peak number filter"""
+        if mode == 0:
+            if number_of_peak >= num_in:
+                return True
+            else:
+                return False
+        elif mode == 1:
+            if number_of_peak == num_in:
+                return True
+            else:
+                return False
+        elif mode == 2:
+            if number_of_peak <= num_in:
+                return True
+            else:
+                return False
+        return False
+
+    def peak_num_filter(self):
+        """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
+        self.peak_num_filtered_index = []
+        holder = [[],[],[],[]]
+        for ch in range(4):
+            holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
+                          if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
+        self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
+
+
+if __name__ == "__main__":
+    freeze_support()
+    import sys
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+indow", "Y-Axis"))
 
         self.subgating_preselect_comboBox_2.setItemText(0, _translate("MainWindow", "Height"))
         self.subgating_preselect_comboBox_2.setItemText(1, _translate("MainWindow", "Width"))
