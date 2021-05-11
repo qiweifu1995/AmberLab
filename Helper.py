@@ -12,6 +12,7 @@ def project_namelist(file_dir):
                  "Ch1-2": "",
                  "Ch1-3": "",
                  "Ch2-3": "",
+                 "Droplet Record": "",
                  "Locked": "",
                  "Param": "",
                  "Summary": "",
@@ -55,6 +56,7 @@ class Stats:
                       "Negative Ch 1-2 Hit": "",
                       "Negative Ch 1-3 Hit": "",
                       "Negative Ch 2-3 Hit": "",
+                      "Negative Droplet Record Hit": "",
                       "Total Dispensed ": "",
                       "Dispense Missed": ""}
         if os.path.isfile(file_path) and file_path.rfind("Summary") >= 0:
@@ -92,6 +94,7 @@ class Stats:
         self.ch12_hit = stats_dict["Negative Ch 1-2 Hit"]
         self.ch13_hit = stats_dict["Negative Ch 1-3 Hit"]
         self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
+        self.Droplet_Record_hit = stats_dict["Negative Droplet Record Hit"]
         self.under_sample_factor = stats_dict["UnderSample Factor"]
         self.total_dispensed = stats_dict["Total Dispensed "]
         self.dispense_missed = stats_dict["Dispense Missed"]
@@ -142,16 +145,28 @@ class ui_state:
         self.ch1_2_check = False
         self.ch1_3_check = False
         self.ch2_3_check = False
+        self.Droplet_Record_check = False
         self.file_select = -1
         self.gating_channel_select = -1
         self.gating_bins = 0
         self.gating_voltage = 0
+    
+        self.width_gating_channel_select = -1
+        self.width_gating_bins = 0
+        self.width_gating_voltagee = 0
+    
         self.peak_width_channel_select = -1
         self.peak_width_bins = 0
         self.peak_width_threshold = -1
         self.voltage_threshold = [[-1], [-1], [-1], [-1]]
         self.scatter_channel_select_x = -1
-        self.scatter_channel_select_y = -1
+        self.scatter_channel_select_y = -1                    
+        self.x_gate = 0
+        self.y_gate = 0
+        self.density_adjust_2 = 1
+        self.density_adjust_1 = 1
+        self.density_adjust_3 = 1
+            
         self.width_scatter_channel_select_x = -1
         self.width_scatter_channel_select_y = -1
         self.scatter_gate_voltage_x = 0
@@ -181,24 +196,21 @@ class ui_state:
         self.subgating_comboBox2 = 0
         self.subgating_preselect_comboBox = 0
         self.subgating_preselect_comboBox2 = 0
-        
+
+
      
     def subgating_replot_check(self, points_inside_square, points_inside_or_quadrant, subgating_comboBox, subgating_comboBox2, 
-                              subgating_preselect_comboBox, subgating_preselect_comboBox2 ):
+                              subgating_preselect_comboBox, subgating_preselect_comboBox2, textbox, density_adjust_3):
         change = False
         
         if points_inside_square is not None and self.points_inside_square != points_inside_square:
             change = True
-            self.points_inside_square = points_inside_square
-            
         if points_inside_or_quadrant is not None and self.points_inside_or_quadrant != points_inside_or_quadrant:
             change = True
             self.points_inside_or_quadrant = points_inside_or_quadrant
-            
         if subgating_comboBox is not None and self.subgating_comboBox != subgating_comboBox:
             change = True
             self.subgating_comboBox = subgating_comboBox
-            
         if subgating_comboBox2 is not None and self.subgating_comboBox2 != subgating_comboBox2:
             change = True
             self.subgating_comboBox2 = subgating_comboBox2
@@ -210,8 +222,11 @@ class ui_state:
         if subgating_preselect_comboBox2 is not None and self.subgating_preselect_comboBox2 != subgating_preselect_comboBox2:
             change = True
             self.subgating_preselect_comboBox2 = subgating_preselect_comboBox2
-
-        return change
+        if density_adjust_3 is not None and self.density_adjust_3 != density_adjust_3:
+            change = True
+            self.density_adjust_3 = density_adjust_3
+            
+        return change, textbox
         
         
         
@@ -224,7 +239,7 @@ class ui_state:
         return changed
     
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
-                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, reset=None):
+                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, Droplet_Record=None, reset=None):
         """checks if checkbox are updated and needs to be refreshed"""
 
         changed = False
@@ -244,6 +259,8 @@ class ui_state:
             changed = True
         elif ch2_3 is not None and self.ch2_3_check != ch2_3:
             changed = True
+        elif Droplet_Record is not None and self.Droplet_Record_check != Droplet_Record:
+            changed = True            
         elif reset is not None and reset == True:
             changed = True
 
@@ -264,7 +281,8 @@ class ui_state:
                 self.ch1_3_check = ch1_3
             if ch2_3 is not None:
                 self.ch2_3_check = ch2_3
-    
+            if Droplet_Record is not None:
+                self.Droplet_Record_check = Droplet_Record  
 
         return changed
 
@@ -283,7 +301,27 @@ class ui_state:
             if gate_voltage is not None:
                 self.gating_voltage = gate_voltage
         return replot
+    
+    
+    def width_gating_update(self, update_state=True, channel_select=None, bins=None, gate_voltage=None):
+        """keeps track of states in gating"""
+        replot = False
+        if channel_select is not None and channel_select != self.width_gating_channel_select:
+            replot = True
+        elif bins is not None and bins != self.width_gating_bins:
+            replot = True
+            
+        if update_state:
+            if channel_select is not None:
+                self.width_gating_channel_select = channel_select
+            if bins is not None:
+                self.width_gating_bins = bins
+            if gate_voltage is not None:
+                self.width_gating_voltage = gate_voltage
+        return replot
 
+
+    
     def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None,
                           voltage_threshold=None):
         """keeps track of states in gating"""
@@ -390,13 +428,21 @@ class ui_state:
 
         return refilter
 
-    def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None):
+    def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None, density_adjust_2=1):
         """keep track of state in scatter tab"""
         replot = False
         if x_select is not None and x_select != self.scatter_channel_select_x:
             replot = True
         elif y_select is not None and y_select != self.scatter_channel_select_y:
             replot = True
+        elif x_gate is not None and x_gate != self.x_gate:
+            replot = True
+        elif y_gate is not None and y_gate != self.y_gate:
+            replot = True
+        elif density_adjust_2 is not None and density_adjust_2 != self.density_adjust_2:
+            replot = True
+
+            
         if update_state:
             if x_select is not None:
                 self.scatter_channel_select_x = x_select
@@ -406,24 +452,28 @@ class ui_state:
                 self.scatter_gate_voltage_x = x_gate
             if y_gate is not None:
                 self.scatter_gate_voltage_y = y_gate
+            if density_adjust_2 is not None:
+                self.density_adjust_2 = density_adjust_2
         return replot
 
-    def width_scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None):
+    def width_scatter_update(self, update_state=True, x_select=None, y_select=None, density_adjust_1=1 ):
         """keep track of state in width scatter tab"""
         replot = False
         if x_select is not None and x_select != self.width_scatter_channel_select_x:
             replot = True
         elif y_select is not None and y_select != self.width_scatter_channel_select_y:
             replot = True
+        elif density_adjust_1 is not None and density_adjust_1 != self.density_adjust_1:
+            replot = True            
+            
+            
         if update_state:
             if x_select is not None:
                 self.width_scatter_channel_select_x = x_select
             if y_select is not None:
                 self.width_scatter_channel_select_y = y_select
-            if x_gate is not None:
-                self.width_scatter_gate_voltage_x = x_gate
-            if y_gate is not None:
-                self.width_scatter_gate_voltage_y = y_gate
+            if density_adjust_1 is not None:
+                self.density_adjust_1 = density_adjust_1
         return replot
 
     def sweep_update(self, update_state=True, channel_select=None, bins=None, file1=None, file2=None):
