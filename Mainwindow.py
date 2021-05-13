@@ -202,7 +202,7 @@ class window_filter(QWidget):
     
     
     
-        # Multi_peaks_layout grid
+        ######## Multi_peaks_layout grid
         
         self.label_num_peak_title = QtWidgets.QLabel('Multi Peaks Gating')
         sizePolicy.setHeightForWidth(self.label_num_peak_title.sizePolicy().hasHeightForWidth())
@@ -226,6 +226,7 @@ class window_filter(QWidget):
         self.label_num_peak_6 = QtWidgets.QLabel('Blue')
         self.label_num_peak_7 = QtWidgets.QLabel('Orange')
 
+        
         Multi_peaks_layout.addWidget(self.label_num_peak_1, 1, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_2, 1, 1)
         Multi_peaks_layout.addWidget(self.label_num_peak_3, 1, 2)
@@ -233,6 +234,7 @@ class window_filter(QWidget):
         Multi_peaks_layout.addWidget(self.label_num_peak_5, 3, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_6, 4, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_7, 5, 0)
+        
         
         self.comboBox_peak_num_1 = QtWidgets.QComboBox()
         self.comboBox_peak_num_1.addItem(">=")
@@ -274,7 +276,7 @@ class window_filter(QWidget):
         self.line_Multi_peaks.setFrameShadow(QtWidgets.QFrame.Sunken)
         Multi_peaks_layout.addWidget(self.line_Multi_peaks, 6, 0, 1, 3)
 
-        # Multi peak end
+        ######## Multi peak end
 
         
         self.line_Multi_peaks = QtWidgets.QFrame()
@@ -685,11 +687,12 @@ class window_filter(QWidget):
         
         
         
-
+        
         self.label_185 = QtWidgets.QLabel("Polynomial Order")
         self.label_185.setAlignment(QtCore.Qt.AlignCenter)
         self.gridLayout_42.addWidget(self.label_185, 17, 0, 1, 1)
 
+        
         self.label_186 = QtWidgets.QLabel("Smooth Level")
         self.label_186.setAlignment(QtCore.Qt.AlignCenter)
         self.gridLayout_42.addWidget(self.label_186, 18, 0, 1, 1)  
@@ -1710,11 +1713,15 @@ class window_filter(QWidget):
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        
+### GUI setup
         self.mainwindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1500, 900)
         MainWindow.setMinimumSize(QtCore.QSize(150, 150))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
+
+### main tab setup
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_15 = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -2521,7 +2528,7 @@ class Ui_MainWindow(object):
         ### peak leanear end
         
         
-### Peak Width
+### Peak Width tab setup
 
         self.tab_peakwidth = QtWidgets.QWidget()
         self.tab_peakwidth.setObjectName("tab_peakwidth")
@@ -2945,22 +2952,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.addLayout(self.gridLayout_peak_num)
 
 
-### tableview_7 
-#         self.tableView_7 = QtWidgets.QTableWidget(self.sub_tab_width_scatter)
-#         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
-#         sizePolicy.setHorizontalStretch(0)
-#         sizePolicy.setVerticalStretch(0)
-#         sizePolicy.setHeightForWidth(self.tableView_statistic.sizePolicy().hasHeightForWidth())
-#         self.tableView_7.setSizePolicy(sizePolicy)
-#         self.tableView_7.setMinimumSize(QtCore.QSize(150, 150))
-#         self.tableView_7.setMaximumSize(QtCore.QSize(600, 400))
-
-#         self.tableView_7.setObjectName("tableView_7")
-#         self.verticalLayout_16.addWidget(self.tableView_7)
-# #         self.tableView_7.setColumnCount(1)
-#         self.tableView_7.setRowCount(1)
-# #         self.tableView_7.setHorizontalHeaderLabels(['Left', 'Medium', 'Right','Total'])
-#         self.tableView_7.setVerticalHeaderLabels(['Medium', ])  
 
         spacerItem22 = QtWidgets.QSpacerItem(20, 60, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_16.addItem(spacerItem22)
@@ -3252,67 +3243,69 @@ class Ui_MainWindow(object):
 ### Peak width end
 
 ### extra filter test tab
-        self.tab = QtWidgets.QWidget()
-        self.tab.setObjectName("tab")
-        self.gridLayout_filter = QtWidgets.QGridLayout(self.tab)
-        self.gridLayout_filter.setObjectName("gridLayout_filter")
+#         self.tab = QtWidgets.QWidget()
+#         self.tab.setObjectName("tab")
+#         self.gridLayout_filter = QtWidgets.QGridLayout(self.tab)
+#         self.gridLayout_filter.setObjectName("gridLayout_filter")
         
-        self.horizontalLayout_filter = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_filter.setObjectName("horizontalLayout_filter")
-        self.label_filter = QtWidgets.QLabel(self.tab)
-        self.label_filter.setObjectName("label_filter")
-        self.horizontalLayout_filter.addWidget(self.label_filter)
+#         self.horizontalLayout_filter = QtWidgets.QHBoxLayout()
+#         self.horizontalLayout_filter.setObjectName("horizontalLayout_filter")
+#         self.label_filter = QtWidgets.QLabel(self.tab)
+#         self.label_filter.setObjectName("label_filter")
+#         self.horizontalLayout_filter.addWidget(self.label_filter)
         
-        self.pushButton_filter = QtWidgets.QPushButton(self.tab)
-        self.pushButton_filter.setObjectName("pushButton_filter")
-        self.horizontalLayout_filter.addWidget(self.pushButton_filter)
+#         self.pushButton_filter = QtWidgets.QPushButton(self.tab)
+#         self.pushButton_filter.setObjectName("pushButton_filter")
+#         self.horizontalLayout_filter.addWidget(self.pushButton_filter)
         
-        self.lineEdit_filter = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_filter.setObjectName("lineEdit_filter")
-        self.horizontalLayout_filter.addWidget(self.lineEdit_filter)
-        
-        
-#         self.filter_list_view = QtWidgets.QListWidget(self.tab)
-#         self.filter_list_view.setObjectName("filter_list_view")
-#         self.horizontalLayout_filter.addWidget(self.filter_list_view)
+#         self.lineEdit_filter = QtWidgets.QLineEdit(self.tab)
+#         self.lineEdit_filter.setObjectName("lineEdit_filter")
+#         self.horizontalLayout_filter.addWidget(self.lineEdit_filter)
         
         
-#         self.filter_list_view.addItem('Creat New Filter')
-#         self.filter_list_view.setCurrentRow(0)
 
-#         self.filter_dict = {}
-#         self.filter_count = -1
 
-        # add tree view
+### add tree view at bottom left corner
 
-        self.treeView = QtWidgets.QTreeView(self.tab)
+        self.treeView = QtWidgets.QTreeView()
         
         self.layout_vertical_filecontrol.addWidget(self.treeView)
-#         self.horizontalLayout_filter.addWidget(self.treeView)
-    
+
+        # original treeview is has a colomn like header, need to hide that 
         self.treeView.setHeaderHidden(True)
+        
+        # setup a model for the braches
         self.treeModel = QStandardItemModel()
+        
+        # disable double clike expand option, double clike now link to the open filter window
         self.treeView.setExpandsOnDoubleClick(False)
         
 
-        
+        # store everything about new filter
         self.tree_dic = {}
 
-#         self.tree_dic[(0,)] = StandardItem('Create graph', 12, set_bold=True)
-#         self.treeModel.appendRow(self.tree_dic[(0,)])
 
+        # StandardItem class created at very top, it combines the brach font and color in to one-line-code
+        # 0, is the parent brach above all
+        # 0,0 is the 0 child brach which has a 0, parent
         self.tree_dic[(0,)] = {}
         self.tree_dic[(0,)]['tree_standarditem'] = StandardItem('Create graph', 12, set_bold=True)
+        
+        # to create a child , call the parent, append the color and font to it
+        # to create the very first parent, call the model its self
         self.treeModel.appendRow(self.tree_dic[(0,)]['tree_standarditem'])
 
+        # create a test child branch
         self.tree_dic[(0,0)] = {}
         self.tree_dic[(0,0)]['tree_standarditem'] = StandardItem('test branch', 10, set_bold=True)
+        
+        # to create a child , call the parent, append the color and font to it
         self.tree_dic[(0,)]['tree_standarditem'].appendRow(self.tree_dic[(0,0)]['tree_standarditem'])
     
-        # 1st window, 1st tree index
-            
-
+        # default tree_index
         self.tree_index = (0,)
+        
+        
         self.dialog = window_filter(self)
         self.tree_dic[(0,)]['tree_windowfilter'] = self.dialog
     
@@ -3346,15 +3339,15 @@ class Ui_MainWindow(object):
     
     
         
-        self.gridLayout_filter.addLayout(self.horizontalLayout_filter, 0, 0, 1, 1)
-        self.tab_widgets_main.addTab(self.tab, "")
+#         self.gridLayout_filter.addLayout(self.horizontalLayout_filter, 0, 0, 1, 1)
+#         self.tab_widgets_main.addTab(self.tab, "")
 
         
         
         
-        self.pushButton_filter.clicked.connect(self.openwindow_filter)
+#         self.pushButton_filter.clicked.connect(self.openwindow_filter)
 
-        self.test_number = 0
+#         self.test_number = 0
 
 
 
@@ -5207,9 +5200,12 @@ class Ui_MainWindow(object):
 #         self.lineEdit_gatevoltage_2.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
 #         self.lineEdit_gatevoltage_4.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
         
+
         self.comboBox_option1.currentIndexChanged.connect(self.update_sweep_1)
         self.comboBox_option2.currentIndexChanged.connect(self.update_sweep_2)
         
+
+
         self.w = OtherWindow(self)
         self.pushButton_resample.clicked.connect(self.openWindow)
         
@@ -5248,7 +5244,8 @@ class Ui_MainWindow(object):
         self.subgating_pushButton_11.clicked.connect(self.subgating_edit_polygon_shape)
         self.subgating_stop_edit_trigger = True
         
-    # check box trigger
+# triggers for the log, havn't update adter new filter window function included.
+
         self.checkbox_ch1.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 1 state changed to ", 
                                                                            afterchange = self.checkbox_ch1.isChecked()))
         self.checkbox_ch2.stateChanged.connect(lambda:self.textbox_trigger(change = "checkbox Channel 2 state changed to ", 
@@ -5415,72 +5412,20 @@ class Ui_MainWindow(object):
         self.subgating_points_inside_list = []        
         
         
-        
-    def openwindow_filter(self):
-        # self.dialog is the current creating filter
-        # self.window_filter is the list contain all the filter tabs, use show() to show
-        # self.filter_count count how many filters created
-        # self.filter_list_view is the list view
-        # self.filter_dict is the dict contain filter name and index, use name to find index, show in self.window_filter
-
-        if self.filter_list_view.currentRow() == 0:
-            self.dialog = window_filter(self)
-            self.window_filter.append(self.dialog)
-
-            self.filter_count = self.filter_count + 1 
-            filter_name = "filter " + str(self.filter_count)
-            self.filter_list_view.addItem(filter_name)
-
-            self.filter_dict[filter_name] = int(self.filter_count)
-
-            self.dialog.show()
-        else:
-            name = self.filter_list_view.currentItem().text()
-            list_number = self.filter_dict[name]
-            self.window_filter[list_number].show()
-            
+# ###  window filter
     def getValue(self, val):
-        # add tree view
+        # current selected row is val
         current_branch = val
+        # find out the index
         self.tree_index = (val.row(),)
         
         while current_branch.parent().row() != -1:    
             self.tree_index += (current_branch.parent().row(),)
             current_branch = current_branch.parent()
-        print(self.tree_index)
 
-#         self.window_filter[self.tree_index].show()
+        # open the branch
         self.tree_dic[self.tree_index]['tree_windowfilter'].show()
-    
-#         if self.tree_index == (0,):
-#             # assign a valid key to new branch
-#             find_a_key = False
-#             key_count = 0
-#             while not find_a_key:         
-#                 new_index = (key_count,) + self.tree_index
-#                 if new_index in self.tree_dic:
-#                     key_count += 1
-#                 else:
-#                     find_a_key = True
-
-#             self.tree_dic[new_index] = StandardItem('New graph', 12 - len(new_index))
-#             self.tree_dic[self.tree_index].appendRow(self.tree_dic[new_index])
-
-#             self.treeView.expandAll()
-            
-#             # open a new window for the new branch
-            
-#             # reassign tree_index, new window need index to create child branch
-#             self.tree_index = new_index
-            
-#             self.dialog = window_filter(self)
-#             self.window_filter[new_index] = self.dialog
-
-#             self.dialog.show()
-            
-#         else:
-#             self.window_filter[self.tree_index].show()
-            
+###  window filter ends    
 
     def chart_title_change(self, change):
         if len(str(change)) > 30:
@@ -7065,6 +7010,7 @@ class Ui_MainWindow(object):
         
 
 
+        ### modify the sweep graph, connect the new filter to the plot function
         
     def update_sweep_graphs(self, bypass=False):
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
@@ -8469,7 +8415,7 @@ class Ui_MainWindow(object):
         self.actionAdd_LoadParameters.setText(_translate("MainWindow", "Load Parameters"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
         
-        self.label_filter.setText(_translate("MainWindow", "test"))
+#         self.label_filter.setText(_translate("MainWindow", "test"))
 
     def pressed(self):
         print('pressed')
