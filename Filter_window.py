@@ -1,14 +1,43 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QLabel, QWidget, QPushButton, QTableWidgetItem
+from pyqtgraph.Qt import QtCore
+from pyqtgraph import PlotWidget
+from PyQt5.Qt import QStandardItem
+import pyqtgraph as pg
+import pandas as pd
+import os
+from scipy.signal import savgol_filter
+import Helper
+import numpy as np
+from itertools import compress
+import matplotlib.path as mpltPath
+import time
+from math import sqrt
+from PyQt5.QtGui import QFont, QColor
+
+
+
+class StandardItem(QStandardItem):
+    def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
+        super().__init__()
+
+        fnt = QFont('Open Sans', font_size)
+        fnt.setBold(set_bold)
+
+        self.setEditable(False)
+        self.setForeground(color)
+        self.setFont(fnt)
+        self.setText(txt)
 
 
 class window_filter(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__()
-
+        self.ui = parent
         # tree_index saved the index number for all filters, include its parent and child branch
         # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
 
-        self.tree_index = ui.tree_index
+        self.tree_index = self.ui.tree_index
 
         self.quadrant1_list_or_polygon = []
 
@@ -16,7 +45,7 @@ class window_filter(QWidget):
         # ex. index = 0,1,1 ; parent index = 0,1
         if self.tree_index != (0,):
             parent_index = self.tree_index[1:]
-            self.quadrant1_list_or_polygon = ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+            self.quadrant1_list_or_polygon = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
 
         #############################################   #############################################
         # main filter tab
@@ -589,16 +618,16 @@ class window_filter(QWidget):
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
-        ui.sweep_left = [[], [], [], []]
-        for ch in range(len(ui.working_data)):
-            ui.sweep_left[ch] = [ui.working_data[ch][i] for i in self.points_inside]
-        ui.update_sweep_1(data_updated=True)
+        self.ui.sweep_left = [[], [], [], []]
+        for ch in range(len(self.ui.working_data)):
+            self.ui.sweep_left[ch] = [self.ui.working_data[ch][i] for i in self.points_inside]
+        self.ui.update_sweep_1(data_updated=True)
 
     def update_sweep_right(self):
-        ui.sweep_right = [[], [], [], []]
-        for ch in range(len(ui.working_data)):
-            ui.sweep_right[ch] = [ui.working_data[ch][i] for i in self.points_inside]
-        ui.update_sweep_2(data_updated=True)
+        self.ui.sweep_right = [[], [], [], []]
+        for ch in range(len(self.ui.working_data)):
+            self.ui.sweep_right[ch] = [self.ui.working_data[ch][i] for i in self.points_inside]
+        self.ui.update_sweep_2(data_updated=True)
 
     # two ways to trigger the linear plot:
     # 1. from the linear plot tab, "generate plot" button, (more like a "reset" button)
@@ -654,14 +683,14 @@ class window_filter(QWidget):
         if self.reset_comboBox == True:
             self.comboBox_14.clear()
 
-            for list_index in ui.comboBox_14_list:
-                list_text = ui.comboBox_14_list[list_index]
+            for list_index in self.ui.comboBox_14_list:
+                list_text = self.ui.comboBox_14_list[list_index]
 
                 polygon_length = 0
                 for i in range(list_index):
-                    polygon_length += len(ui.analog[ui.current_file_dict[ui.comboBox_14_list[i]]][0][0])
+                    polygon_length += len(self.ui.analog[self.ui.current_file_dict[self.ui.comboBox_14_list[i]]][0][0])
 
-                polygon_length_end = polygon_length + len(ui.analog[ui.current_file_dict[list_text]][0][0])
+                polygon_length_end = polygon_length + len(self.ui.analog[self.ui.current_file_dict[list_text]][0][0])
                 index_in_all_selected_channel = [x for x, x in enumerate(self.points_inside) if
                                                  x > polygon_length and x <= polygon_length_end]
 
@@ -670,8 +699,8 @@ class window_filter(QWidget):
 
         self.reset_comboBox = False
 
-        key_list = list(ui.comboBox_14_list.keys())
-        val_list = list(ui.comboBox_14_list.values())
+        key_list = list(self.ui.comboBox_14_list.keys())
+        val_list = list(self.ui.comboBox_14_list.values())
 
         position = val_list.index(self.comboBox_14.currentText())
         polygon_index = key_list[position]
@@ -680,9 +709,9 @@ class window_filter(QWidget):
         polygon_length = 0
 
         for i in range(polygon_index):
-            polygon_length += len(ui.analog[ui.current_file_dict[ui.comboBox_14_list[i]]][0][0])
+            polygon_length += len(self.ui.analog[self.ui.current_file_dict[self.ui.comboBox_14_list[i]]][0][0])
 
-        polygon_length_end = polygon_length + len(ui.analog[ui.current_file_dict[polygon_text]][0][0])
+        polygon_length_end = polygon_length + len(self.ui.analog[self.ui.current_file_dict[polygon_text]][0][0])
 
         ### trace end
 
@@ -726,7 +755,7 @@ class window_filter(QWidget):
             if nrows > 15:
                 self.lineEdit_38.setText(str(lower_bond + 15))
                 nrows = 15
-            self.subgating_file_dict = ui.file_dict_list[ui.file_list_view.currentRow()]
+            self.subgating_file_dict = self.ui.file_dict_list[self.ui.file_list_view.currentRow()]
             os.chdir(self.subgating_file_dict["Root Folder"])
             file = self.subgating_file_dict[text1]
 
@@ -804,9 +833,9 @@ class window_filter(QWidget):
             self.draw_graphwidget()
 
         if self.histogram_comboBox_1.currentIndex() == 0:
-            self.width = ui.working_data[self.histogram_comboBox_2.currentIndex()]
+            self.width = self.ui.working_data[self.histogram_comboBox_2.currentIndex()]
         else:
-            self.width = ui.peak_width_working_data[self.histogram_comboBox_2.currentIndex()]
+            self.width = self.ui.peak_width_working_data[self.histogram_comboBox_2.currentIndex()]
 
         self.full_width = [self.width[i] for i in self.points_inside_square]
 
@@ -817,9 +846,9 @@ class window_filter(QWidget):
             len(self.width)) + '/' + str(len(self.full_width))
         self.label_percentage.setText(width_count)
 
-        percentage_all_count = round(100 * len(self.width) / len(ui.working_data[0]), 2)
+        percentage_all_count = round(100 * len(self.width) / len(self.ui.working_data[0]), 2)
         percentage_all = "Percentage: " + str(percentage_all_count) + '% of all points ' + str(
-            len(self.width)) + '/' + str(len(ui.working_data[0]))
+            len(self.width)) + '/' + str(len(self.ui.working_data[0]))
         self.label_percentage_all.setText(percentage_all)
 
         channel = self.histogram_comboBox_2.currentIndex()
@@ -876,7 +905,7 @@ class window_filter(QWidget):
         self.peak_num_filtered_index = []
         holder = [[], [], [], []]
         for ch in range(4):
-            holder[ch] = [i for i, x in enumerate(ui.peak_num_working_data[ch])
+            holder[ch] = [i for i, x in enumerate(self.ui.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
         self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
         print('holder[0]', holder[0])
@@ -889,7 +918,7 @@ class window_filter(QWidget):
         # prepare data
 
         if self.quadrant1_list_or_polygon == []:
-            points_inside_square = ui.width_index0
+            points_inside_square = self.ui.width_index0
         else:
             points_inside_square = self.quadrant1_list_or_polygon
 
@@ -899,11 +928,11 @@ class window_filter(QWidget):
         if self.lineedit_filter_name.text() == '':
             self_brach_name = str(self.comboBox_2.currentText() + " " + self.comboBox_4.currentText() + 'VS. ' +
                                   self.comboBox_1.currentText() + " " + self.comboBox_3.currentText())
-            ui.tree_dic[self.tree_index]['tree_standarditem'].setText(self_brach_name)
+            self.ui.tree_dic[self.tree_index]['tree_standarditem'].setText(self_brach_name)
             self.setWindowTitle(self_brach_name)
         else:
             self_brach_name = str(self.lineedit_filter_name.text())
-            ui.tree_dic[self.tree_index]['tree_standarditem'].setText(self_brach_name)
+            self.ui.tree_dic[self.tree_index]['tree_standarditem'].setText(self_brach_name)
             self.setWindowTitle(self_brach_name)
 
             # check peak number filter
@@ -926,14 +955,14 @@ class window_filter(QWidget):
         # peak number filter end
 
         if self.comboBox_1.currentIndex() == 0:
-            data_in_subgating_x = ui.working_data[self.comboBox_3.currentIndex()]
+            data_in_subgating_x = self.ui.working_data[self.comboBox_3.currentIndex()]
         else:
-            data_in_subgating_x = ui.peak_width_working_data[self.comboBox_3.currentIndex()]
+            data_in_subgating_x = self.ui.peak_width_working_data[self.comboBox_3.currentIndex()]
 
         if self.comboBox_2.currentIndex() == 0:
-            data_in_subgating_y = ui.working_data[self.comboBox_4.currentIndex()]
+            data_in_subgating_y = self.ui.working_data[self.comboBox_4.currentIndex()]
         else:
-            data_in_subgating_y = ui.peak_width_working_data[self.comboBox_4.currentIndex()]
+            data_in_subgating_y = self.ui.peak_width_working_data[self.comboBox_4.currentIndex()]
 
         x_axis_channel = self.comboBox_3.currentIndex()
         y_axis_channel = self.comboBox_4.currentIndex()
@@ -1080,17 +1109,17 @@ class window_filter(QWidget):
                 channel0_list_quadrant1.append(self.Ch1_channel0[i])
                 channel1_list_quadrant1.append(self.Ch1_channel1[i])
                 count_quadrant1 += 1
-                if ui.Ch1_channel0_peak_num[i] == 1:
+                if self.ui.Ch1_channel0_peak_num[i] == 1:
                     single_peak_count_channel0 += 1
-                elif ui.Ch1_channel0_peak_num[i] > 1:
+                elif self.ui.Ch1_channel0_peak_num[i] > 1:
                     multi_peak_count_channel0 += 1
-                if ui.Ch1_channel1_peak_num[i] == 1:
+                if self.ui.Ch1_channel1_peak_num[i] == 1:
                     single_peak_count_channel1 += 1
-                elif ui.Ch1_channel1_peak_num[i] > 1:
+                elif self.ui.Ch1_channel1_peak_num[i] > 1:
                     multi_peak_count_channel1 += 1
 
         try:
-            droplets = float(ui.lineEdit_totaldroplets.text())
+            droplets = float(self.ui.lineEdit_totaldroplets.text())
             totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
         except:
             totalpercent1 = 0
@@ -1207,7 +1236,7 @@ class window_filter(QWidget):
 
             # fill quadrant table
             try:
-                droplets = float(ui.lineEdit_totaldroplets.text())
+                droplets = float(self.ui.lineEdit_totaldroplets.text())
                 totalpercent1 = round(len(self.Ch1_channel0) / droplets * 100, 2)
             except:
                 totalpercent1 = 0
@@ -1221,13 +1250,13 @@ class window_filter(QWidget):
             a = list(set(self.points_inside).intersection(set(self.points_inside_square)))
 
             for i in range(len(a)):
-                if ui.Ch1_channel0_peak_num[i] == 1:
+                if self.ui.Ch1_channel0_peak_num[i] == 1:
                     single_peak_count_channel0 += 1
-                elif ui.Ch1_channel0_peak_num[i] > 1:
+                elif self.ui.Ch1_channel0_peak_num[i] > 1:
                     multi_peak_count_channel0 += 1
-                if ui.Ch1_channel1_peak_num[i] == 1:
+                if self.ui.Ch1_channel1_peak_num[i] == 1:
                     single_peak_count_channel1 += 1
-                elif ui.Ch1_channel1_peak_num[i] > 1:
+                elif self.ui.Ch1_channel1_peak_num[i] > 1:
                     multi_peak_count_channel1 += 1
 
             self.checkC2 = time.time()
@@ -1476,7 +1505,7 @@ class window_filter(QWidget):
         key_count = 0
         while not find_a_key:
             new_index = (key_count,) + self.tree_index
-            if new_index in ui.tree_dic:
+            if new_index in self.ui.tree_dic:
                 key_count += 1
             else:
                 find_a_key = True
@@ -1484,22 +1513,22 @@ class window_filter(QWidget):
         # tree_dic[self.tree_index]['tree_standarditem'] append the codes for bottom left tree view in main window
         # tree_dic[self.tree_index]['quadrant1_list_or_polygon'] append the filter information
 
-        ui.tree_dic[new_index] = {}
-        ui.tree_dic[new_index]['tree_standarditem'] = StandardItem('New graph', 12 - len(new_index))
-        ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(ui.tree_dic[new_index]['tree_standarditem'])
-        ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.quadrant1_list_or_polygon
+        self.ui.tree_dic[new_index] = {}
+        self.ui.tree_dic[new_index]['tree_standarditem'] = StandardItem('New graph', 12 - len(new_index))
+        self.ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(self.ui.tree_dic[new_index]['tree_standarditem'])
+        self.ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.quadrant1_list_or_polygon
         print('self.quadrant1_list_or_polygon', self.quadrant1_list_or_polygon)
-        ui.treeView.expandAll()
+        self.ui.treeView.expandAll()
 
         # reassign tree_index, new window need this index to create child branch
-        ui.tree_index = new_index
+        self.ui.tree_index = new_index
 
         # open a new window for the new branch
-        ui.dialog = window_filter(self)
-        #         ui.window_filter[new_index] = ui.dialog
-        ui.tree_dic[new_index]['tree_windowfilter'] = ui.dialog
-        ui.dialog.show()
+        self.ui.dialog = window_filter(self.ui)
+        #         self.ui.window_filter[new_index] = self.ui.dialog
+        self.ui.tree_dic[new_index]['tree_windowfilter'] = self.ui.dialog
+        self.ui.dialog.show()
 
     def export_clicked(self):
-        ui.lineEdit_filter.setText(self.lineEdit.text())
+        self.ui.lineEdit_filter.setText(self.lineEdit.text())
         self.close()
