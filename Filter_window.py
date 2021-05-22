@@ -40,6 +40,7 @@ class window_filter(QWidget):
         self.tree_index = self.ui.tree_index
 
         self.quadrant1_list_or_polygon = []
+        self.filter_out_list = []
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
@@ -113,9 +114,9 @@ class window_filter(QWidget):
         Scatter_plot_layout.addWidget(self.comboBox_3, 4, 2, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_4, 5, 2, 1, 1)
 
-        self.GateVoltage_x = QtWidgets.QLineEdit('')
+        self.GateVoltage_x = QtWidgets.QLineEdit('0')
         Scatter_plot_layout.addWidget(self.GateVoltage_x, 4, 3, 1, 1)
-        self.GateVoltage_y = QtWidgets.QLineEdit('')
+        self.GateVoltage_y = QtWidgets.QLineEdit('0')
         Scatter_plot_layout.addWidget(self.GateVoltage_y, 5, 3, 1, 1)
 
         self.line_Scatter_plot = QtWidgets.QFrame()
@@ -1065,6 +1066,8 @@ class window_filter(QWidget):
         self.graphWidget.addItem(self.lr_x_axis)
         self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
         self.graphWidget.addItem(self.lr_y_axis)
+        self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
+        self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
 
         self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
         self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
@@ -1492,12 +1495,12 @@ class window_filter(QWidget):
                 if a[i] and c[i]:
                     self.quadrant1_list[i] = True
 
-            self.quadrant1_list_or_polygon = list(compress(self.points_inside_square, self.quadrant1_list))
+            self.filter_out_list = list(compress(self.points_inside_square, self.quadrant1_list))
         else:
             # run trigger again incase user forgot to finish the shape
             self.polygon_triggering()
             # pass polygon value to next window
-            self.quadrant1_list_or_polygon = self.points_inside
+            self.filter_out_list = self.points_inside
 
         # use self.tree_index instead ui to prevent potential bugs
 
@@ -1516,8 +1519,8 @@ class window_filter(QWidget):
         self.ui.tree_dic[new_index] = {}
         self.ui.tree_dic[new_index]['tree_standarditem'] = StandardItem('New graph', 12 - len(new_index))
         self.ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(self.ui.tree_dic[new_index]['tree_standarditem'])
-        self.ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.quadrant1_list_or_polygon
-        print('self.quadrant1_list_or_polygon', self.quadrant1_list_or_polygon)
+        self.ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.filter_out_list
+        print('self.quadrant1_list_or_polygon', self.filter_out_list)
         self.ui.treeView.expandAll()
 
         # reassign tree_index, new window need this index to create child branch

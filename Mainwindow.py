@@ -1680,11 +1680,11 @@ class Ui_MainWindow(object):
         self.treeModel.appendRow(self.tree_dic[(0,)]['tree_standarditem'])
 
         # create a test child branch
-        self.tree_dic[(0,0)] = {}
-        self.tree_dic[(0,0)]['tree_standarditem'] = StandardItem('test branch', 10, set_bold=True)
+        #self.tree_dic[(0,0)] = {}
+        #self.tree_dic[(0,0)]['tree_standarditem'] = StandardItem('test branch', 10, set_bold=True)
         
         # to create a child , call the parent, append the color and font to it
-        self.tree_dic[(0,)]['tree_standarditem'].appendRow(self.tree_dic[(0,0)]['tree_standarditem'])
+        #self.tree_dic[(0,)]['tree_standarditem'].appendRow(self.tree_dic[(0,0)]['tree_standarditem'])
     
         # default tree_index
         self.tree_index = (0,)
@@ -3768,12 +3768,8 @@ class Ui_MainWindow(object):
                                                                            afterchange = self.lineEdit_scatteryvoltage.text()))
         
         
-        
-        try:
-            self.file_list_view.itemChanged.connect(lambda:self.chart_title_change(change = self.file_list_view.currentItem().text()))
-        except:
-            self.file_list_view.setCurrentRow(0)
-            self.file_list_view.itemChanged.connect(lambda:self.chart_title_change(change = self.file_list_view.currentItem().text()))
+
+        self.file_list_view.itemChanged.connect(self.chart_title_change)
             
             
         self.load = False
@@ -3811,7 +3807,13 @@ class Ui_MainWindow(object):
         self.tree_dic[self.tree_index]['tree_windowfilter'].show()
 ###  window filter ends    
 
-    def chart_title_change(self, change):
+    def chart_title_change(self):
+        if self.file_list_view.currentItem():
+            change = self.file_list_view.currentItem().text()
+        else:
+            self.file_list_view.setCurrentRow(0)
+            change = self.file_list_view.currentItem().text()
+
         if len(str(change)) > 30:
             change = str(change)[0:30]
             
@@ -6968,10 +6970,10 @@ class Ui_MainWindow(object):
         
 
         try:
-            self.chart_title_change(change = self.file_list_view.currentItem().text())
+            self.chart_title_change()
         except:
             self.file_list_view.setCurrentRow(0)
-            self.chart_title_change(change = self.file_list_view.currentItem().text())     
+            self.chart_title_change()
         
         # global Ch1,Ch2,Ch3,Ch1_2,Ch1_3,Ch2_3,Locked,Raw_Time_Log,current_file_dict
         self.main_file_select = self.file_list_view.currentRow()
