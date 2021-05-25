@@ -1690,8 +1690,8 @@ class Ui_MainWindow(object):
         self.tree_index = (0,)
         
         
-        self.dialog = Filter_window.window_filter(ui)
-        self.tree_dic[(0,)]['tree_windowfilter'] = self.dialog
+        #self.dialog = Filter_window.window_filter(ui)
+        #self.tree_dic[(0,)]['tree_windowfilter'] = self.dialog
     
         
         self.treeView.setModel(self.treeModel)
@@ -7329,8 +7329,10 @@ class Ui_MainWindow(object):
 
     def openfolder(self):
         self.analog = {}
+        self.tree_dic = {}
         self.file_list_view.clear()
         self.file_dict_list.clear()
+        self.treeModel.clear()
 #         self.comboBox_option1.clear()
 #         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
@@ -7348,6 +7350,12 @@ class Ui_MainWindow(object):
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            self.tree_dic[(i,)] = {}
+            text = item.text()
+            self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
+            self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
+            self.tree_index = (i,)
+            self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui)
 
     def save(self):
         

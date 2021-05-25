@@ -44,7 +44,7 @@ class window_filter(QWidget):
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
-        if self.tree_index != (0,):
+        if len(self.tree_index) > 1:
             parent_index = self.tree_index[1:]
             self.quadrant1_list_or_polygon = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
 
