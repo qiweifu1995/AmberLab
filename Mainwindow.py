@@ -7355,7 +7355,7 @@ class Ui_MainWindow(object):
             self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
             self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
             self.tree_index = (i,)
-            self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui)
+            self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i],None, None, None)
 
     def save(self):
         

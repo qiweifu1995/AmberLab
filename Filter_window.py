@@ -31,22 +31,28 @@ class StandardItem(QStandardItem):
 
 
 class window_filter(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, current_file_dict, working_data, peak_width_working_data, peak_num_working_data):
         super().__init__()
         self.ui = parent
         # tree_index saved the index number for all filters, include its parent and child branch
         # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
 
         self.tree_index = self.ui.tree_index
-
-        self.quadrant1_list_or_polygon = []
+        self.current_file_dict = current_file_dict
+        self.working_data = working_data
         self.filter_out_list = []
+        self.peak_width_working_data = []
+        self.peak_num_working_data = []
+        self.points_inside_square = []
+
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
         if len(self.tree_index) > 1:
             parent_index = self.tree_index[1:]
-            self.quadrant1_list_or_polygon = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+            self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+            self.peak_width_working_data = peak_width_working_data
+            self.peak_num_working_data = peak_num_working_data
 
         #############################################   #############################################
         # main filter tab
@@ -906,7 +912,7 @@ class window_filter(QWidget):
         self.peak_num_filtered_index = []
         holder = [[], [], [], []]
         for ch in range(4):
-            holder[ch] = [i for i, x in enumerate(self.ui.peak_num_working_data[ch])
+            holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
         self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
         print('holder[0]', holder[0])
@@ -918,10 +924,66 @@ class window_filter(QWidget):
         # "update" clicked
         # prepare data
 
-        if self.quadrant1_list_or_polygon == []:
-            points_inside_square = self.ui.width_index0
+        if self.points_inside_square == []:
+            self.peak_width_working_data = []
+            self.peak_num_working_data = []
+            self.working_data = []
+
+
+            for i in range(4):
+                self.working_data.append([])
+                self.peak_width_working_data.append([])
+                self.peak_num_working_data.append([])
+
+            if self.ui.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][2][i]
+            if self.ui.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][2][i]
+            if self.ui.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][2][i]
+            if self.ui.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][2][i]
+            if self.ui.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][i]
+            if self.ui.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][2][i]
+            if self.ui.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
+            if self.ui.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+
+            if len(self.peak_width_working_data) == 0:
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+            points_inside_square = [i for i in range(len(self.working_data[0]))]
         else:
-            points_inside_square = self.quadrant1_list_or_polygon
+            points_inside_square = self.points_inside_square
 
         # edit filter name
 
@@ -956,14 +1018,14 @@ class window_filter(QWidget):
         # peak number filter end
 
         if self.comboBox_1.currentIndex() == 0:
-            data_in_subgating_x = self.ui.working_data[self.comboBox_3.currentIndex()]
+            data_in_subgating_x = self.working_data[self.comboBox_3.currentIndex()]
         else:
-            data_in_subgating_x = self.ui.peak_width_working_data[self.comboBox_3.currentIndex()]
+            data_in_subgating_x = self.peak_width_working_data[self.comboBox_3.currentIndex()]
 
         if self.comboBox_2.currentIndex() == 0:
-            data_in_subgating_y = self.ui.working_data[self.comboBox_4.currentIndex()]
+            data_in_subgating_y = self.working_data[self.comboBox_4.currentIndex()]
         else:
-            data_in_subgating_y = self.ui.peak_width_working_data[self.comboBox_4.currentIndex()]
+            data_in_subgating_y = self.peak_width_working_data[self.comboBox_4.currentIndex()]
 
         x_axis_channel = self.comboBox_3.currentIndex()
         y_axis_channel = self.comboBox_4.currentIndex()
@@ -1527,7 +1589,7 @@ class window_filter(QWidget):
         self.ui.tree_index = new_index
 
         # open a new window for the new branch
-        self.ui.dialog = window_filter(self.ui)
+        self.ui.dialog = window_filter(self.ui, self.current_file_dict, self.working_data, self.peak_width_working_data, self.peak_num_working_data)
         #         self.ui.window_filter[new_index] = self.ui.dialog
         self.ui.tree_dic[new_index]['tree_windowfilter'] = self.ui.dialog
         self.ui.dialog.show()
