@@ -626,14 +626,14 @@ class window_filter(QWidget):
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
         self.ui.sweep_left = [[], [], [], []]
-        for ch in range(len(self.ui.working_data)):
-            self.ui.sweep_left[ch] = [self.ui.working_data[ch][i] for i in self.points_inside]
+        for ch in range(len(self.working_data)):
+            self.ui.sweep_left[ch] = [self.working_data[ch][i] for i in self.points_inside]
         self.ui.update_sweep_1(data_updated=True)
 
     def update_sweep_right(self):
         self.ui.sweep_right = [[], [], [], []]
-        for ch in range(len(self.ui.working_data)):
-            self.ui.sweep_right[ch] = [self.ui.working_data[ch][i] for i in self.points_inside]
+        for ch in range(len(self.working_data)):
+            self.ui.sweep_right[ch] = [self.working_data[ch][i] for i in self.points_inside]
         self.ui.update_sweep_2(data_updated=True)
 
     # two ways to trigger the linear plot:
@@ -840,9 +840,9 @@ class window_filter(QWidget):
             self.draw_graphwidget()
 
         if self.histogram_comboBox_1.currentIndex() == 0:
-            self.width = self.ui.working_data[self.histogram_comboBox_2.currentIndex()]
+            self.width = self.working_data[self.histogram_comboBox_2.currentIndex()]
         else:
-            self.width = self.ui.peak_width_working_data[self.histogram_comboBox_2.currentIndex()]
+            self.width = self.peak_width_working_data[self.histogram_comboBox_2.currentIndex()]
 
         self.full_width = [self.width[i] for i in self.points_inside_square]
 
@@ -935,42 +935,42 @@ class window_filter(QWidget):
                 self.peak_width_working_data.append([])
                 self.peak_num_working_data.append([])
 
-            if self.ui.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+            if self.ui.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][2][i]
-            if self.ui.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+            if self.ui.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][2][i]
-            if self.ui.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+            if self.ui.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][2][i]
-            if self.ui.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+            if self.ui.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][2][i]
-            if self.ui.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+            if self.ui.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][i]
-            if self.ui.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+            if self.ui.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] in self.ui.analog.s():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][2][i]
-            if self.ui.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+            if self.ui.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
-            if self.ui.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+            if self.ui.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]

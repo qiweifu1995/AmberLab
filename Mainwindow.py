@@ -2546,7 +2546,7 @@ class Ui_MainWindow(object):
         
 
             
-        self.tab_widgets_main.addTab(self.tab_subgating, "")
+        #self.tab_widgets_main.addTab(self.tab_subgating, "")
         self.subgating_verticalLayout_4.addWidget(self.tab_widgets_subgating)
         self.tab_widgets_subgating.addTab(self.subgating_subtab_scatter, "")
 
@@ -2833,8 +2833,8 @@ class Ui_MainWindow(object):
 #         self.tab_sweep.setObjectName("tab_sweep")
 
         
-        self.tab_widgets_subgating.addTab(self.tab_sweep, "")          
-#         self.tab_widgets_main.addTab(self.tab_sweep, "")        
+        self.tab_widgets_subgating.addTab(self.tab_sweep, "")
+        self.tab_widgets_main.addTab(self.tab_sweep, "")
 
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.tab_sweep)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -3585,8 +3585,8 @@ class Ui_MainWindow(object):
 #         self.lineEdit_gatevoltage_4.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
         
 
-        self.comboBox_option1.currentIndexChanged.connect(self.update_sweep_1)
-        self.comboBox_option2.currentIndexChanged.connect(self.update_sweep_2)
+        self.comboBox_option1.currentIndexChanged.connect(self.sweep_1_index_changed)
+        self.comboBox_option2.currentIndexChanged.connect(self.sweep_2_index_changed)
         
 
 
@@ -5283,7 +5283,7 @@ class Ui_MainWindow(object):
         if self.update:
             stats = []
             self.tableView_statistic.clear()
-            self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
+            self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Max', 'Min'])
             self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
             for i in range(4):
                 mean = statistics.mean(self.working_data[i])
@@ -5300,25 +5300,29 @@ class Ui_MainWindow(object):
     def sweep_update_low(self):
         """update sweep parameter threshold for low"""
         sweep_thresh = float(self.lineEdit_gatevoltageminimum.text())
-        if len(self.sweep_1_data) > 0:
-            filtered_gate_voltage = [x for x in self.sweep_1_data if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_1_data), 2)
-            self.lineEdit_percentagelow1.setText(str(percentage))
-        if len(self.sweep_2_data) > 0:
-            filtered_gate_voltage = [x for x in self.sweep_2_data if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_2_data), 2)
-            self.lineEdit_percentagelow2.setText(str(percentage))
+        data_1 = self.sweep_1_data
+        data_2 = self.sweep_2_data
+        if len(data_1) > 0:
+            filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
+            self.lineEdit_percentagehigh1.setText(str(percentage))
+        if len(data_2) > 0:
+            filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
+            self.lineEdit_percentagehigh2.setText(str(percentage))
 
     def sweep_update_high(self):
         """update sweep parameter threshold for above"""
         sweep_thresh = float(self.lineEdit_gatevoltagemaximum.text())
-        if len(self.sweep_1_data) > 0:
-            filtered_gate_voltage = [x for x in self.sweep_1_data if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_1_data), 2)
+        data_1 = self.sweep_1_data
+        data_2 = self.sweep_2_data
+        if len(data_1) > 0:
+            filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
             self.lineEdit_percentagehigh1.setText(str(percentage))
-        if len(self.sweep_2_data) > 0:
-            filtered_gate_voltage = [x for x in self.sweep_2_data if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(self.sweep_2_data), 2)
+        if len(data_2) > 0:
+            filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
+            percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
             self.lineEdit_percentagehigh2.setText(str(percentage))
 
     def sweep_update(self):
@@ -5332,7 +5336,7 @@ class Ui_MainWindow(object):
             range_min = 0
             increment = 0
         if 0 < increment < range_max - range_min and (range_max - range_min) / increment < 500 and \
-                len(self.sweep_1_data) > 0 and len(self.sweep_2_data) > 0:
+                (len(self.sweep_1_data) > 0 or len(self.sweep_2_data) > 0):
             print("Updating Sweep Table")
             self.widget_sweepresult1.clear()
             self.widget_sweepresult1.setRowCount(int((range_max - range_min) / increment))
@@ -5468,6 +5472,13 @@ class Ui_MainWindow(object):
 #         self.widget_sweepparam2.setYRange(0, max(y), padding=0)
 #         self.label_39.setText(self.comboBox_option1.currentText())
 
+    def sweep_1_index_changed(self):
+        """Function used to link update sweep with the index changes"""
+        self.update_sweep_1(True)
+
+    def sweep_2_index_changed(self):
+        """Function used to link update sweep with the index changes"""
+        self.update_sweep_2(True)
 
     def update_sweep_1(self, data_updated=False):
         self.widget_sweepparam2.clear()
@@ -5482,7 +5493,7 @@ class Ui_MainWindow(object):
             try:
                 self.sweep_1_data = self.sweep_left[channel]
             except:
-                self.sweep_1_data = [[], [], [], []]
+                self.sweep_1_data = []
 
         try:
             range_width = int(max(self.sweep_1_data)) + 1
@@ -5512,7 +5523,7 @@ class Ui_MainWindow(object):
             try:
                 self.sweep_2_data = self.sweep_right[channel]
             except:
-                self.sweep_2_data = [[],[],[],[]]
+                self.sweep_2_data = []
 
         try:
             range_width = int(max(self.sweep_2_data)) + 1
@@ -6379,105 +6390,105 @@ class Ui_MainWindow(object):
         self.tableView_scatterquadrants.setItem(3, 5, QTableWidgetItem(x_multi_4))
         self.tableView_scatterquadrants.setItem(3, 6, QTableWidgetItem(y_multi_4))
 
-#         ### mid table
+         ### mid table
 
-#         try:
-#             self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel0_list_quadrant1), 2))))
-#             self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel0_list_quadrant1), 2))))
-#             self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel0_list_quadrant1), 2))))
-#         except:
-#             self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant1), 2))))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant1), 2))))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant1), 2))))
+        except:
+            self.tableView_scatterxaxis.setItem(0, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel0_list_quadrant2), 2))))
-#             self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel0_list_quadrant2), 2))))
-#             self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel0_list_quadrant2), 2))))
-#         except:
-#             self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant2), 2))))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant2), 2))))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant2), 2))))
+        except:
+            self.tableView_scatterxaxis.setItem(1, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(1, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel0_list_quadrant3), 2))))
-#             self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel0_list_quadrant3), 2))))
-#             self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel0_list_quadrant3), 2))))
-#         except:
-#             self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant3), 2))))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant3), 2))))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant3), 2))))
+        except:
+            self.tableView_scatterxaxis.setItem(2, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel0_list_quadrant4), 2))))
-#             self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel0_list_quadrant4), 2))))
-#             self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel0_list_quadrant4), 2))))
-#         except:
-#             self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel0_list_quadrant4), 2))))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel0_list_quadrant4), 2))))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem(
+                str(round(statistics.median(channel0_list_quadrant4), 2))))
+        except:
+            self.tableView_scatterxaxis.setItem(3, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatterxaxis.setItem(3, 2, QTableWidgetItem('NaN'))
 
-#         # bottom
+        # bottom
 
-#         try:
-#             self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel1_list_quadrant1), 2))))
-#             self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel1_list_quadrant1), 2))))
-#             self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel1_list_quadrant1), 2))))
-#         except:
-#             self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant1), 2))))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant1), 2))))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant1), 2))))
+        except:
+            self.tableView_scatteryaxis.setItem(0, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(0, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(0, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel1_list_quadrant2), 2))))
-#             self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel1_list_quadrant2), 2))))
-#             self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel1_list_quadrant2), 2))))
-#         except:
-#             self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant2), 2))))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant2), 2))))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant2), 2))))
+        except:
+            self.tableView_scatteryaxis.setItem(1, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(1, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel1_list_quadrant3), 2))))
-#             self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel1_list_quadrant3), 2))))
-#             self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel1_list_quadrant3), 2))))
-#         except:
-#             self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant3), 2))))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant3), 2))))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant3), 2))))
+        except:
+            self.tableView_scatteryaxis.setItem(2, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(2, 2, QTableWidgetItem('NaN'))
 
-#         try:
-#             self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(
-#                 str(round(statistics.mean(channel1_list_quadrant4), 2))))
-#             self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(
-#                 str(round(statistics.stdev(channel1_list_quadrant4), 2))))
-#             self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(
-#                 str(round(statistics.median(channel1_list_quadrant4), 2))))
-#         except:
-#             self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
-#             self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem('NaN'))
+        try:
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem(
+                str(round(statistics.mean(channel1_list_quadrant4), 2))))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem(
+                str(round(statistics.stdev(channel1_list_quadrant4), 2))))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem(
+                str(round(statistics.median(channel1_list_quadrant4), 2))))
+        except:
+            self.tableView_scatteryaxis.setItem(3, 0, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3, 1, QTableWidgetItem('NaN'))
+            self.tableView_scatteryaxis.setItem(3, 2, QTableWidgetItem('NaN'))
 
 
 #         ###  
@@ -6579,12 +6590,12 @@ class Ui_MainWindow(object):
         
         
         
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_subgating),
-                                         _translate("MainWindow", "Subgating Results"))        
+        #self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_subgating),
+        #                                 _translate("MainWindow", "Subgating Results"))
         self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.subgating_subtab_scatter),
                                             _translate("MainWindow", "Scatter"))        
-        self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_sweep), 
-                                              _translate("MainWindow", "Sweep"))   
+        self.tab_widgets_subgating.setTabText(self.tab_widgets_subgating.indexOf(self.tab_sweep),
+                                              _translate("MainWindow", "Sweep"))
         
         self.subgating_label_30.setText(_translate("MainWindow", "Gate Voltages"))
         self.subgating_label_31.setText(_translate("MainWindow", "X-Axis"))
@@ -6776,6 +6787,8 @@ class Ui_MainWindow(object):
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
                                          _translate("MainWindow", "Peak Width/Number Subgating"))
+        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_sweep),
+                                         _translate("MainWindow", "Sweep"))
         
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
                                          _translate("MainWindow", "Log"))
@@ -7259,6 +7272,7 @@ class Ui_MainWindow(object):
 #             check4 = time.time()
             
             self.draw_peak_width()
+            self.update_statistic()
 #             check4A = time.time()
 #             self.draw_peak_width_2()
 #             check4B = time.time()
