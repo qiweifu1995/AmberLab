@@ -5094,7 +5094,6 @@ class Ui_MainWindow(object):
 #         try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
 #         except : print("Ui_MainWindow.reset: FALSE")
 
-
         print('self.update',self.update)
         print('self.reanalysis',self.reanalysis)
         if self.update or self.reanalysis:
@@ -7273,6 +7272,8 @@ class Ui_MainWindow(object):
             
             self.draw_peak_width()
             self.update_statistic()
+
+
 #             check4A = time.time()
 #             self.draw_peak_width_2()
 #             check4B = time.time()
@@ -7312,8 +7313,9 @@ class Ui_MainWindow(object):
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
             ### End
-            
-            self.subgating_scatter(pressed_function_redo = True) 
+
+            self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(self.comboBox_14_list)
+            self.subgating_scatter(pressed_function_redo = True)
             print("complete!")
         check6 = time.time()
 
