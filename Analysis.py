@@ -93,7 +93,7 @@ class file_extracted_data_Qing:
         print("Extracting Peak... Parallel")
         start = time.time()
         Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
-                                                     peak_enable, channel, 200, 2, 'Peak Record', total_count,
+                                                     peak_enable, channel, 1000, 2, 'Peak Record', total_count,
                                                      peak_threshold, width_min, width_max)
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
         end = time.time()

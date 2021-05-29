@@ -45,6 +45,11 @@ class window_filter(QWidget):
         self.peak_num_working_data = []
         self.points_inside_square = []
 
+        # plot setting
+        axis_font = QFont()
+        axis_font.setPointSize(12)
+        axis_pen = pg.mkPen(QColor(0, 0, 0), width=2)
+
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
         if len(self.tree_index) > 1:
@@ -92,6 +97,8 @@ class window_filter(QWidget):
 
         self.label_y_Axis = QLabel("Y-Axis")
         Scatter_plot_layout.addWidget(self.label_y_Axis, 5, 0, 1, 1)
+
+
 
         ### Check box layout
         self.comboBox_1 = QtWidgets.QComboBox()
@@ -232,6 +239,13 @@ class window_filter(QWidget):
         self.pushButton_confirm = QPushButton('Update')
         layout.addWidget(self.pushButton_confirm, 8, 0, 1, 1)
 
+        #density label
+        self.label_density = QLabel("Plot Density")
+        layout.addWidget(self.label_density, 8,1,1,1)
+        self.density_line_edit = QtWidgets.QLineEdit('7')
+        layout.addWidget(self.density_line_edit,8,2,1,1)
+
+
         self.pushButton_1 = QPushButton('Next Filter')
         self.pushButton_2 = QPushButton('Close')
         self.pushButton_3 = QPushButton('Export Linear Plot')
@@ -284,6 +298,17 @@ class window_filter(QWidget):
         self.graphWidget.setBackground('w')
         self.graphWidget.setLabel('left', 'Green')
         self.graphWidget.setLabel('bottom', 'Far Red')
+
+
+        #plot setting
+
+        self.graphWidget.getAxis('left').setPen(axis_pen)
+        self.graphWidget.getAxis('left').setTextPen(axis_pen)
+        self.graphWidget.getAxis('left').setStyle(tickFont= axis_font)
+        self.graphWidget.getAxis('bottom').setPen(axis_pen)
+        self.graphWidget.getAxis('bottom').setTextPen(axis_pen)
+        self.graphWidget.getAxis('bottom').setStyle(tickFont=axis_font)
+
 
         # add threshold
         pen = pg.mkPen(color=(0, 120, 180), width=5)
@@ -1053,7 +1078,7 @@ class window_filter(QWidget):
                                      [[0, max_voltage], [0, max_voltage]],
                                      density=True)
         max_density = histo.max()
-        percentage_coefficient = int(1) / 10
+        percentage_coefficient = int(float(self.density_line_edit.text()))
         # made empty array to hold the sorted data according to density
         density_listx = []
         density_listy = []
