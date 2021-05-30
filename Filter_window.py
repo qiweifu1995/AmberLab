@@ -311,7 +311,7 @@ class window_filter(QWidget):
 
 
         # add threshold
-        pen = pg.mkPen(color=(0, 120, 180), width=5)
+        pen = pg.mkPen(color=(0, 120, 180), width=5, style=QtCore.Qt.DashLine)
         self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
         self.graphWidget.addItem(self.lr_x_axis)
         self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
@@ -988,7 +988,7 @@ class window_filter(QWidget):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][i]
-            if self.ui.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] in self.ui.analog.s():
+            if self.ui.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
@@ -1152,7 +1152,7 @@ class window_filter(QWidget):
         self.graphWidget.removeItem(self.lr_x_axis)
         self.graphWidget.removeItem(self.lr_y_axis)
 
-        pen = pg.mkPen(color=(0, 120, 180), width=5)
+        pen = pg.mkPen(color=(0, 120, 180), width=5, style=QtCore.Qt.DashLine)
         self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
         self.graphWidget.addItem(self.lr_x_axis)
         self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
