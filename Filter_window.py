@@ -46,8 +46,8 @@ class window_filter(QWidget):
         self.points_inside_square = []
 
         # plot setting
-        axis_font = QFont()
-        axis_font.setPointSize(12)
+        axis_font = QFont('Times')
+        axis_font.setPointSize(14)
         axis_pen = pg.mkPen(QColor(0, 0, 0), width=2)
 
         # export parent index
@@ -311,7 +311,7 @@ class window_filter(QWidget):
 
 
         # add threshold
-        pen = pg.mkPen(color=(0, 120, 180), width=5, style=QtCore.Qt.DashLine)
+        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
         self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
         self.graphWidget.addItem(self.lr_x_axis)
         self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
@@ -805,6 +805,9 @@ class window_filter(QWidget):
                 length = len(polygon_data.columns)
                 polygon_data.columns = list(range(0, length))
                 data = pd.concat([data, polygon_data])
+            if sample_size == 1000:
+                print("Graph will be undersampled to 200")
+                data = data.iloc[::5, :]
 
             height_data = data[0].values.tolist()
             height_index = list(range(len(height_data)))
@@ -813,45 +816,45 @@ class window_filter(QWidget):
             window_length = int(self.lineEdit_40.text()) // 2 * 2 - 1
             self.widget_29.addLegend()
 
-            for i in range(0, sample_size * nrows, sample_size):
+            for i in range(0, 200 * nrows, 200):
                 self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
 
             if self.polygon_Smooth_enable.isChecked():
                 if self.polygon_channel_1.isChecked():
                     height_data = savgol_filter(data[0], window_length, poly_degree)
-                    pen = pg.mkPen(color=(83, 229, 29), width=2)
+                    pen = pg.mkPen(color=(83, 229, 29), width=4)
                     self.widget_29.plot(height_index, height_data, name='Channel_1', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_2.isChecked():
                     height_data = savgol_filter(data[1], window_length, poly_degree)
-                    pen = pg.mkPen(color=(238, 17, 47), width=2)
+                    pen = pg.mkPen(color=(238, 17, 47), width=4)
                     self.widget_29.plot(height_index, height_data, name='Channel_2', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_3.isChecked():
                     height_data = savgol_filter(data[2], window_length, poly_degree)
-                    pen = pg.mkPen(color=(48, 131, 240), width=2)
+                    pen = pg.mkPen(color=(48, 131, 240), width=4)
                     self.widget_29.plot(height_index, height_data, name='Channel_3', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_4.isChecked():
                     height_data = savgol_filter(data[3], window_length, poly_degree)
-                    pen = pg.mkPen(color=(238, 134, 30), width=2)
+                    pen = pg.mkPen(color=(238, 134, 30), width=4)
                     self.widget_29.plot(height_index, height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
             else:
                 if self.polygon_channel_1.isChecked():
-                    pen = pg.mkPen(color=(83, 229, 29), width=2)
+                    pen = pg.mkPen(color=(83, 229, 29), width=4)
                     self.widget_29.plot(height_index, data[0].values.tolist(), name='Channel_1', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_2.isChecked():
-                    pen = pg.mkPen(color=(238, 17, 47), width=2)
+                    pen = pg.mkPen(color=(238, 17, 47), width=4)
                     self.widget_29.plot(height_index, data[1].values.tolist(), name='Channel_2', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_3.isChecked():
-                    pen = pg.mkPen(color=(48, 131, 240), width=2)
+                    pen = pg.mkPen(color=(48, 131, 240), width=4)
                     self.widget_29.plot(height_index, data[2].values.tolist(), name='Channel_3', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_4.isChecked():
-                    pen = pg.mkPen(color=(238, 134, 30), width=2)
+                    pen = pg.mkPen(color=(238, 134, 30), width=4)
                     self.widget_29.plot(height_index, data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
         else:
@@ -1152,7 +1155,7 @@ class window_filter(QWidget):
         self.graphWidget.removeItem(self.lr_x_axis)
         self.graphWidget.removeItem(self.lr_y_axis)
 
-        pen = pg.mkPen(color=(0, 120, 180), width=5, style=QtCore.Qt.DashLine)
+        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
         self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
         self.graphWidget.addItem(self.lr_x_axis)
         self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
