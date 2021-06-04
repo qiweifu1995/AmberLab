@@ -47,8 +47,8 @@ class window_filter(QWidget):
 
         # plot setting
         axis_font = QFont('Times')
-        axis_font.setPointSize(14)
-        axis_pen = pg.mkPen(QColor(0, 0, 0), width=2)
+        axis_font.setPointSize(22)
+        axis_pen = pg.mkPen(QColor(0, 0, 0), width=6)
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
@@ -308,6 +308,8 @@ class window_filter(QWidget):
         self.graphWidget.getAxis('bottom').setPen(axis_pen)
         self.graphWidget.getAxis('bottom').setTextPen(axis_pen)
         self.graphWidget.getAxis('bottom').setStyle(tickFont=axis_font)
+
+
 
 
         # add threshold
@@ -637,6 +639,13 @@ class window_filter(QWidget):
         self.widget_29.setLabel('left', 'Height', **styles)
         self.widget_29.setBackground('w')
 
+        self.widget_29.getAxis('left').setPen(axis_pen)
+        self.widget_29.getAxis('left').setTextPen(axis_pen)
+        self.widget_29.getAxis('left').setStyle(tickFont=axis_font)
+        self.widget_29.getAxis('bottom').setPen(axis_pen)
+        self.widget_29.getAxis('bottom').setTextPen(axis_pen)
+        self.widget_29.getAxis('bottom').setStyle(tickFont=axis_font)
+
         # triggers
         self.pushButton_6.clicked.connect(self.polygon_reset_linear_plot)
         self.pushButton_8.clicked.connect(self.polygon_last_page)
@@ -811,54 +820,63 @@ class window_filter(QWidget):
 
             height_data = data[0].values.tolist()
             height_index = list(range(len(height_data)))
+            height_index = [i/100-0.5 for i in height_index]
 
             poly_degree = int(self.lineEdit_39.text())
             window_length = int(self.lineEdit_40.text()) // 2 * 2 - 1
-            self.widget_29.addLegend()
 
-            for i in range(0, 200 * nrows, 200):
+            self.widget_29.addLegend()
+            self.widget_29.plotItem.legend.setLabelTextColor(QColor(0,0,0))
+            self.widget_29.plotItem.legend.setLabelTextSize('13pt')
+
+            self.plot_width = 10
+
+
+
+            for i in range(0, 2 * nrows, 2):
                 self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
 
             if self.polygon_Smooth_enable.isChecked():
                 if self.polygon_channel_1.isChecked():
                     height_data = savgol_filter(data[0], window_length, poly_degree)
-                    pen = pg.mkPen(color=(83, 229, 29), width=4)
-                    self.widget_29.plot(height_index, height_data, name='Channel_1', pen=pen, symbol='o', symbolSize=0,
+                    pen = pg.mkPen(color=(83, 229, 29), width=self.plot_width)
+                    self.widget_29.plot(height_index, height_data, name='ZsGreen', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_2.isChecked():
                     height_data = savgol_filter(data[1], window_length, poly_degree)
-                    pen = pg.mkPen(color=(238, 17, 47), width=4)
-                    self.widget_29.plot(height_index, height_data, name='Channel_2', pen=pen, symbol='o', symbolSize=0,
+                    pen = pg.mkPen(color=(238, 17, 47), width=self.plot_width)
+                    self.widget_29.plot(height_index, height_data, name='E2-Crimson', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_3.isChecked():
                     height_data = savgol_filter(data[2], window_length, poly_degree)
-                    pen = pg.mkPen(color=(48, 131, 240), width=4)
-                    self.widget_29.plot(height_index, height_data, name='Channel_3', pen=pen, symbol='o', symbolSize=0,
+                    pen = pg.mkPen(color=(48, 131, 240), width=self.plot_width)
+                    self.widget_29.plot(height_index, height_data, name='CellTrace Violet', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_4.isChecked():
                     height_data = savgol_filter(data[3], window_length, poly_degree)
-                    pen = pg.mkPen(color=(238, 134, 30), width=4)
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
                     self.widget_29.plot(height_index, height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
             else:
                 if self.polygon_channel_1.isChecked():
-                    pen = pg.mkPen(color=(83, 229, 29), width=4)
+                    pen = pg.mkPen(color=(83, 229, 29), width=self.plot_width)
                     self.widget_29.plot(height_index, data[0].values.tolist(), name='Channel_1', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_2.isChecked():
-                    pen = pg.mkPen(color=(238, 17, 47), width=4)
+                    pen = pg.mkPen(color=(238, 17, 47), width=self.plot_width)
                     self.widget_29.plot(height_index, data[1].values.tolist(), name='Channel_2', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_3.isChecked():
-                    pen = pg.mkPen(color=(48, 131, 240), width=4)
+                    pen = pg.mkPen(color=(48, 131, 240), width=self.plot_width)
                     self.widget_29.plot(height_index, data[2].values.tolist(), name='Channel_3', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
                 if self.polygon_channel_4.isChecked():
-                    pen = pg.mkPen(color=(238, 134, 30), width=4)
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
                     self.widget_29.plot(height_index, data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
         else:
             print("Enter a new lower bond value")
+
 
         self.widget_29.autoRange()
 
