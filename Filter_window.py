@@ -47,7 +47,7 @@ class window_filter(QWidget):
 
         # plot setting
         axis_font = QFont('Times')
-        axis_font.setPointSize(22)
+        axis_font.setPointSize(21)
         axis_pen = pg.mkPen(QColor(0, 0, 0), width=6)
 
         # export parent index
@@ -827,7 +827,7 @@ class window_filter(QWidget):
 
             self.widget_29.addLegend()
             self.widget_29.plotItem.legend.setLabelTextColor(QColor(0,0,0))
-            self.widget_29.plotItem.legend.setLabelTextSize('13pt')
+            self.widget_29.plotItem.legend.setLabelTextSize('15pt')
 
             self.plot_width = 10
 
