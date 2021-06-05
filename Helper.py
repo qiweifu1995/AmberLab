@@ -19,7 +19,8 @@ def project_namelist(file_dir):
                  "Peak Record": "",
                  "Raw Time Log": "",
                  "Time Log": "",
-                 "Root Folder": ""
+                 "Root Folder": "",
+                 "Droplets Extracted Data": ""
                  }
     if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") >= 0:
         root_folder = os.path.dirname(file_dir)

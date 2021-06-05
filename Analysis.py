@@ -303,6 +303,10 @@ class file_extracted_data_Qing:
         """
         return peak, width, peak_counts
 
+    def extracted_data_loader(self, file_name):
+
+
+
 
 def peak_finder(channel, Ch, user_set_chunk_size):
     print("Peak Finder Start: ", str(time.time()))
