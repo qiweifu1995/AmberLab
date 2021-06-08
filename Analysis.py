@@ -98,7 +98,7 @@ class file_extracted_data_Qing:
         print("Extracting Peak... Parallel")
         start = time.time()
         Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
-                                                     peak_enable, channel, 1000, 2, 'Peak Record', total_count,
+                                                     peak_enable, channel, 200, 2, 'Peak Record', total_count,
                                                      peak_threshold, width_min, width_max)
         self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
         end = time.time()
@@ -311,6 +311,7 @@ class file_extracted_data_Qing:
     def extracted_data_loader(self, file_name):
         """function used to load extracted data"""
         print("start extracted data loading")
+        start = time.time()
         peak = [[], [], [], []]
         width = [[], [], [], []]
         peak_counts = [[], [], [], []]
@@ -329,7 +330,7 @@ class file_extracted_data_Qing:
         start_count = False
         """while loop to figure out chunksize"""
         while chunk_size == 0 and counter < length:
-            if extracted_data.iloc[counter, 0] == 16 and extracted_data.iloc[counter, 3] == 16:
+            if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 3] == -16:
                 """rows with 16,16,16,16 is divider"""
                 if start_count:
                     chunk_size = counter
@@ -343,23 +344,25 @@ class file_extracted_data_Qing:
         total_droplets = length/chunk_size
         print("Total number of droplet extracted: " + str(total_droplets))
         total_channels = (chunk_size-1)//3
+        curent_droplet = 0
         for i in range(0, length, chunk_size):
             """load each chunk and process """
-            current_chunk = extracted_data.iloc[i:i+chunk_size]
-            droplet_size = current_chunk.iloc[0, 4]
-            for j in range(1, chunk_size):
-                channel = (j-1) // 3
-                mode = (j-1) % 3
+            curent_droplet += 1
+            droplet_size = extracted_data.iloc[i, 4]
+            for j in range(i, i+chunk_size):
+                channel = (j-(curent_droplet-1)*chunk_size) // 3
+                mode = (j-curent_droplet) % 3
                 if mode == 0:
                     """first line of the chunk, extract number of peaks and vertical value"""
-                    peak_counts[channel].append(current_chunk.iloc[j, 0])
-                    peak[channel].append(current_chunk.iloc[j, 1])
+                    peak_counts[channel].append(extracted_data[0][j])
+                    peak[channel].append(extracted_data[1][j])
                     width[channel].append(droplet_size)
             if total_channels < 4:
                 """handle AFA data, missing fourth channel"""
                 peak[3].append(0)
                 peak_counts[3].append(0)
                 width[3].append(0)
+        print("Extracted data loading time: " + str(start-time.time()))
 
         return peak, width, peak_counts
 

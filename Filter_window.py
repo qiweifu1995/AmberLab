@@ -44,6 +44,7 @@ class window_filter(QWidget):
         self.peak_width_working_data = []
         self.peak_num_working_data = []
         self.points_inside_square = []
+        self.root = True
 
         # plot setting
         axis_font = QFont('Times')
@@ -57,6 +58,7 @@ class window_filter(QWidget):
             self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
             self.peak_width_working_data = peak_width_working_data
             self.peak_num_working_data = peak_num_working_data
+            self.root = False
 
         #############################################   #############################################
         # main filter tab
@@ -676,6 +678,8 @@ class window_filter(QWidget):
 
     def channel_list_update(self, linear_plot_channel_list):
         self.linear_plot_channel_list = linear_plot_channel_list
+        if self.root:
+            self.points_inside_square = []
 
     def polygon_linear_plot_triggered_from_scatter_subtab(self):
         # reset upper and lower bond
