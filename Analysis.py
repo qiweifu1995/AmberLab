@@ -84,7 +84,12 @@ class file_extracted_data_Qing:
 
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
 
-        if current_file_dict["Droplet Record"] != "":
+        if current_file_dict["Droplets Extracted Data"] != "":
+            print("Importing Extracted Droplet Record...")
+            listDR, widthDR, num_peaksDR = self.extracted_data_loader(current_file_dict["Droplets Extracted Data"])
+
+            self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR]
+        elif current_file_dict["Droplet Record"] != "":
             print("Extracting Droplet Record...")
             listDR, widthDR, num_peaksDR = self.extract_parallel2(current_file_dict["Droplet Record"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
 
@@ -304,6 +309,61 @@ class file_extracted_data_Qing:
         return peak, width, peak_counts
 
     def extracted_data_loader(self, file_name):
+        """function used to load extracted data"""
+        print("start extracted data loading")
+        peak = [[], [], [], []]
+        width = [[], [], [], []]
+        peak_counts = [[], [], [], []]
+        chunk_size = 0
+
+        """loading the data, return empty array is file does not exist"""
+        try:
+            extracted_data = pd.read_csv(file_name, header=None)
+            length = len(extracted_data.index)
+            print("reading: " + str(file_name))
+        except:
+            print("file did not exist")
+            return peak, width, peak_counts
+
+        counter = 0
+        start_count = False
+        """while loop to figure out chunksize"""
+        while chunk_size == 0 and counter < length:
+            if extracted_data.iloc[counter, 0] == 16 and extracted_data.iloc[counter, 3] == 16:
+                """rows with 16,16,16,16 is divider"""
+                if start_count:
+                    chunk_size = counter
+                    break
+                else:
+                    start_count = True
+                    counter += 1
+            else:
+                counter += 1
+
+        total_droplets = length/chunk_size
+        print("Total number of droplet extracted: " + str(total_droplets))
+        total_channels = (chunk_size-1)//3
+        for i in range(0, length, chunk_size):
+            """load each chunk and process """
+            current_chunk = extracted_data.iloc[i:i+chunk_size]
+            droplet_size = current_chunk.iloc[0, 4]
+            for j in range(1, chunk_size):
+                channel = (j-1) // 3
+                mode = (j-1) % 3
+                if mode == 0:
+                    """first line of the chunk, extract number of peaks and vertical value"""
+                    peak_counts[channel].append(current_chunk.iloc[j, 0])
+                    peak[channel].append(current_chunk.iloc[j, 1])
+                    width[channel].append(droplet_size)
+            if total_channels < 4:
+                """handle AFA data, missing fourth channel"""
+                peak[3].append(0)
+                peak_counts[3].append(0)
+                width[3].append(0)
+
+        return peak, width, peak_counts
+
+
 
 
 

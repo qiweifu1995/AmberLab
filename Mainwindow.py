@@ -5127,7 +5127,8 @@ class Ui_MainWindow(object):
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][1][i]
                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Ch2-3']][2][i]
-            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict[
+                'Droplet Record'] in self.analog.keys():
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Droplet Record']][1][i]
                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Droplet Record']][2][i]
@@ -5170,7 +5171,8 @@ class Ui_MainWindow(object):
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Ch2-3']][0][i]
                     
-            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict[
+                'Droplet Record'] in self.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Droplet Record']][0][i]
                     
