@@ -6948,7 +6948,7 @@ class Ui_MainWindow(object):
                 except:
                     print("Peaks Threshold Not Found")
         if len(peaks_threshold) == 0:
-            peaks_threshold = [1, 1, 1, 1]
+            peaks_threshold = [2.7, 3.6, 3.3, 1]
 
         try:
             # test if numbers entered in threshold

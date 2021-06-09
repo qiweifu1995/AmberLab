@@ -47,9 +47,13 @@ class window_filter(QWidget):
         self.root = True
 
         # plot setting
-        axis_font = QFont('Times')
-        axis_font.setPointSize(21)
-        self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=6)
+        self.line_thickness = 4
+        self.axis_font_size = 12
+        self.legend_font_size = 12
+        self.axis_thickness = 3
+        self.axis_font = QFont('Times')
+        self.axis_font.setPointSize(21)
+        self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
@@ -306,10 +310,10 @@ class window_filter(QWidget):
 
         self.graphWidget.getAxis('left').setPen(self.axis_pen)
         self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
-        self.graphWidget.getAxis('left').setStyle(tickFont= axis_font)
+        self.graphWidget.getAxis('left').setStyle(tickFont= self.axis_font)
         self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
         self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
-        self.graphWidget.getAxis('bottom').setStyle(tickFont=axis_font)
+        self.graphWidget.getAxis('bottom').setStyle(tickFont=self.axis_font)
 
 
 
@@ -621,6 +625,7 @@ class window_filter(QWidget):
         line_thickness_valid = QtGui.QIntValidator(1, 40, self)
         self.lineEdit_line_thickness.setValidator(line_thickness_valid)
         self.gridLayout_42.addWidget(self.lineEdit_line_thickness, 20, 1, 1, 1)
+        self.lineEdit_line_thickness.editingFinished.connect(self.update_fonts)
 
         self.label_legend_font = QtWidgets.QLabel("Legend Font")
         self.label_legend_font.setAlignment(QtCore.Qt.AlignCenter)
@@ -637,6 +642,7 @@ class window_filter(QWidget):
         legend_font_valid = QtGui.QIntValidator(1, 40, self)
         self.lineEdit_legend_font.setValidator(legend_font_valid)
         self.gridLayout_42.addWidget(self.lineEdit_legend_font, 21, 1, 1, 1)
+        self.lineEdit_legend_font.editingFinished.connect(self.update_fonts)
 
         self.label_axis_thickness = QtWidgets.QLabel("Axis Thickness")
         self.label_axis_thickness.setAlignment(QtCore.Qt.AlignCenter)
@@ -653,6 +659,8 @@ class window_filter(QWidget):
         axis_thickness_valid = QtGui.QIntValidator(1, 40, self)
         self.lineEdit_axis_thickness.setValidator(axis_thickness_valid)
         self.gridLayout_42.addWidget(self.lineEdit_axis_thickness, 22, 1, 1, 1)
+        self.lineEdit_axis_thickness.editingFinished.connect(self.update_fonts)
+
 
         self.label_axis_font = QtWidgets.QLabel("Axis Font")
         self.label_axis_font.setAlignment(QtCore.Qt.AlignCenter)
@@ -669,6 +677,8 @@ class window_filter(QWidget):
         axis_font_valid = QtGui.QIntValidator(1, 40, self)
         self.lineEdit_axis_font.setValidator(axis_font_valid)
         self.gridLayout_42.addWidget(self.lineEdit_axis_font, 23, 1, 1, 1)
+        self.lineEdit_axis_font.editingFinished.connect(self.update_fonts)
+
 
 
 
@@ -713,10 +723,10 @@ class window_filter(QWidget):
 
         self.widget_29.getAxis('left').setPen(self.axis_pen)
         self.widget_29.getAxis('left').setTextPen(self.axis_pen)
-        self.widget_29.getAxis('left').setStyle(tickFont=axis_font)
+        self.widget_29.getAxis('left').setStyle(tickFont=self.axis_font)
         self.widget_29.getAxis('bottom').setPen(self.axis_pen)
         self.widget_29.getAxis('bottom').setTextPen(self.axis_pen)
-        self.widget_29.getAxis('bottom').setStyle(tickFont=axis_font)
+        self.widget_29.getAxis('bottom').setStyle(tickFont=self.axis_font)
 
         # triggers
         self.pushButton_6.clicked.connect(self.polygon_reset_linear_plot)
@@ -727,6 +737,28 @@ class window_filter(QWidget):
 
         #### linear end
         ##########################################################################################
+
+    def update_fonts(self):
+        print("update fonts")
+        if self.lineEdit_line_thickness.validator():
+            self.line_thickness = int(self.lineEdit_line_thickness.text())
+
+        if self.lineEdit_axis_font.validator():
+            self.axis_font_size = int(self.lineEdit_axis_font.text())
+            self.axis_font.setPointSize(self.axis_font_size)
+            self.widget_29.getAxis('left').setStyle(tickFont=self.axis_font)
+            self.widget_29.getAxis('bottom').setStyle(tickFont=self.axis_font)
+
+        if self.lineEdit_legend_font.validator():
+            self.legend_font_size = self.lineEdit_legend_font.text()
+
+        if self.lineEdit_axis_thickness.validator():
+            self.axis_thickness = int(self.lineEdit_axis_thickness.text())
+            self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
+            self.widget_29.getAxis('left').setPen(self.axis_pen)
+            self.widget_29.getAxis('left').setTextPen(self.axis_pen)
+            self.widget_29.getAxis('bottom').setPen(self.axis_pen)
+            self.widget_29.getAxis('bottom').setTextPen(self.axis_pen)
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
@@ -901,9 +933,9 @@ class window_filter(QWidget):
 
             self.widget_29.addLegend()
             self.widget_29.plotItem.legend.setLabelTextColor(QColor(0,0,0))
-            self.widget_29.plotItem.legend.setLabelTextSize('15pt')
+            self.widget_29.plotItem.legend.setLabelTextSize(str(self.legend_font_size)+'pt')
 
-            self.plot_width = 10
+            self.plot_width = self.line_thickness
 
 
 
