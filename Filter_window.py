@@ -269,7 +269,7 @@ class window_filter(QWidget):
 
         self.tableView_scatterquadrants = QtWidgets.QTableWidget()
         #         self.tableView_scatterquadrants.setObjectName("tableView_scatterquadrants")
-        self.tableView_scatterquadrants.setMaximumSize(QtCore.QSize(1000, 90))
+        self.tableView_scatterquadrants.setMaximumSize(QtCore.QSize(1000, 30))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -279,7 +279,7 @@ class window_filter(QWidget):
         layout.addWidget(self.tableView_scatterquadrants, 12, 0, 1, 6)
 
         # set row count
-        self.tableView_scatterquadrants.setRowCount(1)
+        self.tableView_scatterquadrants.setRowCount(4)
         # set column count
         self.tableView_scatterquadrants.setColumnCount(7)
         self.tableView_scatterquadrants.setHorizontalHeaderLabels(
