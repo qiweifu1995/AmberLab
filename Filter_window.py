@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QLabel, QWidget, QPushButton, QTableWidgetItem
 from pyqtgraph.Qt import QtCore
 from pyqtgraph import PlotWidget
@@ -49,7 +49,7 @@ class window_filter(QWidget):
         # plot setting
         axis_font = QFont('Times')
         axis_font.setPointSize(21)
-        axis_pen = pg.mkPen(QColor(0, 0, 0), width=6)
+        self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=6)
 
         # export parent index
         # ex. index = 0,1,1 ; parent index = 0,1
@@ -304,11 +304,11 @@ class window_filter(QWidget):
 
         #plot setting
 
-        self.graphWidget.getAxis('left').setPen(axis_pen)
-        self.graphWidget.getAxis('left').setTextPen(axis_pen)
+        self.graphWidget.getAxis('left').setPen(self.axis_pen)
+        self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
         self.graphWidget.getAxis('left').setStyle(tickFont= axis_font)
-        self.graphWidget.getAxis('bottom').setPen(axis_pen)
-        self.graphWidget.getAxis('bottom').setTextPen(axis_pen)
+        self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
+        self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
         self.graphWidget.getAxis('bottom').setStyle(tickFont=axis_font)
 
 
@@ -602,6 +602,76 @@ class window_filter(QWidget):
         self.label_186.setAlignment(QtCore.Qt.AlignCenter)
         self.gridLayout_42.addWidget(self.label_186, 18, 0, 1, 1)
 
+        self.label_plot_options = QtWidgets.QLabel("Plot Options")
+        self.label_plot_options.setAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout_42.addWidget(self.label_plot_options, 19, 0, 1, 2)
+
+        self.label_line_thickness = QtWidgets.QLabel("Line Thickness")
+        self.label_line_thickness.setAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout_42.addWidget(self.label_line_thickness, 20, 0, 1, 1)
+
+        self.lineEdit_line_thickness = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_line_thickness.sizePolicy().hasHeightForWidth())
+        self.lineEdit_line_thickness.setSizePolicy(sizePolicy)
+        self.lineEdit_line_thickness.setObjectName("lineEdit_line_thickness")
+        self.lineEdit_line_thickness.setText("3")
+        line_thickness_valid = QtGui.QIntValidator(1, 40, self)
+        self.lineEdit_line_thickness.setValidator(line_thickness_valid)
+        self.gridLayout_42.addWidget(self.lineEdit_line_thickness, 20, 1, 1, 1)
+
+        self.label_legend_font = QtWidgets.QLabel("Legend Font")
+        self.label_legend_font.setAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout_42.addWidget(self.label_legend_font, 21, 0, 1, 1)
+
+        self.lineEdit_legend_font = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_legend_font.sizePolicy().hasHeightForWidth())
+        self.lineEdit_legend_font.setSizePolicy(sizePolicy)
+        self.lineEdit_legend_font.setObjectName("lineEdit_legend_font")
+        self.lineEdit_legend_font.setText("12")
+        legend_font_valid = QtGui.QIntValidator(1, 40, self)
+        self.lineEdit_legend_font.setValidator(legend_font_valid)
+        self.gridLayout_42.addWidget(self.lineEdit_legend_font, 21, 1, 1, 1)
+
+        self.label_axis_thickness = QtWidgets.QLabel("Axis Thickness")
+        self.label_axis_thickness.setAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout_42.addWidget(self.label_axis_thickness, 22, 0, 1, 1)
+
+        self.lineEdit_axis_thickness = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_axis_thickness.sizePolicy().hasHeightForWidth())
+        self.lineEdit_axis_thickness.setSizePolicy(sizePolicy)
+        self.lineEdit_axis_thickness.setObjectName("lineEdit_axis_thickness")
+        self.lineEdit_axis_thickness.setText("3")
+        axis_thickness_valid = QtGui.QIntValidator(1, 40, self)
+        self.lineEdit_axis_thickness.setValidator(axis_thickness_valid)
+        self.gridLayout_42.addWidget(self.lineEdit_axis_thickness, 22, 1, 1, 1)
+
+        self.label_axis_font = QtWidgets.QLabel("Axis Font")
+        self.label_axis_font.setAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout_42.addWidget(self.label_axis_font, 23, 0, 1, 1)
+
+        self.lineEdit_axis_font = QtWidgets.QLineEdit(self.tab_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_axis_font.sizePolicy().hasHeightForWidth())
+        self.lineEdit_axis_font.setSizePolicy(sizePolicy)
+        self.lineEdit_axis_font.setObjectName("lineEdit_axis_font")
+        self.lineEdit_axis_font.setText("12")
+        axis_font_valid = QtGui.QIntValidator(1, 40, self)
+        self.lineEdit_axis_font.setValidator(axis_font_valid)
+        self.gridLayout_42.addWidget(self.lineEdit_axis_font, 23, 1, 1, 1)
+
+
+
         spacerItem28 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_42.addItem(spacerItem28, 13, 0, 1, 2)
 
@@ -641,11 +711,11 @@ class window_filter(QWidget):
         self.widget_29.setLabel('left', 'Height', **styles)
         self.widget_29.setBackground('w')
 
-        self.widget_29.getAxis('left').setPen(axis_pen)
-        self.widget_29.getAxis('left').setTextPen(axis_pen)
+        self.widget_29.getAxis('left').setPen(self.axis_pen)
+        self.widget_29.getAxis('left').setTextPen(self.axis_pen)
         self.widget_29.getAxis('left').setStyle(tickFont=axis_font)
-        self.widget_29.getAxis('bottom').setPen(axis_pen)
-        self.widget_29.getAxis('bottom').setTextPen(axis_pen)
+        self.widget_29.getAxis('bottom').setPen(self.axis_pen)
+        self.widget_29.getAxis('bottom').setTextPen(self.axis_pen)
         self.widget_29.getAxis('bottom').setStyle(tickFont=axis_font)
 
         # triggers
@@ -824,7 +894,7 @@ class window_filter(QWidget):
 
             height_data = data[0].values.tolist()
             height_index = list(range(len(height_data)))
-            height_index = [i/100-0.5 for i in height_index]
+            height_index = [i/100 for i in height_index]
 
             poly_degree = int(self.lineEdit_39.text())
             window_length = int(self.lineEdit_40.text()) // 2 * 2 - 1
