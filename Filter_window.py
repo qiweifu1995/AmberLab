@@ -269,11 +269,12 @@ class window_filter(QWidget):
 
         self.tableView_scatterquadrants = QtWidgets.QTableWidget()
         #         self.tableView_scatterquadrants.setObjectName("tableView_scatterquadrants")
-        self.tableView_scatterquadrants.setMaximumSize(QtCore.QSize(1000, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.tableView_scatterquadrants.setMinimumSize(QtCore.QSize(500, 80))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableView_scatterquadrants.sizePolicy().hasHeightForWidth())
+        self.tableView_scatterquadrants.setSizePolicy(sizePolicy)
         self.tableView_scatterquadrants.setSizePolicy(sizePolicy)
 
         layout.addWidget(self.tableView_scatterquadrants, 12, 0, 1, 6)
@@ -1306,15 +1307,12 @@ class window_filter(QWidget):
         self.infiniteline_table_update()
 
     def infiniteline_table_update(self):
-        single_peak_count_channel0 = 0
-        single_peak_count_channel1 = 0
-        multi_peak_count_channel0 = 0
-        multi_peak_count_channel1 = 0
-
-        channel0_list_quadrant1 = []
-        channel1_list_quadrant1 = []
-
-        count_quadrant1 = 0
+        """yodate the gate voltage filter"""
+        single_peak_count_channel0 = [0, 0, 0, 0]
+        single_peak_count_channel1 = [0, 0, 0, 0]
+        multi_peak_count_channel0 = [0, 0, 0, 0]
+        multi_peak_count_channel1 = [0, 0, 0, 0]
+        count_quadrant = [0, 0, 0, 0]
 
         # pass the threshold value to next window
         text_x = self.lr_x_axis.value()
@@ -1323,57 +1321,68 @@ class window_filter(QWidget):
         c = (np.array(self.Ch1_channel1) > text_y).tolist()
 
         self.quadrant1_list = [False] * len(a)
+        self.quadrant2_list = [False] * len(a)
+        self.quadrant3_list = [False] * len(a)
+        self.quadrant4_list = [False] * len(a)
 
         for i in range(len(a)):
+            """determine each quadrant values"""
             if a[i] and c[i]:
+                quadrant = 0
                 self.quadrant1_list[i] = True
-                channel0_list_quadrant1.append(self.Ch1_channel0[i])
-                channel1_list_quadrant1.append(self.Ch1_channel1[i])
-                count_quadrant1 += 1
-                if self.ui.Ch1_channel0_peak_num[i] == 1:
-                    single_peak_count_channel0 += 1
-                elif self.ui.Ch1_channel0_peak_num[i] > 1:
-                    multi_peak_count_channel0 += 1
-                if self.ui.Ch1_channel1_peak_num[i] == 1:
-                    single_peak_count_channel1 += 1
-                elif self.ui.Ch1_channel1_peak_num[i] > 1:
-                    multi_peak_count_channel1 += 1
+            elif not a[i] and c[i]:
+                quadrant = 1
+                self.quadrant2_list[i] = True
+            elif not a[i] and not c[i]:
+                quadrant = 2
+                self.quadrant3_list[i] = True
+            else:
+                quadrant = 3
+                self.quadrant4_list[i] = True
 
+            count_quadrant[quadrant] += 1
+            if self.ui.Ch1_channel0_peak_num[i] == 1:
+                single_peak_count_channel0[quadrant] += 1
+            elif self.ui.Ch1_channel0_peak_num[i] > 1:
+                multi_peak_count_channel0[quadrant] += 1
+            if self.ui.Ch1_channel1_peak_num[i] == 1:
+                single_peak_count_channel1[quadrant] += 1
+            elif self.ui.Ch1_channel1_peak_num[i] > 1:
+                multi_peak_count_channel1[quadrant] += 1
         try:
             droplets = float(self.ui.lineEdit_totaldroplets.text())
-            totalpercent1 = round(count_quadrant1 / droplets * 100, 2)
         except:
-            totalpercent1 = 0
+            droplets = 1
 
-        if len(self.Ch1_channel0) != 0:
-            view1 = str(round(100 * count_quadrant1 / len(self.Ch1_channel0), 2))
+        for i in range(4):
 
-            if count_quadrant1 > 0:
-                x_single_1 = str(round(100 * single_peak_count_channel0 / count_quadrant1, 2))
-                y_single_1 = str(round(100 * single_peak_count_channel1 / count_quadrant1, 2))
-                x_multi_1 = str(round(100 * multi_peak_count_channel0 / count_quadrant1, 2))
-                y_multi_1 = str(round(100 * multi_peak_count_channel1 / count_quadrant1, 2))
+            if len(self.Ch1_channel0) != 0:
+                view1 = str(round(100 * count_quadrant[i] / len(self.Ch1_channel0), 2))
+                totalpercent = len(self.Ch1_channel0)/droplets
+                if count_quadrant[i] > 0:
+                    x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_quadrant[i], 2))
+                    y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_quadrant[i], 2))
+                    x_multi_1 = str(round(100 * multi_peak_count_channel0[i] / count_quadrant[i], 2))
+                    y_multi_1 = str(round(100 * multi_peak_count_channel1[i] / count_quadrant[i], 2))
+                else:
+                    x_single_1 = '0'
+                    y_single_1 = '0'
+                    x_multi_1 = '0'
+                    y_multi_1 = '0'
             else:
+                view1 = 0
                 x_single_1 = '0'
                 y_single_1 = '0'
                 x_multi_1 = '0'
                 y_multi_1 = '0'
 
-
-        else:
-            view1 = 0
-            x_single_1 = '0'
-            y_single_1 = '0'
-            x_multi_1 = '0'
-            y_multi_1 = '0'
-
-        self.tableView_scatterquadrants.setItem(0, 0, QTableWidgetItem(str(count_quadrant1)))
-        self.tableView_scatterquadrants.setItem(0, 1, QTableWidgetItem(view1))
-        self.tableView_scatterquadrants.setItem(0, 2, QTableWidgetItem(str(totalpercent1)))
-        self.tableView_scatterquadrants.setItem(0, 3, QTableWidgetItem(x_single_1))
-        self.tableView_scatterquadrants.setItem(0, 4, QTableWidgetItem(y_single_1))
-        self.tableView_scatterquadrants.setItem(0, 5, QTableWidgetItem(x_multi_1))
-        self.tableView_scatterquadrants.setItem(0, 6, QTableWidgetItem(y_multi_1))
+            self.tableView_scatterquadrants.setItem(i, 0, QTableWidgetItem(str(count_quadrant[i])))
+            self.tableView_scatterquadrants.setItem(i, 1, QTableWidgetItem(view1))
+            self.tableView_scatterquadrants.setItem(i, 2, QTableWidgetItem(str(totalpercent)))
+            self.tableView_scatterquadrants.setItem(i, 3, QTableWidgetItem(x_single_1))
+            self.tableView_scatterquadrants.setItem(i, 4, QTableWidgetItem(y_single_1))
+            self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
+            self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
         self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
 

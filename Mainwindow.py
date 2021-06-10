@@ -6957,7 +6957,7 @@ class Ui_MainWindow(object):
         except:
             # if not, find in parameter file
             if len(width_threshold) == 0:
-                threshold = [1, 1, 1, 1]
+                threshold = [2.7, 3.6, 3.3, 1]
             else:
                 threshold = width_threshold
 
