@@ -18,7 +18,10 @@ class Droplet:
 
 
 class file_extracted_data_Qing:
-    def __init__(self, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True, peak_enable = False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1", ch12_count="1", ch13_count="1", ch23_count="1", Droplet_Record_count="1", total_count="1"):
+    def __init__(self, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True,
+                 peak_enable=False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1",
+                 ch12_count="1", ch13_count="1", ch23_count="1", Droplet_Record_count="1", locked_out_count="1",
+                 total_count="1"):
         self.analog_file = {}
         peak_file_chunksize = 1000
         self.threshold = threshold
@@ -41,6 +44,8 @@ class file_extracted_data_Qing:
             ch23_count = '1'
         if Droplet_Record_count == '0':
             Droplet_Record_count = '1'
+        if locked_out_count == '0':
+            locked_out_count = '1'
         if total_count == '0':
             total_count = '1'
     
@@ -94,7 +99,14 @@ class file_extracted_data_Qing:
             listDR, widthDR, num_peaksDR = self.extract_parallel2(current_file_dict["Droplet Record"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
 
             self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR]
-            
+
+        if current_file_dict["Locked Out Peaks"] != "":
+            print("Extracting locked out peaks")
+            list_locked, width_locked, num_peaks_locked = self.extract_parallel2(current_file_dict["Locked Out Peaks"], self.threshold, width_enable,
+                                                                  peak_enable, channel, chunksize, header,
+                                                                  'Locked Out Peaks', locked_out_count, peak_threshold, width_min, width_max)
+            self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
+
         print("Extracting Peak... Parallel")
         start = time.time()
         Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
@@ -111,11 +123,7 @@ class file_extracted_data_Qing:
         end = time.time()
         print("normal extrack time", str(start-end))
         """
-        for i in range(4):
-            print("ch", i, " Peaklist len: ", len(Peaklist[i]))
-            print("ch", i, "Peakwidth len: ", len(Peakwidth[i]))
-            print("ch", i, "NumPeak len: ", len(NumPeaks[i]))
-        print("Done")
+
 
     def extract(self, file, threshold,
                 width_enable=True, peak_enable = False, width_channel=0, user_set_chunk_size=200, header=0,

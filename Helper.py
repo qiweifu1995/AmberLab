@@ -20,7 +20,8 @@ def project_namelist(file_dir):
                  "Raw Time Log": "",
                  "Time Log": "",
                  "Root Folder": "",
-                 "Droplets Extracted Data": ""
+                 "Droplets Extracted Data": "",
+                 "Locked Out Peaks": ""
                  }
     if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") >= 0:
         root_folder = os.path.dirname(file_dir)
@@ -96,6 +97,7 @@ class Stats:
         self.ch13_hit = stats_dict["Negative Ch 1-3 Hit"]
         self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
         self.Droplet_Record_hit = stats_dict["Negative Droplet Record Hit"]
+        self.locked_out_peaks = stats_dict["Total Lost From Lockout"]
         self.under_sample_factor = stats_dict["UnderSample Factor"]
         self.total_dispensed = stats_dict["Total Dispensed "]
         self.dispense_missed = stats_dict["Dispense Missed"]
@@ -147,6 +149,7 @@ class ui_state:
         self.ch1_3_check = False
         self.ch2_3_check = False
         self.Droplet_Record_check = False
+        self.locked_out_check = False
         self.file_select = -1
         self.gating_channel_select = -1
         self.gating_bins = 0
@@ -240,7 +243,8 @@ class ui_state:
         return changed
     
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
-                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, Droplet_Record=None, reset=None):
+                                  ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, Droplet_Record=None, locked_out=None,
+                                  reset=None):
         """checks if checkbox are updated and needs to be refreshed"""
 
         changed = False
@@ -261,8 +265,10 @@ class ui_state:
         elif ch2_3 is not None and self.ch2_3_check != ch2_3:
             changed = True
         elif Droplet_Record is not None and self.Droplet_Record_check != Droplet_Record:
-            changed = True            
-        elif reset is not None and reset == True:
+            changed = True
+        elif locked_out is not None and self.locked_out_check != locked_out:
+            changed = True
+        elif reset is not None and reset is True:
             changed = True
 
         if update_state:
@@ -283,7 +289,9 @@ class ui_state:
             if ch2_3 is not None:
                 self.ch2_3_check = ch2_3
             if Droplet_Record is not None:
-                self.Droplet_Record_check = Droplet_Record  
+                self.Droplet_Record_check = Droplet_Record
+            if locked_out is not None:
+                self.locked_out_check = locked_out
 
         return changed
 

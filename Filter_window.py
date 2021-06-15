@@ -1127,6 +1127,12 @@ class window_filter(QWidget):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
+            if self.ui.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
+                'Locked Out Peaks'] in self.ui.analog.keys():
+                for i in range(4):
+                    self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
+                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
             if self.ui.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] in self.ui.analog.keys():
                 for i in range(4):
                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
@@ -1371,6 +1377,7 @@ class window_filter(QWidget):
                     y_multi_1 = '0'
             else:
                 view1 = 0
+                totalpercent = '0'
                 x_single_1 = '0'
                 y_single_1 = '0'
                 x_multi_1 = '0'

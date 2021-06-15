@@ -177,6 +177,10 @@ class Ui_MainWindow(object):
         self.checkbox_Droplet_Record.setObjectName("checkbox_Droplet_Record")
         self.layout_vertical_checkbox.addWidget(self.checkbox_Droplet_Record)
 
+        self.checkbox_Locked_Out_Peaks = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkbox_Locked_Out_Peaks.setObjectName("checkbox_Locked_Out_Peaks")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_Locked_Out_Peaks)
+
         self.checkBox_7 = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBox_7.setObjectName("checkBox_7")
         self.layout_vertical_checkbox.addWidget(self.checkBox_7)
@@ -770,6 +774,8 @@ class Ui_MainWindow(object):
         self.comboBox_13.addItem("Ch1-2")
         self.comboBox_13.addItem("Ch1-3")
         self.comboBox_13.addItem("Ch2-3")
+        self.comboBox_13.addItem("Droplet Record")
+        self.comboBox_13.addItem("Locked Out Peaks")
         self.comboBox_13.addItem("Peak Record")
 
         self.gridLayout_41.addWidget(self.comboBox_13, 1, 0, 1, 2)
@@ -3499,6 +3505,9 @@ class Ui_MainWindow(object):
         self.checkbox_Droplet_Record.stateChanged.connect(
             lambda: self.textbox_trigger(change="checkbox Droplet_Record state changed to ",
                                          afterchange=self.checkbox_Droplet_Record.isChecked()))
+        self.checkbox_Locked_Out_Peaks.stateChanged.connect(
+            lambda: self.textbox_trigger(change="checkbox Locked Out Peaks state changed to ",
+                                         afterchange=self.checkbox_Locked_Out_Peaks.isChecked()))
         self.checkBox_7.stateChanged.connect(
             lambda: self.textbox_trigger(change="checkbox All Channel state changed to ",
                                          afterchange=self.checkBox_7.isChecked()))
@@ -5021,6 +5030,11 @@ class Ui_MainWindow(object):
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Droplet Record']][1][i]
                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Droplet Record']][2][i]
+            if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
+                'Locked Out Peaks'] in self.analog.keys():
+                for i in range(4):
+                    self.peak_width_working_data[i] += self.analog[self.current_file_dict['Locked Out Peaks']][1][i]
+                    self.peak_num_working_data[i] += self.analog[self.current_file_dict['Locked Out Peaks']][2][i]
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
@@ -5065,9 +5079,15 @@ class Ui_MainWindow(object):
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Droplet Record']][0][i]
 
+            if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
+                'Locked Out Peaks'] in self.analog.keys():
+                for i in range(4):
+                    self.working_data[i] += self.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
+
             if len(self.working_data) == 0:
                 for i in range(4):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
@@ -6358,7 +6378,8 @@ class Ui_MainWindow(object):
         self.checkbox_ch13.setText(_translate("MainWindow", "Channel 1-3"))
         self.checkbox_ch23.setText(_translate("MainWindow", "Channel 2-3"))
         self.checkbox_Droplet_Record.setText(_translate("MainWindow", "Droplet Record"))
-        self.checkBox_7.setText(_translate("MainWindow", "All Channel"))
+        self.checkbox_Locked_Out_Peaks.setText(_translate("MainWindow", "Locked Out Peaks"))
+        self.checkBox_7.setText(_translate("MainWindow", "Sorted Peaks"))
 
         self.channel_1.setText(_translate("MainWindow", "Channel 1"))
         self.channel_2.setText(_translate("MainWindow", "Channel 2"))
@@ -6833,6 +6854,7 @@ class Ui_MainWindow(object):
         self.ch13_checkbox = self.checkbox_ch13.isChecked()
         self.ch23_checkbox = self.checkbox_ch23.isChecked()
         self.Droplet_Record_checkbox = self.checkbox_Droplet_Record.isChecked()
+        self.locked_out_checkbox = self.checkbox_Locked_Out_Peaks.isChecked()
         self.all_checkbox = self.checkBox_7.isChecked()
 
         self.histo_channel = self.listView_channels.currentRow()
@@ -6979,6 +7001,7 @@ class Ui_MainWindow(object):
                                                                   ch3=self.ch3_checkbox,
                                                                   ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
                                                                   ch2_3=self.ch23_checkbox,
+                                                                  locked_out=self.locked_out_checkbox,
                                                                   Droplet_Record=self.Droplet_Record_checkbox,
                                                                   reset=Ui_MainWindow.reset)
             print('file', self.main_file_select)
@@ -6988,6 +7011,7 @@ class Ui_MainWindow(object):
                                                                   ch3=self.ch3_checkbox,
                                                                   ch1_2=self.ch12_checkbox, ch1_3=self.ch13_checkbox,
                                                                   ch2_3=self.ch23_checkbox,
+                                                                  locked_out=self.locked_out_checkbox,
                                                                   Droplet_Record=self.Droplet_Record_checkbox)
             print('file', self.main_file_select)
         self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number=int(self.comboBox_5.currentIndex()),
@@ -7136,6 +7160,8 @@ class Ui_MainWindow(object):
                 self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
             if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
                 self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
+            if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+                self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
             if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                 self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
             ### End
@@ -7162,6 +7188,8 @@ class Ui_MainWindow(object):
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
         if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
+        if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
         if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
 
