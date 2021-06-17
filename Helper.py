@@ -55,12 +55,22 @@ class Stats:
                       "Negative Ch 1 Hit": "",
                       "Negative Ch 2 Hit": "",
                       "Negative Ch 3 Hit": "",
+                      "Negative Ch 4 Hit": "",
                       "Negative Ch 1-2 Hit": "",
                       "Negative Ch 1-3 Hit": "",
+                      "Negative Ch 1-4 Hit": "",
                       "Negative Ch 2-3 Hit": "",
+                      "Negative Ch 2-4 Hit": "",
+                      "Negative Ch 3-4 Hit": "",
+                      "Negative Ch 1-2-3 Hit": "",
+                      "Negative Ch 1-2-4 Hit": "",
+                      "Negative Ch 1-3-4 Hit": "",
+                      "Negative Ch 2-3-4 Hit": "",
+                      "Negative Ch 1-2-3-4 Hit": "",
                       "Negative Droplet Record Hit": "",
                       "Total Dispensed ": "",
-                      "Dispense Missed": ""}
+                      "Dispense Missed": "",
+                      "Out of Range Droplets": ""}
         if os.path.isfile(file_path) and file_path.rfind("Summary") >= 0:
             print("run")
             with open(file_path) as param_file:
@@ -84,24 +94,115 @@ class Stats:
                             if stats_key in stats_dict:
                                 stats_dict[stats_key] = data
                         cell_name.clear()
-        self.start_time = stats_dict["Starting Time"]
-        self.end_time = stats_dict["Ending  Time"]
-        self.total_runtime = stats_dict["Total Run Time"]
-        self.total_droplets = stats_dict["Total Droplets"]
-        self.total_sorted = stats_dict["Total Sorted  "]
-        self.total_lost = stats_dict["Total Lost From Lockout"]
-        self.ch1_hit = stats_dict["Negative Ch 1 Hit"]
-        self.ch2_hit = stats_dict["Negative Ch 2 Hit"]
-        self.ch3_hit = stats_dict["Negative Ch 3 Hit"]
-        self.ch12_hit = stats_dict["Negative Ch 1-2 Hit"]
-        self.ch13_hit = stats_dict["Negative Ch 1-3 Hit"]
-        self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
-        self.Droplet_Record_hit = stats_dict["Negative Droplet Record Hit"]
-        self.locked_out_peaks = stats_dict["Total Lost From Lockout"]
-        self.under_sample_factor = stats_dict["UnderSample Factor"]
-        self.total_dispensed = stats_dict["Total Dispensed "]
-        self.dispense_missed = stats_dict["Dispense Missed"]
 
+        if "Starting Time" in stats_dict.keys():
+            self.start_time = stats_dict["Starting Time"]
+        else:
+            self.start_time = "Nan"
+        if "Ending  Time" in stats_dict.keys():
+            self.end_time = stats_dict["Ending  Time"]
+        else:
+            self.end_time = "Nan"
+        if "Total Run Time" in stats_dict.keys():
+            self.total_runtime = stats_dict["Total Run Time"]
+        else:
+            self.total_runtime = "Nan"
+        if "Total Droplets" in stats_dict.keys():
+            self.total_droplets = stats_dict["Total Droplets"]
+        else:
+            self.total_droplets = "Nan"
+        if "Total Sorted  " in stats_dict.keys():
+            self.total_sorted = stats_dict["Total Sorted  "]
+        else:
+            self.total_sorted = "Nan"
+        if "Total Lost From Lockout" in stats_dict.keys():
+            self.total_lost = stats_dict["Total Lost From Lockout"]
+        else:
+            self.total_lost = "Nan"
+        if "Negative Ch 1 Hit" in stats_dict.keys():
+            self.ch1_hit = stats_dict["Negative Ch 1 Hit"]
+        else:
+            self.ch1_hit = "Nan"
+        if "Negative Ch 2 Hit" in stats_dict.keys():
+            self.ch2_hit = stats_dict["Negative Ch 2 Hit"]
+        else:
+            self.ch2_hit = "Nan"
+        if "Negative Ch 3 Hit" in stats_dict.keys():
+            self.ch3_hit = stats_dict["Negative Ch 3 Hit"]
+        else:
+            self.ch3_hit = "Nan"
+        if "Negative Ch 4 Hit" in stats_dict.keys():
+            self.ch4_hit = stats_dict["Negative Ch 4 Hit"]
+        else:
+            self.ch4_hit = "Nan"
+        if "Negative Ch 1-2 Hit" in stats_dict.keys():
+            self.ch12_hit = stats_dict["Negative Ch 1-2 Hit"]
+        else:
+            self.ch12_hit = "Nan"
+        if "Negative Ch 1-3 Hit" in stats_dict.keys():
+            self.ch13_hit = stats_dict["Negative Ch 1-3 Hit"]
+        else:
+            self.ch13_hit = "Nan"
+        if "Negative Ch 1-4 Hit" in stats_dict.keys():
+            self.ch14_hit = stats_dict["Negative Ch 1-4 Hit"]
+        else:
+            self.ch14_hit = "Nan"
+        if "Negative Ch 1-2-3 Hit" in stats_dict.keys():
+            self.ch123_hit = stats_dict["Negative Ch 1-2-3 Hit"]
+        else:
+            self.ch123_hit = "Nan"
+        if "Negative Ch 1-2-4 Hit" in stats_dict.keys():
+            self.ch124_hit = stats_dict["Negative Ch 1-2-4 Hit"]
+        else:
+            self.ch124_hit = "Nan"
+        if "Negative Ch 1-3-4 Hit" in stats_dict.keys():
+            self.ch134_hit = stats_dict["Negative Ch 1-3-4 Hit"]
+        else:
+            self.ch134_hit = "Nan"
+        if "Negative Ch 1-2-3-4 Hit" in stats_dict.keys():
+            self.ch1234_hit = stats_dict["Negative Ch 1-2-3-4 Hit"]
+        else:
+            self.ch1234_hit = "Nan"
+        if "Negative Ch 2-3 Hit" in stats_dict.keys():
+            self.ch23_hit = stats_dict["Negative Ch 2-3 Hit"]
+        else:
+            self.ch23_hit = "Nan"
+        if "Negative Ch 2-4 Hit" in stats_dict.keys():
+            self.ch24_hit = stats_dict["Negative Ch 2-4 Hit"]
+        else:
+            self.ch24_hit = "Nan"
+        if "Negative Ch 2-3-4 Hit" in stats_dict.keys():
+            self.ch234_hit = stats_dict["Negative Ch 2-3-4 Hit"]
+        else:
+            self.ch234_hit = "Nan"
+        if "Negative Ch 3-4 Hit" in stats_dict.keys():
+            self.ch34_hit = stats_dict["Negative Ch 3-4 Hit"]
+        else:
+            self.ch34_hit = "Nan"
+        if "Negative Droplet Record Hit" in stats_dict.keys():
+            self.Droplet_Record_hit = stats_dict["Negative Droplet Record Hit"]
+        else:
+            self.Droplet_Record_hit = "Nan"
+        if "Total Lost From Lockout" in stats_dict.keys():
+            self.locked_out_peaks = stats_dict["Total Lost From Lockout"]
+        else:
+            self.locked_out_peaks = "Nan"
+        if "UnderSample Factor" in stats_dict.keys():
+            self.under_sample_factor = stats_dict["UnderSample Factor"]
+        else:
+            self.under_sample_factor = "Nan"
+        if "Total Dispensed " in stats_dict.keys():
+            self.total_dispensed = stats_dict["Total Dispensed "]
+        else:
+            self.total_dispensed = "Nan"
+        if "Dispense Missed" in stats_dict.keys():
+            self.dispense_missed = stats_dict["Dispense Missed"]
+        else:
+            self.dispense_missed = "Nan"
+        if "Droplets Out of Range" in stats_dict.keys():
+            self.droplets_out_of_range = stats_dict["Droplets Out of Range"]
+        else:
+            self.droplets_out_of_range = "Nan"
 def rgb_select(channel):
     if channel == 0:
         r = 0
