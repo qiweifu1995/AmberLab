@@ -40,6 +40,7 @@ from math import sqrt
 import math
 import pickle
 import Filter_window
+import peak_threshold_window
 
 
 class StandardItem(QStandardItem):
@@ -53,42 +54,6 @@ class StandardItem(QStandardItem):
         self.setForeground(color)
         self.setFont(fnt)
         self.setText(txt)
-
-
-### pop-up window for change the sampling rate in main tab (Resample button)
-class OtherWindow(QWidget):
-    def __init__(self, parent=None):
-        super().__init__()
-        layout = QVBoxLayout()
-        self.label = QLabel("Please select a sampling rate: 250, 500, or 1000")
-        self.lineEdit = QLineEdit('100')
-        self.pushButton_1 = QPushButton('Ok')
-        self.pushButton_2 = QPushButton('Close')
-
-        layout.addWidget(self.label)
-        layout.addWidget(self.lineEdit)
-        layout.addWidget(self.pushButton_1)
-        layout.addWidget(self.pushButton_2)
-
-        self.setLayout(layout)
-        self.pushButton_1.clicked.connect(self.ok_clicked)
-        self.pushButton_2.clicked.connect(self.close_clicked)
-
-    def ok_clicked(self):
-        # if number entered, "ui.textEdit" will be edited. 
-        # "ui." means the main class "Ui_MainWindow". Use "Self." when calling in main class
-
-        self.hide()
-        Ui_MainWindow.OtherWindow_Button_ok_clicked(Ui_MainWindow, self.lineEdit.text())
-
-        ui.textbox = ui.textbox + "\n" + "Resamole set to " + str(self.lineEdit.text())
-        ui.textEdit.setPlainText(ui.textbox)
-
-    def close_clicked(self):
-        self.hide()
-
-    ### pop-up window end
-
 
 ### Pop-up windows for the new filters
 
@@ -1142,694 +1107,6 @@ class Ui_MainWindow(object):
         ### peak leanear end
 
         ### Peak Width tab setup
-
-        self.tab_peakwidth = QtWidgets.QWidget()
-        self.tab_peakwidth.setObjectName("tab_peakwidth")
-        self.gridLayout_10 = QtWidgets.QGridLayout(self.tab_peakwidth)
-        self.gridLayout_10.setObjectName("gridLayout_10")
-        self.tab_widget_peak_width = QtWidgets.QTabWidget(self.tab_peakwidth)
-        self.tab_widget_peak_width.setObjectName("tab_widget_peak_width")
-        self.sub_tab_width_scatter = QtWidgets.QWidget()
-        self.sub_tab_width_scatter.setObjectName("sub_tab_width_scatter")
-        self.gridLayout_15 = QtWidgets.QGridLayout(self.sub_tab_width_scatter)
-        self.gridLayout_15.setObjectName("gridLayout_15")
-        self.verticalLayout_16 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_16.setContentsMargins(10, -1, -1, -1)
-        self.verticalLayout_16.setObjectName("verticalLayout_16")
-        self.gridLayout_13 = QtWidgets.QGridLayout()
-        self.gridLayout_13.setContentsMargins(10, 10, -1, 10)
-        self.gridLayout_13.setObjectName("gridLayout_13")
-        self.label_87 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_87.setFont(font)
-        self.label_87.setObjectName("label_87")
-        self.gridLayout_13.addWidget(self.label_87, 0, 1, 1, 1)
-        self.horizontalLayout_42 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_42.setObjectName("horizontalLayout_42")
-        self.label_88 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_88.setObjectName("label_88")
-        self.horizontalLayout_42.addWidget(self.label_88)
-        self.comboBox_5 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_5.sizePolicy().hasHeightForWidth())
-        self.comboBox_5.setSizePolicy(sizePolicy)
-        self.comboBox_5.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_5.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_5.setObjectName("comboBox_5")
-        self.comboBox_5.addItem("")
-        self.comboBox_5.addItem("")
-        self.comboBox_5.addItem("")
-        self.comboBox_5.addItem("")
-        self.horizontalLayout_42.addWidget(self.comboBox_5)
-        self.gridLayout_13.addLayout(self.horizontalLayout_42, 1, 0, 1, 1)
-        self.lineEdit_5 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
-        self.lineEdit_5.setSizePolicy(sizePolicy)
-        self.lineEdit_5.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_5.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_5.setObjectName("lineEdit_5")
-        self.gridLayout_13.addWidget(self.lineEdit_5, 1, 1, 1, 1)
-        self.lineEdit_6 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
-        self.lineEdit_6.setSizePolicy(sizePolicy)
-        self.lineEdit_6.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_6.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_6.setObjectName("lineEdit_6")
-        self.gridLayout_13.addWidget(self.lineEdit_6, 2, 1, 1, 1)
-        self.horizontalLayout_46 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_46.setObjectName("horizontalLayout_46")
-        self.label_89 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_89.setObjectName("label_89")
-        self.horizontalLayout_46.addWidget(self.label_89)
-        self.comboBox_6 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_6.sizePolicy().hasHeightForWidth())
-        self.comboBox_6.setSizePolicy(sizePolicy)
-        self.comboBox_6.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_6.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_6.setObjectName("comboBox_6")
-        self.comboBox_6.addItem("")
-        self.comboBox_6.addItem("")
-        self.comboBox_6.addItem("")
-        self.comboBox_6.addItem("")
-        self.horizontalLayout_46.addWidget(self.comboBox_6)
-        self.gridLayout_13.addLayout(self.horizontalLayout_46, 2, 0, 1, 1)
-        self.label_90 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_90.setFont(font)
-        self.label_90.setObjectName("label_90")
-        self.gridLayout_13.addWidget(self.label_90, 0, 0, 1, 1)
-        self.lineEdit_7 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
-        self.lineEdit_7.setSizePolicy(sizePolicy)
-        self.lineEdit_7.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_7.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_7.setObjectName("lineEdit_7")
-        self.gridLayout_13.addWidget(self.lineEdit_7, 1, 2, 1, 1)
-        self.lineEdit_8 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
-        self.lineEdit_8.setSizePolicy(sizePolicy)
-        self.lineEdit_8.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_8.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_8.setObjectName("lineEdit_8")
-        self.gridLayout_13.addWidget(self.lineEdit_8, 2, 2, 1, 1)
-        self.lineEdit_5.setText("-1")
-        self.lineEdit_6.setText("-1")
-        self.lineEdit_7.setText("1000")
-        self.lineEdit_8.setText("1000")
-        self.label_91 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_91.setFont(font)
-        self.label_91.setObjectName("label_91")
-        self.gridLayout_13.addWidget(self.label_91, 0, 2, 1, 1)
-        self.verticalLayout_16.addLayout(self.gridLayout_13)
-        self.line_36 = QtWidgets.QFrame(self.sub_tab_width_scatter)
-        self.line_36.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_36.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_36.setObjectName("line_36")
-        self.verticalLayout_16.addWidget(self.line_36)
-        self.label_95 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_95.setFont(font)
-        self.label_95.setObjectName("label_95")
-        self.verticalLayout_16.addWidget(self.label_95)
-
-        self.gridLayout_16 = QtWidgets.QGridLayout()
-        self.gridLayout_16.setContentsMargins(-1, 0, -1, -1)
-        self.gridLayout_16.setObjectName("gridLayout_16")
-        self.lineEdit_9 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_9.sizePolicy().hasHeightForWidth())
-        self.lineEdit_9.setSizePolicy(sizePolicy)
-        self.lineEdit_9.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_9.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_9.setObjectName("lineEdit_9")
-        self.gridLayout_16.addWidget(self.lineEdit_9, 1, 0, 1, 1)
-        self.lineEdit_12 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_12.sizePolicy().hasHeightForWidth())
-        self.lineEdit_12.setSizePolicy(sizePolicy)
-        self.lineEdit_12.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_12.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_12.setObjectName("lineEdit_12")
-        self.gridLayout_16.addWidget(self.lineEdit_12, 1, 3, 1, 1)
-        self.lineEdit_10 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_10.sizePolicy().hasHeightForWidth())
-        self.lineEdit_10.setSizePolicy(sizePolicy)
-        self.lineEdit_10.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_10.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_10.setObjectName("lineEdit_10")
-        self.gridLayout_16.addWidget(self.lineEdit_10, 1, 1, 1, 1)
-        self.lineEdit_11 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_11.sizePolicy().hasHeightForWidth())
-        self.lineEdit_11.setSizePolicy(sizePolicy)
-        self.lineEdit_11.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_11.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_11.setObjectName("lineEdit_11")
-        self.gridLayout_16.addWidget(self.lineEdit_11, 1, 2, 1, 1)
-        self.label_92 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_92.setFont(font)
-        self.label_92.setObjectName("label_92")
-        self.gridLayout_16.addWidget(self.label_92, 0, 0, 1, 1)
-        self.label_96 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_96.setFont(font)
-        self.label_96.setObjectName("label_96")
-        self.gridLayout_16.addWidget(self.label_96, 0, 1, 1, 1)
-        self.label_97 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_97.setFont(font)
-        self.label_97.setObjectName("label_97")
-        self.gridLayout_16.addWidget(self.label_97, 0, 2, 1, 1)
-        self.label_98 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_98.setFont(font)
-        self.label_98.setObjectName("label_98")
-        self.gridLayout_16.addWidget(self.label_98, 0, 3, 1, 1)
-
-        self.label_density_adjust1 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_density_adjust1.setFont(font)
-        self.label_density_adjust1.setObjectName("label_density_adjust1")
-        self.gridLayout_16.addWidget(self.label_density_adjust1, 2, 0, 1, 1)
-
-        self.lineEdit_first_layer_density_adjust = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        #         self.lineEdit_first_layer_density_adjust.setMinimumSize(QtCore.QSize(110, 0))
-        #         self.lineEdit_first_layer_density_adjust.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_first_layer_density_adjust.setObjectName("lineEdit_first_layer_density_adjust")
-        self.gridLayout_16.addWidget(self.lineEdit_first_layer_density_adjust, 2, 1, 1, 2)
-        self.lineEdit_first_layer_density_adjust.setText("1")
-
-        self.verticalLayout_16.addLayout(self.gridLayout_16)
-
-        self.label_93 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_93.setFont(font)
-        self.label_93.setObjectName("label_93")
-        self.verticalLayout_16.addWidget(self.label_93)
-
-        self.lineEdit_9.setText("default")
-        self.lineEdit_10.setText("default")
-        self.lineEdit_11.setText("default")
-        self.lineEdit_12.setText("default")
-
-        self.horizontalLayout_49 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_49.setObjectName("horizontalLayout_41")
-        self.label_84 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_84.sizePolicy().hasHeightForWidth())
-        self.label_84.setSizePolicy(sizePolicy)
-        self.label_84.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_84.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.label_84.setObjectName("label_84")
-        self.horizontalLayout_49.addWidget(self.label_84)
-        self.lineEdit_gatevoltage_5 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_gatevoltage_5.sizePolicy().hasHeightForWidth())
-        self.lineEdit_gatevoltage_5.setSizePolicy(sizePolicy)
-        self.lineEdit_gatevoltage_5.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_gatevoltage_5.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_gatevoltage_5.setObjectName("lineEdit_gatevoltage_5")
-        self.horizontalLayout_49.addWidget(self.lineEdit_gatevoltage_5)
-        self.label_85 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_85.setObjectName("label_85")
-        self.horizontalLayout_49.addWidget(self.label_85)
-
-        self.lineEdit_gatevoltage_6 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_gatevoltage_6.sizePolicy().hasHeightForWidth())
-        self.lineEdit_gatevoltage_6.setSizePolicy(sizePolicy)
-        self.lineEdit_gatevoltage_6.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_gatevoltage_6.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_gatevoltage_6.setObjectName("lineEdit_gatevoltage_6")
-        self.horizontalLayout_49.addWidget(self.lineEdit_gatevoltage_6)
-
-        spacerItem21 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_49.addItem(spacerItem21)
-        self.verticalLayout_16.addLayout(self.horizontalLayout_49)
-
-        self.layout_horizontal_update_2 = QtWidgets.QHBoxLayout()
-        self.layout_horizontal_update_2.setObjectName("layout_horizontal_update_2")
-        self.button_update_2 = QtWidgets.QPushButton(self.sub_tab_width_scatter)
-        self.button_update_2.setMinimumSize(QtCore.QSize(50, 0))
-        self.button_update_2.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.button_update_2.setObjectName("button_update_2")
-        self.layout_horizontal_update_2.addWidget(self.button_update_2)
-        self.verticalLayout_16.addLayout(self.layout_horizontal_update_2)
-
-        ####### multipeak
-
-        # Peak Num Updater
-        self.line_peak_num = QtWidgets.QFrame(self.sub_tab_width_scatter)
-        self.line_peak_num.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_peak_num.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_peak_num.setObjectName("line_peak_num")
-        self.verticalLayout_16.addWidget(self.line_peak_num)
-        self.gridLayout_peak_num = QtWidgets.QGridLayout()
-        self.gridLayout_peak_num.setContentsMargins(10, 10, -1, 10)
-        self.gridLayout_peak_num.setObjectName("gridLayout_13")
-
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_num_peak_title = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_title.setFont(font)
-        self.label_num_peak_title.setObjectName("label_num_peak_title")
-        self.verticalLayout_16.addWidget(self.label_num_peak_title)
-        self.label_num_peak_1 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_1.setFont(font)
-        self.label_num_peak_1.setObjectName("label_num_peak_1")
-        self.label_num_peak_2 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_2.setFont(font)
-        self.label_num_peak_2.setObjectName("label_num_peak_2")
-        self.label_num_peak_3 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_3.setFont(font)
-        self.label_num_peak_3.setObjectName("label_num_peak_3")
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.label_num_peak_4 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_4.setFont(font)
-        self.label_num_peak_4.setObjectName("label_num_peak_4")
-        self.label_num_peak_5 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_5.setFont(font)
-        self.label_num_peak_5.setObjectName("label_num_peak_5")
-        self.label_num_peak_6 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_6.setFont(font)
-        self.label_num_peak_6.setObjectName("label_num_peak_6")
-        self.label_num_peak_7 = QtWidgets.QLabel(self.sub_tab_width_scatter)
-        self.label_num_peak_7.setFont(font)
-        self.label_num_peak_7.setObjectName("label_num_peak_7")
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_1, 0, 0)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_2, 0, 1)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_3, 0, 2)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_4, 1, 0)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_5, 2, 0)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_6, 3, 0)
-        self.gridLayout_peak_num.addWidget(self.label_num_peak_7, 4, 0)
-        self.comboBox_peak_num_1 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_peak_num_1.sizePolicy().hasHeightForWidth())
-        self.comboBox_peak_num_1.setSizePolicy(sizePolicy)
-        self.comboBox_peak_num_1.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_peak_num_1.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_peak_num_1.setObjectName("comboBox_peak_num_1")
-        self.comboBox_peak_num_1.addItem("")
-        self.comboBox_peak_num_1.addItem("")
-        self.comboBox_peak_num_1.addItem("")
-        self.comboBox_peak_num_2 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_peak_num_2.sizePolicy().hasHeightForWidth())
-        self.comboBox_peak_num_2.setSizePolicy(sizePolicy)
-        self.comboBox_peak_num_2.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_peak_num_2.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_peak_num_2.setObjectName("comboBox_peak_num_1")
-        self.comboBox_peak_num_2.addItem("")
-        self.comboBox_peak_num_2.addItem("")
-        self.comboBox_peak_num_2.addItem("")
-        self.comboBox_peak_num_3 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_peak_num_3.sizePolicy().hasHeightForWidth())
-        self.comboBox_peak_num_3.setSizePolicy(sizePolicy)
-        self.comboBox_peak_num_3.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_peak_num_3.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_peak_num_3.setObjectName("comboBox_peak_num_1")
-        self.comboBox_peak_num_3.addItem("")
-        self.comboBox_peak_num_3.addItem("")
-        self.comboBox_peak_num_3.addItem("")
-        self.comboBox_peak_num_4 = QtWidgets.QComboBox(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_peak_num_4.sizePolicy().hasHeightForWidth())
-        self.comboBox_peak_num_4.setSizePolicy(sizePolicy)
-        self.comboBox_peak_num_4.setMinimumSize(QtCore.QSize(80, 0))
-        self.comboBox_peak_num_4.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.comboBox_peak_num_4.setObjectName("comboBox_peak_num_1")
-        self.comboBox_peak_num_4.addItem("")
-        self.comboBox_peak_num_4.addItem("")
-        self.comboBox_peak_num_4.addItem("")
-        self.gridLayout_peak_num.addWidget(self.comboBox_peak_num_1, 1, 1)
-        self.gridLayout_peak_num.addWidget(self.comboBox_peak_num_2, 2, 1)
-        self.gridLayout_peak_num.addWidget(self.comboBox_peak_num_3, 3, 1)
-        self.gridLayout_peak_num.addWidget(self.comboBox_peak_num_4, 4, 1)
-        self.lineEdit_peak_num_1 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_peak_num_1.sizePolicy().hasHeightForWidth())
-        self.lineEdit_peak_num_1.setSizePolicy(sizePolicy)
-        self.lineEdit_peak_num_1.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_peak_num_1.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_peak_num_1.setObjectName("lineEdit_peak_num_1")
-        self.lineEdit_peak_num_2 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_peak_num_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_peak_num_2.setSizePolicy(sizePolicy)
-        self.lineEdit_peak_num_2.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_peak_num_2.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_peak_num_2.setObjectName("lineEdit_peak_num_2")
-        self.lineEdit_peak_num_3 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_peak_num_3.sizePolicy().hasHeightForWidth())
-        self.lineEdit_peak_num_3.setSizePolicy(sizePolicy)
-        self.lineEdit_peak_num_3.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_peak_num_3.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_peak_num_3.setObjectName("lineEdit_peak_num_3")
-        self.lineEdit_peak_num_4 = QtWidgets.QLineEdit(self.sub_tab_width_scatter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_peak_num_4.sizePolicy().hasHeightForWidth())
-        self.lineEdit_peak_num_4.setSizePolicy(sizePolicy)
-        self.lineEdit_peak_num_4.setMinimumSize(QtCore.QSize(60, 0))
-        self.lineEdit_peak_num_4.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.lineEdit_peak_num_4.setObjectName("lineEdit_peak_num_4")
-        self.gridLayout_peak_num.addWidget(self.lineEdit_peak_num_1, 1, 2)
-        self.gridLayout_peak_num.addWidget(self.lineEdit_peak_num_2, 2, 2)
-        self.gridLayout_peak_num.addWidget(self.lineEdit_peak_num_3, 3, 2)
-        self.gridLayout_peak_num.addWidget(self.lineEdit_peak_num_4, 4, 2)
-
-        self.verticalLayout_16.addLayout(self.gridLayout_peak_num)
-
-        spacerItem22 = QtWidgets.QSpacerItem(20, 60, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_16.addItem(spacerItem22)
-
-        self.gridLayout_15.addLayout(self.verticalLayout_16, 0, 0, 1, 1)
-        self.line_38 = QtWidgets.QFrame(self.sub_tab_width_scatter)
-        self.line_38.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line_38.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_38.setObjectName("line_38")
-        self.gridLayout_15.addWidget(self.line_38, 0, 1, 1, 1)
-
-        #         self.widget_9 = QtWidgets.QWidget(self.sub_tab_width_scatter)
-        #         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        #         sizePolicy.setHorizontalStretch(0)
-        #         sizePolicy.setVerticalStretch(0)
-        #         sizePolicy.setHeightForWidth(self.widget_9.sizePolicy().hasHeightForWidth())
-        #         self.widget_9.setSizePolicy(sizePolicy)
-        #         self.widget_9.setMinimumSize(QtCore.QSize(500, 500))
-        #         self.widget_9.setObjectName("widget_9")
-        #         self.gridLayout_15.addWidget(self.widget_9, 0, 2, 1, 1)
-
-        # may fix a potential bug, leave it here for now
-        self.graphWidget_width_scatter = PlotWidget(title=' ')
-
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.graphWidget_width_scatter.sizePolicy().hasHeightForWidth())
-
-        self.graphWidget_width_scatter.setSizePolicy(sizePolicy)
-        self.graphWidget_width_scatter.setMinimumSize(QtCore.QSize(500, 500))
-        self.graphWidget_width_scatter.setObjectName("graphWidget_width_scatter")
-        self.gridLayout_15.addWidget(self.graphWidget_width_scatter, 0, 2, 1, 1)
-
-        #         self.graphWidget_width_scatter.setTitle("test scatter plot", color="w", size="30pt")
-        #         styles = {"color": "r", "font-size": "20px"}
-        self.graphWidget_width_scatter.setBackground('w')
-
-        self.graphWidget_width_scatter.setLabel('left', 'Green', **styles)
-        self.graphWidget_width_scatter.setLabel('bottom', 'Far Red', **styles)
-        #         self.graphWidget_width_scatter.setTitle("Your Title Here", color="b", size="10pt")
-
-        self.lr_x_axis = pg.LinearRegionItem([1, 1])
-        self.lr_y_axis = pg.LinearRegionItem([1, 1], orientation=1)
-        self.graphWidget_width_scatter.addItem(self.lr_x_axis)
-        self.graphWidget_width_scatter.addItem(self.lr_y_axis)
-
-        self.tab_widget_peak_width.addTab(self.sub_tab_width_scatter, "")
-
-        self.sub_tab_width_histogram = QtWidgets.QWidget()
-        self.sub_tab_width_histogram.setObjectName("sub_tab_width_histogram")
-        self.gridLayout_11 = QtWidgets.QGridLayout(self.sub_tab_width_histogram)
-        self.gridLayout_11.setObjectName("gridLayout_11")
-
-        self.verticalLayout_8 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.label_54 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_54.sizePolicy().hasHeightForWidth())
-        self.label_54.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_54.setFont(font)
-        self.label_54.setObjectName("label_54")
-        self.verticalLayout_8.addWidget(self.label_54)
-        self.horizontalLayout_34 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_34.setObjectName("horizontalLayout_34")
-        self.listView_channels_3 = QtWidgets.QListWidget(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.listView_channels_3.sizePolicy().hasHeightForWidth())
-        self.listView_channels_3.setSizePolicy(sizePolicy)
-        self.listView_channels_3.setMinimumSize(QtCore.QSize(150, 150))
-        self.listView_channels_3.setMaximumSize(QtCore.QSize(200, 200))
-        self.listView_channels_3.setObjectName("listView_channels_3")
-        self.listView_channels_3.addItem("Green")
-        self.listView_channels_3.addItem("Red")
-        self.listView_channels_3.addItem("Blue")
-        self.listView_channels_3.addItem("Orange")
-        self.listView_channels_3.setCurrentRow(0)
-
-        self.horizontalLayout_34.addWidget(self.listView_channels_3)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_34)
-        self.horizontalLayout_35 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_35.setContentsMargins(-1, 0, -1, -1)
-        self.horizontalLayout_35.setObjectName("horizontalLayout_35")
-        self.pushButton_saveplot_2 = QtWidgets.QPushButton(self.sub_tab_width_histogram)
-        self.pushButton_saveplot_2.setMinimumSize(QtCore.QSize(60, 0))
-        self.pushButton_saveplot_2.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.pushButton_saveplot_2.setObjectName("pushButton_saveplot_2")
-        self.horizontalLayout_35.addWidget(self.pushButton_saveplot_2)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_35)
-        self.line_32 = QtWidgets.QFrame(self.sub_tab_width_histogram)
-        self.line_32.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_32.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_32.setObjectName("line_32")
-        self.verticalLayout_8.addWidget(self.line_32)
-
-        self.label_59 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_59.sizePolicy().hasHeightForWidth())
-        self.label_59.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_59.setFont(font)
-        self.label_59.setObjectName("label_59")
-        self.verticalLayout_8.addWidget(self.label_59)
-        self.horizontalLayout_37 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_37.setObjectName("horizontalLayout_37")
-        self.label_60 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_60.sizePolicy().hasHeightForWidth())
-        self.label_60.setSizePolicy(sizePolicy)
-        self.label_60.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_60.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.label_60.setObjectName("label_60")
-        self.horizontalLayout_37.addWidget(self.label_60)
-        self.lineEdit_gatevoltage_2 = QtWidgets.QLineEdit(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_gatevoltage_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_gatevoltage_2.setSizePolicy(sizePolicy)
-        self.lineEdit_gatevoltage_2.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_gatevoltage_2.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_gatevoltage_2.setObjectName("lineEdit_gatevoltage_2")
-        self.horizontalLayout_37.addWidget(self.lineEdit_gatevoltage_2)
-        self.label_76 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        self.label_76.setObjectName("label_76")
-        self.horizontalLayout_37.addWidget(self.label_76)
-        spacerItem22 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_37.addItem(spacerItem22)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_37)
-
-        self.horizontalLayout_41 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_41.setObjectName("horizontalLayout_41")
-        self.label_82 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_82.sizePolicy().hasHeightForWidth())
-        self.label_82.setSizePolicy(sizePolicy)
-        self.label_82.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_82.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.label_82.setObjectName("label_82")
-        self.horizontalLayout_41.addWidget(self.label_82)
-        self.lineEdit_gatevoltage_4 = QtWidgets.QLineEdit(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_gatevoltage_4.sizePolicy().hasHeightForWidth())
-        self.lineEdit_gatevoltage_4.setSizePolicy(sizePolicy)
-        self.lineEdit_gatevoltage_4.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_gatevoltage_4.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_gatevoltage_4.setObjectName("lineEdit_gatevoltage_4")
-        self.horizontalLayout_41.addWidget(self.lineEdit_gatevoltage_4)
-        #         self.label_76 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        #         self.label_76.setObjectName("label_76")
-        #         self.horizontalLayout_37.addWidget(self.label_76)
-        spacerItem21 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_41.addItem(spacerItem21)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_41)
-
-        self.horizontalLayout_38 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_38.setObjectName("horizontalLayout_38")
-        self.label_77 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_77.sizePolicy().hasHeightForWidth())
-        self.label_77.setSizePolicy(sizePolicy)
-        self.label_77.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_77.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.label_77.setObjectName("label_77")
-        self.horizontalLayout_38.addWidget(self.label_77)
-        self.lineEdit_percentage_2 = QtWidgets.QLineEdit(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_percentage_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_percentage_2.setSizePolicy(sizePolicy)
-        self.lineEdit_percentage_2.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_percentage_2.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_percentage_2.setObjectName("lineEdit_percentage_2")
-        self.horizontalLayout_38.addWidget(self.lineEdit_percentage_2)
-        self.label_78 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        self.label_78.setObjectName("label_78")
-        self.horizontalLayout_38.addWidget(self.label_78)
-        spacerItem23 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_38.addItem(spacerItem23)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_38)
-        self.horizontalLayout_39 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_39.setObjectName("horizontalLayout_39")
-        self.label_79 = QtWidgets.QLabel(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_79.sizePolicy().hasHeightForWidth())
-        self.label_79.setSizePolicy(sizePolicy)
-        self.label_79.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_79.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.label_79.setObjectName("label_79")
-        self.horizontalLayout_39.addWidget(self.label_79)
-        self.lineEdit_binwidth_3 = QtWidgets.QLineEdit(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_binwidth_3.sizePolicy().hasHeightForWidth())
-        self.lineEdit_binwidth_3.setSizePolicy(sizePolicy)
-        self.lineEdit_binwidth_3.setMinimumSize(QtCore.QSize(80, 0))
-        self.lineEdit_binwidth_3.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.lineEdit_binwidth_3.setObjectName("lineEdit_binwidth_3")
-
-        self.lineEdit_binwidth_3.setText("1")
-
-        self.horizontalLayout_39.addWidget(self.lineEdit_binwidth_3)
-        spacerItem24 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_39.addItem(spacerItem24)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_39)
-        spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_8.addItem(spacerItem25)
-
-        self.gridLayout_11.addLayout(self.verticalLayout_8, 0, 0, 1, 1)
-
-        self.line_39 = QtWidgets.QFrame(self.sub_tab_width_histogram)
-        self.line_39.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line_39.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_39.setObjectName("line_39")
-
-        self.gridLayout_11.addWidget(self.line_39, 0, 1, 2, 2)
-
-        # sub_tab_width_histogram histogram
-        self.histogram_graphWidget_3 = PlotWidget(self.sub_tab_width_histogram)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.histogram_graphWidget_3.sizePolicy().hasHeightForWidth())
-        self.histogram_graphWidget_3.setSizePolicy(sizePolicy)
-        self.histogram_graphWidget_3.setMinimumSize(QtCore.QSize(700, 499))
-        self.histogram_graphWidget_3.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.histogram_graphWidget_3.setObjectName("histogram_graphWidget_3")
-
-        self.gridLayout_11.addWidget(self.histogram_graphWidget_3, 0, 2, 1, 1)
-
-        styles = {"color": "r", "font-size": "20px"}
-        self.histogram_graphWidget_3.setLabel('left', 'Frequency', **styles)
-        self.histogram_graphWidget_3.setBackground('w')
-        self.histogram_graphWidget_3.setXRange(1, 10.5, padding=0)
-        self.histogram_graphWidget_3.setYRange(1, 10.5, padding=0)
-
-        self.lineEdit_gatevoltage_2.setText("-1")
-        self.lineEdit_gatevoltage_4.setText("100")
-
-        #         # threshold end
-
-        self.tab_widget_peak_width.addTab(self.sub_tab_width_histogram, "")
-        self.gridLayout_10.addWidget(self.tab_widget_peak_width, 0, 0, 1, 1)
-        self.tab_widgets_main.addTab(self.tab_peakwidth, "")
-
-        ### Peak width end
 
         ### extra filter test tab
         #         self.tab = QtWidgets.QWidget()
@@ -3628,7 +2905,7 @@ class Ui_MainWindow(object):
         self.actionAdd_SaveSingleFile.triggered.connect(self.save_single)
 
         self.button_update.clicked.connect(self.pressed)
-        self.button_update_2.clicked.connect(self.filter_width_table)
+        #self.button_update_2.clicked.connect(self.filter_width_table)
         self.pushButton_5.clicked.connect(self.reset_linear_plot)
         self.pushButton_4.clicked.connect(self.last_page)
         self.pushButton_3.clicked.connect(self.next_page)
@@ -3663,10 +2940,10 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
 
-        self.lineEdit_5.editingFinished.connect(self.lr_peak_width_plot)
-        self.lineEdit_6.editingFinished.connect(self.lr_peak_width_plot)
-        self.lineEdit_7.editingFinished.connect(self.lr_peak_width_plot)
-        self.lineEdit_8.editingFinished.connect(self.lr_peak_width_plot)
+        #self.lineEdit_5.editingFinished.connect(self.lr_peak_width_plot)
+        #self.lineEdit_6.editingFinished.connect(self.lr_peak_width_plot)
+        #self.lineEdit_7.editingFinished.connect(self.lr_peak_width_plot)
+        #self.lineEdit_8.editingFinished.connect(self.lr_peak_width_plot)
 
         self.channel_1.stateChanged.connect(self.linear_plot)
         self.channel_2.stateChanged.connect(self.linear_plot)
@@ -3680,8 +2957,8 @@ class Ui_MainWindow(object):
 
         self.recalculate_peak_dataset = True
 
-        self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
-        self.lr_y_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
+        #self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
+        #self.lr_y_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
 
         #         self.comboBox_6.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
         #         self.comboBox_5.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
@@ -3692,7 +2969,7 @@ class Ui_MainWindow(object):
         self.comboBox_option1.currentIndexChanged.connect(self.sweep_1_index_changed)
         self.comboBox_option2.currentIndexChanged.connect(self.sweep_2_index_changed)
 
-        self.w = OtherWindow(self)
+        self.w = peak_threshold_window.ThresholdWindow()
         self.pushButton_resample.clicked.connect(self.openWindow)
 
         self.x = []
@@ -3782,26 +3059,7 @@ class Ui_MainWindow(object):
                                          afterchange=self.polygon_channel_4.isChecked()))
 
         # combobox trigger
-        self.comboBox_5.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter scatter plot x-axis changed to ",
-                                         afterchange=self.comboBox_5.currentText()))
 
-        self.comboBox_6.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter scatter plot y-axis changed to ",
-                                         afterchange=self.comboBox_6.currentText()))
-
-        self.comboBox_peak_num_1.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter multi peaks gating channel Green condition changed to ",
-                                         afterchange=self.comboBox_peak_num_1.currentText()))
-        self.comboBox_peak_num_2.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter multi peaks gating channel Red condition changed to ",
-                                         afterchange=self.comboBox_peak_num_2.currentText()))
-        self.comboBox_peak_num_3.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter multi peaks gating channel Blue condition changed to ",
-                                         afterchange=self.comboBox_peak_num_3.currentText()))
-        self.comboBox_peak_num_4.currentIndexChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter multi peaks gating channel Orange condition changed to ",
-                                         afterchange=self.comboBox_peak_num_4.currentText()))
 
         self.comboBox.currentIndexChanged.connect(
             lambda: self.textbox_trigger(change="2nd filter Quadrant Gating x-axis channel changed to ",
@@ -3828,10 +3086,6 @@ class Ui_MainWindow(object):
             lambda: self.textbox_trigger(change="Sweept channel selection changed to ",
                                          afterchange=self.listView_channels_2.currentItem().text()))
 
-        self.listView_channels_3.currentItemChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter histogram channel selection changed to ",
-                                         afterchange=self.listView_channels_3.currentItem().text()))
-
         self.listView_channels.currentItemChanged.connect(
             lambda: self.textbox_trigger(change="2nd filter histogram channel selection changed to ",
                                          afterchange=self.listView_channels.currentItem().text()))
@@ -3839,13 +3093,6 @@ class Ui_MainWindow(object):
         self.file_list_view.currentItemChanged.connect(lambda: self.textbox_trigger(change="loading file changed to ",
                                                                                     afterchange=self.file_list_view.currentItem().text()))
 
-        # lineedit trigger (editingFinished or textChanged)
-        self.lineEdit_gatevoltage_2.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter histogram Min Width threshold changed to ",
-                                         afterchange=self.lineEdit_gatevoltage_2.text()))
-        self.lineEdit_gatevoltage_4.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter histogram Max Width threshold changed to ",
-                                         afterchange=self.lineEdit_gatevoltage_4.text()))
 
         self.lineEdit_gatevoltagemaximum.textChanged.connect(
             lambda: self.textbox_trigger(change="Sweep gating threshold voltage maximum changed to ",
@@ -3860,54 +3107,13 @@ class Ui_MainWindow(object):
         self.lineEdit_binwidth_2.textChanged.connect(
             lambda: self.textbox_trigger(change="Sweep tab bin width changed to ",
                                          afterchange=self.lineEdit_binwidth_2.text()))
-        self.lineEdit_binwidth_3.textChanged.connect(
-            lambda: self.textbox_trigger(change="1nd filter histogram bin width changed to ",
-                                         afterchange=self.lineEdit_binwidth_3.text()))
+
         self.lineEdit_binwidth.textChanged.connect(
             lambda: self.textbox_trigger(change="2nd filter histogram bin width changed to ",
                                          afterchange=self.lineEdit_binwidth.text()))
         self.lineEdit_gatevoltage.textChanged.connect(
             lambda: self.textbox_trigger(change="2nd filter histogram gate voltage changed to ",
                                          afterchange=self.lineEdit_gatevoltage.text()))
-
-        self.lineEdit_5.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter Scatter plot x-axis min changed to ",
-                                         afterchange=self.lineEdit_5.text()))
-        self.lineEdit_6.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter Scatter plot y-axis min changed to ",
-                                         afterchange=self.lineEdit_6.text()))
-        self.lineEdit_7.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter Scatter plot x-axis max changed to ",
-                                         afterchange=self.lineEdit_7.text()))
-        self.lineEdit_8.textChanged.connect(
-            lambda: self.textbox_trigger(change="1st filter Scatter plot y-axis max changed to ",
-                                         afterchange=self.lineEdit_8.text()))
-
-        self.lineEdit_9.textChanged.connect(
-            lambda: self.textbox_trigger(change="Voltage Threshold Green(V) changed to ",
-                                         afterchange=self.lineEdit_9.text()))
-        self.lineEdit_10.textChanged.connect(
-            lambda: self.textbox_trigger(change="Voltage Threshold Far Red(V) changed to ",
-                                         afterchange=self.lineEdit_10.text()))
-        self.lineEdit_11.textChanged.connect(
-            lambda: self.textbox_trigger(change="Voltage Threshold Ultra Violet(V) changed to ",
-                                         afterchange=self.lineEdit_11.text()))
-        self.lineEdit_12.textChanged.connect(
-            lambda: self.textbox_trigger(change="Voltage Threshold Orange(V) changed to ",
-                                         afterchange=self.lineEdit_12.text()))
-
-        self.lineEdit_peak_num_1.textChanged.connect(lambda: self.textbox_trigger(
-            change="1st filter multi peaks gating # of peaks in channel Orange changed to ",
-            afterchange=self.lineEdit_peak_num_1.text()))
-        self.lineEdit_peak_num_2.textChanged.connect(lambda: self.textbox_trigger(
-            change="1st filter multi peaks gating # of peaks in channel Orange changed to ",
-            afterchange=self.lineEdit_peak_num_2.text()))
-        self.lineEdit_peak_num_3.textChanged.connect(lambda: self.textbox_trigger(
-            change="1st filter multi peaks gating # of peaks in channel Orange changed to ",
-            afterchange=self.lineEdit_peak_num_3.text()))
-        self.lineEdit_peak_num_4.textChanged.connect(lambda: self.textbox_trigger(
-            change="1st filter multi peaks gating # of peaks in channel Orange changed to ",
-            afterchange=self.lineEdit_peak_num_4.text()))
 
         self.lineEdit_scatterxvoltage.textChanged.connect(
             lambda: self.textbox_trigger(change="2nd filter quadrant gating x-axis gate voltage changed to ",
@@ -3964,9 +3170,9 @@ class Ui_MainWindow(object):
             change = str(change)[0:30]
 
         self.graphWidget.setTitle(str(change), color="b", size="10pt")
-        self.graphWidget_width_scatter.setTitle(str(change), color="b", size="10pt")
+
         self.widget_28.setTitle(str(change), color="b", size="10pt")
-        self.histogram_graphWidget_3.setTitle(str(change), color="b", size="10pt")
+
         self.histogram_graphWidget.setTitle(str(change), color="b", size="10pt")
         self.subgating_graphWidget.setTitle(str(change), color="b", size="10pt")
         self.widget_29.setTitle(str(change), color="b", size="10pt")
@@ -5236,8 +4442,7 @@ class Ui_MainWindow(object):
         #         except : print("Ui_MainWindow.reset: FALSE")
 
         print('self.update', self.update)
-        print('self.reanalysis', self.reanalysis)
-        if self.update or self.reanalysis:
+        if self.update:
             self.peak_width_working_data = []
             self.peak_num_working_data = []
             for i in range(4):
@@ -5287,7 +4492,7 @@ class Ui_MainWindow(object):
                 for i in range(4):
                     self.peak_width_working_data[i] += self.analog[self.current_file_dict['Peak Record']][1][i]
                     self.peak_num_working_data[i] += self.analog[self.current_file_dict['Peak Record']][2][i]
-            self.peak_num_filter()
+
 
         if self.update:
             self.working_data = []
@@ -6078,7 +5283,7 @@ class Ui_MainWindow(object):
 
             self.check3A2 = time.time()
 
-            points_inside_square = list(set(points_inside_square).intersection(set(self.peak_num_filtered_index)))
+            points_inside_square = set(points_inside_square)
             self.points_inside_square = points_inside_square
             #             peak_data_x = self.working_data[self.comboBox.currentIndex()]
             #             peak_data_y = self.working_data[self.comboBox_2.currentIndex()]
@@ -6637,7 +5842,7 @@ class Ui_MainWindow(object):
         #         self.pushButton_2.setText(_translate("MainWindow", "Save"))
         #         self.pushButton.setText(_translate("MainWindow", "Load"))
         self.label_8.setText(_translate("MainWindow", "Total Runtime"))
-        self.label_3.setText(_translate("MainWindow", "Sampling Rate"))
+        self.label_3.setText(_translate("MainWindow", "Peak Threshold"))
         self.pushButton_resample.setText(_translate("MainWindow", "Resample"))
         self.label_4.setText(_translate("MainWindow", "Count"))
         self.label_6.setText(_translate("MainWindow", "Starting Time"))
@@ -6807,59 +6012,6 @@ class Ui_MainWindow(object):
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakmax),
                                          _translate("MainWindow", "Peak Maxes Log"))
 
-        self.label_82.setText(_translate("MainWindow", "Max Width"))
-        self.label_84.setText(_translate("MainWindow", "Selected/Total"))
-        self.label_85.setText(_translate("MainWindow", "/"))
-        self.button_update_2.setText(_translate("MainWindow", "Quadrants"))
-        self.label_87.setText(_translate("MainWindow", "Min"))
-        self.label_88.setText(_translate("MainWindow", "X-Axis"))
-        self.comboBox_5.setItemText(0, _translate("MainWindow", "Green"))
-        self.comboBox_5.setItemText(1, _translate("MainWindow", "Far Red"))
-        self.comboBox_5.setItemText(2, _translate("MainWindow", "Ultra Violet"))
-        self.comboBox_5.setItemText(3, _translate("MainWindow", "Orange"))
-        self.label_89.setText(_translate("MainWindow", "Y-Axis"))
-        self.comboBox_6.setItemText(0, _translate("MainWindow", "Green"))
-        self.comboBox_6.setItemText(1, _translate("MainWindow", "Far Red"))
-        self.comboBox_6.setItemText(2, _translate("MainWindow", "Ultra Violet"))
-        self.comboBox_6.setItemText(3, _translate("MainWindow", "Orange"))
-        self.label_90.setText(_translate("MainWindow", "Scatter Plot Axes"))
-        self.label_91.setText(_translate("MainWindow", "Max"))
-        self.label_95.setText(_translate("MainWindow", "Voltage Threshold (V)"))
-        self.label_92.setText(_translate("MainWindow", "Green"))
-        self.label_96.setText(_translate("MainWindow", "Far Red"))
-        self.label_97.setText(_translate("MainWindow", "Ultra Vio"))
-        self.label_98.setText(_translate("MainWindow", "Orange"))
-        self.label_93.setText(_translate("MainWindow", "Selected Data"))
-
-        self.label_num_peak_1.setText(_translate("MainWindow", "Channel"))
-        self.label_num_peak_2.setText(_translate("MainWindow", "Condition"))
-        self.label_num_peak_3.setText(_translate("MainWindow", "# of Peaks"))
-        self.label_num_peak_4.setText(_translate("MainWindow", "Green"))
-        self.label_num_peak_5.setText(_translate("MainWindow", "Red"))
-        self.label_num_peak_6.setText(_translate("MainWindow", "Blue"))
-        self.label_num_peak_7.setText(_translate("MainWindow", "Orange"))
-        self.label_num_peak_title.setText(_translate("MainWindow", "Multi Peaks Gating"))
-        self.comboBox_peak_num_1.setItemText(0, _translate("MainWindow", ">="))
-        self.comboBox_peak_num_1.setItemText(1, _translate("MainWindow", "=="))
-        self.comboBox_peak_num_1.setItemText(2, _translate("MainWindow", "<="))
-        self.comboBox_peak_num_2.setItemText(0, _translate("MainWindow", ">="))
-        self.comboBox_peak_num_2.setItemText(1, _translate("MainWindow", "=="))
-        self.comboBox_peak_num_2.setItemText(2, _translate("MainWindow", "<="))
-        self.comboBox_peak_num_3.setItemText(0, _translate("MainWindow", ">="))
-        self.comboBox_peak_num_3.setItemText(1, _translate("MainWindow", "=="))
-        self.comboBox_peak_num_3.setItemText(2, _translate("MainWindow", "<="))
-        self.comboBox_peak_num_4.setItemText(0, _translate("MainWindow", ">="))
-        self.comboBox_peak_num_4.setItemText(1, _translate("MainWindow", "=="))
-        self.comboBox_peak_num_4.setItemText(2, _translate("MainWindow", "<="))
-        self.lineEdit_peak_num_1.setText("0")
-        self.lineEdit_peak_num_2.setText("0")
-        self.lineEdit_peak_num_3.setText("0")
-        self.lineEdit_peak_num_4.setText("0")
-
-        self.tab_widget_peak_width.setTabText(self.tab_widget_peak_width.indexOf(self.sub_tab_width_scatter),
-                                              _translate("MainWindow", "Scatter"))
-        self.tab_widget_peak_width.setTabText(self.tab_widget_peak_width.indexOf(self.sub_tab_width_histogram),
-                                              _translate("MainWindow", "Histogram"))
         self.label_271.setText(_translate("MainWindow", "Channel Selection"))
 
         self.label_180.setText(_translate("MainWindow", "Start Peak"))
@@ -6900,22 +6052,13 @@ class Ui_MainWindow(object):
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_3),
                                          _translate("MainWindow", "Raw Data Viewer"))
 
-        self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakwidth),
-                                         _translate("MainWindow", "Peak Width/Number Subgating"))
+
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_sweep),
                                          _translate("MainWindow", "Sweep"))
 
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_report),
                                          _translate("MainWindow", "Log"))
-        self.label_54.setText(_translate("MainWindow", "Channels"))
-        self.pushButton_saveplot_2.setText(_translate("MainWindow", "Save Plot"))
-        self.label_59.setText(_translate("MainWindow", "Peak Width Threshold"))
-        self.label_60.setText(_translate("MainWindow", "Min Width"))
-        #         self.label_76.setText(_translate("MainWindow", "V"))
-        self.label_77.setText(_translate("MainWindow", "Percentage"))
-        self.label_78.setText(_translate("MainWindow", "%"))
-        self.label_79.setText(_translate("MainWindow", "Bin Width"))
-        self.label_density_adjust1.setText(_translate("MainWindow", "Density Level"))
+
         self.label_density_adjust2.setText(_translate("MainWindow", "Density Level"))
         self.label_density_adjust3.setText(_translate("MainWindow", "Density Level"))
 
@@ -6959,12 +6102,7 @@ class Ui_MainWindow(object):
             self.polygon_channel_4.setChecked(parameters[14])
 
             # combobox 
-            self.comboBox_5.setCurrentIndex(parameters[15])
-            self.comboBox_6.setCurrentIndex(parameters[16])
-            self.comboBox_peak_num_1.setCurrentIndex(parameters[17])
-            self.comboBox_peak_num_2.setCurrentIndex(parameters[18])
-            self.comboBox_peak_num_3.setCurrentIndex(parameters[19])
-            self.comboBox_peak_num_4.setCurrentIndex(parameters[20])
+
             self.comboBox.setCurrentIndex(parameters[21])
             self.comboBox_2.setCurrentIndex(parameters[22])
             self.subgating_comboBox.setCurrentIndex(parameters[23])
@@ -6973,27 +6111,14 @@ class Ui_MainWindow(object):
             self.subgating_preselect_comboBox_2.setCurrentIndex(parameters[26])
 
             # lineedit 
-            self.lineEdit_gatevoltage_2.setText(parameters[27])
-            self.lineEdit_gatevoltage_4.setText(parameters[28])
+
             self.lineEdit_gatevoltagemaximum.setText(parameters[29])
             self.lineEdit_gatevoltageminimum.setText(parameters[30])
             self.lineEdit_increments.setText(parameters[31])
             self.lineEdit_binwidth_2.setText(parameters[32])
-            self.lineEdit_binwidth_3.setText(parameters[33])
             self.lineEdit_binwidth.setText(parameters[34])
             self.lineEdit_gatevoltage.setText(parameters[35])
-            self.lineEdit_5.setText(parameters[36])
-            self.lineEdit_6.setText(parameters[37])
-            self.lineEdit_7.setText(parameters[38])
-            self.lineEdit_8.setText(parameters[39])
-            self.lineEdit_9.setText(parameters[40])
-            self.lineEdit_10.setText(parameters[41])
-            self.lineEdit_11.setText(parameters[42])
-            self.lineEdit_12.setText(parameters[43])
-            self.lineEdit_peak_num_1.setText(parameters[44])
-            self.lineEdit_peak_num_2.setText(parameters[45])
-            self.lineEdit_peak_num_3.setText(parameters[46])
-            self.lineEdit_peak_num_4.setText(parameters[47])
+
             self.lineEdit_scatterxvoltage.setText(parameters[48])
             self.lineEdit_scatteryvoltage.setText(parameters[49])
             self.file_dict_list = parameters[50]
@@ -7053,12 +6178,7 @@ class Ui_MainWindow(object):
             self.polygon_channel_4.setChecked(parameters[14])
 
             # combobox 
-            self.comboBox_5.setCurrentIndex(parameters[15])
-            self.comboBox_6.setCurrentIndex(parameters[16])
-            self.comboBox_peak_num_1.setCurrentIndex(parameters[17])
-            self.comboBox_peak_num_2.setCurrentIndex(parameters[18])
-            self.comboBox_peak_num_3.setCurrentIndex(parameters[19])
-            self.comboBox_peak_num_4.setCurrentIndex(parameters[20])
+
             self.comboBox.setCurrentIndex(parameters[21])
             self.comboBox_2.setCurrentIndex(parameters[22])
             self.subgating_comboBox.setCurrentIndex(parameters[23])
@@ -7067,30 +6187,18 @@ class Ui_MainWindow(object):
             self.subgating_preselect_comboBox_2.setCurrentIndex(parameters[26])
 
             # lineedit 
-            self.lineEdit_gatevoltage_2.setText(parameters[27])
-            self.lineEdit_gatevoltage_4.setText(parameters[28])
+
             self.lineEdit_gatevoltagemaximum.setText(parameters[29])
             self.lineEdit_gatevoltageminimum.setText(parameters[30])
             self.lineEdit_increments.setText(parameters[31])
             self.lineEdit_binwidth_2.setText(parameters[32])
-            self.lineEdit_binwidth_3.setText(parameters[33])
+
             self.lineEdit_binwidth.setText(parameters[34])
             self.lineEdit_gatevoltage.setText(parameters[35])
-            self.lineEdit_5.setText(parameters[36])
-            self.lineEdit_6.setText(parameters[37])
-            self.lineEdit_7.setText(parameters[38])
-            self.lineEdit_8.setText(parameters[39])
-            self.lineEdit_9.setText(parameters[40])
-            self.lineEdit_10.setText(parameters[41])
-            self.lineEdit_11.setText(parameters[42])
-            self.lineEdit_12.setText(parameters[43])
-            self.lineEdit_peak_num_1.setText(parameters[44])
-            self.lineEdit_peak_num_2.setText(parameters[45])
-            self.lineEdit_peak_num_3.setText(parameters[46])
-            self.lineEdit_peak_num_4.setText(parameters[47])
+
             self.lineEdit_scatterxvoltage.setText(parameters[48])
             self.lineEdit_scatteryvoltage.setText(parameters[49])
-            self.checkbox_Droplet_Record(parameters[50])
+
 
         try:
             self.chart_title_change()
@@ -7112,22 +6220,13 @@ class Ui_MainWindow(object):
 
         self.histo_channel = self.listView_channels.currentRow()
         self.histo_bins = float(self.lineEdit_binwidth.text())
-        self.peak_width_channel = self.listView_channels_3.currentRow()
-        self.peak_width_bins = float(self.lineEdit_binwidth_3.text())
+
         self.scatter_channelx = self.comboBox.currentIndex()
         self.scatter_channely = self.comboBox_2.currentIndex()
-        self.width_scatter_channelx = self.comboBox_5.currentIndex()
-        self.width_scatter_channely = self.comboBox_6.currentIndex()
+
         self.peak_num_mode = []
         self.peak_num_in = []
-        self.peak_num_mode.append(self.comboBox_peak_num_1.currentIndex())
-        self.peak_num_mode.append(self.comboBox_peak_num_2.currentIndex())
-        self.peak_num_mode.append(self.comboBox_peak_num_3.currentIndex())
-        self.peak_num_mode.append(self.comboBox_peak_num_4.currentIndex())
-        self.peak_num_in.append(int(self.lineEdit_peak_num_1.text()))
-        self.peak_num_in.append(int(self.lineEdit_peak_num_2.text()))
-        self.peak_num_in.append(int(self.lineEdit_peak_num_3.text()))
-        self.peak_num_in.append(int(self.lineEdit_peak_num_4.text()))
+
 
         self.sweep_channel = self.listView_channels_2.currentRow()
         #         if self.comboBox_option1.currentIndex() > 2:
@@ -7178,7 +6277,7 @@ class Ui_MainWindow(object):
         else:
             under_sample = stats.under_sample_factor
 
-        channel = self.peak_width_channel
+        channel = 0
         width_enable = True
 
         try:
@@ -7206,7 +6305,7 @@ class Ui_MainWindow(object):
             reset = False
 
         ### check Voltage threshold(V)  
-        threshold = [self.lineEdit_9.text(), self.lineEdit_10.text(), self.lineEdit_11.text(), self.lineEdit_12.text()]
+        threshold = [0, 0, 0, 0]
         peaks_threshold = []
         width_threshold = []
         width_min = [0, 0, 0, 0]
@@ -7246,15 +6345,8 @@ class Ui_MainWindow(object):
             else:
                 threshold = width_threshold
 
-        self.lineEdit_9.setText(str(threshold[0]))
-        self.lineEdit_10.setText(str(threshold[1]))
-        self.lineEdit_11.setText(str(threshold[2]))
-        self.lineEdit_12.setText(str(threshold[3]))
 
-        self.width_update, self.reanalysis = self.ui_state.peak_width_update(channel_select=self.peak_width_channel,
-                                                                             bins=self.peak_width_bins,
-                                                                             peak_width_threshold=self.lineEdit_gatevoltage_2.text(),
-                                                                             voltage_threshold=threshold)
+
 
         ### check end
 
@@ -7277,14 +6369,7 @@ class Ui_MainWindow(object):
                                                                   locked_out=self.locked_out_checkbox,
                                                                   Droplet_Record=self.Droplet_Record_checkbox)
             print('file', self.main_file_select)
-        self.filter_update = self.ui_state.filter_peak_update(x_axis_channel_number=int(self.comboBox_5.currentIndex()),
-                                                              y_axis_channel_number=int(self.comboBox_6.currentIndex()),
-                                                              x_axis_channel_min=float(self.lineEdit_5.text()),
-                                                              x_axis_channel_max=float(self.lineEdit_7.text()),
-                                                              y_axis_channel_min=float(self.lineEdit_6.text()),
-                                                              y_axis_channel_max=float(self.lineEdit_8.text()),
-                                                              peak_num_in=self.peak_num_in,
-                                                              peak_num_mode=self.peak_num_mode)
+
 
         threshold_check = self.ui_state.threshold_check(threshold=threshold)
 
@@ -7294,16 +6379,14 @@ class Ui_MainWindow(object):
             peak_enable = False
         print("peak recalculate enable check is :", peak_enable)
         print("resample parameter self.reset check is :", reset)
-        print("filter condition change check is :", self.filter_update)
-        print("threshold check is:", self.reanalysis, ", current threshold is:", threshold)
 
         self.data_updated = False
 
         check1 = time.time()
 
-        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.reanalysis and not self.load:
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.load:
             print("--------------------------------------------------------not reset")
-            self.tab_widgets_main.currentIndex
+
 
             check2 = time.time()
             self.update_working_data()
@@ -7321,9 +6404,9 @@ class Ui_MainWindow(object):
 
             check4 = time.time()
 
-            self.draw_peak_width()
+            #self.draw_peak_width()
             check4A = time.time()
-            self.draw_peak_width_2()
+            #self.draw_peak_width_2()
             check4B = time.time()
 
             self.update_sweep_graphs()
@@ -7384,7 +6467,7 @@ class Ui_MainWindow(object):
 
             #             check4 = time.time()
 
-            self.draw_peak_width()
+            #self.draw_peak_width()
             self.update_statistic()
 
             #             check4A = time.time()
@@ -7525,39 +6608,22 @@ class Ui_MainWindow(object):
                           self.channel_4.isChecked(), self.polygon_channel_1.isChecked(),
                           self.polygon_channel_2.isChecked(),
                           self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
-                          self.comboBox_5.currentIndex(),
-                          self.comboBox_6.currentIndex(),
-                          self.comboBox_peak_num_1.currentIndex(),
-                          self.comboBox_peak_num_2.currentIndex(),
-                          self.comboBox_peak_num_3.currentIndex(),
-                          self.comboBox_peak_num_4.currentIndex(),
+
                           self.comboBox.currentIndex(),
                           self.comboBox_2.currentIndex(),
                           self.subgating_comboBox.currentIndex(),
                           self.subgating_comboBox_2.currentIndex(),
                           self.subgating_preselect_comboBox.currentIndex(),
                           self.subgating_preselect_comboBox_2.currentIndex(),
-                          self.lineEdit_gatevoltage_2.text(),
-                          self.lineEdit_gatevoltage_4.text(),
+
                           self.lineEdit_gatevoltagemaximum.text(),
                           self.lineEdit_gatevoltageminimum.text(),
                           self.lineEdit_increments.text(),
                           self.lineEdit_binwidth_2.text(),
-                          self.lineEdit_binwidth_3.text(),
+
                           self.lineEdit_binwidth.text(),
                           self.lineEdit_gatevoltage.text(),
-                          self.lineEdit_5.text(),
-                          self.lineEdit_6.text(),
-                          self.lineEdit_7.text(),
-                          self.lineEdit_8.text(),
-                          self.lineEdit_9.text(),
-                          self.lineEdit_10.text(),
-                          self.lineEdit_11.text(),
-                          self.lineEdit_12.text(),
-                          self.lineEdit_peak_num_1.text(),
-                          self.lineEdit_peak_num_2.text(),
-                          self.lineEdit_peak_num_3.text(),
-                          self.lineEdit_peak_num_4.text(),
+
                           self.lineEdit_scatterxvoltage.text(),
                           self.lineEdit_scatteryvoltage.text(),
                           # file list
@@ -7619,39 +6685,22 @@ class Ui_MainWindow(object):
                       self.channel_4.isChecked(), self.polygon_channel_1.isChecked(),
                       self.polygon_channel_2.isChecked(),
                       self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
-                      self.comboBox_5.currentIndex(),
-                      self.comboBox_6.currentIndex(),
-                      self.comboBox_peak_num_1.currentIndex(),
-                      self.comboBox_peak_num_2.currentIndex(),
-                      self.comboBox_peak_num_3.currentIndex(),
-                      self.comboBox_peak_num_4.currentIndex(),
+
                       self.comboBox.currentIndex(),
                       self.comboBox_2.currentIndex(),
                       self.subgating_comboBox.currentIndex(),
                       self.subgating_comboBox_2.currentIndex(),
                       self.subgating_preselect_comboBox.currentIndex(),
                       self.subgating_preselect_comboBox_2.currentIndex(),
-                      self.lineEdit_gatevoltage_2.text(),
-                      self.lineEdit_gatevoltage_4.text(),
+
                       self.lineEdit_gatevoltagemaximum.text(),
                       self.lineEdit_gatevoltageminimum.text(),
                       self.lineEdit_increments.text(),
                       self.lineEdit_binwidth_2.text(),
-                      self.lineEdit_binwidth_3.text(),
+
                       self.lineEdit_binwidth.text(),
                       self.lineEdit_gatevoltage.text(),
-                      self.lineEdit_5.text(),
-                      self.lineEdit_6.text(),
-                      self.lineEdit_7.text(),
-                      self.lineEdit_8.text(),
-                      self.lineEdit_9.text(),
-                      self.lineEdit_10.text(),
-                      self.lineEdit_11.text(),
-                      self.lineEdit_12.text(),
-                      self.lineEdit_peak_num_1.text(),
-                      self.lineEdit_peak_num_2.text(),
-                      self.lineEdit_peak_num_3.text(),
-                      self.lineEdit_peak_num_4.text(),
+
                       self.lineEdit_scatterxvoltage.text(),
                       self.lineEdit_scatteryvoltage.text(),
                       # file list
@@ -7707,39 +6756,22 @@ class Ui_MainWindow(object):
                           self.channel_4.isChecked(), self.polygon_channel_1.isChecked(),
                           self.polygon_channel_2.isChecked(),
                           self.polygon_channel_3.isChecked(), self.polygon_channel_4.isChecked(),
-                          self.comboBox_5.currentIndex(),
-                          self.comboBox_6.currentIndex(),
-                          self.comboBox_peak_num_1.currentIndex(),
-                          self.comboBox_peak_num_2.currentIndex(),
-                          self.comboBox_peak_num_3.currentIndex(),
-                          self.comboBox_peak_num_4.currentIndex(),
+
                           self.comboBox.currentIndex(),
                           self.comboBox_2.currentIndex(),
                           self.subgating_comboBox.currentIndex(),
                           self.subgating_comboBox_2.currentIndex(),
                           self.subgating_preselect_comboBox.currentIndex(),
                           self.subgating_preselect_comboBox_2.currentIndex(),
-                          self.lineEdit_gatevoltage_2.text(),
-                          self.lineEdit_gatevoltage_4.text(),
+
                           self.lineEdit_gatevoltagemaximum.text(),
                           self.lineEdit_gatevoltageminimum.text(),
                           self.lineEdit_increments.text(),
                           self.lineEdit_binwidth_2.text(),
-                          self.lineEdit_binwidth_3.text(),
+
                           self.lineEdit_binwidth.text(),
                           self.lineEdit_gatevoltage.text(),
-                          self.lineEdit_5.text(),
-                          self.lineEdit_6.text(),
-                          self.lineEdit_7.text(),
-                          self.lineEdit_8.text(),
-                          self.lineEdit_9.text(),
-                          self.lineEdit_10.text(),
-                          self.lineEdit_11.text(),
-                          self.lineEdit_12.text(),
-                          self.lineEdit_peak_num_1.text(),
-                          self.lineEdit_peak_num_2.text(),
-                          self.lineEdit_peak_num_3.text(),
-                          self.lineEdit_peak_num_4.text(),
+
                           self.lineEdit_scatterxvoltage.text(),
                           self.lineEdit_scatteryvoltage.text(),
                           self.checkbox_Droplet_Record.isChecked()]
@@ -7769,14 +6801,7 @@ class Ui_MainWindow(object):
                 return False
         return False
 
-    def peak_num_filter(self):
-        """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
-        self.peak_num_filtered_index = []
-        holder = [[], [], [], []]
-        for ch in range(4):
-            holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
-                          if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
-        self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
+
 
 
 if __name__ == "__main__":
