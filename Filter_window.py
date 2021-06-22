@@ -741,19 +741,19 @@ class window_filter(QWidget):
 
     def update_fonts(self):
         print("update fonts")
-        if self.lineEdit_line_thickness.validator():
+        if self.lineEdit_line_thickness.hasAcceptableInput():
             self.line_thickness = int(self.lineEdit_line_thickness.text())
 
-        if self.lineEdit_axis_font.validator():
+        if self.lineEdit_axis_font.hasAcceptableInput():
             self.axis_font_size = int(self.lineEdit_axis_font.text())
             self.axis_font.setPointSize(self.axis_font_size)
             self.widget_29.getAxis('left').setStyle(tickFont=self.axis_font)
             self.widget_29.getAxis('bottom').setStyle(tickFont=self.axis_font)
 
-        if self.lineEdit_legend_font.validator():
+        if self.lineEdit_legend_font.hasAcceptableInput():
             self.legend_font_size = self.lineEdit_legend_font.text()
 
-        if self.lineEdit_axis_thickness.validator():
+        if self.lineEdit_axis_thickness.hasAcceptableInput():
             self.axis_thickness = int(self.lineEdit_axis_thickness.text())
             self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
             self.widget_29.getAxis('left').setPen(self.axis_pen)

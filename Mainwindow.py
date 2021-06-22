@@ -2970,6 +2970,7 @@ class Ui_MainWindow(object):
         self.comboBox_option2.currentIndexChanged.connect(self.sweep_2_index_changed)
 
         self.w = peak_threshold_window.ThresholdWindow()
+        self.w.threshold_set.connect(self.threshold_set)
         self.pushButton_resample.clicked.connect(self.openWindow)
 
         self.x = []
@@ -3142,6 +3143,14 @@ class Ui_MainWindow(object):
         self.subgating_polygon_trigger = []
         self.subgating_points = []
         self.subgating_points_inside_list = []
+
+    def threshold_set(self):
+        print(self.w.thresholds)
+        self.listWidget_sampingrate.clear()
+        self.listWidget_sampingrate.addItem("Green: " + str(self.w.thresholds[0]) + "V")
+        self.listWidget_sampingrate.addItem("Red: " + str(self.w.thresholds[1]) + "V")
+        self.listWidget_sampingrate.addItem("Blue: " + str(self.w.thresholds[2]) + "V")
+        self.listWidget_sampingrate.addItem("Orange: " + str(self.w.thresholds[3]) + "V")
 
     # ###  window filter
     def getValue(self, val):
@@ -3332,7 +3341,7 @@ class Ui_MainWindow(object):
                                              [[0, max_voltage], [0, max_voltage]],
                                              density=True)
                 max_density = histo.max()
-                print('histo', histo)
+                #print('histo', histo)
                 percentage_coefficient = int(self.lineEdit_third_layer_density_adjust.text())
 
                 # made empty array to hold the sorted data according to density
@@ -4389,23 +4398,9 @@ class Ui_MainWindow(object):
                 self.widget_28.plot(height_index, data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o',
                                     symbolSize=0, symbolBrush=('m'))
 
-    #     def width_scatter_channel_to_histogram_channel(self):
-    #         self.listView_channels_3.setCurrentRow(self.comboBox_5.currentIndex())
-    #         self.recalculate_peak_dataset = True
-
-    #     def width_histogram_channel_to_scatter_channel(self):
-    #         self.comboBox_5.setCurrentIndex(self.listView_channels_3.currentRow())
-    #         self.lineEdit_5.setText(self.lineEdit_gatevoltage_2.text())
-    #         self.lineEdit_7.setText(self.lineEdit_gatevoltage_4.text())
-    #         self.lr_peak_width_plot()
-    #         self.recalculate_peak_dataset = True
-
-    def OtherWindow_Button_ok_clicked(self, text):
-        self.chunk_resample = int(text)
-        self.reset = True
 
     def openWindow(self):
-
+        self.w.import_threshold([0.0, 0.0, 0.0, 0.0])
         self.w.show()
 
     def update_sampling_Rate(self):
@@ -4556,73 +4551,6 @@ class Ui_MainWindow(object):
         print("0,self.recalculate_peak_dataset", self.recalculate_peak_dataset)
         if self.recalculate_peak_dataset == True:
             ## x-axis
-            if self.comboBox_5.currentIndex() == 0:
-                self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
-                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex() == 0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
-                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
-                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
-                elif self.comboBox_6.currentIndex() == 1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-
-            elif self.comboBox_5.currentIndex() == 1:
-                self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
-                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex() == 0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
-                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
-                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
-                elif self.comboBox_6.currentIndex() == 2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-
-            elif self.comboBox_5.currentIndex() == 2:
-                self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
-                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex() == 0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
-                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
-                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
-                elif self.comboBox_6.currentIndex() == 3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-
-            elif self.comboBox_5.currentIndex() == 3:
-                self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
-                                     x >= float(self.lineEdit_5.text()) and x <= float(self.lineEdit_7.text())]
-                if self.comboBox_6.currentIndex() == 0:
-                    self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 1:
-                    self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 2:
-                    self.width_index2 = [i for i, x in enumerate(self.peak_width_working_data[2]) if
-                                         x >= float(self.lineEdit_6.text()) and x <= float(self.lineEdit_8.text())]
-                elif self.comboBox_6.currentIndex() == 3:
-                    self.width_index3 = [i for i, x in enumerate(self.peak_width_working_data[3]) if
-                                         x >= max(float(self.lineEdit_5.text()), float(self.lineEdit_6.text()))
-                                         and x <= min(float(self.lineEdit_7.text()), float(self.lineEdit_8.text()))]
 
             self.recalculate_peak_dataset = False
 
