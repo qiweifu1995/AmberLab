@@ -21,7 +21,7 @@ class file_extracted_data_Qing:
     def __init__(self, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True,
                  peak_enable=False, channel=0, chunksize=1000, header=2, ch1_count="1", ch2_count="1", ch3_count="1",
                  ch12_count="1", ch13_count="1", ch23_count="1", Droplet_Record_count="1", locked_out_count="1",
-                 total_count="1"):
+                 total_count="1", rethreshold=False):
         self.analog_file = {}
         peak_file_chunksize = 1000
         self.threshold = threshold
@@ -89,7 +89,7 @@ class file_extracted_data_Qing:
 
             self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
 
-        if current_file_dict["Droplets Extracted Data"] != "":
+        if current_file_dict["Droplets Extracted Data"] != "" and not rethreshold:
             print("Importing Extracted Droplet Record...")
             listDR, widthDR, num_peaksDR = self.extracted_data_loader(current_file_dict["Droplets Extracted Data"])
 

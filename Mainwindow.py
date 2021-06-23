@@ -6226,6 +6226,7 @@ class Ui_MainWindow(object):
             print('file', self.main_file_select)
 
         threshold_check = self.ui_state.threshold_check(self.thresholds, self.file_list_view.currentRow())
+        peaks_threshold = self.thresholds[self.file_list_view.currentRow()]
 
         if self.update or threshold_check:
             peak_enable = True
@@ -6238,7 +6239,7 @@ class Ui_MainWindow(object):
 
         check1 = time.time()
 
-        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.load:
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.load and not threshold_check:
             print("--------------------------------------------------------not reset")
 
 
@@ -6292,7 +6293,7 @@ class Ui_MainWindow(object):
                                                       0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,
                                                       stats.ch13_hit,
                                                       stats.ch23_hit, stats.Droplet_Record_hit,
-                                                      stats.total_sorted)
+                                                      stats.total_sorted, rethreshold=threshold_check)
 
                 print("data extration complete, drawing....")
 

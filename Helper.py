@@ -70,7 +70,11 @@ class Stats:
                       "Negative Droplet Record Hit": "",
                       "Total Dispensed ": "",
                       "Dispense Missed": "",
-                      "Out of Range Droplets": ""}
+                      "Out of Range Droplets": "",
+                      "Ch1 V": "",
+                      "Ch2 V": "",
+                      "Ch3 V": "",
+                      "Ch4 V": ""}
         if os.path.isfile(file_path) and file_path.rfind("Summary") >= 0:
             print("run")
             with open(file_path) as param_file:
@@ -343,6 +347,7 @@ class ui_state:
         try:
             if threshold[file_index] != self.threshold[file_index]:
                 changed = True
+            self.threshold = threshold.copy()
         except:
             return False
         return changed
