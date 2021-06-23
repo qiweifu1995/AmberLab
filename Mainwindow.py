@@ -3124,6 +3124,7 @@ class Ui_MainWindow(object):
                                          afterchange=self.lineEdit_scatteryvoltage.text()))
 
         self.file_list_view.itemChanged.connect(self.chart_title_change)
+        self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
 
         self.load = False
 
@@ -3145,12 +3146,35 @@ class Ui_MainWindow(object):
         self.subgating_points_inside_list = []
 
     def threshold_set(self):
+        """function handling when user finished inputing a voltage"""
         print(self.w.thresholds)
+        threshold_holder = self.w.thresholds.copy()
         self.listWidget_sampingrate.clear()
-        self.listWidget_sampingrate.addItem("Green: " + str(self.w.thresholds[0]) + "V")
-        self.listWidget_sampingrate.addItem("Red: " + str(self.w.thresholds[1]) + "V")
-        self.listWidget_sampingrate.addItem("Blue: " + str(self.w.thresholds[2]) + "V")
-        self.listWidget_sampingrate.addItem("Orange: " + str(self.w.thresholds[3]) + "V")
+        self.listWidget_sampingrate.addItem("Green: " + str(round(threshold_holder[0], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Red: " + str(round(threshold_holder[1], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Blue: " + str(round(threshold_holder[2], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Orange: " + str(round(threshold_holder[3], 3)) + "V")
+        try:
+            self.thresholds[self.file_list_view.currentRow()] = threshold_holder
+        except (IndexError, AttributeError):
+            print("File does not exist")
+            return
+        print(self.thresholds)
+
+    def threshold_fetch(self):
+        """this function is called when user clicks on a different file, fetch that files's thesholds"""
+        try:
+            threshold_holder = self.thresholds[self.file_list_view.currentRow()].copy()
+        except (IndexError, AttributeError):
+            print("File Not Exist")
+            return
+        self.w.import_threshold(threshold_holder)
+        self.listWidget_sampingrate.clear()
+        self.listWidget_sampingrate.addItem("Green: " + str(round(threshold_holder[0], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Red: " + str(round(threshold_holder[1], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Blue: " + str(round(threshold_holder[2], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Orange: " + str(round(threshold_holder[3], 3)) + "V")
+
 
     # ###  window filter
     def getValue(self, val):
@@ -4398,39 +4422,8 @@ class Ui_MainWindow(object):
                 self.widget_28.plot(height_index, data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o',
                                     symbolSize=0, symbolBrush=('m'))
 
-
     def openWindow(self):
-        self.w.import_threshold([0.0, 0.0, 0.0, 0.0])
         self.w.show()
-
-    def update_sampling_Rate(self):
-
-        self.listWidget_sampingrate.clear()
-
-        self.listWidget_sampingrate.addItem('Ch1:' + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Ch2:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Ch3:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Ch1_2:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Ch1_3:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Ch2_3:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("Droplet Record:" + str(self.chunksize))
-        self.listWidget_sampingrate.addItem("All Hit:1000")
-
-    #         self.listWidget_sampingrate.setCurrentRow(0)
-
-    #     def update_names(self):
-    #         """update the name of the sweep dropboxes"""
-    #         self.comboBox_option1.clear()
-    #         self.comboBox_option2.clear()
-    #         self.comboBox_option1.addItem("Current Data")
-    #         self.comboBox_option2.addItem("Current Data")
-    #         self.comboBox_option1.addItem("Current Data post Width/Peaks # Filter")
-    #         self.comboBox_option2.addItem("Current Data post Width/Peaks # Filter")
-    #         self.comboBox_option1.addItem("Current Data post 2nd Filter")
-    #         self.comboBox_option2.addItem("Current Data post 2nd Filter")
-    #         for i in range(self.file_list_view.count()):
-    #             self.comboBox_option1.addItem(self.file_list_view.item(i).text())
-    #             self.comboBox_option2.addItem(self.file_list_view.item(i).text())
 
     def update_working_data(self):
         #         try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
@@ -4815,58 +4808,6 @@ class Ui_MainWindow(object):
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
         self.label_65.setText(self.comboBox_option2.currentText())
 
-    #     def update_sweep_2(self, data_updated=False):
-    #         self.widget_sweepparam1.clear()
-    #         channel = self.listView_channels_2.currentRow()
-    #         if channel == -1:
-    #             self.listView_channels_2.setCurrentRow(0)
-    #         axis_name = self.listView_channels_2.currentItem().text()
-    #         self.widget_sweepparam1.setLabel('bottom', axis_name)
-    #         r, g, b = Helper.rgb_select(channel)
-    #         print("update sweep 2")
-    #         if data_updated or len(self.sweep_2_data) == 0:
-    #             # self.sweep_2_data = self.working_data[channel]
-    #             self.sweep_2_data = []
-    #             if self.comboBox_option2.currentIndex() == 0 and len(self.final_subgating_sweep_data) > 0:
-    #                 try:
-    # #                     self.sweep_2_data = self.final_subgating_sweep_data[channel]
-    #                     self.sweep_2_data = self.sweep_right[channel]
-    #                 except:
-    #                     self.sweep_2_data = [[],[],[],[]]
-    #             elif self.comboBox_option2.currentIndex() == 1:
-    #                 self.sweep_2_data = self.filtered_working_data[channel]
-    #             elif self.comboBox_option2.currentIndex() == 2:
-    #                 self.sweep_2_data = self.subgating_sweep_data[channel]
-    #             else:
-    #                 if self.checkBox_7.isChecked() and self.sweep_2_dict['Peak Record'] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Peak Record']][0][channel]
-    #                     print("self.analog[self.sweep_2_dict['Peak Record']][0][channel]",self.analog[self.sweep_2_dict['Peak Record']][0][channel])
-    #                 if self.checkbox_ch1.isChecked() and self.sweep_2_dict['Ch1 '] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1 ']][0][channel]
-    #                 if self.checkbox_ch2.isChecked() and self.sweep_2_dict['Ch2 '] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2 ']][0][channel]
-    #                 if self.checkbox_ch3.isChecked() and self.sweep_2_dict['Ch3 '] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch3 ']][0][channel]
-    #                 if self.checkbox_ch12.isChecked() and self.sweep_2_dict['Ch1-2'] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-2']][0][channel]
-    #                 if self.checkbox_ch13.isChecked() and self.sweep_2_dict['Ch1-3'] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch1-3']][0][channel]
-    #                 if self.checkbox_ch23.isChecked() and self.sweep_2_dict['Ch2-3'] != '':
-    #                     self.sweep_2_data += self.analog[self.sweep_2_dict['Ch2-3']][0][channel]
-    #         try:
-    #             range_width = int(max(self.sweep_2_data)) + 1
-    #         except:
-    #             range_width = 1
-    #         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
-    #         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
-    #         separate_y = [0] * len(y)
-    #         for i in range(len(y)):
-    #             separate_y = [0] * len(y)
-    #             separate_y[i] = y[i]
-    #             self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
-    #         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
-    #         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
-    #         self.label_65.setText(self.comboBox_option2.currentText())
 
     def draw_peak_width(self, data_updated=False):
 
@@ -6214,16 +6155,6 @@ class Ui_MainWindow(object):
             #             self.chunksize = int(1000 / float(under_sample))
             self.chunksize = 200
 
-        ### Qiwei's extraction code
-        ### Call stats_Ch1 ~ stats_Ch23 to extract
-        #         a = Analysis.file_extracted_data(current_file_dict, threshold, width_enable,channel, chunksize, 0)
-        #         self.analog.update(a.analog_file)
-        #         print(self.analog['200225_171057 AFB AFB Ch1 Hit.csv'][1].peak_voltage)
-        ### End
-
-        ### Qing's extraction code
-        ### call Ch1list ~Ch23list to extract
-
         try:
             if self.reset == True:
                 reset = True
@@ -6235,10 +6166,10 @@ class Ui_MainWindow(object):
         ### check Voltage threshold(V)  
         threshold = [0, 0, 0, 0]
         peaks_threshold = []
-        width_threshold = []
         width_min = [0, 0, 0, 0]
         width_max = [500, 500, 500, 500]
 
+        """
         if self.current_file_dict["Param"] != "":
             with open(self.current_file_dict["Param"]) as param_file:
                 stats_reader = csv.reader(param_file, delimiter=",")
@@ -6272,12 +6203,8 @@ class Ui_MainWindow(object):
                 threshold = [2.7, 3.6, 3.3, 1]
             else:
                 threshold = width_threshold
-
-
-
-
         ### check end
-
+        """
         try:
             self.update = self.ui_state.working_file_update_check(file=self.current_file_dict, chall=self.all_checkbox,
                                                                   ch1=self.ch1_checkbox, ch2=self.ch2_checkbox,
@@ -6298,8 +6225,7 @@ class Ui_MainWindow(object):
                                                                   Droplet_Record=self.Droplet_Record_checkbox)
             print('file', self.main_file_select)
 
-
-        threshold_check = self.ui_state.threshold_check(threshold=threshold)
+        threshold_check = self.ui_state.threshold_check(self.thresholds, self.file_list_view.currentRow())
 
         if self.update or threshold_check:
             peak_enable = True
@@ -6348,7 +6274,7 @@ class Ui_MainWindow(object):
 
             self.update_statistic()
             check4G = time.time()
-            self.update_sampling_Rate()
+            #self.update_sampling_Rate()
             check5 = time.time()
 
             self.subgating_scatter(pressed_function_redo=self.draw_2_update)
@@ -6393,32 +6319,8 @@ class Ui_MainWindow(object):
                 self.draw()
                 self.draw_2()
 
-            #             check4 = time.time()
-
-            #self.draw_peak_width()
             self.update_statistic()
 
-            #             check4A = time.time()
-            #             self.draw_peak_width_2()
-            #             check4B = time.time()
-
-            #             self.update_sweep_graphs()
-            #             check4C = time.time()
-            #             self.sweep_update_high()
-            #             check4D = time.time()
-            #             self.sweep_update_low()
-            #             check4E = time.time()
-            #             self.sweep_update()
-            #             check4F = time.time()
-
-            #             self.update_statistic()
-            #             check4G = time.time()
-            #             self.update_sampling_Rate()
-
-            #             check5 = time.time()
-            #             Ui_MainWindow.reset = False
-
-            # add item to polygon linear plot tab
             self.comboBox_14_list = {}
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
                 self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
@@ -6493,6 +6395,7 @@ class Ui_MainWindow(object):
         self.file_list_view.clear()
         self.file_dict_list.clear()
         self.treeModel.clear()
+        self.thresholds = []
         #         self.comboBox_option1.clear()
         #         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
@@ -6517,6 +6420,8 @@ class Ui_MainWindow(object):
             self.tree_index = (i,)
             self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], None,
                                                                                    None, None)
+            self.thresholds.append([0.0, 0.0, 0.0, 0.0])
+        self.ui_state.threshold_initialize(self.thresholds)
 
     def save(self):
 

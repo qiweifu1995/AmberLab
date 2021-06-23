@@ -293,7 +293,7 @@ class ui_state:
         self.peak_num_mode = []
         self.peak_num = []
 
-        self.threshold = [-1,-1,-1,-1]
+        self.threshold = []
         
         self.points_inside_square = 0
         self.points_inside_or_quadrant = 0
@@ -333,14 +333,18 @@ class ui_state:
             
         return change, textbox
         
+    def threshold_initialize(self, threshold):
+        """call this function for when openfolder is called or add file, initialize the threshold"""
+        if len(threshold) > 0:
+            self.threshold = threshold.copy()
         
-        
-    def threshold_check(self, threshold=None):
+    def threshold_check(self, threshold, file_index):
         changed = False
-        if threshold is not None and self.threshold != threshold:
-            changed = True  
-        if threshold is not None:
-            self.threshold = threshold            
+        try:
+            if threshold[file_index] != self.threshold[file_index]:
+                changed = True
+        except:
+            return False
         return changed
     
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,

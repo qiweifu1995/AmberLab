@@ -115,11 +115,8 @@ class ThresholdWindow(QWidget):
         self.horizontal_layout_Orange.addWidget(self.spinbox_orange)
         layout.addLayout(self.horizontal_layout_Orange)
 
-
-
         self.pushButton_1 = QPushButton('Ok')
         self.pushButton_2 = QPushButton('Close')
-
 
         layout.addWidget(self.pushButton_1)
         layout.addWidget(self.pushButton_2)
@@ -154,7 +151,6 @@ class ThresholdWindow(QWidget):
         """send out signal to pass the threshold"""
         self.threshold_set.emit()
         self.hide()
-
 
     def close_clicked(self):
         self.hide()
