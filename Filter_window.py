@@ -1426,7 +1426,6 @@ class window_filter(QWidget):
             self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
             self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
-        self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
 
     def quadrant_rect_update(self):
         """update the quadrant rectangle"""
@@ -1473,6 +1472,17 @@ class window_filter(QWidget):
 
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
+        try:
+            if self.selected_quadrant == 0:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
+            elif self.selected_quadrant == 1:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant2_list))
+            elif self.selected_quadrant == 2:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant3_list))
+            elif self.selected_quadrant == 3:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
+        except:
+            self.points_inside = []
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
@@ -1869,7 +1879,7 @@ class window_filter(QWidget):
         # incase user forgot to click polygon again to finish polygon
 
         if self.polygon_trigger == False:
-
+            """
             text_x = self.lr_x_axis.value()
             text_y = self.lr_y_axis.value()
             a = (np.array(self.Ch1_channel0) > text_x).tolist()
@@ -1880,8 +1890,17 @@ class window_filter(QWidget):
             for i in range(len(a)):
                 if a[i] and c[i]:
                     self.quadrant1_list[i] = True
+            """
+            if self.selected_quadrant == 0:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
+            elif self.selected_quadrant == 1:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant2_list))
+            elif self.selected_quadrant == 2:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant3_list))
+            elif self.selected_quadrant == 3:
+                self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
 
-            self.filter_out_list = list(compress(self.points_inside_square, self.quadrant1_list))
+            self.filter_out_list = self.points_inside
         else:
             # run trigger again incase user forgot to finish the shape
             self.polygon_triggering()
