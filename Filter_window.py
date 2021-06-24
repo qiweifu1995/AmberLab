@@ -28,6 +28,35 @@ class StandardItem(QStandardItem):
         self.setFont(fnt)
         self.setText(txt)
 
+class RectQuadrant(pg.GraphicsObject):
+    """class for drawing the rectangle to show selected quadrant"""
+    def __init__(self, rect, parent=None):
+        super().__init__(parent)
+        self._rect = rect
+        self.picture = QtGui.QPicture()
+        self._generate_picture()
+
+    @property
+    def rect(self):
+        return self._rect
+
+    def _generate_picture(self):
+        painter = QtGui.QPainter(self.picture)
+        painter.setPen(pg.mkPen("w"))
+        painter.setBrush(pg.mkBrush((0, 0, 140, 30)))
+        painter.drawRect(self.rect)
+        painter.end()
+
+    def paint(self, painter, option, widget=None):
+        painter.drawPicture(0, 0, self.picture)
+
+    def boundingRect(self):
+        return QtCore.QRectF(self.picture.boundingRect())
+
+    def resize(self, rect):
+        self._rect = rect
+        self.picture = QtGui.QPicture()
+        self._generate_picture()
 
 class window_filter(QWidget):
     def __init__(self, parent, current_file_dict, working_data, peak_width_working_data, peak_num_working_data,
@@ -45,6 +74,8 @@ class window_filter(QWidget):
         self.peak_num_working_data = []
         self.points_inside_square = []
         self.root = True
+        self.selected_quadrant = 1
+        self.rect_trigger = False
 
         # plot setting
         self.line_thickness = 4
@@ -305,6 +336,7 @@ class window_filter(QWidget):
         self.graphWidget.setBackground('w')
         self.graphWidget.setLabel('left', 'Green')
         self.graphWidget.setLabel('bottom', 'Far Red')
+        self.graphWidget.disableAutoRange()
 
 
         #plot setting
@@ -735,6 +767,9 @@ class window_filter(QWidget):
         self.pushButton_7.clicked.connect(self.polygon_next_page)
 
         self.reset_comboBox = True
+
+        self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
+        self.quadrant_rect_update()
 
         #### linear end
         ##########################################################################################
@@ -1393,8 +1428,98 @@ class window_filter(QWidget):
 
         self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
 
-        ### infinite lines end
-        ################################################################################################
+    def quadrant_rect_update(self):
+        """update the quadrant rectangle"""
+        y_axis = self.graphWidget.getAxis('left')
+        x_axis = self.graphWidget.getAxis('bottom')
+        x_range = x_axis.range
+        y_range = y_axis.range
+        x_threshold = self.lr_x_axis.value()
+        y_threshold = self.lr_y_axis.value()
+        #calls the custom function
+        if self.rect_trigger:
+            self.graphWidget.removeItem(self.quad_rect)
+
+        self.rect_trigger = True
+
+        if self.selected_quadrant == 0:
+            if x_threshold < x_range[1] and y_threshold < y_range[1]:
+                x_width = x_range[1] - x_threshold
+                y_width = y_range[1] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 1:
+            if x_threshold > x_range[0] and y_threshold < y_range[1]:
+                x_width = x_range[0] - x_threshold
+                y_width = y_range[1] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 2:
+            if x_threshold > x_range[0] and y_threshold > y_range[0]:
+                x_width = x_range[0] - x_threshold
+                y_width = y_range[0] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 3:
+            if x_threshold < x_range[1] and y_threshold > y_range[0]:
+                x_width = x_range[1] - x_threshold
+                y_width = y_range[0] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+
+        self.quad_rect = RectQuadrant(rect_object)
+        self.graphWidget.addItem(self.quad_rect)
+
+    def quadrant_rect_resize(self):
+        """update the quadrant rectangle"""
+        y_axis = self.graphWidget.getAxis('left')
+        x_axis = self.graphWidget.getAxis('bottom')
+        x_range = x_axis.range
+        y_range = y_axis.range
+        x_threshold = self.lr_x_axis.value()
+        y_threshold = self.lr_y_axis.value()
+
+        if self.selected_quadrant == 0:
+            if x_threshold < x_range[1] and y_threshold < y_range[1]:
+                x_width = x_range[1] - x_threshold
+                y_width = y_range[1] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 1:
+            if x_threshold > x_range[0] and y_threshold < y_range[1]:
+                x_width = x_range[0] - x_threshold
+                y_width = y_range[1] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 2:
+            if x_threshold > x_range[0] and y_threshold > y_range[0]:
+                x_width = x_range[0] - x_threshold
+                y_width = y_range[0] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+        elif self.selected_quadrant == 3:
+            if x_threshold < x_range[1] and y_threshold > y_range[0]:
+                x_width = x_range[1] - x_threshold
+                y_width = y_range[0] - y_threshold
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+            else:
+                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+
+        #calls the custom function
+        self.quad_rect.resize(rect_object)
+        self.graphWidget.disableAutoRange()
+
+
+
+    ### infinite lines end
+    ################################################################################################
 
     ################################################################################################
     ### polygon functions
@@ -1417,7 +1542,6 @@ class window_filter(QWidget):
     # in the edit part. Good thing is it will not affect the time much.
 
     def polygon_triggering(self):
-
         if self.polygon_trigger == False:
             # trigger step 1
             self.polygon_trigger = True
@@ -1513,7 +1637,33 @@ class window_filter(QWidget):
 
     # step 2,3
     def onMouseMoved(self, point):
-        if self.stop_edit_trigger and self.polygon_trigger:
+        """handle the mouse click event"""
+        if not self.polygon_trigger:
+            """this will handle the quandrant selection, where polygonal gating is off"""
+            p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
+            x = p.x()
+            y = p.y()
+            gate_x = self.lr_x_axis.value()
+            gate_y = self.lr_y_axis.value()
+            print("x: " + str(x))
+            print("y: " + str(y))
+            x_sign = x >= gate_x
+            y_sign = y >= gate_y
+            if x_sign and y_sign:
+                self.selected_quadrant = 0
+            elif not x_sign and y_sign:
+                self.selected_quadrant = 1
+            elif not x_sign and not y_sign:
+                self.selected_quadrant = 2
+            elif x_sign and not y_sign:
+                self.selected_quadrant = 3
+            print("Selected Quandrant: " + str(self.selected_quadrant))
+
+            self.quadrant_rect_update()
+
+        elif self.stop_edit_trigger and self.polygon_trigger:
+
+            self.graphWidget.removeItem(self.quad_rect)
 
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
 
@@ -1530,6 +1680,8 @@ class window_filter(QWidget):
 
         # some redundent functions, used to fix some error. Didn't have time to simplify
         elif self.stop_edit_trigger == False:
+
+            self.graphWidget.removeItem(self.quad_rect)
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
 
             nearest_distance = 20
