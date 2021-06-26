@@ -1217,13 +1217,16 @@ class window_filter(QWidget):
 
         if self.comboBox_1.currentIndex() == 0:
             data_in_subgating_x = self.working_data[self.comboBox_3.currentIndex()]
+            peak_num_in_subgating_x= self.peak_num_working_data[self.comboBox_3.currentIndex()]
         else:
             data_in_subgating_x = self.peak_width_working_data[self.comboBox_3.currentIndex()]
+        peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
 
         if self.comboBox_2.currentIndex() == 0:
             data_in_subgating_y = self.working_data[self.comboBox_4.currentIndex()]
         else:
             data_in_subgating_y = self.peak_width_working_data[self.comboBox_4.currentIndex()]
+        peak_num_in_subgating_y = self.peak_num_working_data[self.comboBox_4.currentIndex()]
 
         x_axis_channel = self.comboBox_3.currentIndex()
         y_axis_channel = self.comboBox_4.currentIndex()
@@ -1235,7 +1238,9 @@ class window_filter(QWidget):
         self.graphWidget.setLabel('bottom', x_axis_name, color='b')
 
         self.Ch1_channel0 = [data_in_subgating_x[i] for i in self.points_inside_square]
+        self.Ch1_channel0_peak_num = [peak_num_in_subgating_x[i] for i in self.points_inside_square]
         self.Ch1_channel1 = [data_in_subgating_y[i] for i in self.points_inside_square]
+        self.Ch1_channel1_peak_num = [peak_num_in_subgating_y[i] for i in self.points_inside_square]
 
         # test color setup
         max_voltage = 12
@@ -1390,13 +1395,13 @@ class window_filter(QWidget):
                 self.quadrant4_list[i] = True
 
             count_quadrant[quadrant] += 1
-            if self.ui.Ch1_channel0_peak_num[i] == 1:
+            if self.Ch1_channel0_peak_num[i] == 1:
                 single_peak_count_channel0[quadrant] += 1
-            elif self.ui.Ch1_channel0_peak_num[i] > 1:
+            elif self.Ch1_channel0_peak_num[i] > 1:
                 multi_peak_count_channel0[quadrant] += 1
-            if self.ui.Ch1_channel1_peak_num[i] == 1:
+            if self.Ch1_channel1_peak_num[i] == 1:
                 single_peak_count_channel1[quadrant] += 1
-            elif self.ui.Ch1_channel1_peak_num[i] > 1:
+            elif self.Ch1_channel1_peak_num[i] > 1:
                 multi_peak_count_channel1[quadrant] += 1
         try:
             droplets = float(self.ui.lineEdit_totaldroplets.text())
@@ -1635,13 +1640,13 @@ class window_filter(QWidget):
             a = list(set(self.points_inside).intersection(set(self.points_inside_square)))
 
             for i in range(len(a)):
-                if self.ui.Ch1_channel0_peak_num[i] == 1:
+                if self.Ch1_channel0_peak_num[i] == 1:
                     single_peak_count_channel0 += 1
-                elif self.ui.Ch1_channel0_peak_num[i] > 1:
+                elif self.Ch1_channel0_peak_num[i] > 1:
                     multi_peak_count_channel0 += 1
-                if self.ui.Ch1_channel1_peak_num[i] == 1:
+                if self.Ch1_channel1_peak_num[i] == 1:
                     single_peak_count_channel1 += 1
-                elif self.ui.Ch1_channel1_peak_num[i] > 1:
+                elif self.Ch1_channel1_peak_num[i] > 1:
                     multi_peak_count_channel1 += 1
 
             self.checkC2 = time.time()
