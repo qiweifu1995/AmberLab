@@ -1330,7 +1330,12 @@ class window_filter(QWidget):
         self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
 
         self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+        self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+        self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
         self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+        self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+        self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+
 
         # reset threshold # test
         self.infiniteline_table_update()
@@ -1354,6 +1359,9 @@ class window_filter(QWidget):
         multi_peak_count_channel0 = [0, 0, 0, 0]
         multi_peak_count_channel1 = [0, 0, 0, 0]
         count_quadrant = [0, 0, 0, 0]
+        quadrant_values_array = []
+        for i in range(4):
+            quadrant_values_array.append([])
 
         # pass the threshold value to next window
         text_x = self.lr_x_axis.value()
@@ -1399,7 +1407,7 @@ class window_filter(QWidget):
 
             if len(self.Ch1_channel0) != 0:
                 view1 = str(round(100 * count_quadrant[i] / len(self.Ch1_channel0), 2))
-                totalpercent = len(self.Ch1_channel0)/droplets
+                totalpercent = str(round(100 * count_quadrant[i] /  droplets, 2))
                 if count_quadrant[i] > 0:
                     x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_quadrant[i], 2))
                     y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_quadrant[i], 2))
@@ -1473,6 +1481,7 @@ class window_filter(QWidget):
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
         try:
+            """output the selected qudrant to the output array"""
             if self.selected_quadrant == 0:
                 self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
             elif self.selected_quadrant == 1:
@@ -1486,12 +1495,18 @@ class window_filter(QWidget):
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
+        print("redraw square")
         y_axis = self.graphWidget.getAxis('left')
         x_axis = self.graphWidget.getAxis('bottom')
         x_range = x_axis.range
         y_range = y_axis.range
         x_threshold = self.lr_x_axis.value()
         y_threshold = self.lr_y_axis.value()
+        # calls the custom function
+        if self.rect_trigger:
+            self.graphWidget.removeItem(self.quad_rect)
+
+        self.rect_trigger = True
 
         if self.selected_quadrant == 0:
             if x_threshold < x_range[1] and y_threshold < y_range[1]:
@@ -1522,9 +1537,8 @@ class window_filter(QWidget):
             else:
                 rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
 
-        #calls the custom function
-        self.quad_rect.resize(rect_object)
-        self.graphWidget.disableAutoRange()
+        self.quad_rect = RectQuadrant(rect_object)
+        self.graphWidget.addItem(self.quad_rect)
 
 
 
