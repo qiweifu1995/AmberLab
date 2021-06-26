@@ -58,18 +58,33 @@ class StandardItem(QStandardItem):
 ### Pop-up windows for the new filters
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+class Ui_MainWindow(QMainWindow):
+
+    def __init__(self):
+        super(Ui_MainWindow, self).__init__()
+
+        # store everything about new filter
+        self.tree_dic = {}
+
+        # StandardItem class created at very top, it combines the brach font and color in to one-line-code
+        # 0, is the parent brach above all
+        # 0,0 is the 0 child brach which has a 0, parent
+        self.tree_dic[(0,)] = {}
+        self.tree_dic[(0,)]['tree_standarditem'] = StandardItem('Create graph', 12, set_bold=True)
+
+        self.setupUi()
+
+
+    def setupUi(self):
 
         ### GUI setup
-        self.mainwindow = MainWindow
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1500, 900)
-        MainWindow.setMinimumSize(QtCore.QSize(150, 150))
-        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.setObjectName("MainWindow")
+        self.resize(1500, 900)
+        self.setMinimumSize(QtCore.QSize(150, 150))
+        self.setMaximumSize(QtCore.QSize(16777215, 16777215))
 
         ### main tab setup
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_15 = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout_15.setObjectName("horizontalLayout_15")
@@ -1104,31 +1119,6 @@ class Ui_MainWindow(object):
         self.widget_28.setBackground('w')
 
         self.tab_widgets_main.addTab(self.tab_3, "")
-        ### peak leanear end
-
-        ### Peak Width tab setup
-
-        ### extra filter test tab
-        #         self.tab = QtWidgets.QWidget()
-        #         self.tab.setObjectName("tab")
-        #         self.gridLayout_filter = QtWidgets.QGridLayout(self.tab)
-        #         self.gridLayout_filter.setObjectName("gridLayout_filter")
-
-        #         self.horizontalLayout_filter = QtWidgets.QHBoxLayout()
-        #         self.horizontalLayout_filter.setObjectName("horizontalLayout_filter")
-        #         self.label_filter = QtWidgets.QLabel(self.tab)
-        #         self.label_filter.setObjectName("label_filter")
-        #         self.horizontalLayout_filter.addWidget(self.label_filter)
-
-        #         self.pushButton_filter = QtWidgets.QPushButton(self.tab)
-        #         self.pushButton_filter.setObjectName("pushButton_filter")
-        #         self.horizontalLayout_filter.addWidget(self.pushButton_filter)
-
-        #         self.lineEdit_filter = QtWidgets.QLineEdit(self.tab)
-        #         self.lineEdit_filter.setObjectName("lineEdit_filter")
-        #         self.horizontalLayout_filter.addWidget(self.lineEdit_filter)
-
-        ### add tree view at bottom left corner
 
         self.treeView = QtWidgets.QTreeView()
 
@@ -1143,14 +1133,7 @@ class Ui_MainWindow(object):
         # disable double clike expand option, double clike now link to the open filter window
         self.treeView.setExpandsOnDoubleClick(False)
 
-        # store everything about new filter
-        self.tree_dic = {}
 
-        # StandardItem class created at very top, it combines the brach font and color in to one-line-code
-        # 0, is the parent brach above all
-        # 0,0 is the 0 child brach which has a 0, parent
-        self.tree_dic[(0,)] = {}
-        self.tree_dic[(0,)]['tree_standarditem'] = StandardItem('Create graph', 12, set_bold=True)
 
         # to create a child , call the parent, append the color and font to it
         # to create the very first parent, call the model its self
@@ -1787,44 +1770,44 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.tab_widgets_main)
         self.horizontalLayout_15.addLayout(self.horizontalLayout_4)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1246, 22))
         self.menubar.setObjectName("menubar")
         self.menuFiles = QtWidgets.QMenu(self.menubar)
         self.menuFiles.setObjectName("menuFiles")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.actionImport = QtWidgets.QAction(MainWindow)
+        self.setStatusBar(self.statusbar)
+        self.actionImport = QtWidgets.QAction(self)
         self.actionImport.setObjectName("actionImport")
-        self.actionAdd_New = QtWidgets.QAction(MainWindow)
+        self.actionAdd_New = QtWidgets.QAction(self)
         self.actionAdd_New.setObjectName("actionAdd_New")
-        self.actionClose = QtWidgets.QAction(MainWindow)
+        self.actionClose = QtWidgets.QAction(self)
         self.actionClose.setObjectName("actionClose")
         self.menuFiles.addAction(self.actionImport)
         self.menuFiles.addAction(self.actionAdd_New)
 
         # save project
-        self.actionAdd_Save = QtWidgets.QAction(MainWindow)
+        self.actionAdd_Save = QtWidgets.QAction(self)
         self.actionAdd_Save.setObjectName("actionAdd_Save")
-        self.actionAdd_Load = QtWidgets.QAction(MainWindow)
+        self.actionAdd_Load = QtWidgets.QAction(self)
         self.actionAdd_Load.setObjectName("actionAdd_Load")
 
         self.menuFiles.addAction(self.actionAdd_Save)
         self.menuFiles.addAction(self.actionAdd_Load)
 
         # save single file
-        self.actionAdd_SaveSingleFile = QtWidgets.QAction(MainWindow)
+        self.actionAdd_SaveSingleFile = QtWidgets.QAction(self)
         self.actionAdd_SaveSingleFile.setObjectName("actionAdd_SaveSingleFile")
 
         self.menuFiles.addAction(self.actionAdd_SaveSingleFile)
 
         # save parameters
-        self.actionAdd_SaveParameters = QtWidgets.QAction(MainWindow)
+        self.actionAdd_SaveParameters = QtWidgets.QAction(self)
         self.actionAdd_SaveParameters.setObjectName("actionAdd_SaveParameters")
-        self.actionAdd_LoadParameters = QtWidgets.QAction(MainWindow)
+        self.actionAdd_LoadParameters = QtWidgets.QAction(self)
         self.actionAdd_LoadParameters.setObjectName("actionAdd_LoadParameters")
 
         self.menuFiles.addAction(self.actionAdd_SaveParameters)
@@ -1851,11 +1834,11 @@ class Ui_MainWindow(object):
         self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
         self.lineEdit_increments.textChanged.connect(self.sweep_update)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi()
         self.tab_widgets_main.setCurrentIndex(0)
 
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
         self.file_dict_list = []
         self.sweep_1_data = []
@@ -1863,20 +1846,14 @@ class Ui_MainWindow(object):
         self.current_file_dict = {}
         self.ui_state = Helper.ui_state()
 
-        #         self.file_list_view.itemChanged.connect(self.update_names)
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
         self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
 
 
-        #         self.file_list_view.itemChanged.connect(self.update_names)
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
 
-        #self.lineEdit_5.editingFinished.connect(self.lr_peak_width_plot)
-        #self.lineEdit_6.editingFinished.connect(self.lr_peak_width_plot)
-        #self.lineEdit_7.editingFinished.connect(self.lr_peak_width_plot)
-        #self.lineEdit_8.editingFinished.connect(self.lr_peak_width_plot)
 
         self.channel_1.stateChanged.connect(self.linear_plot)
         self.channel_2.stateChanged.connect(self.linear_plot)
@@ -1885,41 +1862,12 @@ class Ui_MainWindow(object):
 
 
         self.recalculate_peak_dataset = True
-
-        #self.lr_x_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
-        #self.lr_y_axis.sigRegionChangeFinished.connect(self.lr_peak_width_change)
-
-        #         self.comboBox_6.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
-        #         self.comboBox_5.currentIndexChanged.connect(self.width_scatter_channel_to_histogram_channel)
-        #         self.listView_channels_3.currentItemChanged.connect(self.width_histogram_channel_to_scatter_channel)
-        #         self.lineEdit_gatevoltage_2.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
-        #         self.lineEdit_gatevoltage_4.editingFinished.connect(self.width_histogram_channel_to_scatter_channel)
-
         self.comboBox_option1.currentIndexChanged.connect(self.sweep_1_index_changed)
         self.comboBox_option2.currentIndexChanged.connect(self.sweep_2_index_changed)
 
         self.w = peak_threshold_window.ThresholdWindow()
         self.w.threshold_set.connect(self.threshold_set)
         self.pushButton_resample.clicked.connect(self.openWindow)
-
-        self.x = []
-        self.y = []
-        self.polygon = []
-        self.points_inside = []
-
-        self.subgating_x = []
-        self.subgating_y = []
-        self.subgating_polygon = []
-        self.final_subgating_sweep_data = [[], [], [], []]
-        self.subgating_sweep_data = [[], [], [], []]
-
-        self.polygon_trigger = False
-        self.subgating_polygon_trigger = False
-
-
-        self.stop_edit_trigger = True
-
-        self.subgating_stop_edit_trigger = True
 
         # triggers for the log, havn't update adter new filter window function included.
 
@@ -1994,25 +1942,6 @@ class Ui_MainWindow(object):
 
         self.file_list_view.itemChanged.connect(self.chart_title_change)
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
-
-        self.load = False
-
-        # add default parameters
-
-        self.inside2 = []
-        self.polygon_for_edit = []
-        self.points = []
-
-        self.points_inside_list = []
-
-        self.subgating_inside2 = []
-        self.subgating_points_inside = []
-
-        self.subgating_polygon = []
-        self.subgating_polygon_for_edit = []
-        self.subgating_polygon_trigger = []
-        self.subgating_points = []
-        self.subgating_points_inside_list = []
 
     def threshold_set(self):
         """function handling when user finished inputing a voltage"""
@@ -2205,8 +2134,8 @@ class Ui_MainWindow(object):
         self.w.show()
 
     def update_working_data(self):
-        #         try: print("Ui_MainWindow.reset:", Ui_MainWindow.reset)
-        #         except : print("Ui_MainWindow.reset: FALSE")
+        #         try: print("Ui_self.reset:", Ui_self.reset)
+        #         except : print("Ui_self.reset: FALSE")
 
         print('self.update', self.update)
         if self.update:
@@ -2577,9 +2506,9 @@ class Ui_MainWindow(object):
 
 
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_files.setText(_translate("MainWindow", "Files"))
         self.button_rename.setText(_translate("MainWindow", "Rename"))
         self.label.setText(_translate("MainWindow", "Channel Selection"))
@@ -2740,75 +2669,6 @@ class Ui_MainWindow(object):
         print('pressed')
         check0 = time.time()
 
-        # load parameters
-        if self.load == True:
-            with open(str(self.loadname), 'rb') as filehandle:
-                # read the data as binary data stream
-                parameters = pickle.load(filehandle)
-
-            # check box
-            self.checkbox_ch1.setChecked(parameters[0])
-            self.checkbox_ch2.setChecked(parameters[1])
-            self.checkbox_ch3.setChecked(parameters[2])
-            self.checkbox_ch12.setChecked(parameters[3])
-            self.checkbox_ch13.setChecked(parameters[4])
-            self.checkbox_ch23.setChecked(parameters[5])
-            self.checkBox_7.setChecked(parameters[6])
-            self.channel_1.setChecked(parameters[7])
-            self.channel_2.setChecked(parameters[8])
-            self.channel_3.setChecked(parameters[9])
-            self.channel_4.setChecked(parameters[10])
-
-            # combobox 
-
-
-            # lineedit 
-
-            self.lineEdit_gatevoltagemaximum.setText(parameters[29])
-            self.lineEdit_gatevoltageminimum.setText(parameters[30])
-            self.lineEdit_increments.setText(parameters[31])
-            self.lineEdit_binwidth_2.setText(parameters[32])
-
-            self.file_dict_list = parameters[50]
-            list_name = parameters[51]
-            self.save_a = parameters[52]
-            self.checkbox_Droplet_Record.setChecked(parameters[69])
-
-            # reset file list box on left top
-            self.analog = {}
-            self.file_list_view.clear()
-            #             self.comboBox_option1.clear()
-            #             self.comboBox_option2.clear()
-
-            for i in range(len(list_name)):
-                f = list_name[i]
-                # for i in range
-                self.file_list_view.addItem(f)
-                #                 self.comboBox_option1.addItem(f)
-                #                 self.comboBox_option2.addItem(f)
-
-                # record change in the log
-                self.textbox = self.textbox + "\n" + "open file:" + str(f)
-                self.textEdit.setPlainText(self.textbox)
-
-            for i in range(self.file_list_view.count()):
-                item = self.file_list_view.item(i)
-                item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-            self.file_list_view.setCurrentRow(0)
-
-            #             self.thresholdUpdated()
-
-
-
-
-
-            # lineedit
-
-            self.lineEdit_gatevoltagemaximum.setText(parameters[29])
-            self.lineEdit_gatevoltageminimum.setText(parameters[30])
-            self.lineEdit_increments.setText(parameters[31])
-            self.lineEdit_binwidth_2.setText(parameters[32])
-
         try:
             self.chart_title_change()
         except:
@@ -2968,7 +2828,7 @@ class Ui_MainWindow(object):
 
         check1 = time.time()
 
-        if self.current_file_dict["Peak Record"] in self.analog and not reset and not self.load and not threshold_check:
+        if self.current_file_dict["Peak Record"] in self.analog and not reset and not threshold_check:
             print("--------------------------------------------------------not reset")
 
 
@@ -3009,25 +2869,21 @@ class Ui_MainWindow(object):
 
         else:
             print("--------------------------------------------------------reset")
-            if self.load == False:
 
-                a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold,
-                                                      peaks_threshold, width_min, width_max,
-                                                      width_enable, peak_enable, channel, 200,
-                                                      0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,
-                                                      stats.ch13_hit,
-                                                      stats.ch23_hit, stats.Droplet_Record_hit,
-                                                      stats.total_sorted, rethreshold=threshold_check)
+            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold,
+                                                  peaks_threshold, width_min, width_max,
+                                                  width_enable, peak_enable, channel, 200,
+                                                  0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,
+                                                  stats.ch13_hit,
+                                                  stats.ch23_hit, stats.Droplet_Record_hit,
+                                                  stats.total_sorted, rethreshold=threshold_check)
 
-                print("data extration complete, drawing....")
+            print("data extration complete, drawing....")
 
-                self.analog.update(a.analog_file)
+            self.analog.update(a.analog_file)
 
-                self.save_a = self.analog
-            else:
-                # load
-                self.analog = self.save_a
-                print("data loading complete, drawing....")
+            self.save_a = self.analog
+
 
             check2 = time.time()
 
@@ -3117,7 +2973,7 @@ class Ui_MainWindow(object):
         self.thresholds = []
         #         self.comboBox_option1.clear()
         #         self.comboBox_option2.clear()
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
         for f in name:
             print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
@@ -3150,8 +3006,6 @@ if __name__ == "__main__":
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    ui.show()
     sys.exit(app.exec_())

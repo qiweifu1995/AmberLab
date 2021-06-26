@@ -76,6 +76,12 @@ class window_filter(QWidget):
         self.root = True
         self.selected_quadrant = 1
         self.rect_trigger = False
+        self.reset_comboBox = True
+
+        self.x = []
+        self.y = []
+        self.polygon = []
+        self.points_inside = []
 
         # plot setting
         self.line_thickness = 4
@@ -95,9 +101,9 @@ class window_filter(QWidget):
             self.peak_num_working_data = peak_num_working_data
             self.root = False
 
-        #############################################   #############################################
-        # main filter tab
+        self.setupUI()
 
+    def setupUI(self):
         ### layout setup
         outter_layout = QtWidgets.QHBoxLayout()
         vertical_layout = QtWidgets.QVBoxLayout()
@@ -411,10 +417,7 @@ class window_filter(QWidget):
         # end polygon edit function?
         self.stop_edit_trigger = True
 
-        self.x = []
-        self.y = []
-        self.polygon = []
-        self.points_inside = []
+
         self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved)
 
         #############################################   #############################################
@@ -766,10 +769,9 @@ class window_filter(QWidget):
         self.pushButton_8.clicked.connect(self.polygon_last_page)
         self.pushButton_7.clicked.connect(self.polygon_next_page)
 
-        self.reset_comboBox = True
 
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
-        self.quadrant_rect_update()
+
 
         #### linear end
         ##########################################################################################
@@ -1442,6 +1444,7 @@ class window_filter(QWidget):
 
     def quadrant_rect_update(self):
         """update the quadrant rectangle"""
+        print("update square")
         y_axis = self.graphWidget.getAxis('left')
         x_axis = self.graphWidget.getAxis('bottom')
         x_range = x_axis.range
@@ -1485,18 +1488,7 @@ class window_filter(QWidget):
 
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
-        try:
-            """output the selected qudrant to the output array"""
-            if self.selected_quadrant == 0:
-                self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
-            elif self.selected_quadrant == 1:
-                self.points_inside = list(compress(self.points_inside_square, self.quadrant2_list))
-            elif self.selected_quadrant == 2:
-                self.points_inside = list(compress(self.points_inside_square, self.quadrant3_list))
-            elif self.selected_quadrant == 3:
-                self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
-        except:
-            self.points_inside = []
+
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
@@ -1542,8 +1534,10 @@ class window_filter(QWidget):
             else:
                 rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
 
+
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
+        self.graphWidget.disableAutoRange()
 
 
 
@@ -1672,23 +1666,40 @@ class window_filter(QWidget):
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
             x = p.x()
             y = p.y()
-            gate_x = self.lr_x_axis.value()
-            gate_y = self.lr_y_axis.value()
-            print("x: " + str(x))
-            print("y: " + str(y))
-            x_sign = x >= gate_x
-            y_sign = y >= gate_y
-            if x_sign and y_sign:
-                self.selected_quadrant = 0
-            elif not x_sign and y_sign:
-                self.selected_quadrant = 1
-            elif not x_sign and not y_sign:
-                self.selected_quadrant = 2
-            elif x_sign and not y_sign:
-                self.selected_quadrant = 3
-            print("Selected Quandrant: " + str(self.selected_quadrant))
-
-            self.quadrant_rect_update()
+            y_axis = self.graphWidget.getAxis('left')
+            x_axis = self.graphWidget.getAxis('bottom')
+            x_range = x_axis.range
+            y_range = y_axis.range
+            if x > x_range[0] and y > y_range[0]:
+                """check to ensure mouse click is on plot"""
+                gate_x = self.lr_x_axis.value()
+                gate_y = self.lr_y_axis.value()
+                print("x: " + str(x))
+                print("y: " + str(y))
+                x_sign = x >= gate_x
+                y_sign = y >= gate_y
+                if x_sign and y_sign:
+                    self.selected_quadrant = 0
+                elif not x_sign and y_sign:
+                    self.selected_quadrant = 1
+                elif not x_sign and not y_sign:
+                    self.selected_quadrant = 2
+                elif x_sign and not y_sign:
+                    self.selected_quadrant = 3
+                print("Selected Quandrant: " + str(self.selected_quadrant))
+                try:
+                    """output the selected qudrant to the output array"""
+                    if self.selected_quadrant == 0:
+                        self.points_inside = list(compress(self.points_inside_square, self.quadrant1_list))
+                    elif self.selected_quadrant == 1:
+                        self.points_inside = list(compress(self.points_inside_square, self.quadrant2_list))
+                    elif self.selected_quadrant == 2:
+                        self.points_inside = list(compress(self.points_inside_square, self.quadrant3_list))
+                    elif self.selected_quadrant == 3:
+                        self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
+                except:
+                    self.points_inside = []
+                self.quadrant_rect_resize()
 
         elif self.stop_edit_trigger and self.polygon_trigger:
 
