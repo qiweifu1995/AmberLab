@@ -75,6 +75,6 @@ if __name__ == "__main__":
     import sys
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = QtWidgets.QApplication(sys.argv)
-    ui = stats_window("Stats", [], [])
+    ui = StatsWindow("Stats", [], [])
     ui.show()
     sys.exit(app.exec_())
