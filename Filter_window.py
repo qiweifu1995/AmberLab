@@ -14,6 +14,7 @@ import matplotlib.path as mpltPath
 import time
 from math import sqrt
 from PyQt5.QtGui import QFont, QColor
+import Stats_window
 
 
 class StandardItem(QStandardItem):
@@ -82,6 +83,8 @@ class window_filter(QWidget):
         self.y = []
         self.polygon = []
         self.points_inside = []
+        self.x_quadrant_data = [[] for i in range(4)]
+        self.y_quadrant_data = [[] for i in range(4)]
 
         # plot setting
         self.line_thickness = 4
@@ -100,7 +103,8 @@ class window_filter(QWidget):
             self.peak_width_working_data = peak_width_working_data
             self.peak_num_working_data = peak_num_working_data
             self.root = False
-
+        #sets up the stats window
+        self.stats_window = Stats_window.StatsWindow()
         self.setupUI()
 
     def setupUI(self):
@@ -290,7 +294,7 @@ class window_filter(QWidget):
 
 
         self.pushButton_1 = QPushButton('Next Filter')
-        self.pushButton_2 = QPushButton('Close')
+        self.pushButton_2 = QPushButton('Stats')
         self.pushButton_3 = QPushButton('Export Linear Plot')
 
         layout.addWidget(self.pushButton_1, 11, 0, 1, 1)
@@ -395,7 +399,7 @@ class window_filter(QWidget):
 
         ### triggers
         self.pushButton_1.clicked.connect(self.ok_clicked)
-        self.pushButton_2.clicked.connect(self.close_clicked)
+        self.pushButton_2.clicked.connect(self.stats_clicked)
         self.pushButton_3.clicked.connect(self.polygon_linear_plot_triggered_from_scatter_subtab)
 
         self.pushButton_confirm.clicked.connect(self.draw_graphwidget)
@@ -773,7 +777,6 @@ class window_filter(QWidget):
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
 
 
-        #### linear end
         ##########################################################################################
 
     def update_fonts(self):
@@ -949,7 +952,7 @@ class window_filter(QWidget):
 
             data = pd.DataFrame({0: [], 1: [], 2: [], 3: []}, )
 
-            print("index_in_current_channel", len(index_in_current_channel), ':', index_in_current_channel)
+            #print("index_in_current_channel", len(index_in_current_channel), ':', index_in_current_channel)
 
             for x in range(lower_bond, upper_bond):
                 i = index_in_current_channel[x]
@@ -1108,8 +1111,8 @@ class window_filter(QWidget):
             holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
         self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
-        print('holder[0]', holder[0])
-        print('self.peak_num_filtered_index', self.peak_num_filtered_index)
+        #print('holder[0]', holder[0])
+        #print('self.peak_num_filtered_index', self.peak_num_filtered_index)
 
     ### drawing function for main tab scatter pot
 
@@ -1899,8 +1902,25 @@ class window_filter(QWidget):
 
             # close the filter tab
 
-    def close_clicked(self):
-        self.close()
+    def stats_clicked(self):
+        """ypdate stats window"""
+        self.x_quadrant_data = [[] for i in range(4)]
+        self.y_quadrant_data = [[] for i in range(4)]
+
+        quadrant_index = []
+        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant1_list)))
+        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant2_list)))
+        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant3_list)))
+        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant4_list)))
+
+        for i in range(4):
+            if len(quadrant_index[i]) > 0:
+                for j in range(len(quadrant_index[i])):
+                    self.x_quadrant_data[i].append(self.Ch1_channel0[quadrant_index[i][j]])
+                    self.y_quadrant_data[i].append(self.Ch1_channel1[quadrant_index[i][j]])
+
+        self.stats_window.update(self.windowTitle, self.x_quadrant_data, self.y_quadrant_data)
+        self.stats_window.show()
 
         # "Next filiter" button on the main filter tab, pass the filtered value to next window
 
@@ -1956,7 +1976,7 @@ class window_filter(QWidget):
         self.ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(
             self.ui.tree_dic[new_index]['tree_standarditem'])
         self.ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.filter_out_list
-        print('self.quadrant1_list_or_polygon', self.filter_out_list)
+        #('self.quadrant1_list_or_polygon', self.filter_out_list)
         self.ui.treeView.expandAll()
 
         # reassign tree_index, new window need this index to create child branch

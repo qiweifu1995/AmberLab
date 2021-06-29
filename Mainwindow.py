@@ -6,39 +6,29 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtGui  # Place this at the top of your file.
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, \
-    QWidget, QLineEdit, QTextEdit
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
 
-from PyQt5.QtWidgets import QTreeView
+
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
 
 from pyqtgraph.Qt import QtGui, QtCore
-from pyqtgraph.Point import Point
-import pyqtgraph as pg
 
 import pandas as pd
 import os
 import Helper
 import Analysis
 import time
-from itertools import islice, compress
 from pyqtgraph import PlotWidget
 import numpy as np
 
 import pyqtgraph as pg
 import statistics
 from scipy.signal import savgol_filter
-import csv
 
-import matplotlib.path as mpltPath
-import concurrent.futures
 from multiprocessing import freeze_support
-from math import sqrt
-import math
-import pickle
+
 import Filter_window
 import peak_threshold_window
 
@@ -2734,12 +2724,6 @@ class Ui_MainWindow(QMainWindow):
             self.lineEdit_ch_234_hit.setText(stats.ch234_hit)
             self.lineEdit_ch_1234_hit.setText(stats.ch1234_hit)
 
-        #         start = time.time()
-        if stats.under_sample_factor == "":
-            under_sample = 1
-        else:
-            under_sample = stats.under_sample_factor
-
         channel = 0
         width_enable = True
 
@@ -3004,7 +2988,6 @@ if __name__ == "__main__":
     import sys
 
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    app = 0
     app = QtWidgets.QApplication(sys.argv)
     ui = Ui_MainWindow()
     ui.show()
