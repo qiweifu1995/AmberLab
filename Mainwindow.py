@@ -1933,6 +1933,7 @@ class Ui_MainWindow(QMainWindow):
         self.file_list_view.itemChanged.connect(self.chart_title_change)
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
 
+
     def threshold_set(self):
         """function handling when user finished inputing a voltage"""
         print(self.w.thresholds)
@@ -2352,9 +2353,6 @@ class Ui_MainWindow(QMainWindow):
 
     def update_sweep_graphs(self, bypass=False):
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
-        #         update1, update2, data_updated = self.ui_state.sweep_update(channel_select=self.sweep_channel,
-        #                                                                     file1=self.sweep_file_1,
-        #                                                                     file2=self.sweep_file_2, bins=self.sweep_bins)
         update1 = update2 = data_updated = True
         if update1:
             self.update_sweep_1(data_updated)
@@ -2364,61 +2362,6 @@ class Ui_MainWindow(QMainWindow):
             self.update_sweep_2(data_updated)
         elif bypass:
             self.update_sweep_2(bypass)
-
-    #     def update_sweep_1(self, data_updated=False):
-    #         self.widget_sweepparam2.clear()
-    #         channel = self.listView_channels_2.currentRow()
-    #         if channel == -1:
-    #             self.listView_channels_2.setCurrentRow(0)
-    #         axis_name = self.listView_channels_2.currentItem().text()
-    #         self.widget_sweepparam2.setLabel('bottom', axis_name)
-    #         print("update sweep 1")
-    #         r, g, b = Helper.rgb_select(channel)
-    #         if data_updated or len(self.sweep_1_data) == 0:
-    #             #self.sweep_1_data = self.working_data[channel]
-    #             self.sweep_1_data = []
-    #             if self.comboBox_option1.currentIndex() == 0:
-    #                 try:
-    #                     # sweep data left
-    # #                     self.sweep_1_data = self.final_subgating_sweep_data[channel]
-    #                     self.sweep_1_data = self.sweep_left[channel]
-    #                 except:
-    #                     self.sweep_1_data = [[], [], [], []]
-    #             elif self.comboBox_option1.currentIndex() == 1:
-    #                 self.sweep_1_data = self.filtered_working_data[channel]
-    #             elif self.comboBox_option1.currentIndex() == 2:
-    #                 self.sweep_1_data = self.subgating_sweep_data[channel]
-    #             else:
-    #                 if self.checkBox_7.isChecked() and self.sweep_1_dict['Peak Record'] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Peak Record']][0][channel]
-    #                 if self.checkbox_ch1.isChecked() and self.sweep_1_dict['Ch1 '] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1 ']][0][channel]
-    #                 if self.checkbox_ch2.isChecked() and self.sweep_1_dict['Ch2 '] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2 ']][0][channel]
-    #                 if self.checkbox_ch3.isChecked() and self.sweep_1_dict['Ch3 '] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch3 ']][0][channel]
-    #                 if self.checkbox_ch12.isChecked() and self.sweep_1_dict['Ch1-2'] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-2']][0][channel]
-    #                 if self.checkbox_ch13.isChecked() and self.sweep_1_dict['Ch1-3'] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch1-3']][0][channel]
-    #                 if self.checkbox_ch23.isChecked() and self.sweep_1_dict['Ch2-3'] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Ch2-3']][0][channel]
-    #                 if self.checkbox_Droplet_Record.isChecked() and self.sweep_1_dict['Droplet Record'] != '':
-    #                     self.sweep_1_data += self.analog[self.sweep_1_dict['Droplet Record']][0][channel]
-    #         try:
-    #             range_width = int(max(self.sweep_1_data)) + 1
-    #         except:
-    #             range_width = 1
-    #         bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
-    #         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
-    #         separate_y = [0] * len(y)
-    #         for i in range(len(y)):
-    #             separate_y = [0] * len(y)
-    #             separate_y[i] = y[i]
-    #             self.widget_sweepparam2.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
-    #         self.widget_sweepparam2.setXRange(0, max(x), padding=0)
-    #         self.widget_sweepparam2.setYRange(0, max(y), padding=0)
-    #         self.label_39.setText(self.comboBox_option1.currentText())
 
     def sweep_1_index_changed(self):
         """Function used to link update sweep with the index changes"""
