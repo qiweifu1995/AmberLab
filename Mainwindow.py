@@ -61,6 +61,11 @@ class Ui_MainWindow(QMainWindow):
         # 0,0 is the 0 child brach which has a 0, parent
         self.tree_dic[(0,)] = {}
         self.tree_dic[(0,)]['tree_standarditem'] = StandardItem('Create graph', 12, set_bold=True)
+        self.file_dict_list = []
+        self.sweep_1_data = []
+        self.working_data = []
+        self.current_file_dict = {}
+        self.ui_state = Helper.ui_state()
 
         self.setupUi()
 
@@ -1732,9 +1737,8 @@ class Ui_MainWindow(QMainWindow):
         self.tabWidget.addTab(self.subtab_result, "")
         self.verticalLayout_3.addWidget(self.tabWidget)
 
-        self.tab_timelog = QtWidgets.QWidget()
-        self.tab_timelog.setObjectName("tab_timelog")
-        self.tab_widgets_main.addTab(self.tab_timelog, "")
+        self.time_log_tab_init()
+
         self.tab_peakmax = QtWidgets.QWidget()
         self.tab_peakmax.setObjectName("tab_peakmax")
         self.tab_widgets_main.addTab(self.tab_peakmax, "")
@@ -1811,45 +1815,34 @@ class Ui_MainWindow(QMainWindow):
         self.actionImport.triggered.connect(self.openfolder)
         self.actionAdd_New.triggered.connect(self.add)
 
-
         self.button_update.clicked.connect(self.pressed)
         #self.button_update_2.clicked.connect(self.filter_width_table)
         self.pushButton_5.clicked.connect(self.reset_linear_plot)
         self.pushButton_4.clicked.connect(self.last_page)
         self.pushButton_3.clicked.connect(self.next_page)
 
-
-
         self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
         self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
         self.lineEdit_increments.textChanged.connect(self.sweep_update)
 
         self.retranslateUi()
+
         self.tab_widgets_main.setCurrentIndex(0)
 
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
-        self.file_dict_list = []
-        self.sweep_1_data = []
-        self.working_data = []
-        self.current_file_dict = {}
-        self.ui_state = Helper.ui_state()
-
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
         self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
 
-
         self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
-
 
         self.channel_1.stateChanged.connect(self.linear_plot)
         self.channel_2.stateChanged.connect(self.linear_plot)
         self.channel_3.stateChanged.connect(self.linear_plot)
         self.channel_4.stateChanged.connect(self.linear_plot)
-
 
         self.recalculate_peak_dataset = True
         self.comboBox_option1.currentIndexChanged.connect(self.sweep_1_index_changed)
@@ -1902,11 +1895,6 @@ class Ui_MainWindow(QMainWindow):
             lambda: self.textbox_trigger(change="Raw data viewer channel_4 state changed to ",
                                          afterchange=self.channel_4.isChecked()))
 
-        # combobox trigger
-
-
-
-
         # listview trigger
         self.listView_channels_2.currentItemChanged.connect(
             lambda: self.textbox_trigger(change="Sweept channel selection changed to ",
@@ -1914,7 +1902,6 @@ class Ui_MainWindow(QMainWindow):
 
         self.file_list_view.currentItemChanged.connect(lambda: self.textbox_trigger(change="loading file changed to ",
                                                                                     afterchange=self.file_list_view.currentItem().text()))
-
 
         self.lineEdit_gatevoltagemaximum.textChanged.connect(
             lambda: self.textbox_trigger(change="Sweep gating threshold voltage maximum changed to ",
@@ -1933,6 +1920,29 @@ class Ui_MainWindow(QMainWindow):
         self.file_list_view.itemChanged.connect(self.chart_title_change)
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
 
+    def time_log_tab_init(self):
+        """the function which contains all the Qt UI components"""
+        self.tab_timelog = QtWidgets.QWidget()
+        self.tab_timelog.setObjectName("tab_timelog")
+
+        main_vertical_layout = QtWidgets.QVBoxLayout()
+        main_vertical_layout.setObjectName("main_layout")
+
+        self.time_log_graph = PlotWidget(self.tab_timelog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.time_log_graph.setSizePolicy(sizePolicy)
+        self.time_log_graph.setMinimumSize(QtCore.QSize(700, 500))
+        self.time_log_graph.setObjectName("time_log_graph")
+        main_vertical_layout.addWidget(self.time_log_graph)
+        spacerItem = QtWidgets.QSpacerItem(120, 1000, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        main_vertical_layout.addItem(spacerItem)
+
+
+        self.tab_timelog.setLayout(main_vertical_layout)
+
+        self.tab_widgets_main.addTab(self.tab_timelog, "")
 
     def threshold_set(self):
         """function handling when user finished inputing a voltage"""
