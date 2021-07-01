@@ -1249,22 +1249,20 @@ class window_filter(QWidget):
 
         # test color setup
         max_voltage = 12
-        bins = 1000
+        bins = 2000
         steps = max_voltage / bins
+
+        cm = pg.colormap.get('CET-R2')
 
         # all data is first sorted into a histogram
         histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
                                      [[0, max_voltage], [0, max_voltage]],
-                                     density=True)
+                                     density=False)
         max_density = histo.max()
-        percentage_coefficient = int(float(self.density_line_edit.text()))
+        percentage_coefficient = float(self.density_line_edit.text())
         # made empty array to hold the sorted data according to density
-        density_listx = []
-        density_listy = []
-        for i in range(6):
-            density_listx.append([])
-            density_listy.append([])
-
+        spots = []
+        scatter = pg.ScatterPlotItem()
         for i in range(len(self.Ch1_channel0)):
             x = self.Ch1_channel0[i]
             y = self.Ch1_channel1[i]
@@ -1279,53 +1277,18 @@ class window_filter(QWidget):
             # checking for density, the value divided by steps serves as the index
             density = histo[a][b]
             percentage = density / max_density * 100 * percentage_coefficient
-            if percentage > 100:
-                percentage = 100
+            if percentage > 1:
+                percentage = 1
+            spot_dic = {'pos': (x, y), 'size': 5,
+                        'pen': None,
+                        'symbol': 'p',
+                        'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
+            spots.append(spot_dic)
 
-            if 20 > percentage >= 0:
-                density_listx[0].append(x)
-                density_listy[0].append(y)
-            elif 40 > percentage >= 20:
-                density_listx[1].append(x)
-                density_listy[1].append(y)
-            elif 60 > percentage >= 40:
-                density_listx[2].append(x)
-                density_listy[2].append(y)
-            elif 80 > percentage >= 60:
-                density_listx[3].append(x)
-                density_listy[3].append(y)
-            else:
-                density_listx[4].append(x)
-                density_listy[4].append(y)
-        for i in range(5):
-            if i == 0:
-                red = 0
-                blue = 255 / 15
-                green = 255
-            elif i == 1:
-                red = 0
-                blue = 255
-                green = 255 - 255 / 15
-            elif i == 2:
-                red = 255 / 15
-                blue = 255
-                green = 0
-            elif i == 3:
-                red = 255
-                blue = 255 - 255 / 15
-                green = 0
-            elif i == 4:
-                red = 255
-                blue = 255 / 15
-                green = 255 / 15
-            else:
-                red = 255
-                blue = 255
-                green = 255
-
-            self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-                                  symbolSize=5, symbolBrush=(red, blue, green))
-
+            #self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+            #                     symbolSize=5, symbolBrush=(red, blue, green))
+        scatter.addPoints(spots)
+        self.graphWidget.addItem(scatter)
         # add threshold
 
         self.graphWidget.removeItem(self.lr_x_axis)
