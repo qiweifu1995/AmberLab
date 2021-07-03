@@ -1279,7 +1279,7 @@ class window_filter(QWidget):
             percentage = density / max_density * 100 * percentage_coefficient
             if percentage > 1:
                 percentage = 1
-            spot_dic = {'pos': (x, y), 'size': 5,
+            spot_dic = {'pos': (x, y), 'size': 3,
                         'pen': None,
                         'symbol': 'p',
                         'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
