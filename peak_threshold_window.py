@@ -6,6 +6,7 @@ from functools import partial
 class ThresholdWindow(QWidget):
     """Window that prompt user for voltage to use """
     threshold_set = QtCore.pyqtSignal()
+    apply_all_set = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__()
@@ -18,7 +19,7 @@ class ThresholdWindow(QWidget):
         """set up green channel UI"""
         self.horizontal_layout_green = QHBoxLayout()
         self.horizontal_layout_green.setObjectName("horizontal_layout_green")
-        self.label_green = QtWidgets.QLabel("Green (V): ")
+        self.label_green = QtWidgets.QLabel("Green: ")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -43,7 +44,7 @@ class ThresholdWindow(QWidget):
         """set up Red channel UI"""
         self.horizontal_layout_Red = QHBoxLayout()
         self.horizontal_layout_Red.setObjectName("horizontal_layout_Red")
-        self.label_Red = QtWidgets.QLabel("Red (V): ")
+        self.label_Red = QtWidgets.QLabel("Red: ")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -68,7 +69,7 @@ class ThresholdWindow(QWidget):
         """set up Blue channel UI"""
         self.horizontal_layout_Blue = QHBoxLayout()
         self.horizontal_layout_Blue.setObjectName("horizontal_layout_Blue")
-        self.label_Blue = QtWidgets.QLabel("Blue (V): ")
+        self.label_Blue = QtWidgets.QLabel("Blue: ")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -93,7 +94,7 @@ class ThresholdWindow(QWidget):
         """set up Orange channel UI"""
         self.horizontal_layout_Orange = QHBoxLayout()
         self.horizontal_layout_Orange.setObjectName("horizontal_layout_Orange")
-        self.label_Orange = QtWidgets.QLabel("Orange (V): ")
+        self.label_Orange = QtWidgets.QLabel("Orange: ")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -116,10 +117,12 @@ class ThresholdWindow(QWidget):
         layout.addLayout(self.horizontal_layout_Orange)
 
         self.pushButton_1 = QPushButton('Ok')
-        self.pushButton_2 = QPushButton('Close')
+        self.pushButton_2 = QPushButton('Apply to All')
+        self.pushButton_3 = QPushButton('Close')
 
         layout.addWidget(self.pushButton_1)
         layout.addWidget(self.pushButton_2)
+        layout.addWidget(self.pushButton_3)
 
         self.setLayout(layout)
         self.spinbox_green.editingFinished.connect(partial(self.edit_handler, self.spinbox_green, 0))
@@ -127,7 +130,8 @@ class ThresholdWindow(QWidget):
         self.spinbox_blue.editingFinished.connect(partial(self.edit_handler, self.spinbox_blue, 2))
         self.spinbox_orange.editingFinished.connect(partial(self.edit_handler, self.spinbox_orange, 3))
         self.pushButton_1.clicked.connect(self.ok_clicked)
-        self.pushButton_2.clicked.connect(self.close_clicked)
+        self.pushButton_2.clicked.connect(self.apply_all_clicked)
+        self.pushButton_3.clicked.connect(self.close_clicked)
         self.setWindowTitle("Peak Threshold")
         self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
@@ -150,6 +154,9 @@ class ThresholdWindow(QWidget):
     def ok_clicked(self):
         """send out signal to pass the threshold"""
         self.threshold_set.emit()
+        self.hide()
+    def apply_all_clicked(self):
+        self.apply_all_set.emit()
         self.hide()
 
     def close_clicked(self):

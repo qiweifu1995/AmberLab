@@ -1850,6 +1850,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.w = peak_threshold_window.ThresholdWindow()
         self.w.threshold_set.connect(self.threshold_set)
+        self.w.apply_all_set.connect(self.threshold_apply_all)
         self.pushButton_resample.clicked.connect(self.openWindow)
 
         # triggers for the log, havn't update adter new filter window function included.
@@ -1955,6 +1956,23 @@ class Ui_MainWindow(QMainWindow):
         self.listWidget_sampingrate.addItem("Orange: " + str(round(threshold_holder[3], 3)) + "V")
         try:
             self.thresholds[self.file_list_view.currentRow()] = threshold_holder
+        except (IndexError, AttributeError):
+            print("File does not exist")
+            return
+        print(self.thresholds)
+
+    def threshold_apply_all(self):
+        """function handling when user click set all """
+        print(self.w.thresholds)
+        threshold_holder = self.w.thresholds.copy()
+        self.listWidget_sampingrate.clear()
+        self.listWidget_sampingrate.addItem("Green: " + str(round(threshold_holder[0], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Red: " + str(round(threshold_holder[1], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Blue: " + str(round(threshold_holder[2], 3)) + "V")
+        self.listWidget_sampingrate.addItem("Orange: " + str(round(threshold_holder[3], 3)) + "V")
+        try:
+            for i in range(self.file_list_view.count()):
+                self.thresholds[i] = threshold_holder
         except (IndexError, AttributeError):
             print("File does not exist")
             return
