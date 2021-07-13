@@ -1922,7 +1922,7 @@ class Ui_MainWindow(QMainWindow):
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
 
     def time_log_tab_init(self):
-        """the function which contains all the Qt UI components"""
+        """the function which contains all the Qt UI components for the time log tab"""
         self.tab_timelog = QtWidgets.QWidget()
         self.tab_timelog.setObjectName("tab_timelog")
 
@@ -1939,7 +1939,6 @@ class Ui_MainWindow(QMainWindow):
         main_vertical_layout.addWidget(self.time_log_graph)
         spacerItem = QtWidgets.QSpacerItem(120, 1000, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         main_vertical_layout.addItem(spacerItem)
-
 
         self.tab_timelog.setLayout(main_vertical_layout)
 
@@ -2006,6 +2005,8 @@ class Ui_MainWindow(QMainWindow):
 
         # open the branch
         self.tree_dic[self.tree_index]['tree_windowfilter'].show()
+        self.tree_dic[self.tree_index]['tree_windowfilter'].showNormal()
+        self.tree_dic[self.tree_index]['tree_windowfilter'].activateWindow()
 
     ###  window filter ends
 
