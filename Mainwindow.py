@@ -1923,21 +1923,154 @@ class Ui_MainWindow(QMainWindow):
 
     def time_log_tab_init(self):
         """the function which contains all the Qt UI components for the time log tab"""
+        font = QFont('Open Sans', 14)
+        font.setBold(True)
+
         self.tab_timelog = QtWidgets.QWidget()
         self.tab_timelog.setObjectName("tab_timelog")
 
+        # the layout that will hold both the top and bottom plot
         main_vertical_layout = QtWidgets.QVBoxLayout()
         main_vertical_layout.setObjectName("main_layout")
 
-        self.time_log_graph = PlotWidget(self.tab_timelog)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # the horizontal layout for the top half of the widget
+        top_horizontal_layout = QtWidgets.QHBoxLayout()
+        top_horizontal_layout.setObjectName("top_horizontal_layout")
+
+        # the top left vertical layout that holds the mode combo box and file selector
+        top_left_v_layout = QtWidgets.QVBoxLayout()
+        top_left_v_layout.setObjectName("top_vertical_layout")
+
+        self.log_label_top = QtWidgets.QLabel("Time Log Viewer 1")
+        self.log_label_top.setFont(font)
+        main_vertical_layout.addWidget(self.log_label_top)
+
+        # init top combo box for log
+        self.comboBox_top_log = QtWidgets.QComboBox(self.tab_timelog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        self.time_log_graph.setSizePolicy(sizePolicy)
-        self.time_log_graph.setMinimumSize(QtCore.QSize(700, 500))
-        self.time_log_graph.setObjectName("time_log_graph")
-        main_vertical_layout.addWidget(self.time_log_graph)
-        spacerItem = QtWidgets.QSpacerItem(120, 1000, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHeightForWidth(self.comboBox_option2.sizePolicy().hasHeightForWidth())
+        self.comboBox_top_log.setSizePolicy(sizePolicy)
+        self.comboBox_top_log.setMinimumSize(QtCore.QSize(200, 0))
+        self.comboBox_top_log.addItem("Total Sorted Positives")
+        self.comboBox_top_log.addItem("Total Lost Positives")
+        self.comboBox_top_log.addItem("Total Droplets")
+        self.comboBox_top_log.addItem("Positive Rate")
+        self.comboBox_top_log.addItem("Droplet Frequency")
+        self.comboBox_top_log.addItem("Sorted Rate")
+        self.comboBox_top_log.addItem("Locked Out Frequency")
+        top_left_v_layout.addWidget(self.comboBox_top_log)
+
+        # init top file selector for log
+        self.log_file_select_top = QtWidgets.QListWidget(self.tab_timelog)
+        self.log_file_select_top.setObjectName("log_file_select_top")
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                           QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.log_file_select_top.setSizePolicy(sizePolicy)
+        self.log_file_select_top.setMinimumSize(QtCore.QSize(100, 100))
+        self.log_file_select_top.setMaximumSize(QtCore.QSize(200, 400))
+        top_left_v_layout.addWidget(self.log_file_select_top)
+        top_horizontal_layout.addLayout(top_left_v_layout)
+
+        #adding the line divider
+        self.line_top_vertical = QtWidgets.QFrame(self.subtab_result)
+        self.line_top_vertical.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_top_vertical.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_top_vertical.setObjectName("line_top_vertical")
+        top_horizontal_layout.addWidget(self.line_top_vertical)
+
+        #adding the tip graph
+        self.time_log_graph_top = PlotWidget(self.tab_timelog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.time_log_graph_top.setSizePolicy(sizePolicy)
+        self.time_log_graph_top.setMinimumSize(QtCore.QSize(400, 200))
+        self.time_log_graph_top.setObjectName("time_log_graph_top")
+        self.time_log_graph_top.setBackground('w')
+        top_horizontal_layout.addWidget(self.time_log_graph_top)
+        main_vertical_layout.addLayout(top_horizontal_layout)
+
+        # line divider between top and bottom plot
+        self.line_horizontal = QtWidgets.QFrame(self.subtab_result)
+        self.line_horizontal.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_horizontal.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_horizontal.setObjectName("line_horizontal")
+        main_vertical_layout.addWidget(self.line_horizontal)
+
+        self.log_label_bot = QtWidgets.QLabel("Time Log Viewer 2")
+        self.log_label_bot.setFont(font)
+        main_vertical_layout.addWidget(self.log_label_bot)
+
+        # the horizontal layout for the bottom half of the widget
+        bottom_horizontal_layout = QtWidgets.QHBoxLayout()
+        bottom_horizontal_layout.setObjectName("top_horizontal_layout")
+
+        # the bottom left vertical layout that holds the mode combo box and file selector
+        bottom_left_v_layout = QtWidgets.QVBoxLayout()
+        bottom_left_v_layout.setObjectName("top_vertical_layout")
+
+        # init bottom combo box for log
+        self.comboBox_bot_log = QtWidgets.QComboBox(self.tab_timelog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox_option2.sizePolicy().hasHeightForWidth())
+        self.comboBox_bot_log.setSizePolicy(sizePolicy)
+        self.comboBox_bot_log.setMinimumSize(QtCore.QSize(200, 0))
+        self.comboBox_bot_log.addItem("Total Sorted Positives")
+        self.comboBox_bot_log.addItem("Total Lost Positives")
+        self.comboBox_bot_log.addItem("Total Droplets")
+        self.comboBox_bot_log.addItem("Positive Rate")
+        self.comboBox_bot_log.addItem("Droplet Frequency")
+        self.comboBox_bot_log.addItem("Sorted Rate")
+        self.comboBox_bot_log.addItem("Locked Out Frequency")
+        bottom_left_v_layout.addWidget(self.comboBox_bot_log)
+
+        # init bottom file selector for log
+        self.log_file_select_bot = QtWidgets.QListWidget(self.tab_timelog)
+        self.log_file_select_bot.setObjectName("log_file_select_bot")
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                           QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.log_file_select_bot.setSizePolicy(sizePolicy)
+        self.log_file_select_bot.setMinimumSize(QtCore.QSize(100, 100))
+        self.log_file_select_bot.setMaximumSize(QtCore.QSize(200, 400))
+        bottom_left_v_layout.addWidget(self.log_file_select_bot)
+        bottom_horizontal_layout.addLayout(bottom_left_v_layout)
+
+        # adding the line divider
+        self.line_bot_vertical = QtWidgets.QFrame(self.subtab_result)
+        self.line_bot_vertical.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_bot_vertical.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_bot_vertical.setObjectName("line_bot_vertical")
+        bottom_horizontal_layout.addWidget(self.line_bot_vertical)
+
+        # adding the bottom graph
+        self.time_log_graph_bot = PlotWidget(self.tab_timelog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.time_log_graph_bot.setSizePolicy(sizePolicy)
+        self.time_log_graph_bot.setMinimumSize(QtCore.QSize(400, 200))
+        self.time_log_graph_bot.setObjectName("time_log_graph_bot")
+        self.time_log_graph_bot.setBackground('w')
+        bottom_horizontal_layout.addWidget(self.time_log_graph_bot)
+        main_vertical_layout.addLayout(bottom_horizontal_layout)
+
+        # line divider between top and bottom plot
+        self.line_horizontal_2 = QtWidgets.QFrame(self.subtab_result)
+        self.line_horizontal_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_horizontal_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_horizontal_2.setObjectName("line_horizontal")
+        main_vertical_layout.addWidget(self.line_horizontal_2)
+
+        spacerItem = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         main_vertical_layout.addItem(spacerItem)
 
         self.tab_timelog.setLayout(main_vertical_layout)
