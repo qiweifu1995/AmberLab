@@ -3067,6 +3067,8 @@ class Ui_MainWindow(QMainWindow):
             print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
+            self.log_file_select_top.addItem(f)
+            self.log_file_select_bot.addItem(f)
             #             self.comboBox_option1.addItem(f)
             #             self.comboBox_option2.addItem(f)
 
