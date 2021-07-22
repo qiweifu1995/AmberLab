@@ -31,6 +31,7 @@ from multiprocessing import freeze_support
 
 import Filter_window
 import peak_threshold_window
+import Time_log_selection_window
 
 
 class StandardItem(QStandardItem):
@@ -46,7 +47,6 @@ class StandardItem(QStandardItem):
         self.setText(txt)
 
 ### Pop-up windows for the new filters
-
 
 class Ui_MainWindow(QMainWindow):
 
@@ -66,6 +66,8 @@ class Ui_MainWindow(QMainWindow):
         self.working_data = []
         self.current_file_dict = {}
         self.ui_state = Helper.ui_state()
+
+        self.time_log_file_model = QStandardItemModel()
 
         self.setupUi()
 
@@ -1963,7 +1965,7 @@ class Ui_MainWindow(QMainWindow):
         top_left_v_layout.addWidget(self.comboBox_top_log)
 
         # init top file selector for log
-        self.log_file_select_top = QtWidgets.QListWidget(self.tab_timelog)
+        self.log_file_select_top = QtWidgets.QTreeView(self.tab_timelog)
         self.log_file_select_top.setObjectName("log_file_select_top")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                            QtWidgets.QSizePolicy.Maximum)
@@ -1972,7 +1974,19 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_top.setSizePolicy(sizePolicy)
         self.log_file_select_top.setMinimumSize(QtCore.QSize(100, 100))
         self.log_file_select_top.setMaximumSize(QtCore.QSize(200, 400))
+        self.log_file_select_top.setHeaderHidden(True)
         top_left_v_layout.addWidget(self.log_file_select_top)
+
+        # layout to hold the two buttons
+        top_left_button_layout = QtWidgets.QHBoxLayout()
+        top_left_button_layout.setObjectName("top_left_button_layout")
+
+        self.time_log_add_button_1 = QtWidgets.QPushButton("Add Syringe")
+        self.time_log_remove_button_1 = QtWidgets.QPushButton("Remove")
+        top_left_button_layout.addWidget(self.time_log_add_button_1)
+        top_left_button_layout.addWidget(self.time_log_remove_button_1)
+        top_left_v_layout.addLayout(top_left_button_layout)
+
         top_horizontal_layout.addLayout(top_left_v_layout)
 
         #adding the line divider
@@ -2031,7 +2045,7 @@ class Ui_MainWindow(QMainWindow):
         bottom_left_v_layout.addWidget(self.comboBox_bot_log)
 
         # init bottom file selector for log
-        self.log_file_select_bot = QtWidgets.QListWidget(self.tab_timelog)
+        self.log_file_select_bot = QtWidgets.QTreeView(self.tab_timelog)
         self.log_file_select_bot.setObjectName("log_file_select_bot")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                            QtWidgets.QSizePolicy.Maximum)
@@ -2040,8 +2054,19 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_bot.setSizePolicy(sizePolicy)
         self.log_file_select_bot.setMinimumSize(QtCore.QSize(100, 100))
         self.log_file_select_bot.setMaximumSize(QtCore.QSize(200, 400))
+        self.log_file_select_bot.setHeaderHidden(True)
         bottom_left_v_layout.addWidget(self.log_file_select_bot)
         bottom_horizontal_layout.addLayout(bottom_left_v_layout)
+
+        # layout to hold the two buttons
+        bottom_left_button_layout = QtWidgets.QHBoxLayout()
+        bottom_left_button_layout.setObjectName("bottom_left_button_layout")
+
+        self.time_log_add_button_2 = QtWidgets.QPushButton("Add Syringe")
+        self.time_log_remove_button_2 = QtWidgets.QPushButton("Remove")
+        bottom_left_button_layout.addWidget(self.time_log_add_button_2)
+        bottom_left_button_layout.addWidget(self.time_log_remove_button_2)
+        bottom_left_v_layout.addLayout(bottom_left_button_layout)
 
         # adding the line divider
         self.line_bot_vertical = QtWidgets.QFrame(self.subtab_result)
@@ -2076,6 +2101,14 @@ class Ui_MainWindow(QMainWindow):
         self.tab_timelog.setLayout(main_vertical_layout)
 
         self.tab_widgets_main.addTab(self.tab_timelog, "")
+
+        self.time_log_add_button_1.clicked.connect(self.time_log_add_syringe)
+        self.time_log_add_button_2.clicked.connect(self.time_log_add_syringe)
+
+    def time_log_add_syringe(self):
+        """function for handling add button click event"""
+        self.time_log_window.populate_list()
+        self.time_log_window.show()
 
     def threshold_set(self):
         """function handling when user finished inputing a voltage"""
@@ -3058,6 +3091,7 @@ class Ui_MainWindow(QMainWindow):
         self.tree_dic = {}
         self.file_list_view.clear()
         self.file_dict_list.clear()
+        self.time_log_file_model.clear()
         self.treeModel.clear()
         self.thresholds = []
         #         self.comboBox_option1.clear()
@@ -3067,14 +3101,12 @@ class Ui_MainWindow(QMainWindow):
             print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
-            self.log_file_select_top.addItem(f)
-            self.log_file_select_bot.addItem(f)
             #             self.comboBox_option1.addItem(f)
             #             self.comboBox_option2.addItem(f)
-
             # record change in the log
             self.textbox = self.textbox + "\n" + "open file:" + str(f)
             self.textEdit.setPlainText(self.textbox)
+        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(self.file_list_view)
 
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
