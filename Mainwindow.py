@@ -68,6 +68,9 @@ class Ui_MainWindow(QMainWindow):
         self.ui_state = Helper.ui_state()
 
         self.time_log_file_model = QStandardItemModel()
+        self.time_log_file_indexes = []
+        self.time_log_top_selected = []
+        self.time_log_bot_selected = []
 
         self.setupUi()
 
@@ -1975,6 +1978,7 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_top.setMinimumSize(QtCore.QSize(100, 100))
         self.log_file_select_top.setMaximumSize(QtCore.QSize(200, 400))
         self.log_file_select_top.setHeaderHidden(True)
+        self.log_file_select_top.setModel(self.time_log_file_model)
         top_left_v_layout.addWidget(self.log_file_select_top)
 
         # layout to hold the two buttons
@@ -2055,6 +2059,7 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_bot.setMinimumSize(QtCore.QSize(100, 100))
         self.log_file_select_bot.setMaximumSize(QtCore.QSize(200, 400))
         self.log_file_select_bot.setHeaderHidden(True)
+        self.log_file_select_bot.setModel(self.time_log_file_model)
         bottom_left_v_layout.addWidget(self.log_file_select_bot)
         bottom_horizontal_layout.addLayout(bottom_left_v_layout)
 
@@ -2104,11 +2109,41 @@ class Ui_MainWindow(QMainWindow):
 
         self.time_log_add_button_1.clicked.connect(self.time_log_add_syringe)
         self.time_log_add_button_2.clicked.connect(self.time_log_add_syringe)
+        self.log_file_select_top.clicked.connect(self.time_log_top_selection_change)
+        self.time_log_remove_button_1.clicked.connect(self.time_log_remove_item_top)
 
     def time_log_add_syringe(self):
         """function for handling add button click event"""
         self.time_log_window.populate_list()
         self.time_log_window.show()
+
+    def time_log_top_selection_change(self, val):
+        """function used to extract select item for top chart"""
+        selected = val
+        self.time_log_top_selected.clear()
+        self.time_log_top_selected.append(selected.parent().row())
+        self.time_log_top_selected.append(selected.row())
+
+    def time_log_bot_selection_change(self, val):
+        """function used to extract select item for bot chart"""
+        selected = val
+        self.time_log_bot_selected.clear()
+        self.time_log_bot_selected.append(selected.parent().row())
+        self.time_log_bot_selected.append(selected.row())
+
+    def time_log_remove_item_top(self):
+        """function for handling removing item, calls the time log class"""
+        self.time_log_window.remove_item(self.time_log_top_selected)
+        self.log_file_select_top.clearSelection()
+        self.time_log_top_selected.clear()
+
+
+    def time_log_remove_item_bot(self):
+        """function for handling removing item, calls the time log class"""
+        self.time_log_window.remove_item(self.time_log_bot_selected)
+        self.log_file_select_bot.clearSelection()
+        self.time_log_bot_selected.clear()
+
 
     def threshold_set(self):
         """function handling when user finished inputing a voltage"""
@@ -3087,6 +3122,7 @@ class Ui_MainWindow(QMainWindow):
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
     def openfolder(self):
+        """function handling the open folder operation"""
         self.analog = {}
         self.tree_dic = {}
         self.file_list_view.clear()
@@ -3106,7 +3142,8 @@ class Ui_MainWindow(QMainWindow):
             # record change in the log
             self.textbox = self.textbox + "\n" + "open file:" + str(f)
             self.textEdit.setPlainText(self.textbox)
-        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(self.file_list_view)
+        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
+            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes)
 
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
