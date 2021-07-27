@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QListView, QHBoxLayout, QSizePolicy
+from PyQt5.QtWidgets import *
+from PyQt5 import Qt
 from PyQt5 import QtWidgets, QtCore, QtGui
 from functools import partial
 import os
@@ -7,10 +8,12 @@ from multiprocessing import freeze_support
 
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes"""
-    def __init__(self, file_list):
+    def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
+        self.file_model = file_model
+        self.file_index = file_index
 
     def setupUI(self):
         self.setWindowTitle("Syringe File Selection")
@@ -36,6 +39,7 @@ class TimeLogFileSelectionWindow(QWidget):
         self.file_list.setSizePolicy(sizePolicy)
         self.file_list.setMinimumSize(QtCore.QSize(100, 100))
         self.file_list.setMaximumSize(QtCore.QSize(400, 400))
+        self.file_list.setSelectionMode(QAbstractItemView.MultiSelection)
         layout.addWidget(self.file_list)
 
         layout_h = QHBoxLayout()
@@ -48,11 +52,62 @@ class TimeLogFileSelectionWindow(QWidget):
 
         self.setLayout(layout)
 
+        self.ok_button.clicked.connect(self.ok_clicked)
+        self.cancel_button.clicked.connect(self.close_clicked)
+
     def populate_list(self):
+        """function to populate the file list with updated information"""
         self.file_list.clear()
         for i in range(self.main_file_list.count()):
             item = self.main_file_list.item(i).text()
             self.file_list.addItem(item)
+        # update the automatic default name for syringe
+        syringe_number = self.file_model.rowCount()+1
+        self.line_edit_name.setText("Syringe " + str(syringe_number))
+
+    def remove_item(self, index: list):
+        """function for removing syringe or file"""
+        # check for valid input
+        if len(index) != 2:
+            return
+
+        # check if parent node
+        if index[0] < 0:
+            self.file_index.pop(index[1])
+            self.file_model.removeRow(index[1])
+
+        # child node
+        else:
+            del self.file_index[index[0]][index[1]]
+            self.file_model.item(index[0]).removeRow(index[1])
+
+            # delet syringe group if empty
+            if not self.file_index[index[0]]:
+                self.file_model.removeRow(index[0])
+
+        print(self.file_index)
+
+    def ok_clicked(self):
+        """handler for ok clicked"""
+        index_holder = []
+        for item in self.file_list.selectedIndexes():
+            # find all the index of selected item
+            index_holder.append(item.row())
+        if len(index_holder) > 0:
+            syringe = Qt.QStandardItem(self.line_edit_name.text())
+            self.file_model.appendRow(syringe)
+            syringe_number = self.file_model.rowCount() - 1
+            for i in range(len(index_holder)):
+                item = Qt.QStandardItem(self.main_file_list.item(i).text())
+                self.file_model.item(syringe_number).appendRow(item)
+            self.file_index.append(index_holder)
+        self.hide()
+
+
+    def close_clicked(self):
+        """handle close button clicked"""
+        self.hide()
+
 
 if __name__ == "__main__":
     freeze_support()
