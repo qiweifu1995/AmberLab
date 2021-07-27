@@ -1121,6 +1121,14 @@ class Ui_MainWindow(QMainWindow):
 
         self.layout_vertical_filecontrol.addWidget(self.treeView)
 
+        self.filter_button_layout = QtWidgets.QHBoxLayout()
+        self.filter_add_button = QtWidgets.QPushButton("Add")
+        self.filter_remove_button = QtWidgets.QPushButton("Remove")
+        self.filter_button_layout.addWidget(self.filter_add_button)
+        self.filter_button_layout.addWidget(self.filter_remove_button)
+
+        self.layout_vertical_filecontrol.addLayout(self.filter_button_layout)
+
         # original treeview is has a colomn like header, need to hide that 
         self.treeView.setHeaderHidden(True)
 
@@ -3005,7 +3013,6 @@ class Ui_MainWindow(QMainWindow):
             self.analog.update(a.analog_file)
 
             self.save_a = self.analog
-
 
             check2 = time.time()
 
