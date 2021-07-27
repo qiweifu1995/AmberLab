@@ -7,13 +7,16 @@ from multiprocessing import freeze_support
 
 
 class TimeLogFileSelectionWindow(QWidget):
-    """Class that allows user to select the files for syringes"""
+    """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
     def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
         self.file_model = file_model
         self.file_index = file_index
+
+        #caller keeps track of which file index to work on, 0 for filter, 1 for log files
+        self.caller = 0
 
     def setupUI(self):
         self.setWindowTitle("Syringe File Selection")
@@ -67,6 +70,7 @@ class TimeLogFileSelectionWindow(QWidget):
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""
+
         # check for valid input
         if len(index) != 2:
             return
@@ -93,15 +97,22 @@ class TimeLogFileSelectionWindow(QWidget):
         for item in self.file_list.selectedIndexes():
             # find all the index of selected item
             index_holder.append(item.row())
-        if len(index_holder) > 0:
-            syringe = Qt.QStandardItem(self.line_edit_name.text())
-            self.file_model.appendRow(syringe)
-            syringe_number = self.file_model.rowCount() - 1
-            for i in range(len(index_holder)):
-                item = Qt.QStandardItem(self.main_file_list.item(i).text())
-                self.file_model.item(syringe_number).appendRow(item)
-            self.file_index.append(index_holder)
-        self.hide()
+
+        if self.caller == 1:
+            # this case handles the call request by time log
+            if len(index_holder) > 0:
+                syringe = Qt.QStandardItem(self.line_edit_name.text())
+                self.file_model.appendRow(syringe)
+                syringe_number = self.file_model.rowCount() - 1
+                for i in range(len(index_holder)):
+                    item = Qt.QStandardItem(self.main_file_list.item(i).text())
+                    self.file_model.item(syringe_number).appendRow(item)
+                self.file_index.append(index_holder)
+            self.hide()
+
+        elif self.caller == 0:
+            # this case handles the call request by window filters
+
 
 
     def close_clicked(self):

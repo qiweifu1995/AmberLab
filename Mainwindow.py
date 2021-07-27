@@ -69,8 +69,6 @@ class Ui_MainWindow(QMainWindow):
 
         self.time_log_file_model = QStandardItemModel()
         self.time_log_file_indexes = []
-        self.time_log_top_selected = []
-        self.time_log_bot_selected = []
 
         self.setupUi()
 
@@ -2117,40 +2115,36 @@ class Ui_MainWindow(QMainWindow):
 
         self.time_log_add_button_1.clicked.connect(self.time_log_add_syringe)
         self.time_log_add_button_2.clicked.connect(self.time_log_add_syringe)
-        self.log_file_select_top.clicked.connect(self.time_log_top_selection_change)
         self.time_log_remove_button_1.clicked.connect(self.time_log_remove_item_top)
+        self.time_log_remove_button_2.clicked.connect(self.time_log_remove_item_bot)
 
     def time_log_add_syringe(self):
         """function for handling add button click event"""
         self.time_log_window.populate_list()
         self.time_log_window.show()
 
-    def time_log_top_selection_change(self, val):
-        """function used to extract select item for top chart"""
-        selected = val
-        self.time_log_top_selected.clear()
-        self.time_log_top_selected.append(selected.parent().row())
-        self.time_log_top_selected.append(selected.row())
-
-    def time_log_bot_selection_change(self, val):
-        """function used to extract select item for bot chart"""
-        selected = val
-        self.time_log_bot_selected.clear()
-        self.time_log_bot_selected.append(selected.parent().row())
-        self.time_log_bot_selected.append(selected.row())
-
     def time_log_remove_item_top(self):
         """function for handling removing item, calls the time log class"""
-        self.time_log_window.remove_item(self.time_log_top_selected)
-        self.log_file_select_top.clearSelection()
-        self.time_log_top_selected.clear()
-
+        try:
+            #fetch the index of the selected file, need to idnex [0] since the items are returned in a list
+            index = self.log_file_select_top.selectedIndexes()[0]
+            print(index.row())
+            print(index.parent().row())
+            self.time_log_window.remove_item([index.parent().row(), index.row()])
+            self.log_file_select_top.clearSelection()
+        except IndexError:
+            print("No file selected")
 
     def time_log_remove_item_bot(self):
         """function for handling removing item, calls the time log class"""
-        self.time_log_window.remove_item(self.time_log_bot_selected)
-        self.log_file_select_bot.clearSelection()
-        self.time_log_bot_selected.clear()
+        try:
+            index = self.log_file_select_bot.selectedIndexes()[0]
+            print(index.row())
+            print(index.parent().row())
+            self.time_log_window.remove_item([index.parent().row(), index.row()])
+            self.log_file_select_bot.clearSelection()
+        except IndexError:
+            print("No file selected")
 
 
     def threshold_set(self):
@@ -2217,6 +2211,8 @@ class Ui_MainWindow(QMainWindow):
         self.tree_dic[self.tree_index]['tree_windowfilter'].showNormal()
         self.tree_dic[self.tree_index]['tree_windowfilter'].activateWindow()
 
+    def get_selected_filter(self, val):
+        return
     ###  window filter ends
 
     def chart_title_change(self):
