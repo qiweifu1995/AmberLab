@@ -14,11 +14,13 @@ class TimeLogFileSelectionWindow(QWidget):
         self.main_file_list = file_list
         self.file_model = file_model
         self.file_index = file_index
+        #self.filter_index = tree_index
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
-        self.caller = 0
+        self.caller = 1
 
     def setupUI(self):
+        """call this function when setting up UI"""
         self.setWindowTitle("Syringe File Selection")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                            QtWidgets.QSizePolicy.Maximum)
@@ -70,7 +72,6 @@ class TimeLogFileSelectionWindow(QWidget):
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""
-
         # check for valid input
         if len(index) != 2:
             return
@@ -112,8 +113,7 @@ class TimeLogFileSelectionWindow(QWidget):
 
         elif self.caller == 0:
             # this case handles the call request by window filters
-
-
+            return
 
     def close_clicked(self):
         """handle close button clicked"""

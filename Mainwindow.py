@@ -3145,9 +3145,7 @@ class Ui_MainWindow(QMainWindow):
             # record change in the log
             self.textbox = self.textbox + "\n" + "open file:" + str(f)
             self.textEdit.setPlainText(self.textbox)
-        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
-            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes)
-
+        #initialize the filter window with loaded files
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
@@ -3160,6 +3158,9 @@ class Ui_MainWindow(QMainWindow):
                                                                                    None, None)
             self.thresholds.append([0.0, 0.0, 0.0, 0.0])
         self.ui_state.threshold_initialize(self.thresholds)
+        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
+            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes)
+        print(self.tree_dic.keys())
 
 
 if __name__ == "__main__":
