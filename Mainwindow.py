@@ -2118,10 +2118,53 @@ class Ui_MainWindow(QMainWindow):
         self.time_log_remove_button_1.clicked.connect(self.time_log_remove_item_top)
         self.time_log_remove_button_2.clicked.connect(self.time_log_remove_item_bot)
 
-    def time_log_add_syringe(self):
-        """function for handling add button click event"""
+        self.filter_remove_button.clicked.connect(self.filter_remove_item)
+
+    def filter_add_syringe(self):
+        """function for handing add button click for filter addition"""
         self.time_log_window.populate_list()
+        self.time_log_window.caller = 0
         self.time_log_window.show()
+        self.time_log_window.activateWindow()
+
+    def time_log_add_syringe(self):
+        """function for handling add button click event for time log function"""
+        self.time_log_window.populate_list()
+        self.time_log_window.caller = 1
+        self.time_log_window.show()
+        self.time_log_window.activateWindow()
+
+    def filter_remove_item(self):
+        """function for removing created filter"""
+        # fetch the currently selected filter index, this is the specific index used by filter window
+        index = self.treeView.selectedIndexes()[0]
+        self.tree_index = (index.row(),)
+        while index.parent().row() != -1:
+            self.tree_index += (index.parent().row(),)
+            index = index.parent()
+        print("selected item to delete: " + str(self.tree_index))
+
+        # access the parent node of the selected item, then delete the indexed child row
+        if len(self.tree_index) > 1:
+            self.tree_dic[self.tree_index[1:]]['tree_standarditem'].removeRow(self.tree_index[0])
+        else:
+            self.treeModel.removeRow(self.tree_index[0])
+
+        # need to find other sibling filter, move them up to the deleted filter and update their own index
+        while self.tree_index in self.tree_dic.keys():
+            child_index = self.tree_index[0] + 1
+            next_index = (child_index,) + self.tree_index[1:]
+            # check if index exist for sibling filter with lower index, if so repalce and repeat
+            if next_index in self.tree_dic.keys():
+                self.tree_dic[self.tree_index] = self.tree_dic.pop(next_index)
+                self.tree_index = next_index
+            else:
+                self.tree_dic.pop(self.tree_index)
+                break
+        print(self.tree_dic.keys())
+
+
+
 
     def time_log_remove_item_top(self):
         """function for handling removing item, calls the time log class"""

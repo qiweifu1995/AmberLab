@@ -824,6 +824,10 @@ class window_filter(QWidget):
         if self.root:
             self.points_inside_square = []
 
+    def tree_index_update(self, new_index):
+        """update index function call, usually called after a filter was removed to update the dict"""
+        self.tree_index = new_index
+
     def polygon_linear_plot_triggered_from_scatter_subtab(self):
         # reset upper and lower bond
         self.lineEdit_36.setText("0")
@@ -1951,6 +1955,7 @@ class window_filter(QWidget):
         #         self.ui.window_filter[new_index] = self.ui.dialog
         self.ui.tree_dic[new_index]['tree_windowfilter'] = self.ui.dialog
         self.ui.dialog.show()
+        print(self.ui.tree_dic.keys())
 
     def export_clicked(self):
         self.ui.lineEdit_filter.setText(self.lineEdit.text())

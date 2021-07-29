@@ -18,6 +18,7 @@ class TimeLogFileSelectionWindow(QWidget):
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
         self.caller = 1
+        self.spawned_filter_counter = 0
 
     def setupUI(self):
         """call this function when setting up UI"""
@@ -67,8 +68,16 @@ class TimeLogFileSelectionWindow(QWidget):
             item = self.main_file_list.item(i).text()
             self.file_list.addItem(item)
         # update the automatic default name for syringe
-        syringe_number = self.file_model.rowCount()+1
-        self.line_edit_name.setText("Syringe " + str(syringe_number))
+        if self.caller == 1:
+            # fetch syringe name for time_log_call
+            syringe_number = self.file_model.rowCount()+1
+            self.line_edit_name.setText("Syringe " + str(syringe_number))
+        else:
+            # fetech syringe name for filter call
+            self.spawned_filter_counter += 1
+            self.line_edit_name.setText("Syringe " + str(self.spawned_filter_counter))
+
+
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""
