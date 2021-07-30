@@ -3,8 +3,20 @@ from PyQt5 import Qt
 from PyQt5 import QtWidgets, QtCore, QtGui
 from functools import partial
 import os
+from PyQt5.Qt import QStandardItem
 from multiprocessing import freeze_support
 
+class StandardItem(QStandardItem):
+    def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
+        super().__init__()
+
+        fnt = Qt.QFont('Open Sans', font_size)
+        fnt.setBold(set_bold)
+
+        self.setEditable(False)
+        self.setForeground(color)
+        self.setFont(fnt)
+        self.setText(txt)
 
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
@@ -124,9 +136,10 @@ class TimeLogFileSelectionWindow(QWidget):
         elif self.caller == 0:
             # this case handles the call request by window filters
             self.spawned_filter_counter += 1
-            total_root_filter = len([key for key in self.tree_dict.keys() if len(key) == 1)])
-
-
+            #  the number of root keys, and create new index
+            new_index = (len([key for key in self.tree_dict.keys() if len(key) == 1]),)
+            self.tree_dict[new_index]['tree_standarditem'] = StandardItem(self.line_edit_name.text(), 12, set_bold=True)
+            self.
 
     def close_clicked(self):
         """handle close button clicked"""

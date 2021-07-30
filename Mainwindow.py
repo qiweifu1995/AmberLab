@@ -3058,8 +3058,6 @@ class Ui_MainWindow(QMainWindow):
 
         if self.current_file_dict["Peak Record"] in self.analog and not reset and not threshold_check:
             print("--------------------------------------------------------not reset")
-
-
             check2 = time.time()
             self.update_working_data()
             check2A = time.time()
