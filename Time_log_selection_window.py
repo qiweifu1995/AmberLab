@@ -8,7 +8,7 @@ from multiprocessing import freeze_support
 
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
-    def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list):
+    def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
@@ -19,6 +19,7 @@ class TimeLogFileSelectionWindow(QWidget):
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
         self.caller = 1
         self.spawned_filter_counter = 0
+        self.tree_dict = tree_dict
 
     def setupUI(self):
         """call this function when setting up UI"""
@@ -122,7 +123,10 @@ class TimeLogFileSelectionWindow(QWidget):
 
         elif self.caller == 0:
             # this case handles the call request by window filters
-            return
+            self.spawned_filter_counter += 1
+            total_root_filter = len([key for key in self.tree_dict.keys() if len(key) == 1)])
+
+
 
     def close_clicked(self):
         """handle close button clicked"""

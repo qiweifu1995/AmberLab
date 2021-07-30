@@ -2119,6 +2119,7 @@ class Ui_MainWindow(QMainWindow):
         self.time_log_remove_button_2.clicked.connect(self.time_log_remove_item_bot)
 
         self.filter_remove_button.clicked.connect(self.filter_remove_item)
+        self.filter_add_button.clicked.connect(self.filter_add_syringe)
 
     def filter_add_syringe(self):
         """function for handing add button click for filter addition"""
@@ -2159,7 +2160,6 @@ class Ui_MainWindow(QMainWindow):
             if self.tree_index == key[starting_index:]:
                 # remove all dictionary entry with the same starting index
                 self.tree_dic.pop(key)
-
         # need to find other sibling filter, move them up to the deleted filter and update their own index
         while self.tree_index in self.tree_dic.keys():
             self.tree_dic.pop(self.tree_index)
@@ -2172,6 +2172,7 @@ class Ui_MainWindow(QMainWindow):
                 # extract all the key that have longer index, thus all possible child should be in this list
                 keys = [key for key in self.tree_dic.keys() if len(key) > len(next_index)]
                 print("Children Keys with longer length" + str(keys))
+                # check all the lower level keys for child nodes
                 for key in keys:
                     # find the starting index location
                     starting_index = len(key) - len(next_index)
@@ -2183,7 +2184,6 @@ class Ui_MainWindow(QMainWindow):
                         # update the buildin index of each window
                         self.tree_dic[new_key]['tree_windowfilter'].tree_index_update(new_key)
                 self.tree_index = next_index
-
             else:
                 self.tree_index = next_index
 
