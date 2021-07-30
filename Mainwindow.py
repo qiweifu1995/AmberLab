@@ -2150,20 +2150,44 @@ class Ui_MainWindow(QMainWindow):
         else:
             self.treeModel.removeRow(self.tree_index[0])
 
+        # need to delete all child filter from the dictionary, check for all keys that has the same proceeding index
+        keys = [key for key in self.tree_dic.keys() if len(key) > len(self.tree_index)]
+        print("Keys with longer length" + str(keys))
+        for key in keys:
+            # find the starting index location
+            starting_index = len(key) - len(self.tree_index)
+            if self.tree_index == key[starting_index:]:
+                # remove all dictionary entry with the same starting index
+                self.tree_dic.pop(key)
+
         # need to find other sibling filter, move them up to the deleted filter and update their own index
         while self.tree_index in self.tree_dic.keys():
+            self.tree_dic.pop(self.tree_index)
             child_index = self.tree_index[0] + 1
             next_index = (child_index,) + self.tree_index[1:]
-            # check if index exist for sibling filter with lower index, if so repalce and repeat
+            # check if index exist for sibling filter with lower index, if so replace and repeat
             if next_index in self.tree_dic.keys():
-                self.tree_dic[self.tree_index] = self.tree_dic.pop(next_index)
+                self.tree_dic[self.tree_index] = self.tree_dic[next_index]
+                self.tree_dic[self.tree_index]['tree_windowfilter'].tree_index_update(self.tree_index)
+                # extract all the key that have longer index, thus all possible child should be in this list
+                keys = [key for key in self.tree_dic.keys() if len(key) > len(next_index)]
+                print("Children Keys with longer length" + str(keys))
+                for key in keys:
+                    # find the starting index location
+                    starting_index = len(key) - len(next_index)
+                    if next_index == key[starting_index:]:
+                        # remove all dictionary entry with the same starting index
+                        new_key = key[:starting_index] + self.tree_index
+                        old_key = key[:starting_index] + next_index
+                        self.tree_dic[new_key] = self.tree_dic.pop(old_key)
+                        # update the buildin index of each window
+                        self.tree_dic[new_key]['tree_windowfilter'].tree_index_update(new_key)
                 self.tree_index = next_index
+
             else:
-                self.tree_dic.pop(self.tree_index)
-                break
+                self.tree_index = next_index
+
         print(self.tree_dic.keys())
-
-
 
 
     def time_log_remove_item_top(self):
