@@ -5,9 +5,10 @@ from functools import partial
 import os
 from PyQt5.Qt import QStandardItem
 from multiprocessing import freeze_support
+import Filter_window
 
 class StandardItem(QStandardItem):
-    def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
+    def __init__(self, txt='', font_size=12, set_bold=False, color=Qt.QColor(0, 0, 0)):
         super().__init__()
 
         fnt = Qt.QFont('Open Sans', font_size)
@@ -20,12 +21,15 @@ class StandardItem(QStandardItem):
 
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
-    def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict):
+    def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict
+                 , tree_model: Qt.QStandardItemModel, parent):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
         self.file_model = file_model
         self.file_index = file_index
+        self.tree_model = tree_model
+        self.ui = parent
         #self.filter_index = tree_index
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
@@ -138,8 +142,11 @@ class TimeLogFileSelectionWindow(QWidget):
             self.spawned_filter_counter += 1
             #  the number of root keys, and create new index
             new_index = (len([key for key in self.tree_dict.keys() if len(key) == 1]),)
+            self.tree_dict[new_index] = {}
             self.tree_dict[new_index]['tree_standarditem'] = StandardItem(self.line_edit_name.text(), 12, set_bold=True)
-            self.
+            self.tree_dict[new_index]['tree_windowfilter'] = Filter_window.window_filter(self.ui,None, None,
+                                                                                   None, None, self.ui.comboBox_14_list, index_holder)
+            self.tree_model.appendRow(self.tree_dict[new_index]['tree_standarditem'])
 
     def close_clicked(self):
         """handle close button clicked"""
