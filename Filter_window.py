@@ -882,27 +882,34 @@ class window_filter(QWidget):
         ### will extract later
         if self.reset_comboBox == True:
             self.comboBox_14.clear()
-            for file in self.multi_file:
-                self.current_file_dict = self.ui.file_dict_list[file]
+            self.index_in_all_selected_channel = []
+            if not self.multi_file:
+                multi_file_holder = [0]
+            else:
+                multi_file_holder = self.multi_file
+            for file in multi_file_holder:
+                if len(multi_file_holder) > 1:
+                    self.current_file_dict = self.ui.file_dict_list[file]
                 for list_index in self.linear_plot_channel_list:
                     list_text = self.linear_plot_channel_list[list_index]
-
                     polygon_length = 0
                     for i in range(list_index):
                         polygon_length += len(
                             self.ui.analog[self.current_file_dict[self.linear_plot_channel_list[i]]][0][0])
 
                     polygon_length_end = polygon_length + len(self.ui.analog[self.current_file_dict[list_text]][0][0])
-                    if list_index >= len(self.index_in_all_selected_channel):
+                    if list_index >= len(self.index_in_all_selected_channel) or len(multi_file_holder) == 1:
                         # if first file, append to list , and add channel is not empty
                         self.index_in_all_selected_channel.append([x for x, x in enumerate(self.points_inside) if
                                                                    polygon_length < x <= polygon_length_end])
-                        if self.index_in_all_selected_channel[list_index]:
-                            self.index_in_all_selected_channel[list_index].sort()
-                            self.comboBox_14.addItem(str(list_text))
                     else:
                         self.index_in_all_selected_channel[list_index].extend([x for x, x in enumerate(self.points_inside)
                                                                                if polygon_length < x <= polygon_length_end])
+            # cycle the list again to sort and populate the combo box
+            for list_index in self.linear_plot_channel_list:
+                if self.index_in_all_selected_channel[list_index]:
+                    self.index_in_all_selected_channel[list_index].sort()
+                    self.comboBox_14.addItem(str(self.linear_plot_channel_list[list_index]))
 
         self.reset_comboBox = False
 
@@ -959,6 +966,7 @@ class window_filter(QWidget):
             if nrows > 15:
                 self.lineEdit_38.setText(str(lower_bond + 15))
                 nrows = 15
+
             self.subgating_file_dict = self.ui.file_dict_list[self.tree_index[len(self.tree_index)-1]]
             os.chdir(self.subgating_file_dict["Root Folder"])
             file = self.subgating_file_dict[text1]
@@ -968,8 +976,19 @@ class window_filter(QWidget):
             #print("index_in_current_channel", len(index_in_current_channel), ':', index_in_current_channel)
 
             for x in range(lower_bond, upper_bond):
-                i = index_in_current_channel[x]
-                skip_rows = i * sample_size
+                current_droplet_index = index_in_current_channel[x]
+                file_droplet_index = current_droplet_index
+                if self.multi_file:
+                    for count, index in enumerate(self.multi_file_index):
+                        if current_droplet_index > index:
+                            self.subgating_file_dict = self.ui.file_dict_list[self.multi_file[count]]
+                            os.chdir(self.subgating_file_dict["Root Folder"])
+                            file = self.subgating_file_dict[text1]
+                            file_droplet_index -= index
+                        else:
+                            break
+
+                skip_rows = file_droplet_index * sample_size
                 polygon_data = pd.read_csv(file, skiprows=skip_rows, nrows=sample_size, header=header)
                 length = len(polygon_data.columns)
                 polygon_data.columns = list(range(0, length))

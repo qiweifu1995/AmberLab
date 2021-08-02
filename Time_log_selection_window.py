@@ -124,7 +124,7 @@ class TimeLogFileSelectionWindow(QWidget):
         for item in self.file_list.selectedIndexes():
             # find all the index of selected item
             index_holder.append(item.row())
-
+        index_holder.sort()
         if self.caller == 1:
             # this case handles the call request by time log
             if len(index_holder) > 0:
