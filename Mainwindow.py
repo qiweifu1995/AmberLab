@@ -3224,7 +3224,8 @@ class Ui_MainWindow(QMainWindow):
             self.thresholds.append([0.0, 0.0, 0.0, 0.0])
         self.ui_state.threshold_initialize(self.thresholds)
         self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
-            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel, ui)
+            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
+            ui, self.file_dict_list)
         print(self.tree_dic.keys())
 
 

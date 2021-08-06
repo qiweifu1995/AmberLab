@@ -6,6 +6,9 @@ import os
 from PyQt5.Qt import QStandardItem
 from multiprocessing import freeze_support
 import Filter_window
+import pandas as pd
+import random
+import numpy
 
 class StandardItem(QStandardItem):
     def __init__(self, txt='', font_size=12, set_bold=False, color=Qt.QColor(0, 0, 0)):
@@ -13,7 +16,6 @@ class StandardItem(QStandardItem):
 
         fnt = Qt.QFont('Open Sans', font_size)
         fnt.setBold(set_bold)
-
         self.setEditable(False)
         self.setForeground(color)
         self.setFont(fnt)
@@ -22,7 +24,7 @@ class StandardItem(QStandardItem):
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
     def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict
-                 , tree_model: Qt.QStandardItemModel, parent):
+                 , tree_model: Qt.QStandardItemModel, parent: QMainWindow, file_dict: list):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
@@ -30,12 +32,15 @@ class TimeLogFileSelectionWindow(QWidget):
         self.file_index = file_index
         self.tree_model = tree_model
         self.ui = parent
+        self.file_dict = file_dict
+        self.time_log_data = []
         #self.filter_index = tree_index
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
         self.caller = 1
         self.spawned_filter_counter = 0
         self.tree_dict = tree_dict
+        self.load_files()
 
     def setupUI(self):
         """call this function when setting up UI"""
@@ -93,6 +98,23 @@ class TimeLogFileSelectionWindow(QWidget):
             # fetech syringe name for filter call
             self.spawned_filter_counter += 1
             self.line_edit_name.setText("Syringe " + str(self.spawned_filter_counter))
+
+    def load_files(self):
+        """function call to load the file after filelist is loaded"""
+        for file in self.file_dict:
+            # check if file exist
+            if file["Time Log"]:
+                os.chdir(file["Root Folder"])
+                data = pd.read_csv(file["Time Log"])
+                data.fillna(0, inplace=True)
+                data.replace(0, int(random.randrange(1, 200, 1)), True)
+
+                # follow function for testing use only, when file is not good
+                for col in data.columns.values:
+                    for i in data.index.values:
+                        data.loc[i, col] = int(random.randrange(1, 200, 1))
+
+                print(data)
 
 
 
