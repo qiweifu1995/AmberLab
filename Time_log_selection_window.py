@@ -8,7 +8,7 @@ from multiprocessing import freeze_support
 import Filter_window
 import pandas as pd
 import random
-import numpy
+import datetime
 
 class StandardItem(QStandardItem):
     def __init__(self, txt='', font_size=12, set_bold=False, color=Qt.QColor(0, 0, 0)):
@@ -34,6 +34,8 @@ class TimeLogFileSelectionWindow(QWidget):
         self.ui = parent
         self.file_dict = file_dict
         self.time_log_data = []
+        self.file_names = []
+        self.file_time_data = []
         #self.filter_index = tree_index
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
@@ -106,17 +108,38 @@ class TimeLogFileSelectionWindow(QWidget):
             if file["Time Log"]:
                 os.chdir(file["Root Folder"])
                 data = pd.read_csv(file["Time Log"])
+                self.file_time_data.append(datetime.datetime.strptime(file["Time Log"][0:13], "%y%m%d_%H%M%S"))
                 data.fillna(0, inplace=True)
                 data.replace(0, int(random.randrange(1, 200, 1)), True)
-
                 # follow function for testing use only, when file is not good
                 for col in data.columns.values:
                     for i in data.index.values:
                         data.loc[i, col] = int(random.randrange(1, 200, 1))
-
+                self.time_log_data.append(data)
                 print(data)
+        print(self.file_time_data)
 
+    def time_log_process_data(self, index: list):
+        """function used to combine and load data of the time log"""
+        # check for valid input
+        if len(index) != 2:
+            return
 
+        # parent node, combine all internal syringes
+        time_gap = []
+
+        if index[0] < 0:
+            for i, current_index in enumerate(self.file_index[index[1]]):
+                current_data = self.time_log_data[current_index]
+                # extract the time different between files, first file difference is 0
+                if i > 0:
+                    delta = self.file_time_data[current_index] - self.file_time_data[self.file_index[index[1]][i-1]]
+                    time_gap.append(delta.total_seconds() // 60)
+                else:
+                    time_gap.append(0)
+        else:
+            current_data = self.file_index[index[0]][index[1]]
+        print(time_gap)
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""

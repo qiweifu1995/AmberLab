@@ -2117,6 +2117,8 @@ class Ui_MainWindow(QMainWindow):
         self.time_log_add_button_2.clicked.connect(self.time_log_add_syringe)
         self.time_log_remove_button_1.clicked.connect(self.time_log_remove_item_top)
         self.time_log_remove_button_2.clicked.connect(self.time_log_remove_item_bot)
+        self.log_file_select_top.clicked.connect(self.time_log_top_clicked)
+        self.log_file_select_bot.clicked.connect(self.time_log_bot_clicked)
 
         self.filter_remove_button.clicked.connect(self.filter_remove_item)
         self.filter_add_button.clicked.connect(self.filter_add_syringe)
@@ -2189,6 +2191,15 @@ class Ui_MainWindow(QMainWindow):
 
         print(self.tree_dic.keys())
 
+    def time_log_top_clicked(self):
+        """handles top syringe select when clicked"""
+        index = self.log_file_select_top.selectedIndexes()[0]
+        self.time_log_window.time_log_process_data([index.parent().row(), index.row()])
+
+    def time_log_bot_clicked(self):
+        """handles bot syringe select when clicked"""
+        index = self.log_file_select_bot.selectedIndexes()[0]
+        self.time_log_window.time_log_process_data([index.parent().row(), index.row()])
 
     def time_log_remove_item_top(self):
         """function for handling removing item, calls the time log class"""
@@ -3201,6 +3212,8 @@ class Ui_MainWindow(QMainWindow):
         #         self.comboBox_option1.clear()
         #         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
+        # sort the files so they will be correctly organized in the time log
+        name.sort()
         for f in name:
             print(f)
             self.file_dict_list.append(Helper.project_namelist(f))
