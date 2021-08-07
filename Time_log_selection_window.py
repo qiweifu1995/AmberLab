@@ -127,19 +127,31 @@ class TimeLogFileSelectionWindow(QWidget):
 
         # parent node, combine all internal syringes
         time_gap = []
-
+        current_data = pd.DataFrame()
+        time_col = []
         if index[0] < 0:
             for i, current_index in enumerate(self.file_index[index[1]]):
-                current_data = self.time_log_data[current_index]
                 # extract the time different between files, first file difference is 0
+                delta_in_minutes = 0
                 if i > 0:
+                    current_data = current_data.append(self.time_log_data[current_index], ignore_index=True)
                     delta = self.file_time_data[current_index] - self.file_time_data[self.file_index[index[1]][i-1]]
-                    time_gap.append(delta.total_seconds() // 60)
+                    delta_in_minutes = int(delta.total_seconds() // 60)
+                    time_gap.append(delta_in_minutes)
+                    time_col.extend([x+sum(time_gap) for x in range(len(self.time_log_data[current_index].index))])
                 else:
-                    time_gap.append(0)
+                    current_data = self.time_log_data[current_index]
+                    time_gap.append(delta_in_minutes)
+                    time_col = [x for x in range(len(current_data.index))]
+
+
         else:
-            current_data = self.file_index[index[0]][index[1]]
-        print(time_gap)
+            current_data = self.time_log_data[self.file_index[index[0]][index[1]]]
+            time_col = [x for x in range(len(current_data.index))]
+            current_data['Minutes'] = time_col
+        current_data['Minutes'] = time_col
+        return current_data.copy()
+        print(current_data['Minutes'])
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""
