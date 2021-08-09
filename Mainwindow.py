@@ -32,7 +32,8 @@ from multiprocessing import freeze_support
 import Filter_window
 import peak_threshold_window
 import Time_log_selection_window
-
+from Time_log_selection_window import Time_log_functions
+from enum import Enum
 
 class StandardItem(QStandardItem):
     def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
@@ -45,8 +46,9 @@ class StandardItem(QStandardItem):
         self.setForeground(color)
         self.setFont(fnt)
         self.setText(txt)
-
 ### Pop-up windows for the new filters
+
+
 
 class Ui_MainWindow(QMainWindow):
 
@@ -2119,7 +2121,8 @@ class Ui_MainWindow(QMainWindow):
         self.time_log_remove_button_2.clicked.connect(self.time_log_remove_item_bot)
         self.log_file_select_top.clicked.connect(self.time_log_top_clicked)
         self.log_file_select_bot.clicked.connect(self.time_log_bot_clicked)
-
+        self.comboBox_top_log.currentIndexChanged.connect(self.time_log_combo_box_clicked_top)
+        self.comboBox_bot_log.currentIndexChanged.connect(self.time_log_combo_box_clicked_bot)
         self.filter_remove_button.clicked.connect(self.filter_remove_item)
         self.filter_add_button.clicked.connect(self.filter_add_syringe)
 
@@ -2194,12 +2197,21 @@ class Ui_MainWindow(QMainWindow):
     def time_log_top_clicked(self):
         """handles top syringe select when clicked"""
         index = self.log_file_select_top.selectedIndexes()[0]
-        self.time_log_window.time_log_process_data([index.parent().row(), index.row()])
+        self.time_log_window.time_log_process_data([index.parent().row(), index.row()], 0)
+        self.time_log_window.data_transform(0, Time_log_functions(self.comboBox_top_log.currentIndex()))
 
     def time_log_bot_clicked(self):
         """handles bot syringe select when clicked"""
         index = self.log_file_select_bot.selectedIndexes()[0]
-        self.time_log_window.time_log_process_data([index.parent().row(), index.row()])
+        self.time_log_window.time_log_process_data([index.parent().row(), index.row(), 1])
+
+    def time_log_combo_box_clicked_top(self):
+        """handle when top function of log changes"""
+        self.time_log_window.data_transform(0, Time_log_functions(self.comboBox_top_log.currentIndex()))
+
+    def time_log_combo_box_clicked_bot(self):
+        """handle when bot function of log changes"""
+        self.time_log_window.data_transform(1, Time_log_functions(self.comboBox_bot_log.currentIndex()))
 
     def time_log_remove_item_top(self):
         """function for handling removing item, calls the time log class"""
@@ -3238,7 +3250,7 @@ class Ui_MainWindow(QMainWindow):
         self.ui_state.threshold_initialize(self.thresholds)
         self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
             self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
-            ui, self.file_dict_list)
+            ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
         print(self.tree_dic.keys())
 
 

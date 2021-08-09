@@ -9,6 +9,9 @@ import Filter_window
 import pandas as pd
 import random
 import datetime
+import pyqtgraph as pg
+from enum import Enum
+
 
 class StandardItem(QStandardItem):
     def __init__(self, txt='', font_size=12, set_bold=False, color=Qt.QColor(0, 0, 0)):
@@ -21,10 +24,22 @@ class StandardItem(QStandardItem):
         self.setFont(fnt)
         self.setText(txt)
 
+
+class Time_log_functions(Enum):
+    """This class holds the enum for time log functions"""
+    TOTAL_SORTED = 0
+    TOTAL_LOST = 1
+    TOTAL_DROPLETS = 2
+    POSITIVE_RATE = 3
+    DROPLET_FREQUENCY = 4
+    SORTED_RATE = 5
+    LOCKED_OUT = 6
+
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
     def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict
-                 , tree_model: Qt.QStandardItemModel, parent: QMainWindow, file_dict: list):
+                 , tree_model: Qt.QStandardItemModel, parent: QMainWindow, file_dict: list, top_graph: pg.PlotWidget
+                 , bot_graph: pg.PlotWidget):
         super().__init__()
         self.setupUI()
         self.main_file_list = file_list
@@ -36,6 +51,11 @@ class TimeLogFileSelectionWindow(QWidget):
         self.time_log_data = []
         self.file_names = []
         self.file_time_data = []
+        self.top_processed_data = pd.DataFrame()
+        self.bot_processed_data = pd.DataFrame()
+        self.top_graph = top_graph
+        self.bot_graph = bot_graph
+
         #self.filter_index = tree_index
 
         #caller keeps track of which file index to work on, 0 for filter, 1 for log files
@@ -119,7 +139,7 @@ class TimeLogFileSelectionWindow(QWidget):
                 print(data)
         print(self.file_time_data)
 
-    def time_log_process_data(self, index: list):
+    def time_log_process_data(self, index: list, caller):
         """function used to combine and load data of the time log"""
         # check for valid input
         if len(index) != 2:
@@ -129,6 +149,7 @@ class TimeLogFileSelectionWindow(QWidget):
         time_gap = []
         current_data = pd.DataFrame()
         time_col = []
+
         if index[0] < 0:
             for i, current_index in enumerate(self.file_index[index[1]]):
                 # extract the time different between files, first file difference is 0
@@ -144,14 +165,35 @@ class TimeLogFileSelectionWindow(QWidget):
                     time_gap.append(delta_in_minutes)
                     time_col = [x for x in range(len(current_data.index))]
 
-
         else:
             current_data = self.time_log_data[self.file_index[index[0]][index[1]]]
             time_col = [x for x in range(len(current_data.index))]
             current_data['Minutes'] = time_col
         current_data['Minutes'] = time_col
-        return current_data.copy()
-        print(current_data['Minutes'])
+        print(current_data)
+        if caller == 0:
+            self.top_processed_data = current_data
+        else:
+            self.bot_processed_data = current_data
+
+    def data_transform(self, caller: int, function: Time_log_functions):
+        """this function will change the data into the list accepted by plot widget"""
+        if caller == 0:
+            data = self.top_processed_data
+            plot_widget = self.top_graph
+        else:
+            data = self.bot_processed_data
+            plot_widget = self.bot_graph
+
+        if function is Time_log_functions.TOTAL_SORTED:
+            if data is not pd.DataFrame.empty:
+                y = data["Total Sorted"].cumsum()
+                x = data["Minutes"]
+                self.top_graph.addItem(pg.PlotDataItem(x, y))
+            else:
+                print("No Syringe Selected")
+
+
 
     def remove_item(self, index: list):
         """function for removing syringe or file"""
