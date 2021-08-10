@@ -2203,7 +2203,7 @@ class Ui_MainWindow(QMainWindow):
     def time_log_bot_clicked(self):
         """handles bot syringe select when clicked"""
         index = self.log_file_select_bot.selectedIndexes()[0]
-        self.time_log_window.time_log_process_data([index.parent().row(), index.row(), 1])
+        self.time_log_window.time_log_process_data(1, [index.parent().row(), index.row(), 1])
 
     def time_log_combo_box_clicked_top(self):
         """handle when top function of log changes"""

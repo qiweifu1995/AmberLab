@@ -159,15 +159,15 @@ class TimeLogFileSelectionWindow(QWidget):
                     delta = self.file_time_data[current_index] - self.file_time_data[self.file_index[index[1]][i-1]]
                     delta_in_minutes = int(delta.total_seconds() // 60)
                     time_gap.append(delta_in_minutes)
-                    time_col.extend([x+sum(time_gap) for x in range(len(self.time_log_data[current_index].index))])
+                    time_col.extend([x+sum(time_gap)+1 for x in range(len(self.time_log_data[current_index].index))])
                 else:
                     current_data = self.time_log_data[current_index]
                     time_gap.append(delta_in_minutes)
-                    time_col = [x for x in range(len(current_data.index))]
+                    time_col = [x+1 for x in range(len(current_data.index))]
 
         else:
             current_data = self.time_log_data[self.file_index[index[0]][index[1]]]
-            time_col = [x for x in range(len(current_data.index))]
+            time_col = [x+1 for x in range(len(current_data.index))]
             current_data['Minutes'] = time_col
         current_data['Minutes'] = time_col
         print(current_data)
@@ -184,15 +184,82 @@ class TimeLogFileSelectionWindow(QWidget):
         else:
             data = self.bot_processed_data
             plot_widget = self.bot_graph
+        plot_widget.clear()
 
         if function is Time_log_functions.TOTAL_SORTED:
             if data is not pd.DataFrame.empty:
-                y = data["Total Sorted"].cumsum()
-                x = data["Minutes"]
-                self.top_graph.addItem(pg.PlotDataItem(x, y))
+                try:
+                    y = data["Total Sorted"].cumsum()
+                    x = data["Minutes"]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Sorted Not in Log")
             else:
                 print("No Syringe Selected")
-
+        elif function is Time_log_functions.TOTAL_LOST:
+            if data is not pd.DataFrame.empty:
+                try:
+                    y = data["Total Lost From Lockout"].cumsum()
+                    x = data["Minutes"]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Lost From Lockout Not in Log")
+            else:
+                print("No Syringe Selected")
+        elif function is Time_log_functions.TOTAL_DROPLETS:
+            if data is not pd.DataFrame.empty:
+                try:
+                    y = data["Total Droplets"].cumsum()
+                    x = data["Minutes"]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Droplets Not in Log")
+            else:
+                print("No Syringe Selected")
+        elif function is Time_log_functions.POSITIVE_RATE:
+            if data is not pd.DataFrame.empty:
+                try:
+                    droplets = data["Total Droplets"].cumsum()
+                    positive = data["Total Sorted"].cumsum()
+                    y = [i/j for i, j in zip(positive, droplets)]
+                    x = data["Minutes"]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Droplets or Total Sorted Not in Log")
+            else:
+                print("No Syringe Selected")
+        elif function is Time_log_functions.DROPLET_FREQUENCY:
+            if data is not pd.DataFrame.empty:
+                try:
+                    droplets = data["Total Droplets"].cumsum()
+                    x = data["Minutes"]
+                    y = [i/j for i, j in zip(droplets, x)]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Droplets Not in Log")
+            else:
+                print("No Syringe Selected")
+        elif function is Time_log_functions.SORTED_RATE:
+            if data is not pd.DataFrame.empty:
+                try:
+                    y = data["Total Sorted"]
+                    x = data["Minutes"]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Droplets Not in Log")
+            else:
+                print("No Syringe Selected")
+        elif function is Time_log_functions.LOCKED_OUT:
+            if data is not pd.DataFrame.empty:
+                try:
+                    lost = data["Total Lost From Lockout"].cumsum()
+                    x = data["Minutes"]
+                    y = [i / j for i, j in zip(lost, x)]
+                    self.top_graph.addItem(pg.PlotDataItem(x, y))
+                except:
+                    print("Total Lost Not in Log")
+            else:
+                print("No Syringe Selected")
 
 
     def remove_item(self, index: list):
