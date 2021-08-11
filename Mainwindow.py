@@ -1987,6 +1987,7 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_top.setMaximumSize(QtCore.QSize(200, 400))
         self.log_file_select_top.setHeaderHidden(True)
         self.log_file_select_top.setModel(self.time_log_file_model)
+        self.log_file_select_top.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         top_left_v_layout.addWidget(self.log_file_select_top)
 
         # layout to hold the two buttons
@@ -2014,7 +2015,7 @@ class Ui_MainWindow(QMainWindow):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         self.time_log_graph_top.setSizePolicy(sizePolicy)
-        self.time_log_graph_top.setMinimumSize(QtCore.QSize(400, 200))
+        self.time_log_graph_top.setMinimumSize(QtCore.QSize(400, 350))
         self.time_log_graph_top.setObjectName("time_log_graph_top")
         self.time_log_graph_top.setBackground('w')
         top_horizontal_layout.addWidget(self.time_log_graph_top)
@@ -2068,9 +2069,9 @@ class Ui_MainWindow(QMainWindow):
         self.log_file_select_bot.setMaximumSize(QtCore.QSize(200, 400))
         self.log_file_select_bot.setHeaderHidden(True)
         self.log_file_select_bot.setModel(self.time_log_file_model)
+        self.log_file_select_bot.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         bottom_left_v_layout.addWidget(self.log_file_select_bot)
         bottom_horizontal_layout.addLayout(bottom_left_v_layout)
-
         # layout to hold the two buttons
         bottom_left_button_layout = QtWidgets.QHBoxLayout()
         bottom_left_button_layout.setObjectName("bottom_left_button_layout")
@@ -2095,7 +2096,7 @@ class Ui_MainWindow(QMainWindow):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         self.time_log_graph_bot.setSizePolicy(sizePolicy)
-        self.time_log_graph_bot.setMinimumSize(QtCore.QSize(400, 200))
+        self.time_log_graph_bot.setMinimumSize(QtCore.QSize(400, 350))
         self.time_log_graph_bot.setObjectName("time_log_graph_bot")
         self.time_log_graph_bot.setBackground('w')
         bottom_horizontal_layout.addWidget(self.time_log_graph_bot)
@@ -2196,14 +2197,15 @@ class Ui_MainWindow(QMainWindow):
 
     def time_log_top_clicked(self):
         """handles top syringe select when clicked"""
-        index = self.log_file_select_top.selectedIndexes()[0]
-        self.time_log_window.time_log_process_data([index.parent().row(), index.row()], 0)
+        index = self.log_file_select_top.selectedIndexes()
+        self.time_log_window.time_log_process_data(index, 0)
         self.time_log_window.data_transform(0, Time_log_functions(self.comboBox_top_log.currentIndex()))
 
     def time_log_bot_clicked(self):
         """handles bot syringe select when clicked"""
-        index = self.log_file_select_bot.selectedIndexes()[0]
-        self.time_log_window.time_log_process_data(1, [index.parent().row(), index.row(), 1])
+        index = self.log_file_select_bot.selectedIndexes()
+        self.time_log_window.time_log_process_data(index, 1)
+        self.time_log_window.data_transform(1, Time_log_functions(self.comboBox_bot_log.currentIndex()))
 
     def time_log_combo_box_clicked_top(self):
         """handle when top function of log changes"""
