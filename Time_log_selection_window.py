@@ -133,7 +133,7 @@ class TimeLogFileSelectionWindow(QWidget):
                 data = pd.read_csv(file["Time Log"])
                 self.file_time_data.append(datetime.datetime.strptime(file["Time Log"][0:13], "%y%m%d_%H%M%S"))
                 data.fillna(0, inplace=True)
-                data.replace(0, int(random.randrange(1, 200, 1)), True)
+                data.replace(0, int(random.randrange(150, 200, 1)), True)
                 # follow function for testing use only, when file is not good
                 for col in data.columns.values:
                     for i in data.index.values:
@@ -196,6 +196,7 @@ class TimeLogFileSelectionWindow(QWidget):
 
     def data_transform(self, caller: int, function: Time_log_functions):
         """this function will change the data into the list accepted by plot widget"""
+        line_thickness = 4
         if caller == 0:
             data_list = self.top_processed_data
             plot_widget = self.top_graph
@@ -217,7 +218,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     try:
                         y = data["Total Sorted"].cumsum()
                         x = data["Minutes"]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Sorted Not in Log")
                 else:
@@ -232,7 +233,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     try:
                         y = data["Total Lost From Lockout"].cumsum()
                         x = data["Minutes"]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Lost From Lockout Not in Log")
                 else:
@@ -247,7 +248,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     try:
                         y = data["Total Droplets"].cumsum()
                         x = data["Minutes"]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Droplets Not in Log")
                 else:
@@ -264,7 +265,7 @@ class TimeLogFileSelectionWindow(QWidget):
                         positive = data["Total Sorted"].cumsum()
                         y = [i / j for i, j in zip(positive, droplets)]
                         x = data["Minutes"]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Droplets or Total Sorted Not in Log")
                 else:
@@ -280,7 +281,7 @@ class TimeLogFileSelectionWindow(QWidget):
                         droplets = data["Total Droplets"].cumsum()
                         x = data["Minutes"]
                         y = [i / j for i, j in zip(droplets, x)]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Droplets Not in Log")
                 else:
@@ -295,7 +296,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     try:
                         y = data["Total Sorted"]
                         x = data["Minutes"]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Droplets Not in Log")
                 else:
@@ -311,7 +312,7 @@ class TimeLogFileSelectionWindow(QWidget):
                         lost = data["Total Lost From Lockout"].cumsum()
                         x = data["Minutes"]
                         y = [i / j for i, j in zip(lost, x)]
-                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color)))
+                        plot_widget.addItem(pg.PlotDataItem(x, y, name=name, pen=pg.mkPen(color, width=line_thickness)))
                     except:
                         print("Total Lost Not in Log")
                 else:

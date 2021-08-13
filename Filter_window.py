@@ -794,6 +794,8 @@ class window_filter(QWidget):
             self.axis_font.setPointSize(self.axis_font_size)
             self.widget_29.getAxis('left').setStyle(tickFont=self.axis_font)
             self.widget_29.getAxis('bottom').setStyle(tickFont=self.axis_font)
+            self.graphWidget.getAxis('left').setStyle(tickFont=self.axis_font)
+            self.graphWidget.getAxis('bottom').setStyle(tickFont=self.axis_font)
 
         if self.lineEdit_legend_font.hasAcceptableInput():
             self.legend_font_size = self.lineEdit_legend_font.text()
@@ -805,6 +807,11 @@ class window_filter(QWidget):
             self.widget_29.getAxis('left').setTextPen(self.axis_pen)
             self.widget_29.getAxis('bottom').setPen(self.axis_pen)
             self.widget_29.getAxis('bottom').setTextPen(self.axis_pen)
+            self.graphWidget.getAxis('left').setPen(self.axis_pen)
+            self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
+            self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
+            self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
+
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
