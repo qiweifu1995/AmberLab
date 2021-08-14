@@ -2129,15 +2129,15 @@ class Ui_MainWindow(QMainWindow):
 
     def filter_add_syringe(self):
         """function for handing add button click for filter addition"""
-        self.time_log_window.populate_list()
         self.time_log_window.caller = 0
+        self.time_log_window.populate_list()
         self.time_log_window.show()
         self.time_log_window.activateWindow()
 
     def time_log_add_syringe(self):
         """function for handling add button click event for time log function"""
-        self.time_log_window.populate_list()
         self.time_log_window.caller = 1
+        self.time_log_window.populate_list()
         self.time_log_window.show()
         self.time_log_window.activateWindow()
 

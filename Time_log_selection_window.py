@@ -63,9 +63,14 @@ class TimeLogFileSelectionWindow(QWidget):
 
         # caller keeps track of which file index to work on, 0 for filter, 1 for log files
         self.caller = 1
-        self.spawned_filter_counter = 0
+        self.spawned_filter_counter = 1
         self.tree_dict = tree_dict
         self.load_files()
+
+        self.ch1_name = "Green"
+        self.ch2_name = "Red"
+        self.ch3_name = "Blue"
+        self.ch4_name = "Orange"
 
     def setupUI(self):
         """call this function when setting up UI"""
@@ -95,6 +100,66 @@ class TimeLogFileSelectionWindow(QWidget):
         self.file_list.setSelectionMode(QAbstractItemView.MultiSelection)
         layout.addWidget(self.file_list)
 
+        self.line_divider = QtWidgets.QFrame(self)
+        self.line_divider.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_divider.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_divider.setObjectName("line_top_vertical")
+        layout.addWidget(self.line_divider)
+
+        self.ch_selection_text = QtWidgets.QLabel("Channel Selection (Only for Time Log)")
+
+        layout.addWidget(self.ch_selection_text)
+
+        self.ch_1_checkbox = QtWidgets.QCheckBox("Green")
+        self.ch_1_checkbox.setTristate()
+        self.ch_1_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+        self.ch_2_checkbox = QtWidgets.QCheckBox("Red")
+        self.ch_2_checkbox.setTristate()
+        self.ch_2_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+        self.ch_3_checkbox = QtWidgets.QCheckBox("Blue")
+        self.ch_3_checkbox.setTristate()
+        self.ch_3_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+        self.ch_4_checkbox = QtWidgets.QCheckBox("Orange")
+        self.ch_4_checkbox.setTristate()
+        self.ch_4_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+
+        layout_box = QGridLayout()
+        layout_box.addWidget(self.ch_1_checkbox, 0, 0)
+        layout_box.addWidget(self.ch_2_checkbox, 0, 1)
+        layout_box.addWidget(self.ch_3_checkbox, 1, 0)
+        layout_box.addWidget(self.ch_4_checkbox, 1, 1)
+
+        layout.addLayout(layout_box)
+
+        self.line_divider_2 = QtWidgets.QFrame(self)
+        self.line_divider_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_divider_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_divider_2.setObjectName("line_top_vertical")
+        layout.addWidget(self.line_divider_2)
+
+        self.time_divide_label = QLabel("Time Point Division (Only for Time Log)")
+        layout.addWidget(self.time_divide_label)
+
+        self.time_divide_checkbox = QtWidgets.QCheckBox("Time point every ")
+
+        self.time_spinbox = QtWidgets.QSpinBox()
+        self.time_spinbox.setMinimum(1)
+
+        self.time_combobox = QtWidgets.QComboBox()
+        self.time_combobox.addItem("Minutes")
+        self.time_combobox.addItem("Hours")
+
+        layout_time_divide = QHBoxLayout()
+        layout_time_divide.addWidget(self.time_divide_checkbox)
+        layout_time_divide.addWidget(self.time_spinbox)
+        layout_time_divide.addWidget(self.time_combobox)
+
+        layout.addLayout(layout_time_divide)
+
         layout_h = QHBoxLayout()
         self.ok_button = QtWidgets.QPushButton("OK")
         self.cancel_button = QtWidgets.QPushButton("Cancel")
@@ -105,11 +170,24 @@ class TimeLogFileSelectionWindow(QWidget):
 
         self.setLayout(layout)
 
+        self.ch_1_checkbox.clicked.connect(self.checkbox_handle)
+        self.ch_2_checkbox.clicked.connect(self.checkbox_handle)
+        self.ch_3_checkbox.clicked.connect(self.checkbox_handle)
+        self.ch_4_checkbox.clicked.connect(self.checkbox_handle)
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.close_clicked)
 
+    def checkbox_handle(self):
+        sender = self.sender()
+        if sender.checkState() == 1:
+            sender.setCheckState(2)
+        elif sender.checkState() == 0:
+            sender.setCheckState(1)
+        elif sender.checkState() == 2:
+            sender.setCheckState(0)
+
     def populate_list(self):
-        """function to populate the file list with updated information"""
+        """function to populate the file list with updated information, also update all other elements"""
         self.file_list.clear()
         for i in range(self.main_file_list.count()):
             item = self.main_file_list.item(i).text()
@@ -119,10 +197,33 @@ class TimeLogFileSelectionWindow(QWidget):
             # fetch syringe name for time_log_call
             syringe_number = self.file_model.rowCount() + 1
             self.line_edit_name.setText("Syringe " + str(syringe_number))
+            self.ch_1_checkbox.setCheckState(0)
+            self.ch_2_checkbox.setCheckState(0)
+            self.ch_3_checkbox.setCheckState(0)
+            self.ch_4_checkbox.setCheckState(0)
+            self.ch_1_checkbox.setEnabled(True)
+            self.ch_2_checkbox.setEnabled(True)
+            self.ch_3_checkbox.setEnabled(True)
+            self.ch_4_checkbox.setEnabled(True)
+            self.time_combobox.setEnabled(True)
+            self.time_spinbox.setEnabled(True)
+            self.time_divide_checkbox.setEnabled(True)
+
         else:
             # fetech syringe name for filter call
-            self.spawned_filter_counter += 1
+
             self.line_edit_name.setText("Syringe " + str(self.spawned_filter_counter))
+            self.ch_1_checkbox.setCheckState(0)
+            self.ch_2_checkbox.setCheckState(0)
+            self.ch_3_checkbox.setCheckState(0)
+            self.ch_4_checkbox.setCheckState(0)
+            self.ch_1_checkbox.setEnabled(False)
+            self.ch_2_checkbox.setEnabled(False)
+            self.ch_3_checkbox.setEnabled(False)
+            self.ch_4_checkbox.setEnabled(False)
+            self.time_combobox.setEnabled(False)
+            self.time_spinbox.setEnabled(False)
+            self.time_divide_checkbox.setEnabled(False)
 
     def load_files(self):
         """function call to load the file after filelist is loaded"""
