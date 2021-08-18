@@ -50,10 +50,19 @@ class TimeLogFileSelectionWindow(QWidget):
         self.tree_model = tree_model
         self.ui = parent
         self.file_dict = file_dict
+
+        # time_log_data holds the raw data from time log files, organized in a 1D list
         self.time_log_data = []
+
         self.file_names_top = []
         self.file_names_bot = []
+
+        # file_time_data holds the time stamp of all the file in time log data, one to one
         self.file_time_data = []
+
+        # mode saves the list of dictionary, only exist for the parent node
+        self.mode = []
+
         self.top_processed_data = pd.DataFrame()
         self.bot_processed_data = pd.DataFrame()
         self.top_graph = top_graph
@@ -240,7 +249,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     for i in data.index.values:
                         data.loc[i, col] = int(random.randrange(1, 200, 1))
                 self.time_log_data.append(data)
-                #print(data)
+                # print(data)
         # print(self.file_time_data)
 
     def time_log_process_data(self, index_items, caller):
@@ -273,7 +282,8 @@ class TimeLogFileSelectionWindow(QWidget):
                     delta_in_minutes = 0
                     if i > 0:
                         current_data = current_data.append(self.time_log_data[current_index], ignore_index=True)
-                        delta = self.file_time_data[current_index] - self.file_time_data[self.file_index[index[1]][i - 1]]
+                        delta = self.file_time_data[current_index] - self.file_time_data[
+                            self.file_index[index[1]][i - 1]]
                         delta_in_minutes = int(delta.total_seconds() // 60)
                         time_gap.append(delta_in_minutes)
                         time_col.extend(
@@ -429,17 +439,21 @@ class TimeLogFileSelectionWindow(QWidget):
         if index[0] < 0:
             self.file_index.pop(index[1])
             self.file_model.removeRow(index[1])
+            self.mode.pop(index[1])
 
         # child node
         else:
             del self.file_index[index[0]][index[1]]
             self.file_model.item(index[0]).removeRow(index[1])
 
-            # delet syringe group if empty
+            # delete syringe group if empty
             if not self.file_index[index[0]]:
+                self.file_index.pop(index[0])
                 self.file_model.removeRow(index[0])
+                self.mode.pop(index[0])
 
         print(self.file_index)
+        print(self.mode)
 
     def ok_clicked(self):
         """handler for ok clicked"""
@@ -450,10 +464,13 @@ class TimeLogFileSelectionWindow(QWidget):
         index_holder.sort()
         if self.caller == 1:
             # this case handles the call request by time log
+
             if len(index_holder) > 0:
+                # first add the syringe with the name
                 syringe = Qt.QStandardItem(self.line_edit_name.text())
                 self.file_model.appendRow(syringe)
                 syringe_number = self.file_model.rowCount() - 1
+                self.extract_mode_data(index_holder)
                 for i in range(len(index_holder)):
                     item = Qt.QStandardItem(self.main_file_list.item(i).text())
                     self.file_model.item(syringe_number).appendRow(item)
@@ -476,6 +493,44 @@ class TimeLogFileSelectionWindow(QWidget):
     def close_clicked(self):
         """handle close button clicked"""
         self.hide()
+
+    def extract_mode_data(self, index):
+        """this function checks for the channels user selected, and add the dictionary entry into the mode variable"""
+        checkbox_mode_list = [self.ch_1_checkbox.checkState(), self.ch_2_checkbox.checkState(),
+                              self.ch_3_checkbox.checkState(), self.ch_4_checkbox.checkState()]
+        channel_holder = []
+        time_divide = ()
+        units_multiplier = lambda text: 1 if text == "Minutes" else 60
+        time_increment = self.time_spinbox.value() * units_multiplier(self.time_combobox.currentText())
+        self.mode.append({})
+        if sum(checkbox_mode_list) > 0:
+            # this is when any checkbox is not default unchecked
+
+            for count, checkbox_mode in enumerate(checkbox_mode_list):
+                # unchecked case does not need to go into the dictionary
+                if checkbox_mode == 1:
+                    # this case handle when the user selects negative state for the channel
+                    channel_holder.append((str(count + 1), False))
+                elif checkbox_mode == 2:
+                    # this case handle when user select this channel as positive
+                    channel_holder.append((str(count + 1), True))
+
+        if self.time_divide_checkbox.isChecked():
+            time_divide = (self.time_spinbox.value(), self.time_combobox.currentText())
+            time_list = [self.file_time_data[i] for i in index]
+            starting_time = time_list[0]
+            for time in time_list:
+
+
+
+
+        if channel_holder:
+            self.mode[len(self.mode)-1]["Positive Channels"] = channel_holder
+
+        if time_divide:
+            self.mode[len(self.mode)-1]["Time Divide"] = time_divide
+
+        print(self.mode)
 
 
 if __name__ == "__main__":
