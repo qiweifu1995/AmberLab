@@ -469,12 +469,7 @@ class TimeLogFileSelectionWindow(QWidget):
                 # first add the syringe with the name
                 syringe = Qt.QStandardItem(self.line_edit_name.text())
                 self.file_model.appendRow(syringe)
-                syringe_number = self.file_model.rowCount() - 1
                 self.extract_mode_data(index_holder)
-                for i in range(len(index_holder)):
-                    item = Qt.QStandardItem(self.main_file_list.item(i).text())
-                    self.file_model.item(syringe_number).appendRow(item)
-                self.file_index.append(index_holder)
             self.hide()
 
         elif self.caller == 0:
@@ -535,8 +530,11 @@ class TimeLogFileSelectionWindow(QWidget):
                 # while loop for incrementing the counter
                 time_from_start = time - starting_time
                 time_divide_in_minutes = time_delta.seconds // 60
-                while time_delta*number_of_increment <= time_from_start < time_delta*(number_of_increment+1):
+                while not time_delta*number_of_increment <= time_from_start < time_delta*(number_of_increment+1):
                     # reset data holder and add the increment by 1
+                    if len(data_holder.index) > 0:
+                        self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
+                        data_holder = pd.DataFrame()
                     number_of_increment += 1
                     data_holder = pd.DataFrame()
                 if len(data_holder.index) == 0:
@@ -546,14 +544,13 @@ class TimeLogFileSelectionWindow(QWidget):
                     for i in range(number_of_loop):
                         # for loop with more than 1 iteration, it means file longer than a time point, aka split the
                         # the files into multiple time point
-                        if number_of_loop-1 == i:
+                        if number_of_loop == 1:
                             # last iteration, check for end of length, do not clear the data holder, next file might
                             # be in the same slot
-                            data_holder.append(data.iloc[i * time_divide_in_minutes:len(data.index)])
-                            syringe_data_holder.append(data_holder)
-                            data_holder["Minutes"] = [j + 1 for j in range(len(data_holder.index))]
-                            self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
-                            time_col.append([i * time_divide_in_minutes + 1 + j for j in len(data_holder.index)])
+                            data_holder = data_holder.append(data.iloc[i * time_divide_in_minutes:len(data.index)], ignore_index=True)
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            data_holder.loc[:, "Minutes"] = [j + 1 for j in range(len(data_holder.index))]
+                            time_col.append([i * time_divide_in_minutes + 1 + j for j in range(len(data_holder.index))])
                             # add the entry to the list
                             if self.time_combobox.currentText() == "Minutes":
                                 entry_name = "T-" + str(number_of_increment*time_divide_in_minutes) + "Minutes"
@@ -563,15 +560,15 @@ class TimeLogFileSelectionWindow(QWidget):
                             self.file_model.item(self.file_model.rowCount() - 1).appendRow(item)
                         else:
                             # not last iteration, create a child node every loop, increment the counter
-                            data_holder = data.iloc[i*time_divide_in_minutes:(i+1)*time_divide_in_minutes]
+                            data_holder = data.iloc[i*time_divide_in_minutes:(i+1)*time_divide_in_minutes].copy()
 
                             # add the temp data into the main file
-                            syringe_data_holder.append(data_holder)
-                            data_holder["Minutes"] = [j + 1 for j in range(len(data_holder.index))]
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            data_holder.loc[:, "Minutes"] = [j + 1 for j in range(len(data_holder.index))]
                             self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
 
                             # append the time data into the time_col before clearing temp data
-                            time_col.append([i * time_divide_in_minutes + 1 + j for j in len(data_holder.index)])
+                            time_col.append([i * time_divide_in_minutes + 1 + j for j in range(len(data_holder.index))])
                             data_holder = pd.DataFrame()
 
                             # add the time point into the file model
@@ -585,16 +582,92 @@ class TimeLogFileSelectionWindow(QWidget):
                 else:
                     # this case is when current data is not empty, thus the time point can possibly include more data
                     # the while loop before also checks to ensure that the file starts in this time slot
-                    start_index = len(data_holder.index)
-                    time_from_start - time_delta*number_of_increment
-                    if len(data.index) > time_divide_in_minutes - start_index:
 
+                    left_over_length = (time_delta*(number_of_increment+1) - time_from_start).seconds//60 + 1
+                    start_index = (time_from_start - time_delta*number_of_increment).seconds//60 + 1
 
+                    if len(data.index) > left_over_length:
+                        # current file longer than the left over time slot for current timepoint
+                        number_of_loop = len(data.index) // time_divide_in_minutes + 1
+                    else:
+                        number_of_loop = 1
+
+                    for i in range(number_of_loop):
+                        # for loop with more than 1 iteration, it means file longer than a time point, aka split the
+                        # the files into multiple time point
+                        if number_of_loop == 1:
+                            # this case handle if there is only 1 time point in the current file
+                            replacement_index = len(data_holder.index)
+                            data_holder = data_holder.append(data, ignore_index=True)
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            temp_minute_col = [int(j + 1 + start_index) for j in range(len(data.index))]
+                            data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
+                            time_col.append([i * time_divide_in_minutes + 1 + start_index + j for j in range(len(data.index))])
+
+                        elif i == 0:
+                            # this is the case that handles first loop when there is more than 1 loop present
+                            replacement_index = len(data_holder.index)
+                            data_holder = data_holder.append(data.iloc[0: left_over_length], ignore_index=True)
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            temp_minute_col = [int(j + 1 + start_index) for j in range(left_over_length)]
+                            data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
+                            time_col.append([i * time_divide_in_minutes + start_index + 1 + j for j in range(len(data_holder.index))])
+                            data_holder = pd.DataFrame()
+
+                        elif number_of_loop - 1 == i:
+                            # last iteration, check for end of length, do not clear the data holder, next file might
+                            # be in the same slot, this will be skipped if there is only 1 loop iteration
+                            start_index = i * time_divide_in_minutes + left_over_length
+                            length = len(data.index) - start_index
+                            replacement_index = len(data_holder.index)
+                            data_holder = data_holder.append(data.iloc[start_index: len(data.index)], ignore_index=True)
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            temp_minute_col = [int(j + 1 + start_index) for j in range(length)]
+                            data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
+                            self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
+                            time_col.append([i * time_divide_in_minutes + 1 + j for j in range(len(data_holder.index))])
+                            # add the entry to the list
+                            if self.time_combobox.currentText() == "Minutes":
+                                entry_name = "T-" + str(number_of_increment * time_divide_in_minutes) + "Minutes"
+                            else:
+                                entry_name = "T-" + str(number_of_increment * self.time_spinbox.value()) + "Hours"
+                            item = Qt.QStandardItem(entry_name)
+                            self.file_model.item(self.file_model.rowCount() - 1).appendRow(item)
+
+                        else:
+                            # not last iteration, create a child node every loop, increment the counter
+                            data_holder = data.iloc[i * time_divide_in_minutes + left_over_length:
+                                                    (i + 1) * time_divide_in_minutes + left_over_length].copy()
+
+                            # add the temp data into the main file
+                            syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
+                            data_holder["Minutes"] = [j + 1 for j in range(len(data_holder.index))]
+                            self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
+
+                            # append the time data into the time_col before clearing temp data
+                            time_col.append([i * time_divide_in_minutes + 1 + j for j in range(len(data_holder.index))])
+                            data_holder = pd.DataFrame()
+
+                            # add the time point into the file model
+                            if self.time_combobox.currentText() == "Minutes":
+                                entry_name = "T-" + str(number_of_increment * time_divide_in_minutes) + "Minutes"
+                            else:
+                                entry_name = "T-" + str(number_of_increment * self.time_spinbox.value()) + "Hours"
+                            item = Qt.QStandardItem(entry_name)
+                            self.file_model.item(self.file_model.rowCount() - 1).appendRow(item)
+                            number_of_increment += 1
+            if len(data_holder.index) > 0:
+                # this case clears the data holder if there is any left over
+                self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
+        else:
+            syringe_number = self.file_model.rowCount() - 1
+            for i in range(len(index)):
+                item = Qt.QStandardItem(self.main_file_list.item(i).text())
+                self.file_model.item(syringe_number).appendRow(item)
+            self.file_index.append(index)
         if channel_holder:
             self.mode[len(self.mode)-1]["Positive Channels"] = channel_holder
 
-        if time_divide:
-            self.mode[len(self.mode)-1]["Time Divide"] = time_divide
 
         print(self.mode)
 
