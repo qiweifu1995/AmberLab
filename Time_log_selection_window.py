@@ -310,15 +310,16 @@ class TimeLogFileSelectionWindow(QWidget):
                         channel_name = mode[0]
                         boo_mode = mode[1]
                         valid = valid or boo_mode
+                        print("positive data iteration")
                         col_names = [col for col in col_names if (channel_name in col) is boo_mode]
                         print(col_names)
                     if valid:
-                        print("Data before positive select")
-                        print(current_data["Total Sorted"])
+                        print(current_data.loc[:, col_names])
                         current_data.drop(columns="Total Sorted")
                         current_data["Total Sorted"] = current_data.loc[:, col_names].sum(axis=1)
-                        print("Data After positive select")
+                        print("Print final positive")
                         print(current_data["Total Sorted"])
+
             else:
                 # child node
                 if "Time Divide" in self.mode[index[0]].keys():
@@ -605,13 +606,18 @@ class TimeLogFileSelectionWindow(QWidget):
                     for i in range(number_of_loop):
                         # for loop with more than 1 iteration, it means file longer than a time point, aka split the
                         # the files into multiple time point
+                        if len(syringe_data_holder) > 0:
+                            minute_offset = 0
+                        else:
+                            minute_offset = 1
+
                         if number_of_loop == 1:
                             # last iteration, check for end of length, do not clear the data holder, next file might
                             # be in the same slot
                             data_holder = data_holder.append(data.iloc[i * time_divide_in_minutes:len(data.index)],
                                                              ignore_index=True)
-                            data_holder.loc[:, "Minutes"] = [j + 1 for j in range(len(data_holder.index))]
-                            time_col.extend([i * time_divide_in_minutes + 1 + time_from_start_in_minutes
+                            data_holder.loc[:, "Minutes"] = [j + minute_offset for j in range(len(data_holder.index))]
+                            time_col.extend([i * time_divide_in_minutes + minute_offset + time_from_start_in_minutes
                                              + j for j in range(len(data_holder.index))])
                             # add the entry to the list
                             if self.time_combobox.currentText() == "Minutes":
@@ -622,15 +628,15 @@ class TimeLogFileSelectionWindow(QWidget):
                             self.file_model.item(self.file_model.rowCount() - 1).appendRow(item)
                         else:
                             # not last iteration, create a child node every loop, increment the counter
-                            data_holder = data.iloc[i * time_divide_in_minutes:(i + 1) * time_divide_in_minutes].copy()
+                            data_holder = data.iloc[i * time_divide_in_minutes:(i + minute_offset) * time_divide_in_minutes].copy()
 
                             # add the temp data into the main file
                             syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
-                            data_holder.loc[:, "Minutes"] = [j + 1 for j in range(len(data_holder.index))]
+                            data_holder.loc[:, "Minutes"] = [j + minute_offset for j in range(len(data_holder.index))]
                             self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
 
                             # append the time data into the time_col before clearing temp data
-                            time_col.extend([i * time_divide_in_minutes + 1 + time_from_start_in_minutes
+                            time_col.extend([i * time_divide_in_minutes + minute_offset + time_from_start_in_minutes
                                              + j for j in range(len(data_holder.index))])
                             data_holder = pd.DataFrame()
 
@@ -662,9 +668,9 @@ class TimeLogFileSelectionWindow(QWidget):
                             # this case handle if there is only 1 time point in the current file
                             replacement_index = len(data_holder.index)
                             data_holder = data_holder.append(data, ignore_index=True)
-                            temp_minute_col = [int(j + 1 + start_index) for j in range(len(data.index))]
+                            temp_minute_col = [int(j + 1 + time_from_start_in_minutes) for j in range(len(data.index))]
                             data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
-                            time_col.extend([i * time_divide_in_minutes + 1 + start_index + time_from_start_in_minutes
+                            time_col.extend([i * time_divide_in_minutes + 1 + time_from_start_in_minutes
                                              + j for j in range(len(temp_minute_col))])
 
                         elif i == 0:
@@ -672,9 +678,9 @@ class TimeLogFileSelectionWindow(QWidget):
                             replacement_index = len(data_holder.index)
                             data_holder = data_holder.append(data.iloc[0: left_over_length], ignore_index=True)
                             syringe_data_holder = syringe_data_holder.append(data_holder, ignore_index=True)
-                            temp_minute_col = [int(j + 1 + start_index) for j in range(left_over_length)]
+                            temp_minute_col = [int(j + 1 + time_from_start_in_minutes) for j in range(left_over_length)]
                             data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
-                            time_col.extend([i * time_divide_in_minutes + start_index + 1 + time_from_start_in_minutes
+                            time_col.extend([i * time_divide_in_minutes + 1 + time_from_start_in_minutes
                                              + j for j in range(left_over_length)])
                             data_holder = pd.DataFrame()
 
@@ -685,7 +691,7 @@ class TimeLogFileSelectionWindow(QWidget):
                             length = len(data.index) - start_index
                             replacement_index = len(data_holder.index)
                             data_holder = data_holder.append(data.iloc[start_index: len(data.index)], ignore_index=True)
-                            temp_minute_col = [int(j + 1 + start_index) for j in range(length)]
+                            temp_minute_col = [int(j + 1 + time_from_start_in_minutes) for j in range(length)]
                             data_holder.loc[replacement_index:, "Minutes"] = temp_minute_col
                             self.mode[len(self.mode) - 1]["Time Divide Data"].append(data_holder)
                             time_col.extend([i * time_divide_in_minutes + 1 + time_from_start_in_minutes
