@@ -275,6 +275,7 @@ class TimeLogFileSelectionWindow(QWidget):
             time_gap = []
             current_data = pd.DataFrame()
             time_col = []
+            tool_tip_string = []
 
             if index[0] < 0:
                 # parent node selected, check mode
@@ -521,7 +522,7 @@ class TimeLogFileSelectionWindow(QWidget):
                 # first add the syringe with the name
                 syringe = Qt.QStandardItem(self.line_edit_name.text())
                 self.file_model.appendRow(syringe)
-                self.extract_mode_data(index_holder)
+                self.extract_mode_data(index_holder, syringe)
             self.hide()
 
         elif self.caller == 0:
@@ -542,12 +543,13 @@ class TimeLogFileSelectionWindow(QWidget):
         """handle close button clicked"""
         self.hide()
 
-    def extract_mode_data(self, index):
+    def extract_mode_data(self, index, current_item):
         """this function checks for the channels user selected, and add the dictionary entry into the mode variable"""
         checkbox_mode_list = [self.ch_1_checkbox.checkState(), self.ch_2_checkbox.checkState(),
                               self.ch_3_checkbox.checkState(), self.ch_4_checkbox.checkState()]
         channel_holder = []
-        time_divide = ()
+        channel_name_string = [self.main_file_list.item(i).text() + "\n" for i in index]
+        string_holder = "Contained Files: \n" + "".join(channel_name_string)
         units_multiplier = lambda text: 1 if text == "Minutes" else 60
         time_increment_raw = self.time_spinbox.value() * units_multiplier(self.time_combobox.currentText())
         # time delta used to divide files into its own time division
@@ -568,11 +570,13 @@ class TimeLogFileSelectionWindow(QWidget):
         if self.time_divide_checkbox.isChecked():
             self.mode[len(self.mode) - 1]["Time Divide Data"] = []
             time_divide = (self.time_spinbox.value(), self.time_combobox.currentText())
+            time_divide_string = "".join([str(i)+" " for i in time_divide])
+            string_holder = string_holder + "\n" + "Time Division: " + time_divide_string
             self.mode[len(self.mode) - 1]["Time Divide"] = time_divide
             time_list = [self.file_time_data[i] for i in index]
             file_data = [self.time_log_data[i] for i in index]
             starting_time = time_list[0]
-            # data holder hserve as the buffer for single time points, each file time point start at 0
+            # data holder serve as the buffer for single time points, each file time point start at 0
             data_holder = pd.DataFrame()
             # syringe data holder serve as the holder for the entire syringe cluster, with scaled time column
             syringe_data_holder = pd.DataFrame()
@@ -744,9 +748,22 @@ class TimeLogFileSelectionWindow(QWidget):
 
         if channel_holder:
             self.mode[len(self.mode) - 1]["Positive Channels"] = channel_holder
+            channel_string_holder = ''
+            for i in channel_holder:
+                name = ''
+                if i[0] == '0':
+                    name = "Green is " + str(i[1]) + ", "
+                elif i[0] == '1':
+                    name = "Red is " + str(i[1]) + ", "
+                elif i[0] == '2':
+                    name = "Blue is " + str(i[1]) + ", "
+                elif i[0] == '3':
+                    name = "Orange is " + str(i[1]) + ", "
+                channel_string_holder += name
+            string_holder = string_holder + "\n" + "Positive Channels Selected:\n" + channel_string_holder
 
         self.file_index.append(index)
-
+        current_item.setToolTip(string_holder)
 
 
 if __name__ == "__main__":
