@@ -461,32 +461,48 @@ class window_filter(QWidget):
         self.histogram_comboBox_2.addItem("Ultra Violet")
         self.histogram_comboBox_2.addItem("Orange")
 
-        Control_layout.addWidget(self.histogram_comboBox_1, 4, 0, 1, 1)
-        Control_layout.addWidget(self.histogram_comboBox_2, 5, 0, 1, 1)
+        self.histogram_label_1 = QtWidgets.QLabel("Mode: ")
+        self.histogram_label_2 = QtWidgets.QLabel("Channel: ")
+
+        Control_layout.addWidget(self.histogram_label_1, 0, 0, 1, 1)
+        Control_layout.addWidget(self.histogram_label_2, 1, 0, 1, 1)
+
+        Control_layout.addWidget(self.histogram_comboBox_1, 0, 1, 1, 1)
+        Control_layout.addWidget(self.histogram_comboBox_2, 1, 1, 1, 1)
+
+        self.line_histo_2 = QtWidgets.QFrame(self.tab_2)
+        self.line_histo_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_histo_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        Control_layout.addWidget(self.line_histo_2, 2, 0, 1, 2)
 
         # graph parameters adjust
         self.label_bin_width = QLabel("Binwidth")
-        Control_layout.addWidget(self.label_bin_width, 6, 0, 1, 1)
+        Control_layout.addWidget(self.label_bin_width, 3, 0, 1, 1)
 
-        self.histogram_binwidth = QtWidgets.QLineEdit('0.2')
+        self.histogram_binwidth = QtWidgets.QLineEdit('0.1')
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.histogram_binwidth.sizePolicy().hasHeightForWidth())
         self.histogram_binwidth.setSizePolicy(sizePolicy)
 
-        Control_layout.addWidget(self.histogram_binwidth, 6, 1, 1, 1)
+        Control_layout.addWidget(self.histogram_binwidth, 3, 1, 1, 1)
 
         # gate voltage
         self.label_gate_voltage = QLabel("Gate Voltage")
-        Control_layout.addWidget(self.label_gate_voltage, 7, 0, 1, 1)
+        Control_layout.addWidget(self.label_gate_voltage, 4, 0, 1, 1)
 
         self.histogram_gate_voltage = QtWidgets.QLineEdit('0')
         self.histogram_gate_voltage.setSizePolicy(sizePolicy)
-        Control_layout.addWidget(self.histogram_gate_voltage, 7, 1, 1, 1)
+        Control_layout.addWidget(self.histogram_gate_voltage, 4, 1, 1, 1)
+
+        self.line_histo_3 = QtWidgets.QFrame(self.tab_2)
+        self.line_histo_3.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_histo_3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        Control_layout.addWidget(self.line_histo_3, 5, 0, 1, 2)
 
         # percentage
-
         self.label_percentage = QLabel("Percentage:   %")
         self.label_percentage.setSizePolicy(sizePolicy)
         Control_layout.addWidget(self.label_percentage, 8, 0, 1, 1)
@@ -499,11 +515,18 @@ class window_filter(QWidget):
         self.histogram_pushButton_1 = QPushButton('Update')
 
         Control_layout.addWidget(self.histogram_pushButton_1, 10, 0, 1, 1)
+        spacerItem = QtWidgets.QSpacerItem(5, 400, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
+        Control_layout.addItem(spacerItem, 11, 0, 1, 1)
         # Finish layouts
 
         Histogram_layout = QtWidgets.QHBoxLayout(self.tab_2)
         Histogram_layout.addWidget(self.histogram_graphWidget)
+
+        self.line_histo = QtWidgets.QFrame(self.tab_2)
+        self.line_histo.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_histo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        Histogram_layout.addWidget(self.line_histo)
 
         Histogram_layout.addLayout(Control_layout)
 
