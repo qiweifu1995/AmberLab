@@ -496,29 +496,48 @@ class window_filter(QWidget):
         self.histogram_gate_voltage = QtWidgets.QLineEdit('0')
         self.histogram_gate_voltage.setSizePolicy(sizePolicy)
         Control_layout.addWidget(self.histogram_gate_voltage, 4, 1, 1, 1)
+        self.histogram_gate_voltage.editingFinished.connect(self.histo_text_changed)
 
         self.line_histo_3 = QtWidgets.QFrame(self.tab_2)
         self.line_histo_3.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_histo_3.setFrameShadow(QtWidgets.QFrame.Sunken)
         Control_layout.addWidget(self.line_histo_3, 5, 0, 1, 2)
 
-        # percentage
-        self.label_percentage = QLabel("Percentage:   %")
-        self.label_percentage.setSizePolicy(sizePolicy)
-        Control_layout.addWidget(self.label_percentage, 8, 0, 1, 1)
+        self.label_histo_mean = QLabel("Mean:   ")
+        self.label_histo_mean.setSizePolicy(sizePolicy)
+        Control_layout.addWidget(self.label_histo_mean, 6, 0, 1, 2)
 
-        self.label_percentage_all = QLabel("Percentage:   %")
+        self.label_histo_std = QLabel("Standard Deviation:   ")
+        self.label_histo_std.setSizePolicy(sizePolicy)
+        Control_layout.addWidget(self.label_histo_std, 7, 0, 1, 2)
+
+        # percentage
+        self.label_percentage = QLabel("Percentage (Total Peaks):   %")
+        self.label_percentage.setSizePolicy(sizePolicy)
+        Control_layout.addWidget(self.label_percentage, 8, 0, 1, 2)
+
+        self.label_percentage_all = QLabel("Percentage (Total Droplets):   %")
         self.label_percentage_all.setSizePolicy(sizePolicy)
-        Control_layout.addWidget(self.label_percentage_all, 9, 0, 1, 1)
+        Control_layout.addWidget(self.label_percentage_all, 9, 0, 1, 2)
+
+        self.line_histo_4 = QtWidgets.QFrame(self.tab_2)
+        self.line_histo_4.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_histo_4.setFrameShadow(QtWidgets.QFrame.Sunken)
+        Control_layout.addWidget(self.line_histo_4, 10, 0, 1, 2)
 
         # buttons
         self.histogram_pushButton_1 = QPushButton('Update')
 
-        Control_layout.addWidget(self.histogram_pushButton_1, 10, 0, 1, 1)
+        Control_layout.addWidget(self.histogram_pushButton_1, 11, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(5, 400, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
-        Control_layout.addItem(spacerItem, 11, 0, 1, 1)
+        Control_layout.addItem(spacerItem, 12, 0, 1, 1)
         # Finish layouts
+
+        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
+        self.histo_threshold_line = pg.InfiniteLine(0, movable=True, pen=pen)
+        self.histogram_graphWidget.addItem(self.histo_threshold_line)
+        self.histo_threshold_line.sigPositionChangeFinished.connect(self.histo_line_moved)
 
         Histogram_layout = QtWidgets.QHBoxLayout(self.tab_2)
         Histogram_layout.addWidget(self.histogram_graphWidget)
@@ -788,7 +807,6 @@ class window_filter(QWidget):
         styles = {"color": "r", "font-size": "20px"}
         self.widget_29.setLabel('left', 'Height', **styles)
         self.widget_29.setBackground('w')
-
         self.widget_29.getAxis('left').setPen(self.axis_pen)
         self.widget_29.getAxis('left').setTextPen(self.axis_pen)
         self.widget_29.getAxis('left').setStyle(tickFont=self.axis_font)
@@ -1091,6 +1109,42 @@ class window_filter(QWidget):
 
         # histogram tab main function
 
+    def histo_line_moved(self):
+        """connect when histo line move"""
+        threshold = round(self.histo_threshold_line.value(),3)
+        self.histogram_gate_voltage.setText(str(threshold))
+        self.update_histo_threshold(threshold)
+
+    def histo_text_changed(self):
+        """connect when histo gate voltage text change"""
+        threshold = round(float(self.histogram_gate_voltage.text()), 3)
+        self.histo_threshold_line.setValue(threshold)
+        self.update_histo_threshold(threshold)
+
+    def update_histo_threshold(self, threshold):
+        """this funciton handles when the threshold of the histogram changes from the line"""
+
+        self.width = [x for x in self.full_width if x >= float(threshold)]
+
+        width_count_filtered = round(100 * len(self.width) / len(self.full_width), 2)
+        width_count = "" + str(width_count_filtered) + '% of filtered points ' + str(
+            len(self.width)) + '/' + str(len(self.full_width))
+        self.label_percentage.setText(width_count)
+
+        percentage_all_count = round(100 * len(self.width) / len(self.working_data[0]), 2)
+        percentage_all = "" + str(percentage_all_count) + '% of all points ' + str(
+            len(self.width)) + '/' + str(len(self.working_data[0]))
+        self.label_percentage_all.setText(percentage_all)
+
+        histo_mean = round(np.mean(self.width), 3)
+        histo_mean_string = "Mean:   " + str(histo_mean)
+        self.label_histo_mean.setText(histo_mean_string)
+
+        histo_stdev = round(np.std(self.width), 3)
+        histo_stdev_string = "Standard Deviation:   " + str(histo_stdev)
+        self.label_histo_std.setText(histo_stdev_string)
+
+
     def draw_histogram(self):
         try:
             points_inside_square = self.points_inside_square
@@ -1107,14 +1161,22 @@ class window_filter(QWidget):
         self.width = [x for x in self.full_width if x >= float(self.histogram_gate_voltage.text())]
 
         width_count_filtered = round(100 * len(self.width) / len(self.full_width), 2)
-        width_count = "Percentage: " + str(width_count_filtered) + '% of filtered points ' + str(
+        width_count = "" + str(width_count_filtered) + '% of filtered points ' + str(
             len(self.width)) + '/' + str(len(self.full_width))
         self.label_percentage.setText(width_count)
 
         percentage_all_count = round(100 * len(self.width) / len(self.working_data[0]), 2)
-        percentage_all = "Percentage: " + str(percentage_all_count) + '% of all points ' + str(
+        percentage_all = "" + str(percentage_all_count) + '% of all points ' + str(
             len(self.width)) + '/' + str(len(self.working_data[0]))
         self.label_percentage_all.setText(percentage_all)
+
+        histo_mean = round(np.mean(self.width), 3)
+        histo_mean_string = "Mean:   " + str(histo_mean)
+        self.label_histo_mean.setText(histo_mean_string)
+
+        histo_stdev = round(np.std(self.width), 3)
+        histo_stdev_string = "Standard Deviation:   " + str(histo_stdev)
+        self.label_histo_std.setText(histo_stdev_string)
 
         channel = self.histogram_comboBox_2.currentIndex()
 
@@ -1122,12 +1184,14 @@ class window_filter(QWidget):
         r, g, b = Helper.rgb_select(channel)
         styles = {"color": "r", "font-size": "20px"}
         axis_name = self.histogram_comboBox_2.currentText()
+        self.histogram_graphWidget.addItem(self.histo_threshold_line)
         self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
 
-        range_width = int(max(self.width)) + 1
+
+        range_width = int(max(self.full_width)) + 1
         # test binwidth
         bin_edge = Helper.histogram_bin(range_width, float(self.histogram_binwidth.text()))
-        y, x = np.histogram(self.width, bins=bin_edge)
+        y, x = np.histogram(self.full_width, bins=bin_edge)
         separate_y = [0] * len(y)
 
         for i in range(len(y)):
@@ -1139,10 +1203,6 @@ class window_filter(QWidget):
         self.histogram_graphWidget.setXRange(float(self.histogram_gate_voltage.text()), max(x), padding=0)
         self.histogram_graphWidget.setYRange(0, max(y), padding=0)
 
-        # after 1st map so the line layer will appear in front of the histogram
-        self.data_line = self.histogram_graphWidget.plot([0, 0], [0, 0],
-                                                         pen=pg.mkPen(color=('r'), width=5,
-                                                                      style=QtCore.Qt.DashLine))
 
         # functions used for count peak numbers
 
