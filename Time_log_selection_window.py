@@ -611,16 +611,16 @@ class TimeLogFileSelectionWindow(QWidget):
                         # for loop with more than 1 iteration, it means file longer than a time point, aka split the
                         # the files into multiple time point
                         if len(syringe_data_holder) > 0:
-                            minute_offset = 0
+                            minute_offset = 1
                         else:
                             minute_offset = 1
 
-                        if number_of_loop == 1:
+                        if number_of_loop == 1 or i == number_of_loop-1:
                             # last iteration, check for end of length, do not clear the data holder, next file might
                             # be in the same slot
                             data_holder = data_holder.append(data.iloc[i * time_divide_in_minutes:len(data.index)],
                                                              ignore_index=True)
-                            data_holder.loc[:, "Minutes"] = [j + minute_offset for j in range(len(data_holder.index))]
+                            data_holder.loc[:, "Minutes"] = [j + 1 for j in range(len(data_holder.index))]
                             time_col.extend([i * time_divide_in_minutes + minute_offset + time_from_start_in_minutes
                                              + j for j in range(len(data_holder.index))])
                             # add the entry to the list
