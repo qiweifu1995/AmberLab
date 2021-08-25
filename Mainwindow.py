@@ -2130,6 +2130,7 @@ class Ui_MainWindow(QMainWindow):
     def filter_add_syringe(self):
         """function for handing add button click for filter addition"""
         self.time_log_window.caller = 0
+        self.tree_index = (len([key for key in self.tree_dic.keys() if len(key) == 1]),)
         self.time_log_window.populate_list()
         self.time_log_window.show()
         self.time_log_window.activateWindow()
@@ -2192,7 +2193,7 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_index = next_index
             else:
                 self.tree_index = next_index
-
+        print(self.tree_index)
         print(self.tree_dic.keys())
 
     def time_log_top_clicked(self):

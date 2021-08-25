@@ -529,7 +529,10 @@ class TimeLogFileSelectionWindow(QWidget):
             # this case handles the call request by window filters
             self.spawned_filter_counter += 1
             #  the number of root keys, and create new index
-            new_index = (len([key for key in self.tree_dict.keys() if len(key) == 1]),)
+            if len(self.tree_dict.keys()) == 0:
+                new_index = (0,)
+            else:
+                new_index = (len([key for key in self.tree_dict.keys() if len(key) == 1]),)
             self.tree_dict[new_index] = {}
             self.tree_dict[new_index]['tree_standarditem'] = StandardItem(self.line_edit_name.text(), 12, set_bold=True)
             self.tree_dict[new_index]['tree_windowfilter'] = Filter_window.window_filter(self.ui, None, None,
