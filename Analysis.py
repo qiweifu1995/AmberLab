@@ -48,73 +48,82 @@ class file_extracted_data_Qing:
             locked_out_count = '1'
         if total_count == '0':
             total_count = '1'
-    
-    
-        
+
         if current_file_dict["Ch1 "] != "":
             print("Extracting Ch1...")
             list1, width1, num_peaks1 = self.extract_parallel2(current_file_dict["Ch1 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1', ch1_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch1 "]] = [list1, width1, num_peaks1]
+            time1 = [0 for i in range(len(list1))]
+            self.analog_file[current_file_dict["Ch1 "]] = [list1, width1, num_peaks1, time1]
 
         if current_file_dict["Ch2 "] != "":
             print("Extracting Ch2...")
             list2, width2, num_peaks2 = self.extract_parallel2(current_file_dict["Ch2 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch2', ch2_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch2 "]] = [list2, width2, num_peaks2]
+            time2 = [0 for i in range(len(list2))]
+            self.analog_file[current_file_dict["Ch2 "]] = [list2, width2, num_peaks2, time2]
 
         if current_file_dict["Ch3 "] != "":
             print("Extracting Ch3...")
             list3, width3, num_peaks3 = self.extract_parallel2(current_file_dict["Ch3 "], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch3', ch3_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch3 "]] = [list3, width3, num_peaks3]
+            time3 = [0 for i in range(len(list3))]
+            self.analog_file[current_file_dict["Ch3 "]] = [list3, width3, num_peaks3, time3]
 
         if current_file_dict["Ch1-2"] != "":
             print("Extracting Ch1-2...")
             list12, width12, num_peaks12 = self.extract_parallel2(current_file_dict["Ch1-2"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_2', ch12_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12]
+            time12 = [0 for i in range(len(list12))]
+            self.analog_file[current_file_dict["Ch1-2"]] = [list12, width12, num_peaks12, time12]
 
         if current_file_dict["Ch1-3"] != "":
             print("Extracting Ch1-3...")
             list13, width13, num_peaks13 = self.extract_parallel2(current_file_dict["Ch1-3"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Ch1_3', ch13_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13, num_peaks13]
+            time13 = [0 for i in range(len(list13))]
+            self.analog_file[current_file_dict["Ch1-3"]] = [list13, width13, num_peaks13, time13]
 
         if current_file_dict["Ch2-3"] != "":
             print("Extracting Ch2-3...")
             list23, width23, num_peaks23 = self.extract_parallel2(current_file_dict["Ch2-3"], self.threshold, width_enable, 
                                                                   peak_enable, channel, chunksize, header, 
                                                                   'Ch2_3', ch23_count, peak_threshold, width_min, width_max)
-
-            self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23]
+            time23 = [0 for i in range(len(list23))]
+            self.analog_file[current_file_dict["Ch2-3"]] = [list23, width23, num_peaks23, time23]
 
         if current_file_dict["Droplets Extracted Data"] != "" and not rethreshold:
             print("Importing Extracted Droplet Record...")
-            listDR, widthDR, num_peaksDR = self.extracted_data_loader(current_file_dict["Droplets Extracted Data"])
+            listDR, widthDR, num_peaksDR, timeDR = self.extracted_data_loader(current_file_dict["Droplets Extracted Data"])
 
-            self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR]
+            self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR]
         elif current_file_dict["Droplet Record"] != "":
             print("Extracting Droplet Record...")
-            listDR, widthDR, num_peaksDR = self.extract_parallel2(current_file_dict["Droplet Record"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
+            listDR, widthDR, num_peaksDR, timeDR = self.extract_parallel2(current_file_dict["Droplet Record"], self.threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
 
-            self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR]
+            self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR]
 
-        if current_file_dict["Locked Out Peaks"] != "":
+        if current_file_dict["Locked Out Extracted"] != "":
+            print("Extracting locked out peaks extracted data")
+            list_locked, width_locked, num_peaks_locked, time_locked = self.extracted_data_loader(current_file_dict["Locked Out Extracted"])
+            self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
+        elif current_file_dict["Locked Out Peaks"] != "":
             print("Extracting locked out peaks")
             list_locked, width_locked, num_peaks_locked = self.extract_parallel2(current_file_dict["Locked Out Peaks"], self.threshold, width_enable,
                                                                   peak_enable, channel, chunksize, header,
                                                                   'Locked Out Peaks', locked_out_count, peak_threshold, width_min, width_max)
             self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
 
-        print("Extracting Peak... Parallel")
-        start = time.time()
-        Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
-                                                     peak_enable, channel, 200, 2, 'Peak Record', total_count,
-                                                     peak_threshold, width_min, width_max)
-        self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks]
-        end = time.time()
-        print("parallel extrack time: ", str(start-end))
+        if current_file_dict["Sorted Extracted"] != "":
+            print("Extracting peaks extracted data")
+            Peaklist, Peakwidth, NumPeaks, TimePeaks = self.extracted_data_loader(current_file_dict["Sorted Extracted"])
+            self.analog_file[current_file_dict["Sorted Extracted"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
+
+        else:
+            print("Extracting Peak... Parallel")
+            start = time.time()
+            Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
+                                                         peak_enable, channel, 200, 2, 'Peak Record', total_count,
+                                                         peak_threshold, width_min, width_max)
+            PeakTime = [0 for i in range(len(list23))]
+            self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks, PeakTime]
+            end = time.time()
+            print("parallel extrack time: ", str(start-end))
         """
         print("Extracting Peak...")
         start = time.time()
@@ -323,6 +332,7 @@ class file_extracted_data_Qing:
         peak = [[], [], [], []]
         width = [[], [], [], []]
         peak_counts = [[], [], [], []]
+        time_data = [[], [], [], []]
         chunk_size = 0
 
         """loading the data, return empty array is file does not exist"""
@@ -357,6 +367,7 @@ class file_extracted_data_Qing:
             """load each chunk and process """
             curent_droplet += 1
             droplet_size = extracted_data.iloc[i, 4]
+            time_stamp = extracted_data.iloc[i, 3]
             for j in range(i, i+chunk_size):
                 channel = (j-(curent_droplet-1)*chunk_size) // 3
                 mode = (j-curent_droplet) % 3
@@ -365,14 +376,16 @@ class file_extracted_data_Qing:
                     peak_counts[channel].append(extracted_data[0][j])
                     peak[channel].append(extracted_data[1][j])
                     width[channel].append(droplet_size)
+                    time_data[channel].append(time_stamp)
             if total_channels < 4:
                 """handle AFA data, missing fourth channel"""
                 peak[3].append(0)
                 peak_counts[3].append(0)
                 width[3].append(0)
+                time_data[3].append(0)
         print("Extracted data loading time: " + str(start-time.time()))
 
-        return peak, width, peak_counts
+        return peak, width, peak_counts, time_data
 
 
 

@@ -21,6 +21,8 @@ def project_namelist(file_dir):
                  "Time Log": "",
                  "Root Folder": "",
                  "Droplets Extracted Data": "",
+                 "Sorted Extracted Data": "",
+                 "Locked Out Extracted Data": "",
                  "Locked Out Peaks": ""
                  }
     if os.path.isfile(file_dir) and file_dir.rfind("Peak Record") >= 0:
