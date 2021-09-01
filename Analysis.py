@@ -107,7 +107,8 @@ class file_extracted_data_Qing:
             list_locked, width_locked, num_peaks_locked = self.extract_parallel2(current_file_dict["Locked Out Peaks"], self.threshold, width_enable,
                                                                   peak_enable, channel, chunksize, header,
                                                                   'Locked Out Peaks', locked_out_count, peak_threshold, width_min, width_max)
-            self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
+            time_locked = [0 for i in range(len(list_locked))]
+            self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked]
 
         if current_file_dict["Sorted Extracted"] != "":
             print("Extracting peaks extracted data")
@@ -120,8 +121,8 @@ class file_extracted_data_Qing:
             Peaklist, Peakwidth, NumPeaks = self.extract_parallel2(current_file_dict["Peak Record"], self.threshold, width_enable,
                                                          peak_enable, channel, 200, 2, 'Peak Record', total_count,
                                                          peak_threshold, width_min, width_max)
-            PeakTime = [0 for i in range(len(list23))]
-            self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks, PeakTime]
+            TimePeaks = [0 for i in range(len(Peaklist))]
+            self.analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
             end = time.time()
             print("parallel extrack time: ", str(start-end))
         """

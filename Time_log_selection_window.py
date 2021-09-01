@@ -37,6 +37,10 @@ class Time_log_functions(Enum):
     LOCKED_OUT = 6
 
 
+
+
+
+
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
 
@@ -769,12 +773,74 @@ class TimeLogFileSelectionWindow(QWidget):
         current_item.setToolTip(string_holder)
 
 
+class TimeLogPopUpWindow(QWidget):
+    """window that handles the data transfer from filter window to the time log """
+    def __init__(self, time_log_window: TimeLogFileSelectionWindow, default_name: str):
+        super().__init__()
+        self.setupUI()
+
+    def setupUI(self):
+        """call this function when setting up UI"""
+        self.setWindowTitle("Time Log Exporting")
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                           QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.setMaximumSize(400, 400)
+        self.setSizePolicy(sizePolicy)
+
+        layout = QVBoxLayout()
+        self.label = QLabel("Syringe Name")
+        layout.addWidget(self.label)
+
+        self.line_edit_name = QLineEdit("Syringe")
+        layout.addWidget(self.line_edit_name)
+
+        self.line_divider = QtWidgets.QFrame(self)
+        self.line_divider.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_divider.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_divider.setObjectName("line_top_vertical")
+        layout.addWidget(self.line_divider)
+
+        self.time_divide_label = QLabel("Time Point Division")
+        layout.addWidget(self.time_divide_label)
+
+        self.time_divide_checkbox = QtWidgets.QCheckBox("Time point every ")
+
+        self.time_spinbox = QtWidgets.QSpinBox()
+        self.time_spinbox.setMinimum(1)
+
+        self.time_combobox = QtWidgets.QComboBox()
+        self.time_combobox.addItem("Minutes")
+        self.time_combobox.addItem("Hours")
+
+        layout_time_divide = QHBoxLayout()
+        layout_time_divide.addWidget(self.time_divide_checkbox)
+        layout_time_divide.addWidget(self.time_spinbox)
+        layout_time_divide.addWidget(self.time_combobox)
+
+        layout.addLayout(layout_time_divide)
+
+        layout_h = QHBoxLayout()
+        self.ok_button = QtWidgets.QPushButton("OK")
+        self.cancel_button = QtWidgets.QPushButton("Cancel")
+        layout_h.addWidget(self.ok_button)
+        layout_h.addWidget(self.cancel_button)
+
+        layout.addLayout(layout_h)
+
+        self.setLayout(layout)
+
+        self.ok_button.clicked.connect(self.ok_clicked)
+        self.cancel_button.clicked.connect(self.close_clicked)
+
+
 if __name__ == "__main__":
     freeze_support()
     import sys
 
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = QtWidgets.QApplication(sys.argv)
-    ui = TimeLogFileSelectionWindow()
+    ui = TimeLogPopUpWindow()
     ui.show()
     sys.exit(app.exec_())
