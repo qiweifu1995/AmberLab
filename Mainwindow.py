@@ -68,11 +68,13 @@ class Ui_MainWindow(QMainWindow):
         self.working_data = []
         self.current_file_dict = {}
         self.ui_state = Helper.ui_state()
+        self.version_number = "2.0"
 
         self.time_log_file_model = QStandardItemModel()
         self.time_log_file_indexes = []
 
         self.setupUi()
+        self.setWindowTitle("AmberLab Analysis Suite Ver. " + self.version_number)
 
 
     def setupUi(self):

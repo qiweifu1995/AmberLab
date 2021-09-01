@@ -98,9 +98,9 @@ class file_extracted_data_Qing:
 
             self.analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR]
 
-        if current_file_dict["Locked Out Extracted"] != "":
+        if current_file_dict["Locked Out Extracted Data"] != "":
             print("Extracting locked out peaks extracted data")
-            list_locked, width_locked, num_peaks_locked, time_locked = self.extracted_data_loader(current_file_dict["Locked Out Extracted"])
+            list_locked, width_locked, num_peaks_locked, time_locked = self.extracted_data_loader(current_file_dict["Locked Out Extracted Data"])
             self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
         elif current_file_dict["Locked Out Peaks"] != "":
             print("Extracting locked out peaks")
@@ -110,9 +110,9 @@ class file_extracted_data_Qing:
             time_locked = [0 for i in range(len(list_locked))]
             self.analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked]
 
-        if current_file_dict["Sorted Extracted"] != "":
+        if current_file_dict["Sorted Extracted Data"] != "":
             print("Extracting peaks extracted data")
-            Peaklist, Peakwidth, NumPeaks, TimePeaks = self.extracted_data_loader(current_file_dict["Sorted Extracted"])
+            Peaklist, Peakwidth, NumPeaks, TimePeaks = self.extracted_data_loader(current_file_dict["Sorted Extracted Data"])
             self.analog_file[current_file_dict["Sorted Extracted"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
 
         else:
@@ -333,7 +333,7 @@ class file_extracted_data_Qing:
         peak = [[], [], [], []]
         width = [[], [], [], []]
         peak_counts = [[], [], [], []]
-        time_data = [[], [], [], []]
+        time_data = []
         chunk_size = 0
 
         """loading the data, return empty array is file does not exist"""
@@ -369,6 +369,9 @@ class file_extracted_data_Qing:
             curent_droplet += 1
             droplet_size = extracted_data.iloc[i, 4]
             time_stamp = extracted_data.iloc[i, 3]
+            if time_stamp < 0:
+                #this is just a test case
+                time_stamp = curent_droplet // 100 + 1
             for j in range(i, i+chunk_size):
                 channel = (j-(curent_droplet-1)*chunk_size) // 3
                 mode = (j-curent_droplet) % 3
@@ -377,20 +380,15 @@ class file_extracted_data_Qing:
                     peak_counts[channel].append(extracted_data[0][j])
                     peak[channel].append(extracted_data[1][j])
                     width[channel].append(droplet_size)
-                    time_data[channel].append(time_stamp)
+            time_data.append(time_stamp)
             if total_channels < 4:
                 """handle AFA data, missing fourth channel"""
                 peak[3].append(0)
                 peak_counts[3].append(0)
                 width[3].append(0)
-                time_data[3].append(0)
         print("Extracted data loading time: " + str(start-time.time()))
 
         return peak, width, peak_counts, time_data
-
-
-
-
 
 
 def peak_finder(channel, Ch, user_set_chunk_size):
@@ -402,6 +400,7 @@ def peak_finder(channel, Ch, user_set_chunk_size):
     end = time.time()-start
     print("peak finder done, time: ", str(end))
     return peak, channel
+
 
 def width_finder(channel, Ch, threshold, current_row_number, user_set_chunk_size):
     print("Width Finder Start: ", str(time.time()))

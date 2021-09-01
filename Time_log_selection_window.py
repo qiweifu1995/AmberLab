@@ -777,9 +777,10 @@ class TimeLogPopUpWindow(QWidget):
     """window that handles the data transfer from filter window to the time log """
     def __init__(self, time_log_window: TimeLogFileSelectionWindow, default_name: str):
         super().__init__()
-        self.setupUI()
+        self.setupUI(default_name)
 
-    def setupUI(self):
+
+    def setupUI(self, default_name):
         """call this function when setting up UI"""
         self.setWindowTitle("Time Log Exporting")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,
@@ -793,7 +794,7 @@ class TimeLogPopUpWindow(QWidget):
         self.label = QLabel("Syringe Name")
         layout.addWidget(self.label)
 
-        self.line_edit_name = QLineEdit("Syringe")
+        self.line_edit_name = QLineEdit(default_name)
         layout.addWidget(self.line_edit_name)
 
         self.line_divider = QtWidgets.QFrame(self)
@@ -834,6 +835,11 @@ class TimeLogPopUpWindow(QWidget):
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.close_clicked)
 
+    def ok_clicked(self):
+        """this function extracts the information and send to the main time log class"""
+
+    def close_clicked(self):
+        self.close()
 
 if __name__ == "__main__":
     freeze_support()
