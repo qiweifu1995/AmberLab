@@ -2210,8 +2210,38 @@ class window_filter(QWidget):
             # pass polygon value to next window
             self.filter_out_list = self.points_inside
 
-        self.time_list = [self.peak_time_working_data[i] for i in self.filter_out_list]
+        current_file_counter = 0
+        time_list_holder = []
+        #time list will hold the data for all the file, each file is one list
+        self.time_list = []
+        #file list index holds the file index for each of the time list entry
+        file_list_index = []
+        for index in self.filter_out_list:
+
+            if index < self.multi_file_index[current_file_counter+1]:
+                time_list_holder.append(self.peak_time_working_data[index])
+            else:
+                file_list_index.append(current_file_counter)
+                current_file_counter+=1
+                self.time_list.append(time_list_holder)
+                time_list_holder.clear()
+
+        if len(time_list_holder) > 0:
+            #check for left over data , append
+            file_list_index.append(current_file_counter)
+            self.time_list.append(time_list_holder)
+            time_list_holder.clear()
+
         print(self.time_list)
+
+        #this list is for transfering the data to timeLog
+        dataframe_list = []
+
+        for file_time_data in self.time_list:
+            dataframe = pd.DataFrame(columns=["Total Sorted", "Minutes"])
+            for i in range(1,file_time_data[-1]+1):
+                file_time_data.count(i)
+
 
 
         self.time_log_window.show()
