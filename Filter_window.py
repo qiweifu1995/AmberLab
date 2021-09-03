@@ -2191,7 +2191,7 @@ class window_filter(QWidget):
 
     def time_log_clicked(self):
         """this function handles when user clicks the export time log, create a timelog window"""
-        self.time_log_window = Time_log_selection_window.TimeLogPopUpWindow(self.ui.time_log_window, self.windowTitle())
+
 
         if self.polygon_trigger == False:
             if self.selected_quadrant == 0:
@@ -2212,37 +2212,43 @@ class window_filter(QWidget):
 
         current_file_counter = 0
         time_list_holder = []
-        #time list will hold the data for all the file, each file is one list
+        # time list will hold the data for all the file, each file is one list
         self.time_list = []
-        #file list index holds the file index for each of the time list entry
+        # file list index holds the file index for each of the time list entry
         file_list_index = []
+        print(self.multi_file_index)
         for index in self.filter_out_list:
-
-            if index < self.multi_file_index[current_file_counter+1]:
+            if self.multi_file is None:
                 time_list_holder.append(self.peak_time_working_data[index])
             else:
-                file_list_index.append(current_file_counter)
-                current_file_counter+=1
-                self.time_list.append(time_list_holder)
-                time_list_holder.clear()
+                if index <= self.multi_file_index[current_file_counter+1]:
+                    time_list_holder.append(self.peak_time_working_data[index])
+                else:
+                    file_list_index.append(current_file_counter)
+                    current_file_counter+=1
+                    self.time_list.append(time_list_holder)
+                    time_list_holder.clear()
 
         if len(time_list_holder) > 0:
-            #check for left over data , append
+            # check for left over data , append
             file_list_index.append(current_file_counter)
-            self.time_list.append(time_list_holder)
+            self.time_list.append(time_list_holder.copy())
             time_list_holder.clear()
 
-        print(self.time_list)
-
-        #this list is for transfering the data to timeLog
+        # this list is for transfering the data to timeLog
         dataframe_list = []
 
         for file_time_data in self.time_list:
-            dataframe = pd.DataFrame(columns=["Total Sorted", "Minutes"])
-            for i in range(1,file_time_data[-1]+1):
-                file_time_data.count(i)
 
+            minutes_list = []
+            counts_list = []
+            for i in range(1, file_time_data[-1]+1):
+                minutes_list.append(i)
+                counts_list.append(file_time_data.count(i))
+            dataframe = pd.DataFrame({"Minutes": minutes_list, "Total Sorted": counts_list})
+            dataframe_list.append(dataframe)
 
-
+        self.time_log_window = Time_log_selection_window.TimeLogPopUpWindow(self.ui.time_log_window, self.windowTitle(),
+                                                                            dataframe_list, file_list_index)
         self.time_log_window.show()
 

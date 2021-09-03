@@ -775,9 +775,13 @@ class TimeLogFileSelectionWindow(QWidget):
 
 class TimeLogPopUpWindow(QWidget):
     """window that handles the data transfer from filter window to the time log """
-    def __init__(self, time_log_window: TimeLogFileSelectionWindow, default_name: str):
+    def __init__(self, time_log_window: TimeLogFileSelectionWindow, default_name: str,
+                 data: list, file_index: list):
         super().__init__()
         self.setupUI(default_name)
+        self.parent = time_log_window
+        self.data = data
+        self.file_index = file_index
 
 
     def setupUI(self, default_name):
@@ -837,6 +841,9 @@ class TimeLogPopUpWindow(QWidget):
 
     def ok_clicked(self):
         """this function extracts the information and send to the main time log class"""
+        print(self.data)
+        print(self.file_index)
+
 
     def close_clicked(self):
         self.close()
