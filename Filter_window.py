@@ -2217,17 +2217,20 @@ class window_filter(QWidget):
         # file list index holds the file index for each of the time list entry
         file_list_index = []
         print(self.multi_file_index)
-        for index in self.filter_out_list:
+        for count, index in enumerate(self.filter_out_list):
             if self.multi_file is None:
                 time_list_holder.append(self.peak_time_working_data[index])
             else:
-                if index <= self.multi_file_index[current_file_counter+1]:
-                    time_list_holder.append(self.peak_time_working_data[index])
+                if len(self.multi_file_index) > current_file_counter+1:
+                    if index <= self.multi_file_index[current_file_counter+1]:
+                        time_list_holder.append(self.peak_time_working_data[index])
+                    else:
+                        file_list_index.append(current_file_counter)
+                        current_file_counter += 1
+                        self.time_list.append(time_list_holder.copy())
+                        time_list_holder.clear()
                 else:
-                    file_list_index.append(current_file_counter)
-                    current_file_counter+=1
-                    self.time_list.append(time_list_holder)
-                    time_list_holder.clear()
+                    time_list_holder.append(self.peak_time_working_data[index])
 
         if len(time_list_holder) > 0:
             # check for left over data , append

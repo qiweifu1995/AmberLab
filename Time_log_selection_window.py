@@ -839,10 +839,22 @@ class TimeLogPopUpWindow(QWidget):
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.close_clicked)
 
+    def extract_filtered_data(self, index: list, data: list):
+        """this function will process the data and send to parent class"""
+
+
+
     def ok_clicked(self):
         """this function extracts the information and send to the main time log class"""
         print(self.data)
         print(self.file_index)
+
+        if len(self.file_index) > 0:
+            # first add the syringe with the name
+            syringe = Qt.QStandardItem(self.line_edit_name.text())
+            self.parent.file_model.appendRow(syringe)
+            self.extract_filtered_data(self.file_index, self.data)
+        self.hide()
 
 
     def close_clicked(self):
