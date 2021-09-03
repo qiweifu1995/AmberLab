@@ -30,8 +30,10 @@ class StandardItem(QStandardItem):
         self.setFont(fnt)
         self.setText(txt)
 
+
 class RectQuadrant(pg.GraphicsObject):
     """class for drawing the rectangle to show selected quadrant"""
+
     def __init__(self, rect, parent=None):
         super().__init__(parent)
         self._rect = rect
@@ -59,6 +61,7 @@ class RectQuadrant(pg.GraphicsObject):
         self._rect = rect
         self.picture = QtGui.QPicture()
         self._generate_picture()
+
 
 class window_filter(QWidget):
     def __init__(self, parent, current_file_dict, working_data, peak_width_working_data, peak_num_working_data,
@@ -110,7 +113,7 @@ class window_filter(QWidget):
             self.peak_width_working_data = peak_width_working_data
             self.peak_num_working_data = peak_num_working_data
             self.root = False
-        #sets up the stats window
+        # sets up the stats window
         self.stats_window = Stats_window.StatsWindow()
         self.setupUI()
 
@@ -151,8 +154,6 @@ class window_filter(QWidget):
 
         self.label_y_Axis = QLabel("Y-Axis")
         Scatter_plot_layout.addWidget(self.label_y_Axis, 5, 0, 1, 1)
-
-
 
         ### Check box layout
         self.comboBox_1 = QtWidgets.QComboBox()
@@ -292,13 +293,12 @@ class window_filter(QWidget):
         self.pushButton_confirm = QPushButton('Update')
         layout.addWidget(self.pushButton_confirm, 8, 0, 1, 1)
 
-        #density label
+        # density label
         self.label_density = QLabel("Plot Density")
-        layout.addWidget(self.label_density, 8,1,1,1)
+        layout.addWidget(self.label_density, 8, 1, 1, 1)
         self.density_line_edit = QtWidgets.QDoubleSpinBox()
         self.density_line_edit.setValue(0.1)
-        layout.addWidget(self.density_line_edit,8,2,1,1)
-
+        layout.addWidget(self.density_line_edit, 8, 2, 1, 1)
 
         self.pushButton_1 = QPushButton('Next Filter')
         self.pushButton_2 = QPushButton('Stats')
@@ -358,18 +358,14 @@ class window_filter(QWidget):
         self.graphWidget.setLabel('bottom', 'Far Red')
         self.graphWidget.disableAutoRange()
 
-
-        #plot setting
+        # plot setting
 
         self.graphWidget.getAxis('left').setPen(self.axis_pen)
         self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
-        self.graphWidget.getAxis('left').setStyle(tickFont= self.axis_font)
+        self.graphWidget.getAxis('left').setStyle(tickFont=self.axis_font)
         self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
         self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
         self.graphWidget.getAxis('bottom').setStyle(tickFont=self.axis_font)
-
-
-
 
         # add threshold
         pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
@@ -436,7 +432,6 @@ class window_filter(QWidget):
 
         # end polygon edit function?
         self.stop_edit_trigger = True
-
 
         self.graphWidget.scene().sigMouseClicked.connect(self.onMouseMoved)
 
@@ -759,7 +754,6 @@ class window_filter(QWidget):
         self.gridLayout_42.addWidget(self.lineEdit_axis_thickness, 22, 1, 1, 1)
         self.lineEdit_axis_thickness.editingFinished.connect(self.update_fonts)
 
-
         self.label_axis_font = QtWidgets.QLabel("Axis Font")
         self.label_axis_font.setAlignment(QtCore.Qt.AlignCenter)
         self.gridLayout_42.addWidget(self.label_axis_font, 23, 0, 1, 1)
@@ -776,9 +770,6 @@ class window_filter(QWidget):
         self.lineEdit_axis_font.setValidator(axis_font_valid)
         self.gridLayout_42.addWidget(self.lineEdit_axis_font, 23, 1, 1, 1)
         self.lineEdit_axis_font.editingFinished.connect(self.update_fonts)
-
-
-
 
         spacerItem28 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_42.addItem(spacerItem28, 13, 0, 1, 2)
@@ -831,9 +822,7 @@ class window_filter(QWidget):
         self.pushButton_7.clicked.connect(self.polygon_next_page)
         self.pushButton_timelog.clicked.connect(self.time_log_clicked)
 
-
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
-
 
         ##########################################################################################
 
@@ -864,7 +853,6 @@ class window_filter(QWidget):
             self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
             self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
             self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
-
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
@@ -963,8 +951,9 @@ class window_filter(QWidget):
                         self.index_in_all_selected_channel.append([x for x, x in enumerate(self.points_inside) if
                                                                    polygon_length < x <= polygon_length_end])
                     else:
-                        self.index_in_all_selected_channel[list_index].extend([x for x, x in enumerate(self.points_inside)
-                                                                               if polygon_length < x <= polygon_length_end])
+                        self.index_in_all_selected_channel[list_index].extend(
+                            [x for x, x in enumerate(self.points_inside)
+                             if polygon_length < x <= polygon_length_end])
             # cycle the list again to sort and populate the combo box
             for list_index in self.linear_plot_channel_list:
                 if self.index_in_all_selected_channel[list_index]:
@@ -1027,13 +1016,13 @@ class window_filter(QWidget):
                 self.lineEdit_38.setText(str(lower_bond + 15))
                 nrows = 15
 
-            self.subgating_file_dict = self.ui.file_dict_list[self.tree_index[len(self.tree_index)-1]]
+            self.subgating_file_dict = self.ui.file_dict_list[self.tree_index[len(self.tree_index) - 1]]
             os.chdir(self.subgating_file_dict["Root Folder"])
             file = self.subgating_file_dict[text1]
 
             data = pd.DataFrame({0: [], 1: [], 2: [], 3: []}, )
 
-            #print("index_in_current_channel", len(index_in_current_channel), ':', index_in_current_channel)
+            # print("index_in_current_channel", len(index_in_current_channel), ':', index_in_current_channel)
 
             for x in range(lower_bond, upper_bond):
                 current_droplet_index = index_in_current_channel[x]
@@ -1059,18 +1048,16 @@ class window_filter(QWidget):
 
             height_data = data[0].values.tolist()
             height_index = list(range(len(height_data)))
-            height_index = [i/100 for i in height_index]
+            height_index = [i / 100 for i in height_index]
 
             poly_degree = int(self.lineEdit_39.text())
             window_length = int(self.lineEdit_40.text()) // 2 * 2 - 1
 
             self.widget_29.addLegend()
-            self.widget_29.plotItem.legend.setLabelTextColor(QColor(0,0,0))
-            self.widget_29.plotItem.legend.setLabelTextSize(str(self.legend_font_size)+'pt')
+            self.widget_29.plotItem.legend.setLabelTextColor(QColor(0, 0, 0))
+            self.widget_29.plotItem.legend.setLabelTextSize(str(self.legend_font_size) + 'pt')
 
             self.plot_width = self.line_thickness
-
-
 
             for i in range(0, 2 * nrows, 2):
                 self.widget_29.plot([i, i], [0, 3], pen=pg.mkPen(color=('r'), width=1, style=QtCore.Qt.DashLine))
@@ -1089,7 +1076,8 @@ class window_filter(QWidget):
                 if self.polygon_channel_3.isChecked():
                     height_data = savgol_filter(data[2], window_length, poly_degree)
                     pen = pg.mkPen(color=(48, 131, 240), width=self.plot_width)
-                    self.widget_29.plot(height_index, height_data, name='CellTrace Violet', pen=pen, symbol='o', symbolSize=0,
+                    self.widget_29.plot(height_index, height_data, name='CellTrace Violet', pen=pen, symbol='o',
+                                        symbolSize=0,
                                         symbolBrush=('m'))
                 if self.polygon_channel_4.isChecked():
                     height_data = savgol_filter(data[3], window_length, poly_degree)
@@ -1116,14 +1104,13 @@ class window_filter(QWidget):
         else:
             print("Enter a new lower bond value")
 
-
         self.widget_29.autoRange()
 
         # histogram tab main function
 
     def histo_line_moved(self):
         """connect when histo line move"""
-        threshold = round(self.histo_threshold_line.value(),3)
+        threshold = round(self.histo_threshold_line.value(), 3)
         self.histogram_gate_voltage.setText(str(threshold))
         self.update_histo_threshold(threshold)
 
@@ -1155,7 +1142,6 @@ class window_filter(QWidget):
         histo_stdev = round(np.std(self.width), 3)
         histo_stdev_string = "Standard Deviation:   " + str(histo_stdev)
         self.label_histo_std.setText(histo_stdev_string)
-
 
     def draw_histogram(self):
         try:
@@ -1199,7 +1185,6 @@ class window_filter(QWidget):
         self.histogram_graphWidget.addItem(self.histo_threshold_line)
         self.histogram_graphWidget.setLabel('bottom', axis_name, **styles)
 
-
         range_width = int(max(self.full_width)) + 1
         # test binwidth
         bin_edge = Helper.histogram_bin(range_width, float(self.histogram_binwidth.text()))
@@ -1214,7 +1199,6 @@ class window_filter(QWidget):
 
         self.histogram_graphWidget.setXRange(float(self.histogram_gate_voltage.text()), max(x), padding=0)
         self.histogram_graphWidget.setYRange(0, max(y), padding=0)
-
 
         # functions used for count peak numbers
 
@@ -1245,8 +1229,8 @@ class window_filter(QWidget):
             holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
         self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
-        #print('holder[0]', holder[0])
-        #print('self.peak_num_filtered_index', self.peak_num_filtered_index)
+        # print('holder[0]', holder[0])
+        # print('self.peak_num_filtered_index', self.peak_num_filtered_index)
 
     ### drawing function for main tab scatter pot
 
@@ -1260,8 +1244,6 @@ class window_filter(QWidget):
             self.peak_num_working_data = []
             self.working_data = []
             self.peak_time_working_data = []
-
-
 
             for i in range(4):
                 self.working_data.append([])
@@ -1310,14 +1292,18 @@ class window_filter(QWidget):
                     'Droplet Record'] in self.ui.analog.keys():
                     for i in range(4):
                         self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
-                        self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
+                        self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][
+                            i]
                         self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                     self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][3]
-                if self.ui.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
+                if self.ui.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
+                    'Locked Out Peaks'] in self.ui.analog.keys():
                     for i in range(4):
                         self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
-                        self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
-                        self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
+                        self.peak_width_working_data[i] += \
+                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
+                        self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
+                            i]
                     self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                 if self.ui.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] in self.ui.analog.keys():
                     for i in range(4):
@@ -1380,21 +1366,21 @@ class window_filter(QWidget):
                         for i in range(4):
                             self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
                             self.peak_width_working_data[i] += \
-                            self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
+                                self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                             self.peak_num_working_data[i] += \
-                            self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
+                                self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                         self.peak_time_working_data += \
-                        self.ui.analog[self.current_file_dict['Droplet Record']][3]
+                            self.ui.analog[self.current_file_dict['Droplet Record']][3]
                     if self.ui.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
                         'Locked Out Peaks'] in self.ui.analog.keys():
                         for i in range(4):
                             self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                             self.peak_width_working_data[i] += \
-                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
+                                self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
                             self.peak_num_working_data[i] += \
-                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
+                                self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
                         self.peak_time_working_data += \
-                        self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
 
                     if self.ui.checkBox_7.isChecked() and self.current_file_dict[
                         'Peak Record'] in self.ui.analog.keys():
@@ -1453,7 +1439,7 @@ class window_filter(QWidget):
 
         if self.comboBox_1.currentIndex() == 0:
             data_in_subgating_x = self.working_data[self.comboBox_3.currentIndex()]
-            peak_num_in_subgating_x= self.peak_num_working_data[self.comboBox_3.currentIndex()]
+            peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
         else:
             data_in_subgating_x = self.peak_width_working_data[self.comboBox_3.currentIndex()]
         peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
@@ -1516,7 +1502,7 @@ class window_filter(QWidget):
                         'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
             spots.append(spot_dic)
 
-            #self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+            # self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
             #                     symbolSize=5, symbolBrush=(red, blue, green))
         scatter.addPoints(spots)
         self.graphWidget.addItem(scatter)
@@ -1539,7 +1525,6 @@ class window_filter(QWidget):
         self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
         self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
         self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
-
 
         # reset threshold # test
         self.infiniteline_table_update()
@@ -1611,7 +1596,7 @@ class window_filter(QWidget):
 
             if len(self.Ch1_channel0) != 0:
                 view1 = str(round(100 * count_quadrant[i] / len(self.Ch1_channel0), 2))
-                totalpercent = str(round(100 * count_quadrant[i] /  droplets, 2))
+                totalpercent = str(round(100 * count_quadrant[i] / droplets, 2))
                 if count_quadrant[i] > 0:
                     x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_quadrant[i], 2))
                     y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_quadrant[i], 2))
@@ -1638,7 +1623,6 @@ class window_filter(QWidget):
             self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
             self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
-
     def quadrant_rect_update(self):
         """update the quadrant rectangle"""
         print("update square")
@@ -1648,7 +1632,7 @@ class window_filter(QWidget):
         y_range = y_axis.range
         x_threshold = self.lr_x_axis.value()
         y_threshold = self.lr_y_axis.value()
-        #calls the custom function
+        # calls the custom function
         if self.rect_trigger:
             self.graphWidget.removeItem(self.quad_rect)
 
@@ -1685,7 +1669,6 @@ class window_filter(QWidget):
 
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
-
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
@@ -1731,12 +1714,9 @@ class window_filter(QWidget):
             else:
                 rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
 
-
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
         self.graphWidget.disableAutoRange()
-
-
 
     ### infinite lines end
     ################################################################################################
@@ -2170,7 +2150,7 @@ class window_filter(QWidget):
         self.ui.tree_dic[self.tree_index]['tree_standarditem'].appendRow(
             self.ui.tree_dic[new_index]['tree_standarditem'])
         self.ui.tree_dic[self.tree_index]['quadrant1_list_or_polygon'] = self.filter_out_list
-        #('self.quadrant1_list_or_polygon', self.filter_out_list)
+        # ('self.quadrant1_list_or_polygon', self.filter_out_list)
         self.ui.treeView.expandAll()
 
         # reassign tree_index, new window need this index to create child branch
@@ -2191,7 +2171,6 @@ class window_filter(QWidget):
 
     def time_log_clicked(self):
         """this function handles when user clicks the export time log, create a timelog window"""
-
 
         if self.polygon_trigger == False:
             if self.selected_quadrant == 0:
@@ -2216,27 +2195,40 @@ class window_filter(QWidget):
         self.time_list = []
         # file list index holds the file index for each of the time list entry
         file_list_index = []
+        # indices holds the number of iteration for each file
+        indices = [0]
         print(self.multi_file_index)
-        for count, index in enumerate(self.filter_out_list):
-            if self.multi_file is None:
-                time_list_holder.append(self.peak_time_working_data[index])
-            else:
-                if len(self.multi_file_index) > current_file_counter+1:
-                    if index <= self.multi_file_index[current_file_counter+1]:
-                        time_list_holder.append(self.peak_time_working_data[index])
-                    else:
-                        file_list_index.append(current_file_counter)
-                        current_file_counter += 1
-                        self.time_list.append(time_list_holder.copy())
-                        time_list_holder.clear()
-                else:
-                    time_list_holder.append(self.peak_time_working_data[index])
 
-        if len(time_list_holder) > 0:
-            # check for left over data , append
-            file_list_index.append(current_file_counter)
+        if self.multi_file is not None:
+            counter = 0
+            for index in self.multi_file_index:
+                file_exist = False
+                low = index
+                if len(self.multi_file_index) > current_file_counter + 1:
+                    high = self.multi_file_index[current_file_counter + 1]
+                else:
+                    high = self.filter_out_list[-1] + 1
+                while counter < len(self.filter_out_list):
+                    x = self.filter_out_list[counter]
+                    if low <= x < high and file_exist is False:
+                        file_exist = True
+                        file_list_index.append(self.multi_file[current_file_counter])
+                    elif x >= high:
+                        current_file_counter += 1
+                        break
+                    counter += 1
+                if file_exist:
+                    indices.append(counter)
+
+        for i in range(len(indices)-1):
+            lower_bound = indices[i]
+            upper_bound = indices[i+1]
+            for j in range(lower_bound, upper_bound):
+                x = self.filter_out_list[j]
+                time_list_holder.append(self.peak_time_working_data[x])
             self.time_list.append(time_list_holder.copy())
             time_list_holder.clear()
+
 
         # this list is for transfering the data to timeLog
         dataframe_list = []
@@ -2245,7 +2237,7 @@ class window_filter(QWidget):
 
             minutes_list = []
             counts_list = []
-            for i in range(1, file_time_data[-1]+1):
+            for i in range(1, file_time_data[-1] + 1):
                 minutes_list.append(i)
                 counts_list.append(file_time_data.count(i))
             dataframe = pd.DataFrame({"Minutes": minutes_list, "Total Sorted": counts_list})
@@ -2254,4 +2246,3 @@ class window_filter(QWidget):
         self.time_log_window = Time_log_selection_window.TimeLogPopUpWindow(self.ui.time_log_window, self.windowTitle(),
                                                                             dataframe_list, file_list_index)
         self.time_log_window.show()
-
