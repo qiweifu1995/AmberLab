@@ -343,7 +343,7 @@ class file_extracted_data_Qing:
             print("reading: " + str(file_name))
         except:
             print("file did not exist")
-            return peak, width, peak_counts
+            return peak, width, peak_counts, time_data
 
         counter = 0
         start_count = False
@@ -371,7 +371,7 @@ class file_extracted_data_Qing:
             time_stamp = extracted_data.iloc[i, 3]
             if time_stamp < 0:
                 #this is just a test case
-                time_stamp = curent_droplet // 100 + 1
+                time_stamp = curent_droplet // 6000 + 1
             for j in range(i, i+chunk_size):
                 channel = (j-(curent_droplet-1)*chunk_size) // 3
                 mode = (j-curent_droplet) % 3
