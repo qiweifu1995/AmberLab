@@ -65,7 +65,7 @@ class RectQuadrant(pg.GraphicsObject):
 
 class window_filter(QWidget):
     def __init__(self, parent, current_file_dict, working_data, peak_width_working_data, peak_num_working_data,
-                 linear_plot_channel_list={}, multi_file=None, multi_file_index=None):
+                 linear_plot_channel_list={}, multi_file=None, multi_file_index=None, root=None):
         super().__init__()
         self.ui = parent
         # tree_index saved the index number for all filters, include its parent and child branch
@@ -79,7 +79,8 @@ class window_filter(QWidget):
         self.peak_num_working_data = []
         self.peak_time_working_data = []
         self.points_inside_square = []
-        self.root = True
+        # root will hold the file index for the root file if true, else None
+        self.root = root
         self.selected_quadrant = 1
         self.rect_trigger = False
         self.reset_comboBox = True
@@ -112,7 +113,7 @@ class window_filter(QWidget):
             self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
             self.peak_width_working_data = peak_width_working_data
             self.peak_num_working_data = peak_num_working_data
-            self.root = False
+            self.root = None
         # sets up the stats window
         self.stats_window = Stats_window.StatsWindow()
         self.setupUI()
@@ -1318,6 +1319,7 @@ class window_filter(QWidget):
                         self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                     self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                 points_inside_square = [i for i in range(len(self.working_data[0]))]
+
             else:
                 """case for multiple file"""
                 self.multi_file_index = []
@@ -2159,7 +2161,7 @@ class window_filter(QWidget):
         # open a new window for the new branch
         self.ui.dialog = window_filter(self.ui, self.current_file_dict, self.working_data, self.peak_width_working_data,
                                        self.peak_num_working_data, self.linear_plot_channel_list, self.multi_file,
-                                       self.multi_file_index)
+                                       self.multi_file_index, self.root)
         #         self.ui.window_filter[new_index] = self.ui.dialog
         self.ui.tree_dic[new_index]['tree_windowfilter'] = self.ui.dialog
         self.ui.dialog.show()
@@ -2199,7 +2201,14 @@ class window_filter(QWidget):
         indices = [0]
         print(self.multi_file_index)
 
-        if self.multi_file is not None:
+        if self.root:
+            file_list_index.append(self.root)
+            time_list_holder = [self.peak_time_working_data[x] for x in self.filter_out_list]
+            self.time_list.append(time_list_holder.copy())
+            time_list_holder.clear()
+
+        elif len(self.multi_file_index)>1:
+            # handles cases where multi file index is true and has more than 1 file index
             counter = 0
             for index in self.multi_file_index:
                 file_exist = False
@@ -2220,14 +2229,22 @@ class window_filter(QWidget):
                 if file_exist:
                     indices.append(counter)
 
-        for i in range(len(indices)-1):
-            lower_bound = indices[i]
-            upper_bound = indices[i+1]
-            for j in range(lower_bound, upper_bound):
-                x = self.filter_out_list[j]
-                time_list_holder.append(self.peak_time_working_data[x])
+            for i in range(len(indices) - 1):
+                lower_bound = indices[i]
+                upper_bound = indices[i + 1]
+                for j in range(lower_bound, upper_bound):
+                    x = self.filter_out_list[j]
+                    time_list_holder.append(self.peak_time_working_data[x])
+                self.time_list.append(time_list_holder.copy())
+                time_list_holder.clear()
+
+        elif len(self.multi_file_index) == 1 and self.root is None:
+            # handle when there is only 1 file, but not a root file
+            file_list_index.append(self.multi_file[0])
+            time_list_holder = [self.peak_time_working_data[x] for x in self.filter_out_list]
             self.time_list.append(time_list_holder.copy())
             time_list_holder.clear()
+
 
 
         # this list is for transfering the data to timeLog

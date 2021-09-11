@@ -3250,7 +3250,7 @@ class Ui_MainWindow(QMainWindow):
             self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
             self.tree_index = (i,)
             self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], None,
-                                                                                   None, None)
+                                                                                   None, None, root=i)
             self.thresholds.append([0.0, 0.0, 0.0, 0.0])
         self.ui_state.threshold_initialize(self.thresholds)
         self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
