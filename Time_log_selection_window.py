@@ -887,7 +887,7 @@ class TimeLogPopUpWindow(QWidget):
             string_holder = string_holder + "\n" + "Time Division: " + time_divide_string
             self.parent.mode[len(self.parent.mode) - 1]["Time Divide"] = time_divide
             time_list = [self.parent.file_time_data[i] for i in index]
-            file_data = [self.time_log_data[i] for i in index]
+            file_data = self.time_log_data.copy()
             starting_time = time_list[0]
             # data holder serve as the buffer for single time points, each file time point start at 0
             data_holder = pd.DataFrame()
