@@ -296,12 +296,12 @@ class TimeLogFileSelectionWindow(QWidget):
                                 self.file_index[index[1]][i - 1]]
                             delta_in_minutes = int(delta.total_seconds() // 60)
                             time_gap.append(delta_in_minutes)
-                            data_holder = self.mode[index[1]]["Filter Data"][current_index].copy()
+                            data_holder = self.mode[index[1]]["Filter Data"][i].copy()
                             data_holder["Minutes"] += sum(time_gap)
                             current_data = current_data.append(data_holder, ignore_index=True)
 
                         else:
-                            current_data = self.mode[index[1]]["Filter Data"][current_index].copy()
+                            current_data = self.mode[index[1]]["Filter Data"][i].copy()
 
                 else:
                     for i, current_index in enumerate(self.file_index[index[1]]):
@@ -322,7 +322,7 @@ class TimeLogFileSelectionWindow(QWidget):
 
                     current_data['Minutes'] = time_col
 
-                if "Positive Channels" in self.mode[index[1]].keys():
+                """if "Positive Channels" in self.mode[index[1]].keys():
                     channels = self.mode[index[1]]["Positive Channels"]
                     # valid is used to check that at least 1 data is positive selected, else data cannot be processed
                     valid = False
@@ -340,7 +340,7 @@ class TimeLogFileSelectionWindow(QWidget):
                         current_data.drop(columns="Total Sorted")
                         current_data["Total Sorted"] = current_data.loc[:, col_names].sum(axis=1)
                         print("Print final positive")
-                        print(current_data["Total Sorted"])
+                        print(current_data["Total Sorted"])"""
 
             else:
                 # child node
@@ -352,7 +352,7 @@ class TimeLogFileSelectionWindow(QWidget):
                     time_col = [x + 1 for x in range(len(current_data.index))]
                     current_data['Minutes'] = time_col
 
-                if "Positive Channels" in self.mode[index[0]].keys():
+                """if "Positive Channels" in self.mode[index[0]].keys():
                     channels = self.mode[index[0]]["Positive Channels"]
                     # valid is used to check that at least 1 data is positive selected, else data cannot be processed
                     valid = False
@@ -370,7 +370,7 @@ class TimeLogFileSelectionWindow(QWidget):
                         current_data.drop(columns="Total Sorted")
                         current_data["Total Sorted"] = current_data.loc[:, col_names].sum(axis=1)
                         print("Data After positive select")
-                        print(current_data["Total Sorted"])
+                        print(current_data["Total Sorted"])"""
 
             if caller == 0:
                 self.top_processed_data.append(current_data)
