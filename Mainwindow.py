@@ -3124,7 +3124,7 @@ class Ui_MainWindow(QMainWindow):
         else:
             print("--------------------------------------------------------reset")
 
-            a = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold,
+            analog_file = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold,
                                                   peaks_threshold, width_min, width_max,
                                                   width_enable, peak_enable, channel, 200,
                                                   0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,
@@ -3134,7 +3134,7 @@ class Ui_MainWindow(QMainWindow):
 
             print("data extration complete, drawing....")
 
-            self.analog.update(a.analog_file)
+            self.analog.update(analog_file)
 
             self.save_a = self.analog
 
