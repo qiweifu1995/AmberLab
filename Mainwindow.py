@@ -8,7 +8,7 @@
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
-
+from functools import partial
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -69,17 +69,18 @@ class Ui_MainWindow(QMainWindow):
         self.current_file_dict = {}
         self.ui_state = Helper.ui_state()
         self.version_number = "2.0"
-
+        self.thread = []
         self.time_log_file_model = QStandardItemModel()
         self.time_log_file_indexes = []
 
         self.setupUi()
-        self.setWindowTitle("AmberLab Analysis Suite Ver. " + self.version_number)
+
 
 
     def setupUi(self):
 
         ### GUI setup
+        self.setWindowTitle("AmberLab Analysis Suite Ver. " + self.version_number)
         self.setObjectName("MainWindow")
         self.resize(1500, 900)
         self.setMinimumSize(QtCore.QSize(150, 150))
@@ -3123,7 +3124,7 @@ class Ui_MainWindow(QMainWindow):
 
         else:
             print("--------------------------------------------------------reset")
-
+            """
             analog_file = Analysis.file_extracted_data_Qing(self.current_file_dict, threshold,
                                                   peaks_threshold, width_min, width_max,
                                                   width_enable, peak_enable, channel, 200,
@@ -3131,14 +3132,12 @@ class Ui_MainWindow(QMainWindow):
                                                   stats.ch13_hit,
                                                   stats.ch23_hit, stats.Droplet_Record_hit,
                                                   stats.total_sorted, rethreshold=threshold_check)
-
+            
             print("data extration complete, drawing....")
-
             self.analog.update(analog_file)
 
             self.save_a = self.analog
-
-            check2 = time.time()
+            heck2 = time.time()
 
             self.update_working_data()
 
@@ -3149,6 +3148,9 @@ class Ui_MainWindow(QMainWindow):
                 self.update_sweep_graphs(True)
 
             self.update_statistic()
+            """
+            self.run_extraction(self.main_file_select, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check)
+
 
             self.comboBox_14_list = {}
             if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
@@ -3242,6 +3244,7 @@ class Ui_MainWindow(QMainWindow):
             self.textEdit.setPlainText(self.textbox)
         #initialize the filter window with loaded files
         for i in range(self.file_list_view.count()):
+            self.thread.append(QtCore.QThread())
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
             self.tree_dic[(i,)] = {}
@@ -3257,6 +3260,52 @@ class Ui_MainWindow(QMainWindow):
             self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
             ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
         print(self.tree_dic.keys())
+
+
+    def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
+        worker = ExtractWorker()
+        worker.moveToThread(self.thread[thread_index])
+        self.thread[thread_index].started.connect(partial(worker.run, ui, self.current_file_dict, threshold,
+                                                            peaks_threshold, stats, threshold_check, width_min, width_max,
+                                                            width_enable, peak_enable, channel))
+        worker.finished.connect(self.thread[thread_index].quit)
+        worker.finished.connect(worker.deleteLater)
+        self.thread[thread_index].finished.connect(self.thread[thread_index].deleteLater)
+        self.thread[thread_index].start()
+
+
+class ExtractWorker(QtCore.QObject):
+    """This class will be called to run extraction process"""
+    finished = QtCore.pyqtSignal()
+    progress = QtCore.pyqtSignal()
+
+    def run(self, ui, current_file_dict, threshold, peaks_threshold, stats, threshold_check,
+            width_min=0, width_max=200, width_enable=True, peak_enable=False, channel=0):
+
+        analog_file = Analysis.file_extracted_data_Qing(current_file_dict, threshold,
+                                                        peaks_threshold, width_min, width_max,
+                                                        width_enable, peak_enable, channel, 200,
+                                                        0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,
+                                                        stats.ch13_hit,
+                                                        stats.ch23_hit, stats.Droplet_Record_hit,
+                                                        stats.total_sorted, rethreshold=threshold_check)
+
+        print("data extration complete, drawing....")
+
+        ui.analog.update(analog_file)
+        ui.update_working_data()
+
+        # direct everything into window filters
+        # self.draw is histogram
+        # self.draw_2 triggers 2nd and 3rd filter
+        #if ui.data_updated == True:
+          #  ui.update_sweep_graphs(True)
+
+        ui.update_statistic()
+
+        self.finished.emit()
+
+
 
 
 if __name__ == "__main__":
