@@ -3301,7 +3301,7 @@ class ExtractWorker(QtCore.QObject):
         #if ui.data_updated == True:
           #  ui.update_sweep_graphs(True)
 
-        ui.update_statistic()
+        #ui.update_statistic()
 
         self.finished.emit()
 

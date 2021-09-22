@@ -246,7 +246,12 @@ def extract_parallel2(file, threshold,
     row_chunk = 0
     peak_row_count = 0
     row_count = 0
-    for Ch in pd.read_csv(file, chunksize=20000000, header=header):
+    csv_file = pd.read_csv(file, chunksize=20000000, header=header)
+    total_portions = 0
+    for i in csv_file:
+        total_portions += 1
+    print(total_portions)
+    for Ch in csv_file:
         start = time.time()
         Ch.columns = [0, 1, 2, 3]
         row_count += len(Ch)
@@ -351,8 +356,8 @@ def file_extracted_data_Qing(current_file_dict, threshold, peak_threshold, width
             analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR]
         elif current_file_dict["Droplet Record"] != "":
             print("Extracting Droplet Record...")
-            listDR, widthDR, num_peaksDR, timeDR = extract_parallel2(current_file_dict["Droplet Record"], threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
-
+            listDR, widthDR, num_peaksDR = extract_parallel2(current_file_dict["Droplet Record"], threshold, width_enable, peak_enable, channel, chunksize, header, 'Droplet Record', Droplet_Record_count, peak_threshold, width_min, width_max)
+            timeDR = [0 for i in range(len(listDR))]
             analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR]
 
         if current_file_dict["Locked Out Extracted Data"] != "":

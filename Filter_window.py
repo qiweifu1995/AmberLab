@@ -1238,7 +1238,6 @@ class window_filter(QWidget):
     def draw_graphwidget(self):
         # "update" clicked
         # prepare data
-
         if not self.points_inside_square:
             # this is for root data extraction
             self.peak_width_working_data = []
@@ -1530,6 +1529,7 @@ class window_filter(QWidget):
 
         # reset threshold # test
         self.infiniteline_table_update()
+
 
     ################################################################################################
     ### these are  the mouse-draggable-lines on the main tab, they are called "infinitelines" in the pyqt documents
@@ -2080,6 +2080,8 @@ class window_filter(QWidget):
 
     def stats_clicked(self):
         """ypdate stats window"""
+
+        self.setEnabled(False)
         self.x_quadrant_data = [[] for i in range(4)]
         self.y_quadrant_data = [[] for i in range(4)]
 
