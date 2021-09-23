@@ -9,6 +9,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
 from functools import partial
+import logging
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -33,7 +34,10 @@ import Filter_window
 import peak_threshold_window
 import Time_log_selection_window
 from Time_log_selection_window import Time_log_functions
+from Helper import ThreadState
 from enum import Enum
+
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 class StandardItem(QStandardItem):
     def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
@@ -47,7 +51,6 @@ class StandardItem(QStandardItem):
         self.setFont(fnt)
         self.setText(txt)
 ### Pop-up windows for the new filters
-
 
 
 class Ui_MainWindow(QMainWindow):
@@ -72,9 +75,8 @@ class Ui_MainWindow(QMainWindow):
         self.thread = []
         self.time_log_file_model = QStandardItemModel()
         self.time_log_file_indexes = []
-
+        self.extraction_thread_state = []
         self.setupUi()
-
 
 
     def setupUi(self):
@@ -3149,34 +3151,35 @@ class Ui_MainWindow(QMainWindow):
 
             self.update_statistic()
             """
-            self.run_extraction(self.main_file_select, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check)
+            if self.extraction_thread_state[self.main_file_select] in (ThreadState.IDLING, ThreadState.FINISHED):
+                self.run_extraction(self.main_file_select, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check)
+                self.comboBox_14_list = {}
+                if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
+                if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
+                if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
+                if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
+                if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
+                if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
+                if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
+                if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
+                if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
+                ### End
 
+                self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
+                    self.comboBox_14_list)
+                print("complete!")
+            else:
+                logging.info("Thread not ready for processing")
 
-            self.comboBox_14_list = {}
-            if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
-            if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
-            if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
-            if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
-            if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
-            if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
-            if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
-            if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
-            if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
-                self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
-            ### End
-
-            self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
-                self.comboBox_14_list)
-            print("complete!")
-        check6 = time.time()
 
     def update_checkbox(self):
         self.comboBox_14_list = {}
@@ -3221,48 +3224,57 @@ class Ui_MainWindow(QMainWindow):
 
     def openfolder(self):
         """function handling the open folder operation"""
-        self.analog = {}
-        self.tree_dic = {}
-        self.file_list_view.clear()
-        self.file_dict_list.clear()
-        self.time_log_file_model.clear()
-        self.treeModel.clear()
-        self.thresholds = []
         #         self.comboBox_option1.clear()
         #         self.comboBox_option2.clear()
         name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
         # sort the files so they will be correctly organized in the time log
         name.sort()
-        for f in name:
-            print(f)
-            self.file_dict_list.append(Helper.project_namelist(f))
-            self.file_list_view.addItem(f)
-            #             self.comboBox_option1.addItem(f)
-            #             self.comboBox_option2.addItem(f)
-            # record change in the log
-            self.textbox = self.textbox + "\n" + "open file:" + str(f)
-            self.textEdit.setPlainText(self.textbox)
-        #initialize the filter window with loaded files
-        for i in range(self.file_list_view.count()):
-            self.thread.append(QtCore.QThread())
-            item = self.file_list_view.item(i)
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-            self.tree_dic[(i,)] = {}
-            text = item.text()
-            self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
-            self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
-            self.tree_index = (i,)
-            self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], None,
-                                                                                   None, None, root=i)
-            self.thresholds.append([0.0, 0.0, 0.0, 0.0])
-        self.ui_state.threshold_initialize(self.thresholds)
-        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
-            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
-            ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
-        print(self.tree_dic.keys())
+        if name:
+            self.analog = {}
+            self.tree_dic = {}
+            self.file_list_view.clear()
+            self.file_dict_list.clear()
+            self.time_log_file_model.clear()
+            self.treeModel.clear()
+            self.thresholds = []
+            self.thread = []
+            self.extraction_thread_state = []
+            for f in name:
+                print(f)
+                self.file_dict_list.append(Helper.project_namelist(f))
+                self.file_list_view.addItem(f)
+                #             self.comboBox_option1.addItem(f)
+                #             self.comboBox_option2.addItem(f)
+                # record change in the log
+                self.textbox = self.textbox + "\n" + "open file:" + str(f)
+                self.textEdit.setPlainText(self.textbox)
+            #initialize the filter window with loaded files
+            for i in range(self.file_list_view.count()):
+                # create a thread for each of the file added
+                self.thread.append(QtCore.QThread())
+                self.extraction_thread_state.append(ThreadState.IDLING)
+                # create item for the list view
+                item = self.file_list_view.item(i)
+                item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                # initialize the tree dic
+                self.tree_dic[(i,)] = {}
+                text = item.text()
+                self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
+                self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
+                self.tree_index = (i,)
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], None,
+                                                                                       None, None, root=i)
+                self.thresholds.append([0.0, 0.0, 0.0, 0.0])
+            self.ui_state.threshold_initialize(self.thresholds)
+            self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
+                self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
+                ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
+            print(self.tree_dic.keys())
 
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
+        self.extraction_thread_state[thread_index] = ThreadState.RUNNING
+        self.thread[thread_index] = QtCore.QThread()
         worker = ExtractWorker()
         worker.moveToThread(self.thread[thread_index])
         self.thread[thread_index].started.connect(partial(worker.run, ui, self.current_file_dict, threshold,
@@ -3270,9 +3282,16 @@ class Ui_MainWindow(QMainWindow):
                                                             width_enable, peak_enable, channel))
         worker.finished.connect(self.thread[thread_index].quit)
         worker.finished.connect(worker.deleteLater)
+        self.thread[thread_index].finished.connect(partial(self.extract_worker_finished, thread_index))
         self.thread[thread_index].finished.connect(self.thread[thread_index].deleteLater)
         self.thread[thread_index].start()
 
+    def extract_worker_finished(self, thread_index: int):
+        """function called update state of extract thread"""
+        if thread_index < len(self.extraction_thread_state):
+            self.extraction_thread_state[thread_index] = ThreadState.FINISHED
+        else:
+            logging.INFO("Thread index out of range")
 
 class ExtractWorker(QtCore.QObject):
     """This class will be called to run extraction process"""
@@ -3290,8 +3309,7 @@ class ExtractWorker(QtCore.QObject):
                                                         stats.ch23_hit, stats.Droplet_Record_hit,
                                                         stats.total_sorted, rethreshold=threshold_check)
 
-        print("data extration complete, drawing....")
-
+        logging.info("Extraction done, updating file")
         ui.analog.update(analog_file)
         ui.update_working_data()
 
@@ -3302,10 +3320,8 @@ class ExtractWorker(QtCore.QObject):
           #  ui.update_sweep_graphs(True)
 
         #ui.update_statistic()
-
+        logging.info("Worker finished")
         self.finished.emit()
-
-
 
 
 if __name__ == "__main__":

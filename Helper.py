@@ -2,6 +2,7 @@
 # all functions that serves a generic purpose should be implemented here
 
 import os, csv
+from enum import Enum
 
 
 def project_namelist(file_dir):
@@ -627,6 +628,11 @@ class ui_state:
         return replot1, replot2, data_changed
 
 
+class ThreadState(Enum):
+    """enum holding state of threads"""
+    IDLING = 0
+    RUNNING = 1
+    FINISHED = 2
 
 
 if __name__ == "__main__":

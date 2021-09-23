@@ -37,10 +37,6 @@ class Time_log_functions(Enum):
     LOCKED_OUT = 6
 
 
-
-
-
-
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
 
