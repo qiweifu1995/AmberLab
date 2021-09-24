@@ -16,6 +16,9 @@ from math import sqrt
 from PyQt5.QtGui import QFont, QColor
 import Stats_window
 import Time_log_selection_window
+import logging
+import sys
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
 class StandardItem(QStandardItem):
@@ -1238,6 +1241,7 @@ class window_filter(QWidget):
     def draw_graphwidget(self):
         # "update" clicked
         # prepare data
+        start = time.time()
         if not self.points_inside_square:
             # this is for root data extraction
             self.peak_width_working_data = []
@@ -1407,7 +1411,8 @@ class window_filter(QWidget):
             points_inside_square = self.points_inside_square
 
         # edit filter name
-
+        logging.info("Data collection time pt1: " + str(time.time()-start))
+        start = time.time()
         # updatename to y vs.  x axis
         if self.lineedit_filter_name.text() == '':
             self_brach_name = str(self.comboBox_2.currentText() + " " + self.comboBox_4.currentText() + 'VS. ' +
@@ -1465,12 +1470,15 @@ class window_filter(QWidget):
         self.Ch1_channel1 = [data_in_subgating_y[i] for i in self.points_inside_square]
         self.Ch1_channel1_peak_num = [peak_num_in_subgating_y[i] for i in self.points_inside_square]
 
+        logging.info("Data collection time pt2: " + str(time.time() - start))
+        start = time.time()
+
         # test color setup
         max_voltage = 12
         bins = 2000
         steps = max_voltage / bins
 
-        cm = pg.colormap.get('CET-R2')
+
 
         # all data is first sorted into a histogram
         histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
@@ -1478,6 +1486,10 @@ class window_filter(QWidget):
                                      density=False)
         max_density = histo.max()
         percentage_coefficient = self.density_line_edit.value()
+
+        logging.info("Data plotting density generation time: " + str(time.time() - start))
+        start = time.time()
+
         # made empty array to hold the sorted data according to density
         spots = []
         scatter = pg.ScatterPlotItem()
@@ -1509,6 +1521,9 @@ class window_filter(QWidget):
         self.graphWidget.addItem(scatter)
         # add threshold
 
+        logging.info("Data plotting color assign time: " + str(time.time() - start))
+        start = time.time()
+
         self.graphWidget.removeItem(self.lr_x_axis)
         self.graphWidget.removeItem(self.lr_y_axis)
 
@@ -1519,6 +1534,8 @@ class window_filter(QWidget):
         self.graphWidget.addItem(self.lr_y_axis)
         self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
         self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
+
+        logging.info("Data plotting final item adding time: " + str(time.time() - start))
 
         self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
         self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
@@ -2265,3 +2282,89 @@ class window_filter(QWidget):
         self.time_log_window = Time_log_selection_window.TimeLogPopUpWindow(self.ui.time_log_window, self.windowTitle(),
                                                                             dataframe_list, file_list_index)
         self.time_log_window.show()
+
+    def start_plot_update(self, parent, steps, histo, max_density, percentage_coefficient):
+        """method to create threads to do plot update"""
+        self.thread = QtCore.QThread()
+        worker = PlotGenerationWorker()
+        worker.moveToThread(self.thread)
+        self.thread.started.connect(worker.run(parent, steps, histo, max_density, percentage_coefficient))
+        worker.finished.connect(self.thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        self.thread.finished.connect(self.thread[thread_index].deleteLater)
+        self.thread.start()
+
+
+class PlotGenerationWorker(QtCore.QObject):
+    """worker to handle plot color generation"""
+    finished = QtCore.pyqtSignal()
+    progress = QtCore.pyqtSignal()
+
+    def run(self, parent, steps, histo, max_density, percentage_coefficient):
+        spots = []
+        scatter = pg.ScatterPlotItem()
+        cm = pg.colormap.get('CET-R2')
+        for i in range(len(parent.Ch1_channel0)):
+            x = parent.Ch1_channel0[i]
+            y = parent.Ch1_channel1[i]
+
+            a = int(x / steps)
+            b = int(y / steps)
+            if a >= 1000:
+                a = 999
+            if b >= 1000:
+                b = 999
+
+            # checking for density, the value divided by steps serves as the index
+            density = histo[a][b]
+            percentage = density / max_density * 100 * percentage_coefficient
+            if percentage > 1:
+                percentage = 1
+            spot_dic = {'pos': (x, y), 'size': 3,
+                        'pen': None,
+                        'symbol': 'p',
+                        'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
+            spots.append(spot_dic)
+
+            # parent.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
+            #                     symbolSize=5, symbolBrush=(red, blue, green))
+        scatter.addPoints(spots)
+        parent.graphWidget.addItem(scatter)
+        self.finished.emit()
+
+
+class LoadingScreen(QWidget):
+    """This class is the pop up window for when graph is loading"""
+    def __init__(self):
+        super(LoadingScreen, self).__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.layout = QtWidgets.QVBoxLayout()
+        self.bar_text = QtWidgets.QLabel(self)
+        self.bar_text.setText("Start updating plot")
+        self.layout.addWidget(self.bar_text)
+        self.pbar = QtWidgets.QProgressBar(self)
+        self.pbar.setGeometry(30, 40, 400, 25)
+        self.pbar.setValue(0)
+        self.layout.addWidget(self.pbar)
+        self.setWindowTitle("Plot Updating")
+        self.setLayout(self.layout)
+        self.setFixedSize(500, 80)
+        self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+        self.show()
+
+    def update(self, progress: int, text: str):
+        self.bar_text.setText(text)
+        self.pbar.setValue(progress)
+
+
+if __name__ == '__main__':
+    # create pyqt5 app
+    App = QtWidgets.QApplication(sys.argv)
+
+    # create the instance of our Window
+    window = LoadingScreen()
+
+    # start the app
+    sys.exit(App.exec())

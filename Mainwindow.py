@@ -9,7 +9,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
 from functools import partial
-import logging
+
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -36,7 +36,7 @@ import Time_log_selection_window
 from Time_log_selection_window import Time_log_functions
 from Helper import ThreadState
 from enum import Enum
-
+import logging
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 class StandardItem(QStandardItem):
@@ -3151,7 +3151,8 @@ class Ui_MainWindow(QMainWindow):
 
             self.update_statistic()
             """
-            if self.extraction_thread_state[self.main_file_select] in (ThreadState.IDLING, ThreadState.FINISHED):
+            if self.extraction_thread_state[self.main_file_select] in (ThreadState.IDLING, ThreadState.FINISHED)\
+                    and ThreadState.RUNNING not in self.extraction_thread_state:
                 self.run_extraction(self.main_file_select, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check)
                 self.comboBox_14_list = {}
                 if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
