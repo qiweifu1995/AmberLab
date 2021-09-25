@@ -109,19 +109,17 @@ class Ui_MainWindow(QMainWindow):
         self.file_list_view.setObjectName("file_list_view")
         self.layout_vertical_filecontrol.addWidget(self.file_list_view)
 
-        self.layout_horizontal_renamebutton = QtWidgets.QHBoxLayout()
-        self.layout_horizontal_renamebutton.setObjectName("layout_horizontal_renamebutton")
-        self.button_rename = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(50)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.button_rename.sizePolicy().hasHeightForWidth())
-        self.button_rename.setSizePolicy(sizePolicy)
-        self.button_rename.setMinimumSize(QtCore.QSize(50, 0))
-        self.button_rename.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.button_rename.setObjectName("button_rename")
-        self.layout_horizontal_renamebutton.addWidget(self.button_rename)
-        self.layout_vertical_filecontrol.addLayout(self.layout_horizontal_renamebutton)
+        self.layout_progress_bar = QtWidgets.QVBoxLayout()
+        self.layout_progress_bar.setObjectName("layout_progress_bar")
+        self.progress_label = QtWidgets.QLabel(self.centralwidget)
+        self.progress_label.setMaximumSize(250,40)
+        self.layout_progress_bar.addWidget(self.progress_label)
+        self.pbar = QtWidgets.QProgressBar(self)
+        self.pbar.setValue(0)
+        self.layout_progress_bar.addWidget(self.pbar)
+        self.layout_vertical_filecontrol.addLayout(self.layout_progress_bar)
+
+
         spacerItem = QtWidgets.QSpacerItem(120, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.layout_vertical_filecontrol.addItem(spacerItem)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
@@ -2775,7 +2773,7 @@ class Ui_MainWindow(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_files.setText(_translate("MainWindow", "Files"))
-        self.button_rename.setText(_translate("MainWindow", "Rename"))
+        self.progress_label.setText(_translate("MainWindow", "File Extraction"))
         self.label.setText(_translate("MainWindow", "Channel Selection"))
         self.checkbox_ch1.setText(_translate("MainWindow", "Channel 1"))
         self.checkbox_ch2.setText(_translate("MainWindow", "Channel 2"))
@@ -3281,6 +3279,7 @@ class Ui_MainWindow(QMainWindow):
         self.thread[thread_index].started.connect(partial(worker.run, ui, self.current_file_dict, threshold,
                                                             peaks_threshold, stats, threshold_check, width_min, width_max,
                                                             width_enable, peak_enable, channel))
+        worker.progress.connect(self.extracton_progress_update)
         worker.finished.connect(self.thread[thread_index].quit)
         worker.finished.connect(worker.deleteLater)
         self.thread[thread_index].finished.connect(partial(self.extract_worker_finished, thread_index))
@@ -3294,15 +3293,20 @@ class Ui_MainWindow(QMainWindow):
         else:
             logging.INFO("Thread index out of range")
 
+    def extracton_progress_update(self, progress):
+        """function called to update the progress bar of the main menu"""
+        self.pbar.setValue(int(progress[0]))
+        self.progress_label.setText(progress[1])
+
 class ExtractWorker(QtCore.QObject):
     """This class will be called to run extraction process"""
     finished = QtCore.pyqtSignal()
-    progress = QtCore.pyqtSignal()
+    progress = QtCore.pyqtSignal(list)
 
     def run(self, ui, current_file_dict, threshold, peaks_threshold, stats, threshold_check,
             width_min=0, width_max=200, width_enable=True, peak_enable=False, channel=0):
 
-        analog_file = Analysis.file_extracted_data_Qing(current_file_dict, threshold,
+        analog_file = Analysis.file_extracted_data_Qing(self, current_file_dict, threshold,
                                                         peaks_threshold, width_min, width_max,
                                                         width_enable, peak_enable, channel, 200,
                                                         0, stats.ch1_hit, stats.ch2_hit, stats.ch3_hit, stats.ch12_hit,

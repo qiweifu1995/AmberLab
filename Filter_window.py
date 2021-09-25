@@ -18,6 +18,7 @@ import Stats_window
 import Time_log_selection_window
 import logging
 import sys
+from functools import partial
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
@@ -1491,61 +1492,9 @@ class window_filter(QWidget):
         start = time.time()
 
         # made empty array to hold the sorted data according to density
-        spots = []
-        scatter = pg.ScatterPlotItem()
-        for i in range(len(self.Ch1_channel0)):
-            x = self.Ch1_channel0[i]
-            y = self.Ch1_channel1[i]
+        self.start_plot_update(steps, histo, max_density, percentage_coefficient)
+        self.setEnabled(False)
 
-            a = int(x / steps)
-            b = int(y / steps)
-            if a >= 1000:
-                a = 999
-            if b >= 1000:
-                b = 999
-
-            # checking for density, the value divided by steps serves as the index
-            density = histo[a][b]
-            percentage = density / max_density * 100 * percentage_coefficient
-            if percentage > 1:
-                percentage = 1
-            spot_dic = {'pos': (x, y), 'size': 3,
-                        'pen': None,
-                        'symbol': 'p',
-                        'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
-            spots.append(spot_dic)
-
-            # self.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
-            #                     symbolSize=5, symbolBrush=(red, blue, green))
-        scatter.addPoints(spots)
-        self.graphWidget.addItem(scatter)
-        # add threshold
-
-        logging.info("Data plotting color assign time: " + str(time.time() - start))
-        start = time.time()
-
-        self.graphWidget.removeItem(self.lr_x_axis)
-        self.graphWidget.removeItem(self.lr_y_axis)
-
-        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
-        self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
-        self.graphWidget.addItem(self.lr_x_axis)
-        self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
-        self.graphWidget.addItem(self.lr_y_axis)
-        self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
-        self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
-
-        logging.info("Data plotting final item adding time: " + str(time.time() - start))
-
-        self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
-        self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
-        self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
-        self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
-        self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
-        self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
-
-        # reset threshold # test
-        self.infiniteline_table_update()
 
 
     ################################################################################################
@@ -2283,28 +2232,57 @@ class window_filter(QWidget):
                                                                             dataframe_list, file_list_index)
         self.time_log_window.show()
 
-    def start_plot_update(self, parent, steps, histo, max_density, percentage_coefficient):
+    def start_plot_update(self, steps, histo, max_density, percentage_coefficient):
         """method to create threads to do plot update"""
+        self.loading_bar = LoadingScreen()
         self.thread = QtCore.QThread()
         worker = PlotGenerationWorker()
         worker.moveToThread(self.thread)
-        self.thread.started.connect(worker.run(parent, steps, histo, max_density, percentage_coefficient))
+        self.thread.started.connect(partial(worker.run, self, steps, histo, max_density, percentage_coefficient))
         worker.finished.connect(self.thread.quit)
         worker.finished.connect(worker.deleteLater)
-        self.thread.finished.connect(self.thread[thread_index].deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.finished.connect(self.plot_finalization)
+        worker.progress.connect(self.loading_bar.update)
         self.thread.start()
+
+    def plot_finalization(self):
+        """call this function when the worker finish updating plot data"""
+        self.setEnabled(True)
+        self.loading_bar.hide()
+        self.graphWidget.removeItem(self.lr_x_axis)
+        self.graphWidget.removeItem(self.lr_y_axis)
+
+        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
+        self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
+        self.graphWidget.addItem(self.lr_x_axis)
+        self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
+        self.graphWidget.addItem(self.lr_y_axis)
+        self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
+        self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
+
+        self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+        self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+        self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+        self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+        self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+        self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+        # reset threshold # test
+        self.infiniteline_table_update()
 
 
 class PlotGenerationWorker(QtCore.QObject):
     """worker to handle plot color generation"""
     finished = QtCore.pyqtSignal()
-    progress = QtCore.pyqtSignal()
+    progress = QtCore.pyqtSignal(list)
 
     def run(self, parent, steps, histo, max_density, percentage_coefficient):
         spots = []
         scatter = pg.ScatterPlotItem()
         cm = pg.colormap.get('CET-R2')
-        for i in range(len(parent.Ch1_channel0)):
+        progress_percent = 0
+        data_size = len(parent.Ch1_channel0)
+        for i in range(data_size):
             x = parent.Ch1_channel0[i]
             y = parent.Ch1_channel1[i]
 
@@ -2325,11 +2303,18 @@ class PlotGenerationWorker(QtCore.QObject):
                         'symbol': 'p',
                         'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
             spots.append(spot_dic)
-
+            # calculate current percentage, this stage max at 80
+            if i*100//data_size != progress_percent:
+                progress_percent = i*80//data_size
+                signal_string = "Processing data points: " + str(i) + "/" + str(data_size)
+                self.progress.emit([progress_percent, signal_string])
             # parent.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
             #                     symbolSize=5, symbolBrush=(red, blue, green))
+        self.progress.emit([85, "Assigning density to data..."])
         scatter.addPoints(spots)
+        self.progress.emit([95, "Plotting data..."])
         parent.graphWidget.addItem(scatter)
+        self.progress.emit([100, "Finished"])
         self.finished.emit()
 
 
@@ -2342,7 +2327,7 @@ class LoadingScreen(QWidget):
     def initUI(self):
         self.layout = QtWidgets.QVBoxLayout()
         self.bar_text = QtWidgets.QLabel(self)
-        self.bar_text.setText("Start updating plot")
+        self.bar_text.setText("Updating plot...")
         self.layout.addWidget(self.bar_text)
         self.pbar = QtWidgets.QProgressBar(self)
         self.pbar.setGeometry(30, 40, 400, 25)
@@ -2354,9 +2339,10 @@ class LoadingScreen(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         self.show()
 
-    def update(self, progress: int, text: str):
-        self.bar_text.setText(text)
-        self.pbar.setValue(progress)
+    def update(self, progress: int):
+        """Call this function when progress signal is emited"""
+        self.bar_text.setText(progress[1])
+        self.pbar.setValue(progress[0])
 
 
 if __name__ == '__main__':
