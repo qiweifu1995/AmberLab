@@ -3221,6 +3221,17 @@ class Ui_MainWindow(QMainWindow):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
+    def update_file_color(self):
+        """call this function to update the color of file selection"""
+        for i in range(len(self.extraction_thread_state)):
+            if self.extraction_thread_state[i] == ThreadState.IDLING:
+                self.file_list_view.item(i).setForeground(QColor(128, 128, 128))
+            elif self.extraction_thread_state[i] == ThreadState.RUNNING:
+                self.file_list_view.item(i).setForeground(QColor(0, 128, 0))
+            else:
+                self.file_list_view.item(i).setForeground(QColor(0, 0, 0))
+
+
     def openfolder(self):
         """function handling the open folder operation"""
         #         self.comboBox_option1.clear()
@@ -3268,11 +3279,13 @@ class Ui_MainWindow(QMainWindow):
             self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
                 self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
                 ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
+            self.update_file_color()
             print(self.tree_dic.keys())
 
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
         self.extraction_thread_state[thread_index] = ThreadState.RUNNING
+        self.update_file_color()
         self.thread[thread_index] = QtCore.QThread()
         worker = ExtractWorker()
         worker.moveToThread(self.thread[thread_index])
@@ -3290,13 +3303,16 @@ class Ui_MainWindow(QMainWindow):
         """function called update state of extract thread"""
         if thread_index < len(self.extraction_thread_state):
             self.extraction_thread_state[thread_index] = ThreadState.FINISHED
+            self.update_file_color()
         else:
             logging.INFO("Thread index out of range")
+
 
     def extracton_progress_update(self, progress):
         """function called to update the progress bar of the main menu"""
         self.pbar.setValue(int(progress[0]))
         self.progress_label.setText(progress[1])
+
 
 class ExtractWorker(QtCore.QObject):
     """This class will be called to run extraction process"""

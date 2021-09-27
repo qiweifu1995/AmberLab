@@ -120,6 +120,11 @@ class window_filter(QWidget):
             self.root = None
         # sets up the stats window
         self.stats_window = Stats_window.StatsWindow()
+
+        # set up plot data
+        self.spot = []
+        self.scatter = pg.ScatterPlotItem()
+
         self.setupUI()
 
     def setupUI(self):
@@ -2235,19 +2240,23 @@ class window_filter(QWidget):
     def start_plot_update(self, steps, histo, max_density, percentage_coefficient):
         """method to create threads to do plot update"""
         self.loading_bar = LoadingScreen()
+        self.scatter = pg.ScatterPlotItem()
         self.thread = QtCore.QThread()
-        worker = PlotGenerationWorker()
-        worker.moveToThread(self.thread)
-        self.thread.started.connect(partial(worker.run, self, steps, histo, max_density, percentage_coefficient))
-        worker.finished.connect(self.thread.quit)
-        worker.finished.connect(worker.deleteLater)
+        self.worker = PlotGenerationWorker()
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(partial(self.worker.run, self, steps, histo, max_density, percentage_coefficient))
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(self.plot_finalization)
-        worker.progress.connect(self.loading_bar.update)
+        self.worker.progress.connect(self.loading_bar.update)
         self.thread.start()
 
     def plot_finalization(self):
         """call this function when the worker finish updating plot data"""
+        #self.scatter = pg.ScatterPlotItem()
+        #self.scatter.addPoints(self.spots)
+        #self.graphWidget.addItem(self.scatter)
         self.setEnabled(True)
         self.loading_bar.hide()
         self.graphWidget.removeItem(self.lr_x_axis)
@@ -2277,8 +2286,7 @@ class PlotGenerationWorker(QtCore.QObject):
     progress = QtCore.pyqtSignal(list)
 
     def run(self, parent, steps, histo, max_density, percentage_coefficient):
-        spots = []
-        scatter = pg.ScatterPlotItem()
+        parent.spots = []
         cm = pg.colormap.get('CET-R2')
         progress_percent = 0
         data_size = len(parent.Ch1_channel0)
@@ -2302,7 +2310,7 @@ class PlotGenerationWorker(QtCore.QObject):
                         'pen': None,
                         'symbol': 'p',
                         'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
-            spots.append(spot_dic)
+            parent.spots.append(spot_dic.copy())
             # calculate current percentage, this stage max at 80
             if i*100//data_size != progress_percent:
                 progress_percent = i*80//data_size
@@ -2311,9 +2319,9 @@ class PlotGenerationWorker(QtCore.QObject):
             # parent.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
             #                     symbolSize=5, symbolBrush=(red, blue, green))
         self.progress.emit([85, "Assigning density to data..."])
-        scatter.addPoints(spots)
+        parent.scatter.addPoints(parent.spots)
         self.progress.emit([95, "Plotting data..."])
-        parent.graphWidget.addItem(scatter)
+        parent.graphWidget.addItem(parent.scatter)
         self.progress.emit([100, "Finished"])
         self.finished.emit()
 
