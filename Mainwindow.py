@@ -75,7 +75,10 @@ class Ui_MainWindow(QMainWindow):
         self.thread = []
         self.time_log_file_model = QStandardItemModel()
         self.time_log_file_indexes = []
+        # extraction thread holds the threads created for each file
         self.extraction_thread_state = []
+        # extraction queue holds the index of threads to get extracted
+        self.extraction_queue = []
         self.setupUi()
 
 
@@ -3176,6 +3179,34 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
                     self.comboBox_14_list)
                 print("complete!")
+            elif ThreadState.RUNNING in self.extraction_thread_state and \
+                    self.extraction_thread_state[self.main_file_select] in (ThreadState.IDLING, ThreadState.FINISHED):
+                # this case will add a index to the extraction q
+                self.extraction_queue.append([self.main_file_select, threshold, peaks_threshold, width_min, width_max,
+                                              width_enable, peak_enable, channel, stats, threshold_check])
+                self.comboBox_14_list = {}
+                if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
+                if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
+                if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
+                if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
+                if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
+                if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
+                if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
+                if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
+                if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+                    self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
+                self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
+                    self.comboBox_14_list)
+                self.file_list_view.item(self.main_file_select).setForeground(QColor(255, 255, 0))
+                logging.info("New file added to extraction queue")
             else:
                 logging.info("Thread not ready for processing")
 
@@ -3289,7 +3320,7 @@ class Ui_MainWindow(QMainWindow):
         self.thread[thread_index] = QtCore.QThread()
         worker = ExtractWorker()
         worker.moveToThread(self.thread[thread_index])
-        self.thread[thread_index].started.connect(partial(worker.run, ui, self.current_file_dict, threshold,
+        self.thread[thread_index].started.connect(partial(worker.run, ui, self.file_dict_list[thread_index], threshold,
                                                             peaks_threshold, stats, threshold_check, width_min, width_max,
                                                             width_enable, peak_enable, channel))
         worker.progress.connect(self.extracton_progress_update)
@@ -3306,6 +3337,11 @@ class Ui_MainWindow(QMainWindow):
             self.update_file_color()
         else:
             logging.INFO("Thread index out of range")
+        if self.extraction_queue:
+            arg = self.extraction_queue.pop(0)
+            logging.info(arg)
+            self.run_extraction(*arg)
+
 
 
     def extracton_progress_update(self, progress):

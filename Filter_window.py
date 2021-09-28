@@ -1596,9 +1596,9 @@ class window_filter(QWidget):
             self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
             self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
-    def quadrant_rect_update(self):
-        """update the quadrant rectangle"""
-        print("update square")
+    def quadrant_rect_click_handle(self):
+        """update the quadrant rectangle when mouse is clicked, remove or add the box as needed"""
+        print("redraw square")
         y_axis = self.graphWidget.getAxis('left')
         x_axis = self.graphWidget.getAxis('bottom')
         x_range = x_axis.range
@@ -1608,7 +1608,8 @@ class window_filter(QWidget):
         # calls the custom function
         if self.rect_trigger:
             self.graphWidget.removeItem(self.quad_rect)
-
+            self.rect_trigger = False
+            return
         self.rect_trigger = True
 
         if self.selected_quadrant == 0:
@@ -1642,6 +1643,7 @@ class window_filter(QWidget):
 
         self.quad_rect = RectQuadrant(rect_object)
         self.graphWidget.addItem(self.quad_rect)
+        self.graphWidget.disableAutoRange()
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
@@ -1849,7 +1851,7 @@ class window_filter(QWidget):
                         self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
                 except:
                     self.points_inside = []
-                self.quadrant_rect_resize()
+                self.quadrant_rect_click_handle()
 
         elif self.stop_edit_trigger and self.polygon_trigger and point.button() == 1:
 
