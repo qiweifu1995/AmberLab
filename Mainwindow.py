@@ -9,7 +9,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
 from functools import partial
-
+import pickle
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -59,8 +59,9 @@ class Ui_MainWindow(QMainWindow):
         super(Ui_MainWindow, self).__init__()
 
         # store everything about new filter
+        self.analog = {}
+        self.thresholds = []
         self.tree_dic = {}
-
         # StandardItem class created at very top, it combines the brach font and color in to one-line-code
         # 0, is the parent brach above all
         # 0,0 is the 0 child brach which has a 0, parent
@@ -1872,6 +1873,8 @@ class Ui_MainWindow(QMainWindow):
         self.w.apply_all_set.connect(self.threshold_apply_all)
         self.pushButton_resample.clicked.connect(self.openWindow)
 
+        self.actionAdd_Save.triggered.connect(self.save)
+
         # triggers for the log, havn't update adter new filter window function included.
 
         self.checkbox_ch1.stateChanged.connect(
@@ -3232,8 +3235,13 @@ class Ui_MainWindow(QMainWindow):
         if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
 
+    def save(self):
+        """ function to save current instance """
+        file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.save_instance()
+
     def add(self):
-        name, _ = QFileDialog.getOpenFileNames(self.mainwindow, 'Open File', filter="*peak*")
+        name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
         #         self.comboBox_option1.addItem("Current Data")
         #         self.comboBox_option2.addItem("Current Data")
         #         self.comboBox_option1.addItem("Current Data post Width/Peaks # Filter")
@@ -3246,11 +3254,17 @@ class Ui_MainWindow(QMainWindow):
         for f in name:
             self.file_dict_list.append(Helper.project_namelist(f))
             self.file_list_view.addItem(f)
+            self.thread.append(QtCore.QThread())
+            self.extraction_thread_state.append(ThreadState.IDLING)
+            self.thresholds.append([0.0, 0.0, 0.0, 0.0])
         #             self.comboBox_option1.addItem(f)
         #             self.comboBox_option2.addItem(f)
         for i in range(self.file_list_view.count()):
             item = self.file_list_view.item(i)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        self.ui_state.threshold_initialize(self.thresholds)
+        self.update_file_color()
+
 
     def update_file_color(self):
         """call this function to update the color of file selection"""
@@ -3312,6 +3326,13 @@ class Ui_MainWindow(QMainWindow):
                 ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
             self.update_file_color()
             print(self.tree_dic.keys())
+
+    def save_instance(self, file_dir, main_window):
+        full_file_dir = file_dir + "/save.pickle"
+        file_out = open(full_file_dir, "wb")
+        pickle.dump(main_window, file_out)
+        file_out.close()
+        print(full_file_dir + " finished writing")
 
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
@@ -3379,6 +3400,9 @@ class ExtractWorker(QtCore.QObject):
         #ui.update_statistic()
         logging.info("Worker finished")
         self.finished.emit()
+
+
+
 
 
 if __name__ == "__main__":
