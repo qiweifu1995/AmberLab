@@ -635,6 +635,27 @@ class ThreadState(Enum):
     FINISHED = 2
 
 
+class SaveObject:
+    """this class used for exporting software state with pickle"""
+    def __init__(self, analog: dict, thresholds: list, file_dict_list: list, working_data: list, current_file_dict: dict
+                 , ui_state: ui_state, time_log_file_indexes: list, extraction_thread_state: list, tree_dic):
+        self.analog = analog
+        self.thresholds = thresholds
+        self.file_dict_list = file_dict_list
+        self.working_data = working_data
+        self.current_file_dict = current_file_dict
+        self.ui_state = ui_state
+        self.time_log_file_indexes = time_log_file_indexes
+        # extraction thread holds the threads created for each file
+        self.extraction_thread_state = extraction_thread_state
+        self.tree_dic_keys = list(tree_dic.keys())
+        self.filter_data_dict = {}
+        for keys in tree_dic.keys():
+            filter_data = tree_dic[keys]['tree_windowfilter'].filter_export()
+            self.filter_data_dict[keys] = filter_data
+
+
+
 if __name__ == "__main__":
     state = ui_state()
     update = state.checkbox_update_check(True, ch2=True)

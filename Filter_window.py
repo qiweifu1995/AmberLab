@@ -70,37 +70,11 @@ class RectQuadrant(pg.GraphicsObject):
 
 
 class window_filter(QWidget):
-    def __init__(self, parent, current_file_dict, working_data, peak_width_working_data, peak_num_working_data,
-                 linear_plot_channel_list={}, multi_file=None, multi_file_index=None, root=None):
+    def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
+                 peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
+                 root=None, saved_data=None):
         super().__init__()
-        self.ui = parent
-        # tree_index saved the index number for all filters, include its parent and child branch
-        # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
-        self.linear_plot_channel_list = linear_plot_channel_list
-        self.tree_index = self.ui.tree_index
-        self.current_file_dict = current_file_dict
-        self.working_data = working_data
-        self.filter_out_list = []
-        self.peak_width_working_data = []
-        self.peak_num_working_data = []
-        self.peak_time_working_data = []
-        self.points_inside_square = []
-        # root will hold the file index for the root file if true, else None
-        self.root = root
-        self.selected_quadrant = 1
-        self.rect_trigger = False
-        self.reset_comboBox = True
-        self.multi_file = multi_file
-        self.multi_file_index = multi_file_index
 
-        self.x = []
-        self.y = []
-        self.polygon = []
-        self.points_inside = []
-        self.x_quadrant_data = [[] for i in range(4)]
-        self.y_quadrant_data = [[] for i in range(4)]
-
-        # plot setting
         self.line_thickness = 4
         self.axis_font_size = 12
         self.legend_font_size = 12
@@ -109,25 +83,121 @@ class window_filter(QWidget):
         self.axis_font.setPointSize(21)
         self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
 
-        # linear plot data
-        self.index_in_all_selected_channel = []
-
-        # export parent index
-        # ex. index = 0,1,1 ; parent index = 0,1
-        if len(self.tree_index) > 1:
-            parent_index = self.tree_index[1:]
-            self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
-            self.peak_width_working_data = peak_width_working_data
-            self.peak_num_working_data = peak_num_working_data
-            self.root = None
-        # sets up the stats window
-        self.stats_window = Stats_window.StatsWindow()
-
-        # set up plot data
-        self.spot = []
-        self.scatter = pg.ScatterPlotItem()
-
         self.setupUI()
+        print(saved_data)
+        if saved_data is None:
+            self.ui = parent
+            # tree_index saved the index number for all filters, include its parent and child branch
+            # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
+            self.linear_plot_channel_list = linear_plot_channel_list
+            self.tree_index = self.ui.tree_index
+            self.current_file_dict = current_file_dict
+            self.working_data = working_data
+            self.filter_out_list = []
+            self.peak_width_working_data = []
+            self.peak_num_working_data = []
+            self.peak_time_working_data = []
+            self.points_inside_square = []
+            # root will hold the file index for the root file if true, else None
+            self.root = root
+            self.selected_quadrant = 1
+            self.rect_trigger = False
+            self.reset_comboBox = True
+            self.multi_file = multi_file
+            self.multi_file_index = multi_file_index
+
+            self.x = []
+            self.y = []
+            self.polygon = []
+            self.points_inside = []
+            self.x_quadrant_data = [[] for i in range(4)]
+            self.y_quadrant_data = [[] for i in range(4)]
+
+            # plot setting
+            self.line_thickness = 4
+            self.axis_font_size = 12
+            self.legend_font_size = 12
+            self.axis_thickness = 3
+            self.axis_font = QFont('Times')
+            self.axis_font.setPointSize(21)
+            self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
+
+            # linear plot data
+            self.index_in_all_selected_channel = []
+
+            # export parent index
+            # ex. index = 0,1,1 ; parent index = 0,1
+            if len(self.tree_index) > 1:
+                parent_index = self.tree_index[1:]
+                self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+                self.peak_width_working_data = peak_width_working_data
+                self.peak_num_working_data = peak_num_working_data
+                self.root = None
+            # sets up the stats window
+            self.stats_window = Stats_window.StatsWindow()
+
+            # set up plot data
+            self.spots = []
+            self.scatter = pg.ScatterPlotItem()
+
+        else:
+            self.ui = parent
+            # tree_index saved the index number for all filters, include its parent and child branch
+            # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
+            self.linear_plot_channel_list = saved_data.linear_plot_channel_list
+            self.tree_index = saved_data.tree_index
+            self.current_file_dict = saved_data.current_file_dict
+            self.working_data = saved_data.working_data
+            self.filter_out_list = saved_data.filter_out_list
+            self.peak_width_working_data = saved_data.peak_width_working_data
+            self.peak_num_working_data = saved_data.peak_num_working_data
+            self.peak_time_working_data = saved_data.peak_time_working_data
+            self.points_inside_square = saved_data.points_inside_square
+            # root will hold the file index for the root file if true, else None
+            self.root = saved_data.root
+            self.selected_quadrant = 1
+            self.rect_trigger = False
+            self.reset_comboBox = True
+            self.multi_file = saved_data.multi_file
+            self.multi_file_index = saved_data.multi_file_index
+
+            self.x = []
+            self.y = []
+            self.polygon = saved_data.polygon
+            self.points_inside = saved_data.points_inside
+            self.x_quadrant_data = [[] for i in range(4)]
+            self.y_quadrant_data = [[] for i in range(4)]
+
+            # plot setting
+            self.line_thickness = 4
+            self.axis_font_size = 12
+            self.legend_font_size = 12
+            self.axis_thickness = 3
+            self.axis_font = QFont('Times')
+            self.axis_font.setPointSize(21)
+            self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
+
+            # linear plot data
+            self.index_in_all_selected_channel = saved_data.index_in_all_selected_channel
+
+            # export parent index
+            # ex. index = 0,1,1 ; parent index = 0,1
+            if len(self.tree_index) > 1:
+                parent_index = self.tree_index[1:]
+                self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+                self.peak_width_working_data = peak_width_working_data
+                self.peak_num_working_data = peak_num_working_data
+                #self.root = None
+            # sets up the stats window
+            self.stats_window = Stats_window.StatsWindow()
+
+            # set up plot data
+            self.spots = saved_data.spots
+            logging.info(self.spots)
+            self.scatter = pg.ScatterPlotItem()
+            self.scatter.addPoints(self.spots)
+            self.graphWidget.addItem(self.scatter)
+
 
     def setupUI(self):
         ### layout setup
@@ -2291,7 +2361,7 @@ class window_filter(QWidget):
     def plot_finalization(self):
         """call this function when the worker finish updating plot data"""
         #self.scatter = pg.ScatterPlotItem()
-        #self.scatter.addPoints(self.spots)
+        #self.scatter.addPoints(self.spotss)
         #self.graphWidget.addItem(self.scatter)
         self.setEnabled(True)
         self.loading_bar.hide()
@@ -2314,6 +2384,56 @@ class window_filter(QWidget):
         self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
         # reset threshold # test
         self.infiniteline_table_update()
+
+    def filter_export(self):
+        """function calls to export data needed to recreate filter"""
+        output = FilterData(self.linear_plot_channel_list, self.tree_index, self.current_file_dict,
+                            self.working_data, self.filter_out_list, self.peak_width_working_data,
+                            self.peak_num_working_data, self.peak_time_working_data, self.root, self.multi_file,
+                            self.multi_file_index, self.index_in_all_selected_channel, self.spots)
+        logging.info(self.spots)
+        return output
+
+
+class FilterData:
+    """this class will hold all the data to reconstruct a filter"""
+    def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, filter_out_list,
+                 peak_width_working_data, peak_num_working_data, peak_time_working_data, root, multi_file,
+                 multi_file_index, index_in_all_selected_channel, spots):
+        # tree_index saved the index number for all filters, include its parent and child branch
+        # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
+        self.linear_plot_channel_list = linear_plot_channel_list
+        self.tree_index = tree_index
+        self.current_file_dict = current_file_dict
+        self.working_data = working_data
+        self.filter_out_list = filter_out_list
+        self.peak_width_working_data = peak_width_working_data
+        self.peak_num_working_data = peak_num_working_data
+        self.peak_time_working_data = peak_time_working_data
+        self.points_inside_square = []
+        # root will hold the file index for the root file if true, else None
+        self.root = root
+
+        self.multi_file = multi_file
+        self.multi_file_index = multi_file_index
+
+        self.polygon = []
+        self.points_inside = []
+
+        # linear plot data
+        self.index_in_all_selected_channel = index_in_all_selected_channel
+
+        # export parent index
+        # ex. index = 0,1,1 ; parent index = 0,1
+        if len(self.tree_index) > 1:
+            parent_index = self.tree_index[1:]
+            self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
+            self.peak_width_working_data = peak_width_working_data
+            self.peak_num_working_data = peak_num_working_data
+            self.root = None
+
+        # set up plot data
+        self.spots = spots
 
 
 class PlotGenerationWorker(QtCore.QObject):
@@ -2387,6 +2507,7 @@ class LoadingScreen(QWidget):
         """Call this function when progress signal is emited"""
         self.bar_text.setText(progress[1])
         self.pbar.setValue(progress[0])
+
 
 def show_dialog(text: str, window_title: str):
     """this function is used to present user with a dialog"""

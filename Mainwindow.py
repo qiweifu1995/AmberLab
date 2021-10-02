@@ -1874,6 +1874,7 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_resample.clicked.connect(self.openWindow)
 
         self.actionAdd_Save.triggered.connect(self.save)
+        self.actionAdd_Load.triggered.connect(self.load)
 
         # triggers for the log, havn't update adter new filter window function included.
 
@@ -2564,7 +2565,7 @@ class Ui_MainWindow(QMainWindow):
                     self.working_data[i] += self.analog[self.current_file_dict['Peak Record']][0][i]
 
             ### filter data by using min and max width
-
+        """
         if self.filtered_working_data[3] == [] or self.filtered_working_data[2] == []:
             self.width_index0 = [i for i, x in enumerate(self.peak_width_working_data[0])]
             self.width_index1 = [i for i, x in enumerate(self.peak_width_working_data[1])]
@@ -2575,7 +2576,7 @@ class Ui_MainWindow(QMainWindow):
             self.filtered_working_data[2] = self.working_data[2]
             self.filtered_working_data[3] = self.working_data[3]
             self.filtered_peak_num_working_data = self.peak_num_working_data.copy()
-
+        """
         print("0,self.recalculate_peak_dataset", self.recalculate_peak_dataset)
         if self.recalculate_peak_dataset == True:
             ## x-axis
@@ -3238,7 +3239,41 @@ class Ui_MainWindow(QMainWindow):
     def save(self):
         """ function to save current instance """
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        self.save_instance()
+        if file:
+            full_file_dir = file + "/save.pickle"
+            file_out = open(full_file_dir, "wb")
+            output = Helper.SaveObject(self.analog, self.thresholds, self.file_dict_list, self.working_data,
+                                       self.current_file_dict, self.ui_state,
+                                       self.time_log_file_indexes, self.extraction_thread_state, self.tree_dic)
+            pickle.dump(output, file_out)
+            file_out.close()
+            print(full_file_dir + " finished writing")
+
+    def load(self):
+        file, _ = QFileDialog.getOpenFileName(self, "Select save file")
+        with open(file, "rb") as input_file:
+            self.tree_dic = {}
+            self.treeModel.clear()
+            data = pickle.load(input_file)
+            self.analog = data.analog
+            self.thresholds = data.thresholds
+            self.file_dict_list = data.file_dict_list
+            self.working_data = data.working_data
+            self.current_file_dict = data.current_file_dict
+            self.ui_state = data.ui_state
+            self.time_log_file_indexes = data.time_log_file_indexes
+            self.extraction_thread_state = data.extraction_thread_state
+            print(data.tree_dic_keys)
+            self.file_list_view.clear()
+            for i, file in enumerate(self.file_dict_list):
+                self.file_list_view.addItem(file["Peak Record"])
+                self.tree_dic[(i,)] = {}
+                self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(file["Peak Record"], 12, set_bold=True)
+                self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
+                print(data.filter_data_dict[(i,)])
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=data.filter_data_dict[(i,)])
+
+
 
     def add(self):
         name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
@@ -3317,8 +3352,7 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
                 self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
                 self.tree_index = (i,)
-                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], None,
-                                                                                       None, None, root=i)
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i)
                 self.thresholds.append([0.0, 0.0, 0.0, 0.0])
             self.ui_state.threshold_initialize(self.thresholds)
             self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
@@ -3327,12 +3361,8 @@ class Ui_MainWindow(QMainWindow):
             self.update_file_color()
             print(self.tree_dic.keys())
 
-    def save_instance(self, file_dir, main_window):
-        full_file_dir = file_dir + "/save.pickle"
-        file_out = open(full_file_dir, "wb")
-        pickle.dump(main_window, file_out)
-        file_out.close()
-        print(full_file_dir + " finished writing")
+
+
 
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
@@ -3400,8 +3430,6 @@ class ExtractWorker(QtCore.QObject):
         #ui.update_statistic()
         logging.info("Worker finished")
         self.finished.emit()
-
-
 
 
 
