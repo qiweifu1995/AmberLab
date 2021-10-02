@@ -3274,7 +3274,6 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=data.filter_data_dict[(i,)])
 
 
-
     def add(self):
         name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*peak*")
         #         self.comboBox_option1.addItem("Current Data")

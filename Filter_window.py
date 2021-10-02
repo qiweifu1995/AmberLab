@@ -112,6 +112,10 @@ class window_filter(QWidget):
             self.points_inside = []
             self.x_quadrant_data = [[] for i in range(4)]
             self.y_quadrant_data = [[] for i in range(4)]
+            self.Ch1_channel0 = []
+            self.Ch1_channel1 = []
+            self.Ch1_channel0_peak_num = []
+            self.Ch1_channel1_peak_num = []
 
             # plot setting
             self.line_thickness = 4
@@ -168,6 +172,27 @@ class window_filter(QWidget):
             self.x_quadrant_data = [[] for i in range(4)]
             self.y_quadrant_data = [[] for i in range(4)]
 
+            self.Ch1_channel0 = saved_data.Ch1_channel0
+            self.Ch1_channel1 = saved_data.Ch1_channel1
+            self.Ch1_channel0_peak_num = saved_data.Ch1_channel0_peak_num
+            self.Ch1_channel1_peak_num = saved_data.Ch1_channel1_peak_num
+
+            # ui element update
+            self.comboBox_3.setCurrentIndex(saved_data.window_setting["x_color"])
+            self.comboBox_4.setCurrentIndex(saved_data.window_setting["y_color"])
+            self.comboBox_1.setCurrentIndex(saved_data.window_setting["x_mode"])
+            self.comboBox_2.setCurrentIndex(saved_data.window_setting["y_mode"])
+            self.GateVoltage_x.setText(saved_data.window_setting["GateVoltage_x"])
+            self.GateVoltage_y.setText(saved_data.window_setting["GateVoltage_y"])
+            self.comboBox_peak_num_1.setCurrentIndex(saved_data.window_setting["ch1_peak_num_mode"])
+            self.comboBox_peak_num_2.setCurrentIndex(saved_data.window_setting["ch2_peak_num_mode"])
+            self.comboBox_peak_num_3.setCurrentIndex(saved_data.window_setting["ch3_peak_num_mode"])
+            self.comboBox_peak_num_4.setCurrentIndex(saved_data.window_setting["ch4_peak_num_mode"])
+            self.lineEdit_peak_num_1.setText(saved_data.window_setting["ch1_peak_num"])
+            self.lineEdit_peak_num_2.setText(saved_data.window_setting["ch2_peak_num"])
+            self.lineEdit_peak_num_3.setText(saved_data.window_setting["ch3_peak_num"])
+            self.lineEdit_peak_num_4.setText(saved_data.window_setting["ch4_peak_num"])
+
             # plot setting
             self.line_thickness = 4
             self.axis_font_size = 12
@@ -180,14 +205,6 @@ class window_filter(QWidget):
             # linear plot data
             self.index_in_all_selected_channel = saved_data.index_in_all_selected_channel
 
-            # export parent index
-            # ex. index = 0,1,1 ; parent index = 0,1
-            if len(self.tree_index) > 1:
-                parent_index = self.tree_index[1:]
-                self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
-                self.peak_width_working_data = peak_width_working_data
-                self.peak_num_working_data = peak_num_working_data
-                #self.root = None
             # sets up the stats window
             self.stats_window = Stats_window.StatsWindow()
 
@@ -197,6 +214,21 @@ class window_filter(QWidget):
             self.scatter = pg.ScatterPlotItem()
             self.scatter.addPoints(self.spots)
             self.graphWidget.addItem(self.scatter)
+
+            pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
+            self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
+            self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
+
+            self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+            self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+            self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+            self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+            self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+            self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+            # reset threshold # test
+            self.infiniteline_table_update()
+
+
 
 
     def setupUI(self):
@@ -1335,7 +1367,7 @@ class window_filter(QWidget):
 
             if self.multi_file is None:
                 """if file is single"""
-                if self.ui.extraction_thread_state[self.root] is ThreadState.FINISHED:
+                if len(self.tree_index) > 1 or self.ui.extraction_thread_state[self.root] is ThreadState.FINISHED:
                     self.peak_width_working_data = []
                     self.peak_num_working_data = []
                     self.working_data = []
@@ -2387,10 +2419,27 @@ class window_filter(QWidget):
 
     def filter_export(self):
         """function calls to export data needed to recreate filter"""
+        window_setting = {"x_color": self.comboBox_3.currentIndex(),
+                          "y_color": self.comboBox_4.currentIndex(),
+                          "x_mode": self.comboBox_1.currentIndex(),
+                          "y_mode": self.comboBox_2.currentIndex(),
+                          "GateVoltage_x": self.GateVoltage_x.text(),
+                          "GateVoltage_y": self.GateVoltage_y.text(),
+                          "ch1_peak_num_mode": self.comboBox_peak_num_1.currentIndex(),
+                          "ch2_peak_num_mode": self.comboBox_peak_num_2.currentIndex(),
+                          "ch3_peak_num_mode": self.comboBox_peak_num_3.currentIndex(),
+                          "ch4_peak_num_mode": self.comboBox_peak_num_4.currentIndex(),
+                          "ch1_peak_num": self.lineEdit_peak_num_1.text(),
+                          "ch2_peak_num": self.lineEdit_peak_num_2.text(),
+                          "ch3_peak_num": self.lineEdit_peak_num_3.text(),
+                          "ch4_peak_num": self.lineEdit_peak_num_4.text(),
+                          }
+
         output = FilterData(self.linear_plot_channel_list, self.tree_index, self.current_file_dict,
                             self.working_data, self.filter_out_list, self.peak_width_working_data,
                             self.peak_num_working_data, self.peak_time_working_data, self.root, self.multi_file,
-                            self.multi_file_index, self.index_in_all_selected_channel, self.spots)
+                            self.multi_file_index, self.index_in_all_selected_channel, self.spots, self.Ch1_channel0,
+                            self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
         logging.info(self.spots)
         return output
 
@@ -2399,7 +2448,8 @@ class FilterData:
     """this class will hold all the data to reconstruct a filter"""
     def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, filter_out_list,
                  peak_width_working_data, peak_num_working_data, peak_time_working_data, root, multi_file,
-                 multi_file_index, index_in_all_selected_channel, spots):
+                 multi_file_index, index_in_all_selected_channel, spots, Ch1_channel0, Ch1_channel1,
+                 Ch1_channel0_peak_num, Ch1_channel1_peak_num, window_setting):
         # tree_index saved the index number for all filters, include its parent and child branch
         # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
         self.linear_plot_channel_list = linear_plot_channel_list
@@ -2434,6 +2484,12 @@ class FilterData:
 
         # set up plot data
         self.spots = spots
+        self.Ch1_channel0 = Ch1_channel0
+        self.Ch1_channel1 = Ch1_channel1
+        self.Ch1_channel0_peak_num = Ch1_channel0_peak_num
+        self.Ch1_channel1_peak_num = Ch1_channel1_peak_num
+        self.window_setting = window_setting
+
 
 
 class PlotGenerationWorker(QtCore.QObject):
