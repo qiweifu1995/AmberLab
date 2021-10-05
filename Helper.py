@@ -650,10 +650,11 @@ class SaveObject:
         self.extraction_thread_state = extraction_thread_state
         self.tree_dic_keys = list(tree_dic.keys())
         self.filter_data_dict = {}
+        self.filter_names_dict = {}
         for keys in tree_dic.keys():
             filter_data = tree_dic[keys]['tree_windowfilter'].filter_export()
             self.filter_data_dict[keys] = filter_data
-
+            self.filter_names_dict[keys] = tree_dic[keys]['tree_standarditem'].text()
 
 
 if __name__ == "__main__":

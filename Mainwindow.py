@@ -3267,11 +3267,33 @@ class Ui_MainWindow(QMainWindow):
             self.file_list_view.clear()
             for i, file in enumerate(self.file_dict_list):
                 self.file_list_view.addItem(file["Peak Record"])
+                """
                 self.tree_dic[(i,)] = {}
                 self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(file["Peak Record"], 12, set_bold=True)
                 self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
                 print(data.filter_data_dict[(i,)])
                 self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=data.filter_data_dict[(i,)])
+                """
+            for key in data.filter_data_dict.keys():
+                if len(key) == 1:
+                    """this should be the root"""
+                    self.tree_dic[key] = {}
+                    filter_name = data.filter_names_dict[key]
+                    self.tree_dic[key]['tree_standarditem'] = StandardItem(filter_name, 12, set_bold=True)
+                    self.treeModel.appendRow(self.tree_dic[key]['tree_standarditem'])
+                    print(data.filter_data_dict[key])
+                    self.tree_dic[key]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=
+                    data.filter_data_dict[key])
+                else:
+                    parent_key = key[1:]
+                    self.tree_dic[key] = {}
+                    filter_name = data.filter_names_dict[key]
+                    self.tree_dic[key]['tree_standarditem'] = StandardItem(filter_name, 12, set_bold=True)
+                    self.tree_dic[parent_key]['tree_standarditem'].appendRow(self.tree_dic[key]['tree_standarditem'])
+                    self.tree_dic[key]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=
+                    data.filter_data_dict[key])
+
+
 
 
     def add(self):

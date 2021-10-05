@@ -2436,7 +2436,7 @@ class window_filter(QWidget):
                           }
 
         output = FilterData(self.linear_plot_channel_list, self.tree_index, self.current_file_dict,
-                            self.working_data, self.filter_out_list, self.peak_width_working_data,
+                            self.working_data, self.points_inside_square, self.points_inside, self.filter_out_list, self.peak_width_working_data,
                             self.peak_num_working_data, self.peak_time_working_data, self.root, self.multi_file,
                             self.multi_file_index, self.index_in_all_selected_channel, self.spots, self.Ch1_channel0,
                             self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
@@ -2446,7 +2446,7 @@ class window_filter(QWidget):
 
 class FilterData:
     """this class will hold all the data to reconstruct a filter"""
-    def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, filter_out_list,
+    def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, points_inside_square, points_inside, filter_out_list,
                  peak_width_working_data, peak_num_working_data, peak_time_working_data, root, multi_file,
                  multi_file_index, index_in_all_selected_channel, spots, Ch1_channel0, Ch1_channel1,
                  Ch1_channel0_peak_num, Ch1_channel1_peak_num, window_setting):
@@ -2460,7 +2460,8 @@ class FilterData:
         self.peak_width_working_data = peak_width_working_data
         self.peak_num_working_data = peak_num_working_data
         self.peak_time_working_data = peak_time_working_data
-        self.points_inside_square = []
+        self.points_inside_square = points_inside_square
+        self.points_inside = points_inside
         # root will hold the file index for the root file if true, else None
         self.root = root
 
@@ -2472,15 +2473,6 @@ class FilterData:
 
         # linear plot data
         self.index_in_all_selected_channel = index_in_all_selected_channel
-
-        # export parent index
-        # ex. index = 0,1,1 ; parent index = 0,1
-        if len(self.tree_index) > 1:
-            parent_index = self.tree_index[1:]
-            self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
-            self.peak_width_working_data = peak_width_working_data
-            self.peak_num_working_data = peak_num_working_data
-            self.root = None
 
         # set up plot data
         self.spots = spots
