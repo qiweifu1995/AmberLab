@@ -2438,7 +2438,6 @@ class window_filter(QWidget):
                             self.peak_num_working_data, self.peak_time_working_data, self.root, self.multi_file,
                             self.multi_file_index, self.index_in_all_selected_channel, self.spots, self.Ch1_channel0,
                             self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
-        logging.info(self.spots)
         return output
 
 

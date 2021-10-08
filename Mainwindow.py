@@ -3243,14 +3243,20 @@ class Ui_MainWindow(QMainWindow):
             full_file_dir = file + "/save.pickle"
             file_out = open(full_file_dir, "wb")
             time_log_reconstruct_index = {}
-
+            offset = 2
             for i in range(self.time_log_file_model.rowCount()):
                 item = self.time_log_file_model.item(i)
                 key = item.text()
+                if key in time_log_reconstruct_index.keys():
+                    key = key + " (" + str(offset) + ")"
+                    offset += 1
                 holder = []
                 for j in range(item.rowCount()):
                     holder.append(item.child(j).text())
                 time_log_reconstruct_index[key] = holder
+
+            print(time_log_reconstruct_index)
+
 
             output = Helper.SaveObject(self.analog, self.thresholds, self.file_dict_list, self.working_data,
                                        self.current_file_dict, self.ui_state, self.time_log_file_indexes,
@@ -3311,6 +3317,7 @@ class Ui_MainWindow(QMainWindow):
             ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
         self.time_log_window.import_data(data.time_log_data)
         self.time_log_file_model.clear()
+        print(data.time_log_reconstruct_index)
         for key in data.time_log_reconstruct_index.keys():
             current_item = QStandardItem(key)
             if data.time_log_reconstruct_index[key]:
