@@ -230,7 +230,6 @@ class window_filter(QWidget):
 
 
 
-
     def setupUI(self):
         ### layout setup
         outter_layout = QtWidgets.QHBoxLayout()
@@ -2190,7 +2189,6 @@ class window_filter(QWidget):
     def stats_clicked(self):
         """ypdate stats window"""
 
-        self.setEnabled(False)
         self.x_quadrant_data = [[] for i in range(4)]
         self.y_quadrant_data = [[] for i in range(4)]
 
@@ -2312,7 +2310,7 @@ class window_filter(QWidget):
         indices = [0]
         print(self.multi_file_index)
 
-        if self.root:
+        if self.root is not None:
             file_list_index.append(self.root)
             time_list_holder = [self.peak_time_working_data[x] for x in self.filter_out_list]
             self.time_list.append(time_list_holder.copy())

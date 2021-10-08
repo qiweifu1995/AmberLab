@@ -785,6 +785,31 @@ class TimeLogFileSelectionWindow(QWidget):
         self.file_index.append(index)
         current_item.setToolTip(string_holder)
 
+    def export_data(self):
+        """function to export data needed to recreate the time log from save file"""
+        time_log_export_data = {
+            "time_log_data": self.time_log_data,
+            "file_name_top": self.file_names_top,
+            "file_name_bot": self.file_names_bot,
+            "file_time_data": self.file_time_data,
+            "mode": self.mode,
+            "top_processed_data": self.top_processed_data,
+            "bot_processed_data": self.bot_processed_data,
+            "spawned_filter_counter": self.spawned_filter_counter
+        }
+        return time_log_export_data
+
+    def import_data(self, time_log_export_data):
+        """import data from export data"""
+        self.time_log_data = time_log_export_data["time_log_data"]
+        self.file_names_top = time_log_export_data["file_name_top"]
+        self.file_names_bot = time_log_export_data["file_name_bot"]
+        self.file_time_data = time_log_export_data["file_time_data"]
+        self.mode = time_log_export_data["mode"]
+        self.top_processed_data = time_log_export_data["top_processed_data"]
+        self.bot_processed_data = time_log_export_data["bot_processed_data"]
+        self.spawned_filter_counter = time_log_export_data["spawned_filter_counter"]
+
 
 class TimeLogPopUpWindow(QWidget):
     """window that handles the data transfer from filter window to the time log """

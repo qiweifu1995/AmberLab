@@ -638,7 +638,8 @@ class ThreadState(Enum):
 class SaveObject:
     """this class used for exporting software state with pickle"""
     def __init__(self, analog: dict, thresholds: list, file_dict_list: list, working_data: list, current_file_dict: dict
-                 , ui_state: ui_state, time_log_file_indexes: list, extraction_thread_state: list, tree_dic):
+                 , ui_state: ui_state, time_log_file_indexes: list, extraction_thread_state: list, tree_dic: dict,
+                 time_log_window, time_log_reconstruct_index):
         self.analog = analog
         self.thresholds = thresholds
         self.file_dict_list = file_dict_list
@@ -655,6 +656,8 @@ class SaveObject:
             filter_data = tree_dic[keys]['tree_windowfilter'].filter_export()
             self.filter_data_dict[keys] = filter_data
             self.filter_names_dict[keys] = tree_dic[keys]['tree_standarditem'].text()
+        self.time_log_data = time_log_window.export_data()
+        self.time_log_reconstruct_index = time_log_reconstruct_index
 
 
 if __name__ == "__main__":

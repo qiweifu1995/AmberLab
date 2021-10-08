@@ -3242,9 +3242,20 @@ class Ui_MainWindow(QMainWindow):
         if file:
             full_file_dir = file + "/save.pickle"
             file_out = open(full_file_dir, "wb")
+            time_log_reconstruct_index = {}
+
+            for i in range(self.time_log_file_model.rowCount()):
+                item = self.time_log_file_model.item(i)
+                key = item.text()
+                holder = []
+                for j in range(item.rowCount()):
+                    holder.append(item.child(j).text())
+                time_log_reconstruct_index[key] = holder
+
             output = Helper.SaveObject(self.analog, self.thresholds, self.file_dict_list, self.working_data,
-                                       self.current_file_dict, self.ui_state,
-                                       self.time_log_file_indexes, self.extraction_thread_state, self.tree_dic)
+                                       self.current_file_dict, self.ui_state, self.time_log_file_indexes,
+                                       self.extraction_thread_state, self.tree_dic, self.time_log_window,
+                                       time_log_reconstruct_index)
             pickle.dump(output, file_out)
             file_out.close()
             print(full_file_dir + " finished writing")
@@ -3265,8 +3276,10 @@ class Ui_MainWindow(QMainWindow):
             self.extraction_thread_state = data.extraction_thread_state
             print(data.tree_dic_keys)
             self.file_list_view.clear()
+            self.thread = []
             for i, file in enumerate(self.file_dict_list):
                 self.file_list_view.addItem(file["Peak Record"])
+                self.thread.append(QtCore.QThread())
                 """
                 self.tree_dic[(i,)] = {}
                 self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(file["Peak Record"], 12, set_bold=True)
@@ -3293,7 +3306,17 @@ class Ui_MainWindow(QMainWindow):
                     self.tree_dic[key]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=
                     data.filter_data_dict[key])
 
-
+        self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
+            self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
+            ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
+        self.time_log_window.import_data(data.time_log_data)
+        self.time_log_file_model.clear()
+        for key in data.time_log_reconstruct_index.keys():
+            current_item = QStandardItem(key)
+            if data.time_log_reconstruct_index[key]:
+                for child in data.time_log_reconstruct_index[key]:
+                    current_item.appendRow(QStandardItem(child))
+            self.time_log_file_model.appendRow(current_item)
 
 
     def add(self):
@@ -3383,9 +3406,6 @@ class Ui_MainWindow(QMainWindow):
             print(self.tree_dic.keys())
 
 
-
-
-
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
         self.extraction_thread_state[thread_index] = ThreadState.RUNNING
         self.update_file_color()
@@ -3413,7 +3433,6 @@ class Ui_MainWindow(QMainWindow):
             arg = self.extraction_queue.pop(0)
             logging.info(arg)
             self.run_extraction(*arg)
-
 
 
     def extracton_progress_update(self, progress):
