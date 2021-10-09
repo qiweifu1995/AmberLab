@@ -249,12 +249,12 @@ class window_filter(QWidget):
         Scatter_plot_layout.addWidget(self.label_filter_name, 1, 0, 1, 1)
 
         self.lineedit_filter_name = QtWidgets.QLineEdit('')
-        Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 1)
+        Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 2)
 
         self.line_filter_name = QtWidgets.QFrame()
         self.line_filter_name.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_filter_name.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Scatter_plot_layout.addWidget(self.line_filter_name, 2, 0, 1, 4)
+        Scatter_plot_layout.addWidget(self.line_filter_name, 2, 0, 1, 7)
 
         # some thresholds
         self.label_Axes = QLabel("Scatter Plot Axes")
@@ -267,6 +267,15 @@ class window_filter(QWidget):
 
         self.label_y_Axis = QLabel("Y-Axis")
         Scatter_plot_layout.addWidget(self.label_y_Axis, 5, 0, 1, 1)
+
+        self.label_channel_select = QLabel("Select Ch")
+        Scatter_plot_layout.addWidget(self.label_channel_select, 3, 5, 1, 1)
+
+        self.button_channel_select = QPushButton("Legacy Ch Select")
+        Scatter_plot_layout.addWidget(self.button_channel_select, 5, 5, 1, 1)
+
+        self.spacerItem_ch_select = QtWidgets.QSpacerItem(50, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        Scatter_plot_layout.addItem(self.spacerItem_ch_select, 5, 6, 1, 1)
 
         ### Check box layout
         self.comboBox_1 = QtWidgets.QComboBox()
@@ -289,10 +298,18 @@ class window_filter(QWidget):
         self.comboBox_4.addItem("Ultra Violet")
         self.comboBox_4.addItem("Orange")
 
+        self.comboBox_ch_select = QtWidgets.QComboBox()
+        self.comboBox_ch_select.addItem("All Droplets")
+        self.comboBox_ch_select.addItem("Sorted Positives")
+        self.comboBox_ch_select.addItem("All Positives")
+        self.comboBox_ch_select.addItem("Locked Positives")
+
         Scatter_plot_layout.addWidget(self.comboBox_1, 4, 1, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_2, 5, 1, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_3, 4, 2, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_4, 5, 2, 1, 1)
+        Scatter_plot_layout.addWidget(self.comboBox_4, 5, 2, 1, 1)
+        Scatter_plot_layout.addWidget(self.comboBox_ch_select, 4, 5, 1, 1)
 
         self.GateVoltage_x = QtWidgets.QLineEdit('0')
         Scatter_plot_layout.addWidget(self.GateVoltage_x, 4, 3, 1, 1)
@@ -302,7 +319,12 @@ class window_filter(QWidget):
         self.line_Scatter_plot = QtWidgets.QFrame()
         self.line_Scatter_plot.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_Scatter_plot.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Scatter_plot_layout.addWidget(self.line_Scatter_plot, 6, 0, 1, 4)
+        Scatter_plot_layout.addWidget(self.line_Scatter_plot, 6, 0, 1, 7)
+
+        self.line_ch_select = QtWidgets.QFrame()
+        self.line_ch_select.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_ch_select.setFrameShadow(QtWidgets.QFrame.Sunken)
+        Scatter_plot_layout.addWidget(self.line_ch_select, 3, 4, 3, 1)
 
         ######## Multi_peaks_layout grid
 
@@ -2554,6 +2576,100 @@ class LoadingScreen(QWidget):
         self.pbar.setValue(progress[0])
 
 
+class ChannelSelectWindow(QWidget):
+    """this class will pop up for legacy channel selection"""
+    def __init__(self):
+        super(ChannelSelectWindow, self).__init__()
+        self.comboBox_14_list = {}
+        self.setupUI()
+
+    def setupUI(self):
+        self.setWindowTitle("Channel Selection")
+        self.setFixedSize(200, 300)
+        self.layout_vertical_checkbox = QtWidgets.QVBoxLayout()
+
+        self.line = QtWidgets.QFrame()
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.label = QtWidgets.QLabel("Please select channels: ")
+        self.layout_vertical_checkbox.addWidget(self.label)
+
+        self.layout_vertical_checkbox.addWidget(self.line)
+
+        self.layout_vertical_checkbox.setObjectName("layout_vertical_checkbox")
+        self.checkbox_ch1 = QtWidgets.QCheckBox("Channel 1")
+        self.checkbox_ch1.setObjectName("checkbox_ch1")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch1)
+        self.checkbox_ch2 = QtWidgets.QCheckBox("Channel 2")
+        self.checkbox_ch2.setObjectName("checkbox_ch2")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch2)
+        self.checkbox_ch3 = QtWidgets.QCheckBox("Channel 3")
+        self.checkbox_ch3.setObjectName("checkbox_ch3")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch3)
+        self.checkbox_ch12 = QtWidgets.QCheckBox("Channel 1-2")
+        self.checkbox_ch12.setObjectName("checkbox_ch12")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch12)
+        self.checkbox_ch13 = QtWidgets.QCheckBox("Channel 1-3")
+        self.checkbox_ch13.setObjectName("checkbox_ch13")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch13)
+        self.checkbox_ch23 = QtWidgets.QCheckBox("Channel 2-3")
+        self.checkbox_ch23.setObjectName("checkbox_ch23")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_ch23)
+
+        self.checkbox_Droplet_Record = QtWidgets.QCheckBox("Droplet Record")
+        self.checkbox_Droplet_Record.setObjectName("checkbox_Droplet_Record")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_Droplet_Record)
+
+        self.checkbox_Locked_Out_Peaks = QtWidgets.QCheckBox("Locked Out Peaks")
+        self.checkbox_Locked_Out_Peaks.setObjectName("checkbox_Locked_Out_Peaks")
+        self.layout_vertical_checkbox.addWidget(self.checkbox_Locked_Out_Peaks)
+
+        self.checkBox_7 = QtWidgets.QCheckBox("Sorted Peaks")
+        self.checkBox_7.setObjectName("checkBox_7")
+        self.layout_vertical_checkbox.addWidget(self.checkBox_7)
+
+        self.layout_horizontal_checkbox = QtWidgets.QHBoxLayout()
+        self.ok_button = QtWidgets.QPushButton("OK")
+        self.reset_button = QtWidgets.QPushButton("Reset")
+
+        self.line_2 = QtWidgets.QFrame()
+        self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        self.layout_vertical_checkbox.addWidget(self.line_2)
+
+        self.layout_horizontal_checkbox.addWidget(self.ok_button)
+        self.layout_horizontal_checkbox.addWidget(self.reset_button)
+        self.layout_vertical_checkbox.addLayout(self.layout_horizontal_checkbox)
+
+        self.setLayout(self.layout_vertical_checkbox)
+        self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, False)
+
+    def update_channels(self):
+        self.comboBox_14_list = {}
+        if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
+        if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
+        if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
+        if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
+        if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
+        if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
+        if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
+        if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
+        if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+            self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
+
+
+
 def show_dialog(text: str, window_title: str):
     """this function is used to present user with a dialog"""
     dialog = QtWidgets.QDialog()
@@ -2575,7 +2691,8 @@ if __name__ == '__main__':
     App = QtWidgets.QApplication(sys.argv)
 
     # create the instance of our Window
-    window = LoadingScreen()
+    window = ChannelSelectWindow()
+    window.show()
 
     # start the app
     sys.exit(App.exec())
