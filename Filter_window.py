@@ -87,6 +87,8 @@ class window_filter(QWidget):
         print(saved_data)
         if saved_data is None:
             self.ui = parent
+            self.ch_select = ChannelSelectWindow(self)
+            self.legacy_mode = False
             # tree_index saved the index number for all filters, include its parent and child branch
             # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
             self.linear_plot_channel_list = linear_plot_channel_list
@@ -146,8 +148,10 @@ class window_filter(QWidget):
 
         else:
             self.ui = parent
+            self.ch_select = ChannelSelectWindow()
             # tree_index saved the index number for all filters, include its parent and child branch
             # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
+            self.legacy_mode = False
             self.linear_plot_channel_list = saved_data.linear_plot_channel_list
             self.tree_index = saved_data.tree_index
             self.current_file_dict = saved_data.current_file_dict
@@ -956,6 +960,7 @@ class window_filter(QWidget):
         self.pushButton_8.clicked.connect(self.polygon_last_page)
         self.pushButton_7.clicked.connect(self.polygon_next_page)
         self.pushButton_timelog.clicked.connect(self.time_log_clicked)
+        self.button_channel_select.clicked.connect(self.channel_select_clicked)
 
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
 
@@ -2207,6 +2212,10 @@ class window_filter(QWidget):
             self.label_dots_inside_polygon.setText(points_inside)
 
             # close the filter tab
+    def channel_select_clicked(self):
+        """for when channel selected is clicked"""
+        self.ch_select.show()
+
 
     def stats_clicked(self):
         """ypdate stats window"""
@@ -2578,9 +2587,10 @@ class LoadingScreen(QWidget):
 
 class ChannelSelectWindow(QWidget):
     """this class will pop up for legacy channel selection"""
-    def __init__(self):
+    def __init__(self, parent: window_filter):
         super(ChannelSelectWindow, self).__init__()
         self.comboBox_14_list = {}
+        self.parent = parent
         self.setupUI()
 
     def setupUI(self):
@@ -2647,26 +2657,54 @@ class ChannelSelectWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
         self.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, False)
 
+        self.ok_button.pressed.connect(self.update_channels)
+        self.reset_button.pressed.connect(self.reset)
+
     def update_channels(self):
         self.comboBox_14_list = {}
-        if self.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] != '':
+        if self.checkbox_ch1.isChecked() and self.parent.current_file_dict['Ch1 '] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1 "
-        if self.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] != '':
+        if self.checkbox_ch2.isChecked() and self.parent.current_file_dict['Ch2 '] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2 "
-        if self.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] != '':
+        if self.checkbox_ch3.isChecked() and self.parent.current_file_dict['Ch3 '] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch3 "
-        if self.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] != '':
+        if self.checkbox_ch12.isChecked() and self.parent.current_file_dict['Ch1-2'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-2"
-        if self.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] != '':
+        if self.checkbox_ch13.isChecked() and self.parent.current_file_dict['Ch1-3'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch1-3"
-        if self.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] != '':
+        if self.checkbox_ch23.isChecked() and self.parent.current_file_dict['Ch2-3'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Ch2-3"
-        if self.checkbox_Droplet_Record.isChecked() and self.current_file_dict['Droplet Record'] != '':
+        if self.checkbox_Droplet_Record.isChecked() and self.parent.current_file_dict['Droplet Record'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Droplet Record"
-        if self.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict['Locked Out Peaks'] != '':
+        if self.checkbox_Locked_Out_Peaks.isChecked() and self.parent.current_file_dict['Locked Out Peaks'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
-        if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
+        if self.checkBox_7.isChecked() and self.parent.current_file_dict['Peak Record'] != '':
             self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
+
+        if len(self.comboBox_14_list.keys()) > 0:
+            self.parent.legacy_mode = True
+            self.parent.button_channel_select.setCheckable(True)
+            self.parent.button_channel_select.setDown(True)
+            self.parent.button_channel_select.repaint()
+        else:
+            self.parent.legacy_mode = False
+            self.parent.button_channel_select.setCheckable(True)
+            self.parent.button_channel_select.setDown(False)
+            self.parent.button_channel_select.repaint()
+
+        self.hide()
+
+    def reset(self):
+        self.checkbox_ch1.setCheckState(0)
+        self.checkbox_ch2.setCheckState(0)
+        self.checkbox_ch3.setCheckState(0)
+        self.checkbox_ch12.setCheckState(0)
+        self.checkbox_ch13.setCheckState(0)
+        self.checkbox_ch23.setCheckState(0)
+        self.checkbox_Droplet_Record.setCheckState(0)
+        self.checkbox_Locked_Out_Peaks.setCheckState(0)
+        self.checkBox_7.setCheckState(0)
+
 
 
 
@@ -2689,7 +2727,6 @@ def show_dialog(text: str, window_title: str):
 if __name__ == '__main__':
     # create pyqt5 app
     App = QtWidgets.QApplication(sys.argv)
-
     # create the instance of our Window
     window = ChannelSelectWindow()
     window.show()
