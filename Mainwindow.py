@@ -3238,9 +3238,10 @@ class Ui_MainWindow(QMainWindow):
 
     def save(self):
         """ function to save current instance """
-        file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        if file:
-            full_file_dir = file + "/save.pickle"
+        file = QFileDialog.getSaveFileName(self, "Save File", os.getcwd(), "AmberLab Save File (*.abl)")
+        file_str = str(file[0])
+        if file_str:
+            full_file_dir = file_str
             file_out = open(full_file_dir, "wb")
             time_log_reconstruct_index = {}
             offset = 2
@@ -3267,7 +3268,7 @@ class Ui_MainWindow(QMainWindow):
             print(full_file_dir + " finished writing")
 
     def load(self):
-        file, _ = QFileDialog.getOpenFileName(self, "Select save file")
+        file, _ = QFileDialog.getOpenFileName(self, "Select save file", filter="(*.abl)")
         with open(file, "rb") as input_file:
             self.tree_dic = {}
             self.treeModel.clear()
@@ -3286,13 +3287,6 @@ class Ui_MainWindow(QMainWindow):
             for i, file in enumerate(self.file_dict_list):
                 self.file_list_view.addItem(file["Peak Record"])
                 self.thread.append(QtCore.QThread())
-                """
-                self.tree_dic[(i,)] = {}
-                self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(file["Peak Record"], 12, set_bold=True)
-                self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
-                print(data.filter_data_dict[(i,)])
-                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=data.filter_data_dict[(i,)])
-                """
             for key in data.filter_data_dict.keys():
                 if len(key) == 1:
                     """this should be the root"""
