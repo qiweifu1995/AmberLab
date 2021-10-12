@@ -4,7 +4,7 @@ import glob
 import logging
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-FILE_DIRECTORY = r"D:\Users\Kiwi\Downloads\EXP AFA 210804-1/"
+FILE_DIRECTORY = r"Z:\Data\EXP210929-1/"
 OUTPUT_NAME = "SNR Report.txt"
 CHUNK_SIZE = 200
 NOISE_WIDTH = 20

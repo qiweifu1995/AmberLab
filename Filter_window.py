@@ -148,7 +148,7 @@ class window_filter(QWidget):
 
         else:
             self.ui = parent
-            self.ch_select = ChannelSelectWindow()
+            self.ch_select = ChannelSelectWindow(self)
             # tree_index saved the index number for all filters, include its parent and child branch
             # ex. index = 0,1,1 means: select filter index is "No.1", under parent "No.1", upder grand-parent "No.0"
             self.legacy_mode = False
