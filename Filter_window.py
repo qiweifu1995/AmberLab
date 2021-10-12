@@ -139,6 +139,8 @@ class window_filter(QWidget):
                 self.peak_width_working_data = peak_width_working_data
                 self.peak_num_working_data = peak_num_working_data
                 self.root = None
+                self.comboBox_ch_select.setDisabled(True)
+                self.button_channel_select.setDisabled(True)
             # sets up the stats window
             self.stats_window = Stats_window.StatsWindow()
 
@@ -230,6 +232,9 @@ class window_filter(QWidget):
             self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
             self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
             # reset threshold # test
+            if len(self.tree_index) > 1:
+                self.comboBox_ch_select.setDisabled(True)
+                self.button_channel_select.setDisabled(True)
             self.infiniteline_table_update()
 
 
@@ -1378,7 +1383,7 @@ class window_filter(QWidget):
         # "update" clicked
         # prepare data
         start = time.time()
-        if not self.points_inside_square:
+        if len(self.tree_index) == 1:
             # this is for root data extraction
 
             self.peak_width_working_data = []

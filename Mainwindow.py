@@ -3180,8 +3180,8 @@ class Ui_MainWindow(QMainWindow):
                     self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
                 ### End
 
-                self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
-                    self.comboBox_14_list)
+#                self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
+#                   self.comboBox_14_list)
                 print("complete!")
             elif ThreadState.RUNNING in self.extraction_thread_state and \
                     self.extraction_thread_state[self.main_file_select] in (ThreadState.IDLING, ThreadState.FINISHED):
