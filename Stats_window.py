@@ -22,11 +22,11 @@ class StatsWindow(QWidget):
         vertical_layout = QtWidgets.QVBoxLayout()
 
         self.stats_table = QtWidgets.QTableWidget()
-        self.stats_table.setMinimumSize(QtCore.QSize(800,50))
+        self.stats_table.setMinimumSize(QtCore.QSize(850,50))
         vertical_layout.addWidget(self.stats_table)
         self.stats_table.setRowCount(4)
         # set column count
-        self.stats_table.setColumnCount(7)
+        self.stats_table.setColumnCount(8)
         self.stats_table.setHorizontalHeaderLabels(
             ('X Mean', 'X Stdev', 'X Max', 'X Min', 'Y Mean', 'Y Stdev', 'Y Max', 'Y Min'))
         self.stats_table.setVerticalHeaderLabels(

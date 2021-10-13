@@ -1818,6 +1818,7 @@ class window_filter(QWidget):
         # pass the threshold value to next window
         text_x = self.lr_x_axis.value()
         text_y = self.lr_y_axis.value()
+        self.quadrant_indexs = [[],[],[],[]]
         a = (np.array(self.Ch1_channel0) > text_x).tolist()
         c = (np.array(self.Ch1_channel1) > text_y).tolist()
 
@@ -1831,15 +1832,19 @@ class window_filter(QWidget):
             if a[i] and c[i]:
                 quadrant = 0
                 self.quadrant1_list[i] = True
+                self.quadrant_indexs[0].append(i)
             elif not a[i] and c[i]:
                 quadrant = 1
                 self.quadrant2_list[i] = True
+                self.quadrant_indexs[1].append(i)
             elif not a[i] and not c[i]:
                 quadrant = 2
                 self.quadrant3_list[i] = True
+                self.quadrant_indexs[2].append(i)
             else:
                 quadrant = 3
                 self.quadrant4_list[i] = True
+                self.quadrant_indexs[3].append(i)
 
             count_quadrant[quadrant] += 1
             if self.Ch1_channel0_peak_num[i] == 1:
@@ -2351,17 +2356,12 @@ class window_filter(QWidget):
         self.x_quadrant_data = [[] for i in range(4)]
         self.y_quadrant_data = [[] for i in range(4)]
 
-        quadrant_index = []
-        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant1_list)))
-        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant2_list)))
-        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant3_list)))
-        quadrant_index.append(list(compress(self.points_inside_square, self.quadrant4_list)))
 
         for i in range(4):
-            if len(quadrant_index[i]) > 0:
-                for j in range(len(quadrant_index[i])):
-                    self.x_quadrant_data[i].append(self.Ch1_channel0[quadrant_index[i][j]])
-                    self.y_quadrant_data[i].append(self.Ch1_channel1[quadrant_index[i][j]])
+            if len(self.quadrant_indexs[i]) > 0:
+                for j in range(len(self.quadrant_indexs[i])):
+                    self.x_quadrant_data[i].append(self.Ch1_channel0[self.quadrant_indexs[i][j]])
+                    self.y_quadrant_data[i].append(self.Ch1_channel1[self.quadrant_indexs[i][j]])
 
         self.stats_window.update(self.windowTitle, self.x_quadrant_data, self.y_quadrant_data)
         self.stats_window.show()
@@ -2744,7 +2744,7 @@ class ChannelSelectWindow(QWidget):
         self.layout_vertical_checkbox.addWidget(self.checkbox_ch2)
         self.checkbox_ch3 = QtWidgets.QCheckBox("Channel 3")
         self.checkbox_ch3.setObjectName("checkbox_ch3")
-        self.layout_vertical_checkbox.addWidget(self.checkbox_ch3)
+        #elf.layout_vertical_checkbox.addWidget(self.checkbox_ch3)
         self.checkbox_ch12 = QtWidgets.QCheckBox("Channel 1-2")
         self.checkbox_ch12.setObjectName("checkbox_ch12")
         self.layout_vertical_checkbox.addWidget(self.checkbox_ch12)
