@@ -126,7 +126,7 @@ class Ui_MainWindow(QMainWindow):
 
         spacerItem = QtWidgets.QSpacerItem(120, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.layout_vertical_filecontrol.addItem(spacerItem)
-        self.line_2 = QtWidgets.QFrame(self.centralwidget)
+        self.line_2 = QtWidgets.QFrame()
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
@@ -1759,9 +1759,8 @@ class Ui_MainWindow(QMainWindow):
 
         self.time_log_tab_init()
 
-        self.tab_peakmax = QtWidgets.QWidget()
-        self.tab_peakmax.setObjectName("tab_peakmax")
-        self.tab_widgets_main.addTab(self.tab_peakmax, "")
+        self.dispense_mapping_tab_init()
+
 
         # report tab
 
@@ -1943,6 +1942,83 @@ class Ui_MainWindow(QMainWindow):
 
         self.file_list_view.itemChanged.connect(self.chart_title_change)
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
+
+    def dispense_mapping_tab_init(self):
+        """this method contains all the QT UI components for the mapping """
+        self.tab_peakmax = QtWidgets.QWidget()
+        self.tab_peakmax.setObjectName("tab_peakmax")
+        self.tab_widgets_main.addTab(self.tab_peakmax, "")
+
+        h_divider_line = QtWidgets.QFrame()
+        h_divider_line.setFrameShape(QtWidgets.QFrame.HLine)
+        h_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        #main vertical layout
+        main_vertical_layout = QtWidgets.QVBoxLayout()
+        self.well_plots_layout = QtWidgets.QGridLayout()
+        self.well_plots = [[] for i in range(8)]
+        for i in range (8):
+            self.well_plots[i] = PlotWidget(background="w")
+            if i < 4:
+                self.well_plots_layout.addWidget(self.well_plots[i], 0, i, 1, 1)
+            else:
+                self.well_plots_layout.addWidget(self.well_plots[i], 1, i-4, 1, 1)
+
+        main_vertical_layout.addLayout(self.well_plots_layout)
+        main_vertical_layout.addWidget(h_divider_line)
+        spacerItem = QtWidgets.QSpacerItem(5, 200, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        bottom_horizontal_layout = QtWidgets.QHBoxLayout()
+        bottom_horizontal_layout.addSpacerItem(spacerItem)
+        main_vertical_layout.addLayout(bottom_horizontal_layout)
+
+        self.col_buttons = [QtWidgets.QPushButton(str(i+1)) for i in range(12)]
+        v_labels = [chr(i) for i in range(65, 73)]
+        self.well_selector_layout = QtWidgets.QGridLayout()
+
+        for i in range(12):
+            self.well_selector_layout.addWidget(self.col_buttons[i], 0, i+1, 1, 1)
+            self.col_buttons[i].setFixedSize(QtCore.QSize(20, 20))
+            self.col_buttons[i].clicked.connect(self.col_button_clicked)
+        for i in range(8):
+            self.well_selector_layout.addWidget(QtWidgets.QLabel(v_labels[i]), i+1, 0, 1, 1)
+
+        self.well_selector_checkboxes = []
+        for i in range(12):
+            self.well_selector_checkboxes.append([])
+            for j in range(8):
+                self.well_selector_checkboxes[i].append(WellsCheckBox(i,j))
+                self.well_selector_layout.addWidget(self.well_selector_checkboxes[i][j], j+1, i+1, 1, 1)
+                self.well_selector_checkboxes[i][j].stateChanged.connect(self.well_clicked)
+
+        bottom_horizontal_layout.addLayout(self.well_selector_layout)
+
+        self.plate_combobox = QtWidgets.QComboBox()
+        self.well_selector_layout.addWidget(self.plate_combobox, 9, 0, 1, 13)
+
+        V_divider_line = QtWidgets.QFrame()
+        V_divider_line.setFrameShape(QtWidgets.QFrame.VLine)
+        V_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        spacerItem2 = QtWidgets.QSpacerItem(2000, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        bottom_horizontal_layout.addWidget(V_divider_line)
+        bottom_horizontal_layout.addItem(spacerItem2)
+
+
+        self.tab_peakmax.setLayout(main_vertical_layout)
+
+
+
+
+
+    def col_button_clicked(self):
+        """this function handle when a button is clicked"""
+        button = self.sender()
+        print(button.text())
+
+    def well_clicked(self):
+        """this function handle when a button is clicked"""
+        button = self.sender()
+        print(button.x)
+        print(button.y)
 
     def time_log_tab_init(self):
         """the function which contains all the Qt UI components for the time log tab"""
@@ -2895,7 +2971,7 @@ class Ui_MainWindow(QMainWindow):
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_timelog),
                                          _translate("MainWindow", "Time Log"))
         self.tab_widgets_main.setTabText(self.tab_widgets_main.indexOf(self.tab_peakmax),
-                                         _translate("MainWindow", "Peak Maxes Log"))
+                                         _translate("MainWindow", "Dispense Mapping"))
 
         self.label_271.setText(_translate("MainWindow", "Channel Selection"))
 
@@ -3472,6 +3548,12 @@ class ExtractWorker(QtCore.QObject):
         logging.info("Worker finished")
         self.finished.emit()
 
+class WellsCheckBox(QtWidgets.QCheckBox):
+    """this is the checkbox that will hold its position"""
+    def __init__(self, x, y):
+        super(WellsCheckBox, self).__init__()
+        self.x = x
+        self.y = y
 
 
 if __name__ == "__main__":
