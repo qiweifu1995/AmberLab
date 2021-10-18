@@ -1797,10 +1797,12 @@ class Ui_MainWindow(QMainWindow):
         self.actionImport.setObjectName("actionImport")
         self.actionAdd_New = QtWidgets.QAction(self)
         self.actionAdd_New.setObjectName("actionAdd_New")
+        self.actionMapping = QtWidgets.QAction("Load Dispense Mapping")
         self.actionClose = QtWidgets.QAction(self)
         self.actionClose.setObjectName("actionClose")
         self.menuFiles.addAction(self.actionImport)
         self.menuFiles.addAction(self.actionAdd_New)
+        self.menuFiles.addAction(self.actionMapping)
 
         # save project
         self.actionAdd_Save = QtWidgets.QAction(self)
@@ -2000,6 +2002,9 @@ class Ui_MainWindow(QMainWindow):
         V_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         spacerItem2 = QtWidgets.QSpacerItem(2000, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         bottom_horizontal_layout.addWidget(V_divider_line)
+
+        options_layout = QtWidgets.QFormLayout()
+
         bottom_horizontal_layout.addItem(spacerItem2)
 
 
