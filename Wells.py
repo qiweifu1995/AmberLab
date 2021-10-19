@@ -10,7 +10,7 @@ class Wells:
     def __init__(self, rootfolder, indexed_files, chunk_size, well_mode):
         """initialize speicifed numbers of channels, assign data and if well is filled"""
 
-        self.current_well = 1
+        self.current_well = 0
         self.current_strip = 1
         self.current_plate = 1
         self.strip_data = []
@@ -43,7 +43,7 @@ class Wells:
                                 for data in peak_reader:
                                     peak_holder.append(data)
                     while len(well_index):
-                        for well_x in range(self.current_well, well_mode+1):
+                        for well_x in range(self.current_well, well_mode):
                             if len(well_index) == 0:
                                 break
                             elif well_index[0][0] == self.current_well:

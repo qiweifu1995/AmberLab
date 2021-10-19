@@ -10,6 +10,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMainWindow
 from functools import partial
 import pickle
+import Wells
+import math
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -80,6 +82,7 @@ class Ui_MainWindow(QMainWindow):
         self.extraction_thread_state = []
         # extraction queue holds the index of threads to get extracted
         self.extraction_queue = []
+        self.well_checkbox_queue = []
         self.setupUi()
 
 
@@ -1876,6 +1879,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.actionAdd_Save.triggered.connect(self.save)
         self.actionAdd_Load.triggered.connect(self.load)
+        self.actionMapping.triggered.connect(self.open_dispense_folder)
 
         # triggers for the log, havn't update adter new filter window function included.
 
@@ -1980,6 +1984,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(12):
             self.well_selector_layout.addWidget(self.col_buttons[i], 0, i+1, 1, 1)
             self.col_buttons[i].setFixedSize(QtCore.QSize(20, 20))
+            self.col_buttons[i].setCheckable(True)
             self.col_buttons[i].clicked.connect(self.col_button_clicked)
         for i in range(8):
             self.well_selector_layout.addWidget(QtWidgets.QLabel(v_labels[i]), i+1, 0, 1, 1)
@@ -2004,7 +2009,49 @@ class Ui_MainWindow(QMainWindow):
         bottom_horizontal_layout.addWidget(V_divider_line)
 
         options_layout = QtWidgets.QFormLayout()
+        self.radio_group = QtWidgets.QGroupBox()
+        group_v_layout = QtWidgets.QVBoxLayout()
+        self.radiobutton_200 = QtWidgets.QRadioButton("200 Sample Size")
+        self.radiobutton_200.setChecked(True)
+        self.radiobutton_1000 = QtWidgets.QRadioButton("1000 Sample Size")
+        group_divider_line = QtWidgets.QFrame()
+        group_divider_line.setFrameShape(QtWidgets.QFrame.HLine)
+        group_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        group_v_layout.addWidget(self.radiobutton_200)
+        group_v_layout.addWidget(self.radiobutton_1000)
+        self.radio_group.setLayout(group_v_layout)
+        options_layout.addRow("File Format:", self.radio_group)
 
+        self.radio_group_2 = QtWidgets.QGroupBox()
+        group_v_layout_2 = QtWidgets.QVBoxLayout()
+        self.radiobutton_96 = QtWidgets.QRadioButton("96 Wells Mode")
+        self.radiobutton_96.setChecked(True)
+        self.radiobutton_48 = QtWidgets.QRadioButton("48 Wells Mode")
+        group_v_layout_2.addWidget(self.radiobutton_96)
+        group_v_layout_2.addWidget(self.radiobutton_48)
+        self.radio_group_2.setLayout(group_v_layout_2)
+        options_layout.addRow("Wells Mode:", self.radio_group_2)
+
+        group_divider_line = QtWidgets.QFrame()
+        group_divider_line.setFrameShape(QtWidgets.QFrame.VLine)
+        group_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+
+        options_layout_2 = QtWidgets.QFormLayout()
+        self.name_option = QtWidgets.QLabel("Legends Channel Names Setting: ")
+        self.green_name = QtWidgets.QLineEdit()
+        self.red_name = QtWidgets.QLineEdit()
+        self.blue_name = QtWidgets.QLineEdit()
+        self.orange_name = QtWidgets.QLineEdit()
+        options_layout_2.addRow(self.name_option)
+        options_layout_2.addRow("488nm Channel Name: ", self.green_name)
+        options_layout_2.addRow("638nm Channel Name: ", self.red_name)
+        options_layout_2.addRow("405nm Channel Name: ", self.blue_name)
+        options_layout_2.addRow("561nm Channel Name: ", self.orange_name)
+
+        bottom_horizontal_layout.addLayout(options_layout)
+        bottom_horizontal_layout.addWidget(group_divider_line)
+        bottom_horizontal_layout.addLayout(options_layout_2)
         bottom_horizontal_layout.addItem(spacerItem2)
 
 
@@ -2014,16 +2061,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-    def col_button_clicked(self):
-        """this function handle when a button is clicked"""
-        button = self.sender()
-        print(button.text())
 
-    def well_clicked(self):
-        """this function handle when a button is clicked"""
-        button = self.sender()
-        print(button.x)
-        print(button.y)
 
     def time_log_tab_init(self):
         """the function which contains all the Qt UI components for the time log tab"""
@@ -2217,6 +2255,7 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_bot_log.currentIndexChanged.connect(self.time_log_combo_box_clicked_bot)
         self.filter_remove_button.clicked.connect(self.filter_remove_item)
         self.filter_add_button.clicked.connect(self.filter_add_syringe)
+
 
     def filter_add_syringe(self):
         """function for handing add button click for filter addition"""
@@ -3487,6 +3526,92 @@ class Ui_MainWindow(QMainWindow):
             self.update_file_color()
             print(self.tree_dic.keys())
 
+    # start of the dispense mapping file
+    def open_dispense_folder(self):
+        """function return the list of """
+        root_folder = QFileDialog.getExistingDirectory(self, 'Open')
+        self.fileindex = Wells.index_files(root_folder)
+        print(self.fileindex)
+
+        if self.radiobutton_200.isChecked():
+            self.chunk_size = 200
+        else:
+            self.chunk_size = 1000
+
+        if self.radiobutton_96.isChecked():
+            self.well_mode = 96
+        else:
+            self.well_mode = 48
+
+        self.well_object = Wells.Wells(root_folder, self.fileindex, self.chunk_size, self.well_mode)
+        self.plate_combobox.clear()
+        # for i in range(8):
+        # print(self.well_object.plate_data[0][i])
+        # for i in range(8):
+        # print(self.well_object.plate_data[1][i])
+        for i in range(math.ceil(self.well_object.number_of_strips / 12)):
+            text_holder = 'Plate ' + str(i + 1)
+            self.plate_combobox.addItem(text_holder)
+        self.tabWidget.setCurrentIndex(4)
+        self.plate_update()
+        
+    def plate_update(self):
+        """update plate information when plate number changes"""
+        for strip in range(self.plate_combobox.currentIndex() * 12, self.plate_combobox.currentIndex() * 12 + 12):
+            for well in range(8):
+                # print(strip)
+                well_number = str(8 * (strip % 12) + well + 1)
+                try:
+                    holder = self.well_object.plate_data[strip][well]
+                    if len(holder) == 0:
+                        self.well_selector_checkboxes[strip][well].setEnabled(False)
+                    else:
+                        self.well_selector_checkboxes[strip][well].setEnabled(True)
+                except IndexError:
+                    self.well_selector_checkboxes[strip][well].setEnabled(False)
+        for strip in range(12):
+            self.col_buttons[strip].setEnabled(False)
+            for well in range(8):
+                if self.well_selector_checkboxes[strip][well].isEnabled():
+                    hi = QtWidgets.QCheckBox()
+                    self.col_buttons[strip].setEnabled(True)
+                    break
+
+    def col_button_clicked(self):
+        """this function handle when a button is clicked"""
+        button = self.sender()
+        button.setCheckable(True)
+        selected_col = int(button.text()) - 1
+        for strip in range(12):
+            if strip != selected_col:
+                self.col_buttons[strip].setChecked(False)
+            for well in range(8):
+                if strip == selected_col:
+                    if self.col_buttons[strip].isChecked():
+                        if self.well_selector_checkboxes[strip][well].isEnabled():
+                            self.well_selector_checkboxes[strip][well].setChecked(True)
+
+                    else:
+                        if self.well_selector_checkboxes[strip][well].isEnabled():
+                            self.well_selector_checkboxes[strip][well].setChecked(False)
+                else:
+                    self.well_selector_checkboxes[strip][well].setChecked(False)
+
+        self.well_checkbox_queue = []
+        if self.col_buttons[selected_col].isChecked():
+            for well in range(8):
+                if self.well_selector_checkboxes[selected_col][well].isEnabled():
+                    self.well_checkbox_queue.append((selected_col, well))
+
+        print(self.well_checkbox_queue)
+
+
+
+    def well_clicked(self):
+        """this function handle when a button is clicked"""
+        button = self.sender()
+        print(button.x)
+        print(button.y)
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
         self.extraction_thread_state[thread_index] = ThreadState.RUNNING

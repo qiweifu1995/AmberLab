@@ -781,9 +781,6 @@ class Mapping_MainWindow(object):
                 self.graphicsView9.plot(index, channel_4, name='Channel_4', pen='m', symbol='o', symbolSize=3,
                                         symbolBrush=('m'))
 
-
-
-
         else:
             if well_number1 == int(c):
                 self.graphicsView1.clear()
