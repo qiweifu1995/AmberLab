@@ -1960,17 +1960,28 @@ class Ui_MainWindow(QMainWindow):
         h_divider_line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         #main vertical layout
+        top_horizontal_layout = QtWidgets.QHBoxLayout()
         main_vertical_layout = QtWidgets.QVBoxLayout()
         self.well_plots_layout = QtWidgets.QGridLayout()
         self.well_plots = [[] for i in range(8)]
         for i in range (8):
+            plot = PlotWidget()
+            styles = {'color': 'r', 'font-size': '12px'}
             self.well_plots[i] = PlotWidget(background="w")
+            self.well_plots[i].setLabel('left', 'Voltage', **styles)
+            self.well_plots[i].setLabel('bottom', 'Samples', **styles)
+            legend = self.well_plots[i].addLegend(offset=(1, 1), verSpacing=-20)
+            self.well_plots[i].showGrid(x=True, y=True)
+
             if i < 4:
                 self.well_plots_layout.addWidget(self.well_plots[i], 0, i, 1, 1)
             else:
                 self.well_plots_layout.addWidget(self.well_plots[i], 1, i-4, 1, 1)
 
-        main_vertical_layout.addLayout(self.well_plots_layout)
+        top_horizontal_layout.addLayout(self.well_plots_layout)
+        spacerItem_3 = QtWidgets.QSpacerItem(0, 2000, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        top_horizontal_layout.addItem(spacerItem_3)
+        main_vertical_layout.addLayout(top_horizontal_layout)
         main_vertical_layout.addWidget(h_divider_line)
         spacerItem = QtWidgets.QSpacerItem(5, 200, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         bottom_horizontal_layout = QtWidgets.QHBoxLayout()
@@ -2054,6 +2065,7 @@ class Ui_MainWindow(QMainWindow):
         bottom_horizontal_layout.addLayout(options_layout_2)
         bottom_horizontal_layout.addItem(spacerItem2)
 
+        self.plate_combobox.currentIndexChanged.connect(self.plate_update)
 
         self.tab_peakmax.setLayout(main_vertical_layout)
 
@@ -2898,7 +2910,6 @@ class Ui_MainWindow(QMainWindow):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_files.setText(_translate("MainWindow", "Files"))
         self.progress_label.setText(_translate("MainWindow", "File Extraction"))
         self.label.setText(_translate("MainWindow", "Channel Selection"))
@@ -3557,28 +3568,30 @@ class Ui_MainWindow(QMainWindow):
         
     def plate_update(self):
         """update plate information when plate number changes"""
+        self.well_checkbox_queue = []
         for strip in range(self.plate_combobox.currentIndex() * 12, self.plate_combobox.currentIndex() * 12 + 12):
             for well in range(8):
                 # print(strip)
-                well_number = str(8 * (strip % 12) + well + 1)
+                current_strip = strip % 12
                 try:
                     holder = self.well_object.plate_data[strip][well]
                     if len(holder) == 0:
-                        self.well_selector_checkboxes[strip][well].setEnabled(False)
+                        self.well_selector_checkboxes[current_strip][well].setEnabled(False)
                     else:
-                        self.well_selector_checkboxes[strip][well].setEnabled(True)
+                        self.well_selector_checkboxes[current_strip][well].setEnabled(True)
                 except IndexError:
-                    self.well_selector_checkboxes[strip][well].setEnabled(False)
+                    self.well_selector_checkboxes[current_strip][well].setEnabled(False)
         for strip in range(12):
             self.col_buttons[strip].setEnabled(False)
             for well in range(8):
                 if self.well_selector_checkboxes[strip][well].isEnabled():
-                    hi = QtWidgets.QCheckBox()
                     self.col_buttons[strip].setEnabled(True)
                     break
 
     def col_button_clicked(self):
         """this function handle when a button is clicked"""
+        print("Total layout row: " + str(self.well_plots_layout.rowCount()))
+        print("Total layout col: " + str(self.well_plots_layout.columnCount()))
         button = self.sender()
         button.setCheckable(True)
         selected_col = int(button.text()) - 1
@@ -3590,28 +3603,178 @@ class Ui_MainWindow(QMainWindow):
                     if self.col_buttons[strip].isChecked():
                         if self.well_selector_checkboxes[strip][well].isEnabled():
                             self.well_selector_checkboxes[strip][well].setChecked(True)
-
                     else:
+                        self.well_plots[well].hide()
+                        self.well_plots[well].setParent(None)
                         if self.well_selector_checkboxes[strip][well].isEnabled():
                             self.well_selector_checkboxes[strip][well].setChecked(False)
                 else:
                     self.well_selector_checkboxes[strip][well].setChecked(False)
-
         self.well_checkbox_queue = []
         if self.col_buttons[selected_col].isChecked():
             for well in range(8):
+                title = str(self.plate_combobox.currentIndex() + 1) + chr(65 + well) + str(selected_col)
+                self.well_plots[well].setTitle(title)
                 if self.well_selector_checkboxes[selected_col][well].isEnabled():
-                    self.well_checkbox_queue.append((selected_col, well))
-
-        print(self.well_checkbox_queue)
-
-
+                    self.well_checkbox_queue.append((selected_col, well, self.well_object.plate_data[self.plate_combobox.currentIndex()*12+selected_col][well]))
+            self.wells_plot(1)
 
     def well_clicked(self):
         """this function handle when a button is clicked"""
         button = self.sender()
-        print(button.x)
-        print(button.y)
+        col_triggered = None
+        for i in range(12):
+            if self.col_buttons[i].isChecked():
+                col_triggered = i
+        if col_triggered == button.x and button.isChecked():
+            return
+        else:
+            total_selected = 0
+            for x in range(12):
+                for y in range(8):
+                    if self.well_selector_checkboxes[x][y].isChecked():
+                        total_selected+=1
+            if total_selected > 8:
+                if self.well_selector_checkboxes[button.x][button.y].isChecked():
+                    self.well_selector_checkboxes[button.x][button.y].setChecked(False)
+                    return
+            else:
+                if col_triggered is not None:
+                    self.col_buttons[col_triggered].setChecked(False)
+                plate = self.plate_combobox.currentIndex()
+                self.well_checkbox_queue.clear()
+                for i in range(8):
+                    self.well_plots[i].hide()
+                    self.well_plots[i].setParent(None)
+                for col in range(12):
+                    for row in range(8):
+                        if self.well_selector_checkboxes[col][row].isChecked():
+                            data = self.well_object.plate_data[col + 12 * plate][row]
+                            self.well_checkbox_queue.append((col, row, data))
+                if len(self.well_checkbox_queue) > 0:
+                    self.wells_plot(0)
+
+    def wells_plot(self, mode):
+        """function called to plot all the items in the queue"""
+        for i in range(8):
+            self.well_plots[i].clear()
+            self.well_plots[i].setParent(None)
+            self.well_plots[i].hide()
+        strip_offset = self.plate_combobox.currentIndex() * 12
+        print("Total layout row: " + str(self.well_plots_layout.rowCount()))
+        print("Total layout col: " + str(self.well_plots_layout.columnCount()))
+        if self.green_name.text():
+            ch1_name = self.green_name.text()
+        else:
+            ch1_name = "Channel 1"
+
+        if self.red_name.text():
+            ch2_name = self.red_name.text()
+        else:
+            ch2_name = "Channel 2"
+
+        if self.blue_name.text():
+            ch3_name = self.blue_name.text()
+        else:
+            ch3_name = "Channel 3"
+
+        if self.orange_name.text():
+            ch4_name = self.orange_name.text()
+        else:
+            ch4_name = "Channel 4"
+
+        if mode == 0:
+            for count in range(8):
+                if count < 4:
+                    self.well_plots_layout.addWidget(self.well_plots[count], 0, count, 1, 1)
+                else:
+                    self.well_plots_layout.addWidget(self.well_plots[count], 1, count - 4, 1, 1)
+                self.well_plots[count].show()
+                for i in range(len(self.well_checkbox_queue), 8, 1):
+                    self.well_plots[i].hide()
+            if len(self.well_checkbox_queue) > 4:
+                self.well_plots_layout.setRowStretch(0, 1000)
+                self.well_plots_layout.setRowMinimumHeight(0, 1000)
+                self.well_plots_layout.setRowStretch(1, 1000)
+                self.well_plots_layout.setRowMinimumHeight(1, 1000)
+            else:
+                self.well_plots_layout.setRowStretch(0, 1000)
+                self.well_plots_layout.setRowMinimumHeight(0, 1000)
+                self.well_plots_layout.setRowStretch(1, 0)
+                self.well_plots_layout.setRowMinimumHeight(1, 0)
+
+            if len(self.well_checkbox_queue) > 4:
+                for i in range(4):
+                    self.well_plots_layout.setColumnStretch(i, 1000)
+                    self.well_plots_layout.setColumnMinimumWidth(i, 1000)
+            else:
+                for i in range(4):
+                    if i < len(self.well_checkbox_queue):
+                        self.well_plots_layout.setColumnStretch(i, 1000)
+                        self.well_plots_layout.setColumnMinimumWidth(i, 1000)
+                    else:
+                        self.well_plots_layout.setColumnStretch(i, 0)
+                        self.well_plots_layout.setColumnMinimumWidth(i, 0)
+
+        else:
+            for count in range(8):
+                if count < 4:
+                    self.well_plots_layout.addWidget(self.well_plots[count], 0, count, 1, 1)
+                else:
+                    self.well_plots_layout.addWidget(self.well_plots[count], 1, count - 4, 1, 1)
+                self.well_plots[count].show()
+            self.well_plots_layout.setRowStretch(0, 1000)
+            self.well_plots_layout.setRowMinimumHeight(0, 1000)
+            self.well_plots_layout.setRowStretch(1, 1000)
+            self.well_plots_layout.setRowMinimumHeight(1, 1000)
+            for i in range(4):
+                if i < len(self.well_checkbox_queue):
+                    self.well_plots_layout.setColumnStretch(i, 1000)
+                    self.well_plots_layout.setColumnMinimumWidth(i, 1000)
+                else:
+                    self.well_plots_layout.setColumnStretch(i, 0)
+                    self.well_plots_layout.setColumnMinimumWidth(i, 0)
+
+        for i in range(self.well_plots_layout.columnCount()):
+            self.well_plots_layout.setColumnStretch(i, 1000)
+        for i in range(self.well_plots_layout.rowCount()):
+            self.well_plots_layout.setRowStretch(i, 1000)
+
+        for count, data in enumerate(self.well_checkbox_queue):
+            x = data[0]
+            y = data[1]
+            peak_profile = data[2]
+            title = str(self.plate_combobox.currentIndex()+1) + chr(65+y) + str(x+1)
+            ch1_data = []
+            ch2_data = []
+            ch3_data = []
+            ch4_data = []
+            for i in peak_profile:
+                ch1_data.append(i[0])
+                ch2_data.append(i[1])
+                ch3_data.append(i[2])
+                ch4_data.append(i[3])
+            ch1_data = np.array(ch1_data).astype(float)
+            ch2_data = np.array(ch2_data).astype(float)
+            ch3_data = np.array(ch3_data).astype(float)
+            ch4_data = np.array(ch4_data).astype(float)
+            if mode == 1:
+                self.well_plots[y].plot(ch1_data, name=ch1_name, pen='g', symbol=None)
+                self.well_plots[y].plot(ch2_data, name=ch2_name, pen='r', symbol=None)
+                self.well_plots[y].plot(ch3_data, name=ch3_name, pen='b', symbol=None)
+                self.well_plots[y].plot(ch4_data, name=ch4_name, pen='m', symbol=None)
+            else:
+                self.well_plots[count].plot(ch1_data, name=ch1_name, pen='g', symbol=None)
+                self.well_plots[count].plot(ch2_data, name=ch2_name, pen='r', symbol=None)
+                self.well_plots[count].plot(ch3_data, name=ch3_name, pen='b', symbol=None)
+                self.well_plots[count].plot(ch4_data, name=ch4_name, pen='m', symbol=None)
+                self.well_plots[count].setTitle(title)
+        if mode == 1:
+            col = self.well_checkbox_queue[0][0]
+            for well in range(8):
+                title = str(self.plate_combobox.currentIndex() + 1) + chr(65 + well) + str(col + 1)
+                self.well_plots[well].setTitle(title)
+
 
     def run_extraction(self, thread_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check):
         self.extraction_thread_state[thread_index] = ThreadState.RUNNING
