@@ -44,7 +44,7 @@ def extracted_data_loader(parent, progress_index, file_name):
     start_count = False
     """while loop to figure out chunksize"""
     while chunk_size == 0 and counter < length:
-        if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 3] == -16:
+        if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 2] == -16:
             """rows with 16,16,16,16 is divider"""
             if start_count:
                 chunk_size = counter
@@ -383,7 +383,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
             print("Extracting peaks extracted data")
             progress_index = progress_index_list.pop(0)
             Peaklist, Peakwidth, NumPeaks, TimePeaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"])
-            analog_file[current_file_dict["Sorted Extracted"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
+            analog_file[current_file_dict["Sorted Extracted Data"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
 
         else:
             print("Extracting Peak... Parallel")
