@@ -3663,6 +3663,8 @@ class Ui_MainWindow(QMainWindow):
         strip_offset = self.plate_combobox.currentIndex() * 12
         print("Total layout row: " + str(self.well_plots_layout.rowCount()))
         print("Total layout col: " + str(self.well_plots_layout.columnCount()))
+
+        # update channel names
         if self.green_name.text():
             ch1_name = self.green_name.text()
         else:
@@ -3683,6 +3685,7 @@ class Ui_MainWindow(QMainWindow):
         else:
             ch4_name = "Channel 4"
 
+        # mode 0 means single well selections
         if mode == 0:
             for count in range(8):
                 if count < 4:
@@ -3728,12 +3731,8 @@ class Ui_MainWindow(QMainWindow):
             self.well_plots_layout.setRowStretch(1, 1000)
             self.well_plots_layout.setRowMinimumHeight(1, 1000)
             for i in range(4):
-                if i < len(self.well_checkbox_queue):
-                    self.well_plots_layout.setColumnStretch(i, 1000)
-                    self.well_plots_layout.setColumnMinimumWidth(i, 1000)
-                else:
-                    self.well_plots_layout.setColumnStretch(i, 0)
-                    self.well_plots_layout.setColumnMinimumWidth(i, 0)
+                self.well_plots_layout.setColumnStretch(i, 1000)
+                self.well_plots_layout.setColumnMinimumWidth(i, 1000)
 
         for i in range(self.well_plots_layout.columnCount()):
             self.well_plots_layout.setColumnStretch(i, 1000)
