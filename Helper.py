@@ -632,7 +632,8 @@ class ThreadState(Enum):
     """enum holding state of threads"""
     IDLING = 0
     RUNNING = 1
-    FINISHED = 2
+    PENDING = 2
+    FINISHED = 3
 
 
 class SaveObject:

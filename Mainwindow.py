@@ -3341,6 +3341,7 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
                     self.comboBox_14_list)
                 self.file_list_view.item(self.main_file_select).setForeground(QColor(255, 255, 0))
+                self.extraction_thread_state[self.main_file_select] = ThreadState.PENDING
                 logging.info("New file added to extraction queue")
             else:
                 logging.info("Thread not ready for processing")
@@ -3484,6 +3485,8 @@ class Ui_MainWindow(QMainWindow):
                 self.file_list_view.item(i).setForeground(QColor(128, 128, 128))
             elif self.extraction_thread_state[i] == ThreadState.RUNNING:
                 self.file_list_view.item(i).setForeground(QColor(0, 128, 0))
+            elif self.extraction_thread_state[i] == ThreadState.PENDING:
+                self.file_list_view.item(i).setForeground(QColor(256, 256, 0))
             else:
                 self.file_list_view.item(i).setForeground(QColor(0, 0, 0))
 
