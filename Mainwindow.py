@@ -2010,8 +2010,16 @@ class Ui_MainWindow(QMainWindow):
 
         bottom_horizontal_layout.addLayout(self.well_selector_layout)
 
+        self.well_left_button = QtWidgets.QToolButton()
+        self.well_left_button.setArrowType(QtCore.Qt.LeftArrow)
+        self.well_right_button = QtWidgets.QToolButton()
+        self.well_right_button.setArrowType(QtCore.Qt.RightArrow)
+
         self.plate_combobox = QtWidgets.QComboBox()
-        self.well_selector_layout.addWidget(self.plate_combobox, 9, 0, 1, 13)
+        self.well_selector_layout.addWidget(self.well_left_button, 9, 0, 1, 1)
+        self.well_selector_layout.addWidget(self.plate_combobox, 9, 1, 1, 11)
+        self.well_selector_layout.addWidget(self.well_right_button, 9, 12, 1, 1)
+
 
         V_divider_line = QtWidgets.QFrame()
         V_divider_line.setFrameShape(QtWidgets.QFrame.VLine)
@@ -2066,6 +2074,8 @@ class Ui_MainWindow(QMainWindow):
         bottom_horizontal_layout.addItem(spacerItem2)
 
         self.plate_combobox.currentIndexChanged.connect(self.plate_update)
+        self.well_left_button.clicked.connect(self.plate_left_button_clicked)
+        self.well_right_button.clicked.connect(self.plate_right_button_clicked)
 
         self.tab_peakmax.setLayout(main_vertical_layout)
 
@@ -3591,6 +3601,16 @@ class Ui_MainWindow(QMainWindow):
                 if self.well_selector_checkboxes[strip][well].isEnabled():
                     self.col_buttons[strip].setEnabled(True)
                     break
+
+    def plate_left_button_clicked(self):
+        """update the selected plate"""
+        if self.plate_combobox.currentIndex() > 0:
+            self.plate_combobox.setCurrentIndex(self.plate_combobox.currentIndex()-1)
+
+    def plate_right_button_clicked(self):
+        """update the selected plate"""
+        if self.plate_combobox.currentIndex() < self.plate_combobox.count() - 1:
+            self.plate_combobox.setCurrentIndex(self.plate_combobox.currentIndex() + 1)
 
     def col_button_clicked(self):
         """this function handle when a button is clicked"""
