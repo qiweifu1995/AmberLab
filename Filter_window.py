@@ -14,13 +14,17 @@ from itertools import compress
 import matplotlib.path as mpltPath
 import time
 from math import sqrt
+import math
 from PyQt5.QtGui import QFont, QColor
 import Stats_window
 import Time_log_selection_window
 import logging
 import sys
+from pyqtgraph import colormap
 from Helper import ThreadState
 from functools import partial
+from pathlib import Path
+import csv
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
@@ -2647,7 +2651,16 @@ class PlotGenerationWorker(QtCore.QObject):
 
     def run(self, parent, steps, histo, max_density, percentage_coefficient):
         parent.spots = []
-        cm = pg.colormap.get('CET-R2')
+        print(os.getcwd())
+        step = [i/256 for i in range(255)]
+        colors = []
+        with open(os.path.dirname(os.path.realpath(__file__))+'/CET-R2.csv',  newline='') as f:
+            reader = csv.reader(f)
+            for line in reader:
+                colors.append([float(x)*256 for x in line])
+        print(colors)
+        cm = pg.ColorMap(pos= step, color=colors)
+        #cm = colormap.get("CET-R2.csv")
         progress_percent = 0
         data_size = len(parent.Ch1_channel0)
         for i in range(data_size):
@@ -2664,7 +2677,9 @@ class PlotGenerationWorker(QtCore.QObject):
             # checking for density, the value divided by steps serves as the index
             density = histo[a][b]
             percentage = density / max_density * 100 * percentage_coefficient
-            if percentage > 1:
+            if percentage <= 0 or math.isnan(percentage):
+                percentage = 0.1
+            elif percentage > 1:
                 percentage = 1
             spot_dic = {'pos': (x, y), 'size': 3,
                         'pen': None,
