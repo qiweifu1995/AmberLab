@@ -1021,10 +1021,33 @@ class window_filter(QWidget):
     # 2. from main filter tab, "export leaner plot button"
     # This is the trigger 2 from the main filter tab
 
-    def channel_list_update(self, linear_plot_channel_list):
-        self.linear_plot_channel_list = linear_plot_channel_list
-        if self.root:
-            self.points_inside_square = []
+    def channel_list_update(self, linear_plot_channel_list=None):
+        """function call to update the channel list used for linear plot"""
+        if linear_plot_channel_list is not None:
+            self.linear_plot_channel_list = linear_plot_channel_list
+        else:
+            self.linear_plot_channel_list = {}
+            if self.comboBox_ch_select.currentIndex() == 0:
+                """case for droplet file"""
+                if self.parent.current_file_dict['Droplet Record'] != '':
+                    self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Droplet Record"
+            elif self.comboBox_ch_select.currentIndex() == 1:
+                """case for sorted positive file"""
+                if self.parent.current_file_dict['Peak Record'] != '':
+                    self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Peak Record"
+            elif self.comboBox_ch_select.currentIndex() == 2:
+                """case for all positive file"""
+                if self.parent.current_file_dict['Peak Record'] != '':
+                    self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Peak Record"
+                if self.parent.current_file_dict['Locked Out Peaks'] != '':
+                    self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
+            else:
+                """case for locked out file"""
+                if self.parent.current_file_dict['Locked Out Peaks'] != '':
+                    self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
+
+
+
 
     def tree_index_update(self, new_index):
         """update index function call, usually called after a filter was removed to update the dict"""
@@ -1528,6 +1551,7 @@ class window_filter(QWidget):
                                         i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
+                        self.channel_list_update()
                 else:
                     show_dialog("File not extracted or out of date, please extract file and try again.", "Error")
                     return False
@@ -1702,6 +1726,8 @@ class window_filter(QWidget):
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
+
+                            self.channel_list_update()
 
                 else:
                     show_dialog("Not all files extracted or up to date, please extract files and try again.", "Error")
@@ -2835,7 +2861,7 @@ class ChannelSelectWindow(QWidget):
             self.parent.button_channel_select.setCheckable(True)
             self.parent.button_channel_select.setDown(False)
             self.parent.button_channel_select.repaint()
-
+        self.parent.channel_list_update(self.comboBox_14_list)
         self.hide()
 
     def reset(self):
