@@ -1229,7 +1229,8 @@ class Ui_MainWindow(QMainWindow):
         self.widget_sweepparam2.setObjectName("widget_sweepparam2")
         styles = {"color": "r", "font-size": "20px"}
         self.widget_sweepparam2.setLabel('left', 'Frequency', **styles)
-        self.widget_sweepparam2.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam2.setLabel('bottom', 'Signal(V)', **styles)
+        self.widget_sweepparam2.setTitle("")
         self.widget_sweepparam2.setBackground('w')
         self.widget_sweepparam2.setXRange(1, 10.5, padding=0)
         self.widget_sweepparam2.setYRange(1, 10.5, padding=0)
@@ -1246,7 +1247,8 @@ class Ui_MainWindow(QMainWindow):
         self.widget_sweepparam1.setObjectName("widget_sweepparam1")
         styles = {"color": "r", "font-size": "20px"}
         self.widget_sweepparam1.setLabel('left', 'Frequency', **styles)
-        self.widget_sweepparam1.setLabel('bottom', 'Green', **styles)
+        self.widget_sweepparam1.setLabel('bottom', 'Signal(V)', **styles)
+        self.widget_sweepparam1.setTitle("")
         self.widget_sweepparam1.setBackground('w')
         self.widget_sweepparam1.setXRange(1, 10.5, padding=0)
         self.widget_sweepparam1.setYRange(1, 10.5, padding=0)
@@ -1427,35 +1429,24 @@ class Ui_MainWindow(QMainWindow):
         self.verticalLayout_channelsbinwidth.setObjectName("verticalLayout_channelsbinwidth")
         self.gridLayout_9 = QtWidgets.QGridLayout()
         self.gridLayout_9.setObjectName("gridLayout_9")
-        self.lineEdit_binwidth_2 = QtWidgets.QLineEdit(self.subtab_parameter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_binwidth_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_binwidth_2.setSizePolicy(sizePolicy)
-        self.lineEdit_binwidth_2.setObjectName("lineEdit_binwidth_2")
-        self.gridLayout_9.addWidget(self.lineEdit_binwidth_2, 1, 1, 1, 1)
-        self.label_56 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_56.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.label_56.setObjectName("label_56")
-        self.gridLayout_9.addWidget(self.label_56, 1, 0, 1, 1)
-        self.label_55 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_55.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.label_55.setObjectName("label_55")
-        self.gridLayout_9.addWidget(self.label_55, 0, 0, 1, 1)
-        self.listView_channels_2 = QtWidgets.QListWidget(self.subtab_parameter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.listView_channels_2.sizePolicy().hasHeightForWidth())
-        self.listView_channels_2.setSizePolicy(sizePolicy)
-        self.listView_channels_2.setMinimumSize(QtCore.QSize(20, 20))
-        self.listView_channels_2.setObjectName("listView_channels_2")
-        self.listView_channels_2.addItem("Green")
-        self.listView_channels_2.addItem("Red")
-        self.listView_channels_2.addItem("Blue")
-        self.listView_channels_2.addItem("Orange")
-        self.gridLayout_9.addWidget(self.listView_channels_2, 0, 1, 1, 1)
+
+        # self.label_55 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_55.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        # self.label_55.setObjectName("label_55")
+        # self.gridLayout_9.addWidget(self.label_55, 0, 0, 1, 1)
+        # self.listView_channels_2 = QtWidgets.QListWidget(self.subtab_parameter)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.listView_channels_2.sizePolicy().hasHeightForWidth())
+        # self.listView_channels_2.setSizePolicy(sizePolicy)
+        # self.listView_channels_2.setMinimumSize(QtCore.QSize(20, 20))
+        # self.listView_channels_2.setObjectName("listView_channels_2")
+        # self.listView_channels_2.addItem("Green")
+        # self.listView_channels_2.addItem("Red")
+        # self.listView_channels_2.addItem("Blue")
+        # self.listView_channels_2.addItem("Orange")
+        # self.gridLayout_9.addWidget(self.listView_channels_2, 0, 1, 1, 1)
         self.verticalLayout_channelsbinwidth.addLayout(self.gridLayout_9)
         self.horizontalLayout_48.addLayout(self.verticalLayout_channelsbinwidth)
         self.line_29 = QtWidgets.QFrame(self.subtab_parameter)
@@ -1480,36 +1471,50 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_7.setHorizontalSpacing(10)
         self.gridLayout_7.setVerticalSpacing(20)
         self.gridLayout_7.setObjectName("gridLayout_7")
-        self.label_50 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_50.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.label_50.setObjectName("label_50")
-        self.gridLayout_7.addWidget(self.label_50, 0, 0, 1, 1)
-        self.label_61 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_61.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.label_61.setObjectName("label_61")
-        self.gridLayout_7.addWidget(self.label_61, 2, 0, 1, 1)
-        self.lineEdit_increments = QtWidgets.QLineEdit(self.subtab_parameter)
-        self.lineEdit_increments.setObjectName("lineEdit_increments")
-        self.gridLayout_7.addWidget(self.lineEdit_increments, 2, 1, 1, 1)
-        self.lineEdit_gatevoltagemaximum = QtWidgets.QLineEdit(self.subtab_parameter)
-        self.lineEdit_gatevoltagemaximum.setObjectName("lineEdit_gatevoltagemaximum")
-        self.gridLayout_7.addWidget(self.lineEdit_gatevoltagemaximum, 1, 1, 1, 1)
-        self.lineEdit_gatevoltageminimum = QtWidgets.QLineEdit(self.subtab_parameter)
-        self.lineEdit_gatevoltageminimum.setObjectName("lineEdit_gatevoltageminimum")
-        self.gridLayout_7.addWidget(self.lineEdit_gatevoltageminimum, 0, 1, 1, 1)
-        self.label_62 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_62.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.label_62.setObjectName("label_62")
-        self.gridLayout_7.addWidget(self.label_62, 1, 0, 1, 1)
-        self.label_63 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_63.setObjectName("label_63")
-        self.gridLayout_7.addWidget(self.label_63, 0, 2, 1, 1)
-        self.label_64 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_64.setObjectName("label_64")
-        self.gridLayout_7.addWidget(self.label_64, 1, 2, 1, 1)
-        self.label_66 = QtWidgets.QLabel(self.subtab_parameter)
-        self.label_66.setObjectName("label_66")
-        self.gridLayout_7.addWidget(self.label_66, 2, 2, 1, 1)
+        # self.label_50 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_50.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        # self.label_50.setObjectName("label_50")
+        # self.gridLayout_7.addWidget(self.label_50, 0, 0, 1, 1)
+        # self.label_61 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_61.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        # self.label_61.setObjectName("label_61")
+        # self.gridLayout_7.addWidget(self.label_61, 2, 0, 1, 1)
+        # self.lineEdit_increments = QtWidgets.QLineEdit(self.subtab_parameter)
+        # self.lineEdit_increments.setObjectName("lineEdit_increments")
+        # self.gridLayout_7.addWidget(self.lineEdit_increments, 2, 1, 1, 1)
+        # self.lineEdit_gatevoltagemaximum = QtWidgets.QLineEdit(self.subtab_parameter)
+        # self.lineEdit_gatevoltagemaximum.setObjectName("lineEdit_gatevoltagemaximum")
+        # self.gridLayout_7.addWidget(self.lineEdit_gatevoltagemaximum, 1, 1, 1, 1)
+        # self.lineEdit_gatevoltageminimum = QtWidgets.QLineEdit(self.subtab_parameter)
+        # self.lineEdit_gatevoltageminimum.setObjectName("lineEdit_gatevoltageminimum")
+        # self.gridLayout_7.addWidget(self.lineEdit_gatevoltageminimum, 0, 1, 1, 1)
+        # self.label_62 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_62.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        # self.label_62.setObjectName("label_62")
+        # self.gridLayout_7.addWidget(self.label_62, 1, 0, 1, 1)
+        # self.label_63 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_63.setObjectName("label_63")
+        # self.gridLayout_7.addWidget(self.label_63, 0, 2, 1, 1)
+        # self.label_64 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_64.setObjectName("label_64")
+        # self.gridLayout_7.addWidget(self.label_64, 1, 2, 1, 1)
+        # self.label_66 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_66.setObjectName("label_66")
+        # self.gridLayout_7.addWidget(self.label_66, 2, 2, 1, 1)
+
+        self.lineEdit_binwidth_2 = QtWidgets.QLineEdit()
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_binwidth_2.sizePolicy().hasHeightForWidth())
+        self.lineEdit_binwidth_2.setSizePolicy(sizePolicy)
+        self.lineEdit_binwidth_2.setObjectName("lineEdit_binwidth_2")
+        # self.gridLayout_7.addWidget(self.lineEdit_binwidth_2, 3, 1, 1, 1)
+        # self.label_56 = QtWidgets.QLabel(self.subtab_parameter)
+        # self.label_56.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        # self.label_56.setObjectName("label_56")
+        # self.gridLayout_7.addWidget(self.label_56, 3, 0, 1, 1)
+
         self.verticalLayout_gatingthresholds.addLayout(self.gridLayout_7)
         self.horizontalLayout_48.addLayout(self.verticalLayout_gatingthresholds)
         self.line_30 = QtWidgets.QFrame(self.subtab_parameter)
@@ -1845,9 +1850,9 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_4.clicked.connect(self.last_page)
         self.pushButton_3.clicked.connect(self.next_page)
 
-        self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
-        self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
-        self.lineEdit_increments.textChanged.connect(self.sweep_update)
+        # self.lineEdit_gatevoltagemaximum.textChanged.connect(self.sweep_update)
+        # self.lineEdit_gatevoltageminimum.textChanged.connect(self.sweep_update)
+        # self.lineEdit_increments.textChanged.connect(self.sweep_update)
 
         self.retranslateUi()
 
@@ -1856,12 +1861,12 @@ class Ui_MainWindow(QMainWindow):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
-        self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
-        self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
-        self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
-
-        self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
-        self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+        # self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
+        # self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+        # self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
+        #
+        # self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
+        # self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
 
         self.channel_1.stateChanged.connect(self.linear_plot)
         self.channel_2.stateChanged.connect(self.linear_plot)
@@ -1925,26 +1930,26 @@ class Ui_MainWindow(QMainWindow):
                                          afterchange=self.channel_4.isChecked()))
 
         # listview trigger
-        self.listView_channels_2.currentItemChanged.connect(
-            lambda: self.textbox_trigger(change="Sweept channel selection changed to ",
-                                         afterchange=self.listView_channels_2.currentItem().text()))
+        # self.listView_channels_2.currentItemChanged.connect(
+        #     lambda: self.textbox_trigger(change="Sweept channel selection changed to ",
+        #                                  afterchange=self.listView_channels_2.currentItem().text()))
 
         self.file_list_view.currentItemChanged.connect(lambda: self.textbox_trigger(change="loading file changed to ",
                                                                                     afterchange=self.file_list_view.currentItem().text()))
 
-        self.lineEdit_gatevoltagemaximum.textChanged.connect(
-            lambda: self.textbox_trigger(change="Sweep gating threshold voltage maximum changed to ",
-                                         afterchange=self.lineEdit_gatevoltagemaximum.text()))
-        self.lineEdit_gatevoltageminimum.textChanged.connect(
-            lambda: self.textbox_trigger(change="Sweep gating threshold voltage minimum change to ",
-                                         afterchange=self.lineEdit_gatevoltageminimum.text()))
-        self.lineEdit_increments.textChanged.connect(
-            lambda: self.textbox_trigger(change="Sweep gating threshold increments changed to ",
-                                         afterchange=self.lineEdit_increments.text()))
-
-        self.lineEdit_binwidth_2.textChanged.connect(
-            lambda: self.textbox_trigger(change="Sweep tab bin width changed to ",
-                                         afterchange=self.lineEdit_binwidth_2.text()))
+        # self.lineEdit_gatevoltagemaximum.textChanged.connect(
+        #     lambda: self.textbox_trigger(change="Sweep gating threshold voltage maximum changed to ",
+        #                                  afterchange=self.lineEdit_gatevoltagemaximum.text()))
+        # self.lineEdit_gatevoltageminimum.textChanged.connect(
+        #     lambda: self.textbox_trigger(change="Sweep gating threshold voltage minimum change to ",
+        #                                  afterchange=self.lineEdit_gatevoltageminimum.text()))
+        # self.lineEdit_increments.textChanged.connect(
+        #     lambda: self.textbox_trigger(change="Sweep gating threshold increments changed to ",
+        #                                  afterchange=self.lineEdit_increments.text()))
+        #
+        # self.lineEdit_binwidth_2.textChanged.connect(
+        #     lambda: self.textbox_trigger(change="Sweep tab bin width changed to ",
+        #                                  afterchange=self.lineEdit_binwidth_2.text()))
 
         self.file_list_view.itemChanged.connect(self.chart_title_change)
         self.file_list_view.currentRowChanged.connect(self.threshold_fetch)
@@ -2749,30 +2754,42 @@ class Ui_MainWindow(QMainWindow):
     def sweep_update_low(self):
         """update sweep parameter threshold for low"""
         sweep_thresh = float(self.lineEdit_gatevoltageminimum.text())
-        data_1 = self.sweep_1_data
-        data_2 = self.sweep_2_data
-        if len(data_1) > 0:
-            filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
-            self.lineEdit_percentagehigh1.setText(str(percentage))
-        if len(data_2) > 0:
-            filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
-            self.lineEdit_percentagehigh2.setText(str(percentage))
+        try:
+            if self.sweep_1_data:
+                data_1 = self.sweep_1_data
+                filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
+                percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
+                self.lineEdit_percentagelow1.setText(str(percentage))
+        except AttributeError:
+            print("Issue loading data 1")
+        try:
+            if self.sweep_2_data:
+                data_2 = self.sweep_2_data
+                filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
+                percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
+                self.lineEdit_percentagelow2.setText(str(percentage))
+        except AttributeError:
+            print("Issue loading data 2")
 
     def sweep_update_high(self):
         """update sweep parameter threshold for above"""
         sweep_thresh = float(self.lineEdit_gatevoltagemaximum.text())
-        data_1 = self.sweep_1_data
-        data_2 = self.sweep_2_data
-        if len(data_1) > 0:
-            filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
-            self.lineEdit_percentagehigh1.setText(str(percentage))
-        if len(data_2) > 0:
-            filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
-            percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
-            self.lineEdit_percentagehigh2.setText(str(percentage))
+        try:
+            if self.sweep_1_data:
+                data_1 = self.sweep_1_data
+                filtered_gate_voltage = [x for x in data_1 if x > sweep_thresh]
+                percentage = round(100 * len(filtered_gate_voltage) / len(data_1), 2)
+                self.lineEdit_percentagehigh1.setText(str(percentage))
+        except AttributeError:
+            print("Issue loading data")
+        try:
+            if self.sweep_2_data:
+                data_2 = self.sweep_2_data
+                filtered_gate_voltage = [x for x in data_2 if x > sweep_thresh]
+                percentage = round(100 * len(filtered_gate_voltage) / len(data_2), 2)
+                self.lineEdit_percentagehigh2.setText(str(percentage))
+        except AttributeError:
+            print("Issue loading data")
 
     def sweep_update(self):
         """update the sweep result table"""
@@ -2799,36 +2816,42 @@ class Ui_MainWindow(QMainWindow):
             self.widget_sweepresult2.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
                                                                 "Total Count", "Percentages"))
             self.widget_sweepresult2.verticalHeader().hide()
-            if len(self.sweep_1_data) > 0:
-                counter = range_min
-                sweep_list = []
-                i = 0
-                while counter < range_max:
-                    filtered_gate_voltage_x = [x for x in self.sweep_1_data if x > counter]
-                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_1_data), 2)
-                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_1_data), percentage])
-                    counter += increment
-                    i += 1
-                for x, row in enumerate(sweep_list):
-                    for y in range(4):
-                        item = QTableWidgetItem(str(round(row[y], 2)))
-                        self.widget_sweepresult1.setItem(x, y, item)
-                self.widget_sweepresult1.show()
-            if len(self.sweep_2_data) > 0:
-                counter = range_min
-                sweep_list = []
-                i = 0
-                while counter < range_max:
-                    filtered_gate_voltage_x = [x for x in self.sweep_2_data if x > counter]
-                    percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_2_data), 2)
-                    sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_2_data), percentage])
-                    counter += increment
-                    i += 1
-                for x, row in enumerate(sweep_list):
-                    for y in range(4):
-                        item = QTableWidgetItem(str(round(row[y], 2)))
-                        self.widget_sweepresult2.setItem(x, y, item)
-                self.widget_sweepresult2.show()
+            try:
+                if len(self.sweep_1_data) > 0:
+                    counter = range_min
+                    sweep_list = []
+                    i = 0
+                    while counter < range_max:
+                        filtered_gate_voltage_x = [x for x in self.sweep_1_data if x > counter]
+                        percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_1_data), 2)
+                        sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_1_data), percentage])
+                        counter += increment
+                        i += 1
+                    for x, row in enumerate(sweep_list):
+                        for y in range(4):
+                            item = QTableWidgetItem(str(round(row[y], 2)))
+                            self.widget_sweepresult1.setItem(x, y, item)
+                    self.widget_sweepresult1.show()
+            except AttributeError:
+                print("Data 1 not loaded")
+            try:
+                if len(self.sweep_2_data) > 0:
+                    counter = range_min
+                    sweep_list = []
+                    i = 0
+                    while counter < range_max:
+                        filtered_gate_voltage_x = [x for x in self.sweep_2_data if x > counter]
+                        percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_2_data), 2)
+                        sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_2_data), percentage])
+                        counter += increment
+                        i += 1
+                    for x, row in enumerate(sweep_list):
+                        for y in range(4):
+                            item = QTableWidgetItem(str(round(row[y], 2)))
+                            self.widget_sweepresult2.setItem(x, y, item)
+                    self.widget_sweepresult2.show()
+            except AttributeError:
+                print("Data 2 not loaded")
 
     def update_sweep_graphs(self, bypass=False):
         self.sweep_bins = float(self.lineEdit_binwidth_2.text())
@@ -2856,7 +2879,7 @@ class Ui_MainWindow(QMainWindow):
         if channel == -1:
             self.comboBox_option1.setCurrentIndex(0)
         axis_name = self.comboBox_option1.currentText()
-        self.widget_sweepparam2.setLabel('bottom', axis_name)
+        #self.widget_sweepparam2.setLabel('bottom', axis_name)
         print("update sweep 1")
         r, g, b = Helper.rgb_select(channel)
         if data_updated or len(self.sweep_1_data) == 0:
@@ -2886,7 +2909,7 @@ class Ui_MainWindow(QMainWindow):
         if channel == -1:
             self.comboBox_option2.setCurrentIndex(0)
         axis_name = self.comboBox_option2.currentText()
-        self.widget_sweepparam1.setLabel('bottom', axis_name)
+        #self.widget_sweepparam1.setLabel('bottom', axis_name)
         r, g, b = Helper.rgb_select(channel)
         print("update sweep 2")
         if data_updated or len(self.sweep_2_data) == 0:
@@ -2993,30 +3016,30 @@ class Ui_MainWindow(QMainWindow):
         self.lineEdit_percentagehigh2.setText(_translate("MainWindow", "0"))
         self.label_48.setText(_translate("MainWindow", "%"))
         self.lineEdit_binwidth_2.setText(_translate("MainWindow", "0.1"))
-        self.label_56.setText(_translate("MainWindow", "Bin Width"))
+        # self.label_56.setText(_translate("MainWindow", "Bin Width"))
         #         self.label_57
-        self.label_55.setText(_translate("MainWindow", "Channels"))
-        self.label_49.setText(_translate("MainWindow", "Gating Thresholds"))
-        self.label_50.setText(_translate("MainWindow", "Gate Voltage Minimum"))
-        self.label_61.setText(_translate("MainWindow", "Increments"))
-        self.lineEdit_increments.setText(_translate("MainWindow", "0"))
-        self.lineEdit_gatevoltagemaximum.setText(_translate("MainWindow", "0.5"))
-        self.lineEdit_gatevoltageminimum.setText(_translate("MainWindow", "0"))
-        self.label_62.setText(_translate("MainWindow", "Gate Voltage Maximum"))
-        self.label_63.setText(_translate("MainWindow", "V"))
-        self.label_64.setText(_translate("MainWindow", "V"))
-        self.label_66.setText(_translate("MainWindow", "V"))
+        # self.label_55.setText(_translate("MainWindow", "Channels"))
+        # self.label_49.setText(_translate("MainWindow", "Gating Thresholds"))
+        # self.label_50.setText(_translate("MainWindow", "Gate Voltage Minimum"))
+        # self.label_61.setText(_translate("MainWindow", "Increments"))
+        # self.lineEdit_increments.setText(_translate("MainWindow", "0"))
+        # self.lineEdit_gatevoltagemaximum.setText(_translate("MainWindow", "0.5"))
+        # self.lineEdit_gatevoltageminimum.setText(_translate("MainWindow", "0"))
+        # self.label_62.setText(_translate("MainWindow", "Gate Voltage Maximum"))
+        # self.label_63.setText(_translate("MainWindow", "V"))
+        # self.label_64.setText(_translate("MainWindow", "V"))
+        # self.label_66.setText(_translate("MainWindow", "V"))
         self.label_68.setText(_translate("MainWindow", "Axis Limits"))
-        self.lineEdit_sweepxlimits1.setText(_translate("MainWindow", "0,10"))
-        self.label_71.setText(_translate("MainWindow", "Y-Limits"))
-        self.label_69.setText(_translate("MainWindow", "X-Limits"))
-        self.label_70.setText(_translate("MainWindow", "X-Limits"))
+        self.lineEdit_sweepxlimits1.setText(_translate("MainWindow", "0"))
+        self.label_71.setText(_translate("MainWindow", "End Voltage"))
+        self.label_69.setText(_translate("MainWindow", "Start Voltage"))
+        self.label_70.setText(_translate("MainWindow", "Start Voltage"))
         self.pushButton_relimit2.setText(_translate("MainWindow", "Re-Limit"))
-        self.lineEdit_sweepylimits1.setText(_translate("MainWindow", "0,10"))
-        self.lineEdit_sweepylimits2.setText(_translate("MainWindow", "0,10"))
+        self.lineEdit_sweepylimits1.setText(_translate("MainWindow", "10"))
+        self.lineEdit_sweepylimits2.setText(_translate("MainWindow", "10"))
         self.pushButton_relimit1.setText(_translate("MainWindow", "Re-Limit"))
-        self.label_72.setText(_translate("MainWindow", "Y-Limits"))
-        self.lineEdit_sweepxlimits2.setText(_translate("MainWindow", "0,10"))
+        self.label_72.setText(_translate("MainWindow", "End Voltage"))
+        self.lineEdit_sweepxlimits2.setText(_translate("MainWindow", "0"))
         self.pushButton_auto1.setText(_translate("MainWindow", "Auto"))
         self.pushButton_auto2.setText(_translate("MainWindow", "Auto"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.subtab_parameter), _translate("MainWindow", "Parameter"))
@@ -3102,7 +3125,7 @@ class Ui_MainWindow(QMainWindow):
         self.peak_num_in = []
 
 
-        self.sweep_channel = self.listView_channels_2.currentRow()
+        # self.sweep_channel = self.listView_channels_2.currentRow()
         #         if self.comboBox_option1.currentIndex() > 2:
         #             self.sweep_file_1 = self.comboBox_option1.currentIndex() - 3
         #             self.sweep_1_dict = self.file_dict_list[self.sweep_file_1]

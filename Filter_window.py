@@ -1029,17 +1029,17 @@ class window_filter(QWidget):
             self.linear_plot_channel_list = {}
             if self.comboBox_ch_select.currentIndex() == 0:
                 """case for droplet file"""
-                if self.parent.current_file_dict['Droplet Record'] != '':
+                if self.current_file_dict['Droplet Record'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Droplet Record"
             elif self.comboBox_ch_select.currentIndex() == 1:
                 """case for sorted positive file"""
-                if self.parent.current_file_dict['Peak Record'] != '':
+                if self.current_file_dict['Peak Record'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Peak Record"
             elif self.comboBox_ch_select.currentIndex() == 2:
                 """case for all positive file"""
-                if self.parent.current_file_dict['Peak Record'] != '':
+                if self.current_file_dict['Peak Record'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Peak Record"
-                if self.parent.current_file_dict['Locked Out Peaks'] != '':
+                if self.current_file_dict['Locked Out Peaks'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
             else:
                 """case for locked out file"""
