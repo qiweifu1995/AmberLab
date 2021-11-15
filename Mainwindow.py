@@ -1502,13 +1502,13 @@ class Ui_MainWindow(QMainWindow):
         # self.label_66.setObjectName("label_66")
         # self.gridLayout_7.addWidget(self.label_66, 2, 2, 1, 1)
 
-        self.lineEdit_binwidth_2 = QtWidgets.QLineEdit()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_binwidth_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_binwidth_2.setSizePolicy(sizePolicy)
-        self.lineEdit_binwidth_2.setObjectName("lineEdit_binwidth_2")
+        # self.lineEdit_binwidth_2 = QtWidgets.QLineEdit()
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.lineEdit_binwidth_2.sizePolicy().hasHeightForWidth())
+        # self.lineEdit_binwidth_2.setSizePolicy(sizePolicy)
+        # self.lineEdit_binwidth_2.setObjectName("lineEdit_binwidth_2")
         # self.gridLayout_7.addWidget(self.lineEdit_binwidth_2, 3, 1, 1, 1)
         # self.label_56 = QtWidgets.QLabel(self.subtab_parameter)
         # self.label_56.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
@@ -1521,7 +1521,7 @@ class Ui_MainWindow(QMainWindow):
         self.line_30.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_30.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_30.setObjectName("line_30")
-        self.horizontalLayout_48.addWidget(self.line_30)
+
         self.verticalLayout_axislimits = QtWidgets.QVBoxLayout()
         self.verticalLayout_axislimits.setObjectName("verticalLayout_axislimits")
         self.sweep_h_layout = QtWidgets.QHBoxLayout()
@@ -1619,7 +1619,9 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_8.addWidget(self.lineEdit_bin2, 3, 4, 1, 1)
         self.gridLayout_8.addWidget(self.label_bin2, 3, 3, 1, 1)
         self.verticalLayout_axislimits.addLayout(self.gridLayout_8)
+
         self.horizontalLayout_48.addLayout(self.verticalLayout_axislimits)
+        self.horizontalLayout_48.addWidget(self.line_30)
         self.verticalLayout_14.addLayout(self.horizontalLayout_48)
         self.verticalLayout_13.addLayout(self.verticalLayout_14)
         self.tabWidget.addTab(self.subtab_parameter, "")
@@ -1881,6 +1883,32 @@ class Ui_MainWindow(QMainWindow):
 
         # self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
         # self.lineEdit_gatevoltagemaximum.editingFinished.connect(self.sweep_update_high)
+        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
+        self.sweep1_low_line = pg.InfiniteLine(0, movable=False, pen=pen)
+        self.sweep1_high_line = pg.InfiniteLine(0, movable=False, pen=pen)
+        self.sweep2_low_line = pg.InfiniteLine(0, movable=False, pen=pen)
+        self.sweep2_high_line = pg.InfiniteLine(0, movable=False, pen=pen)
+
+        self.lineEdit_sweepxlimits1.editingFinished.connect(self.sweep_update_low_1)
+        self.lineEdit_sweepxlimits2.editingFinished.connect(self.sweep_update_low_2)
+        self.lineEdit_sweepylimits1.editingFinished.connect(self.sweep_update_high_1)
+        self.lineEdit_sweepylimits2.editingFinished.connect(self.sweep_update_high_2)
+        self.lineEdit_sweepxlimits1.editingFinished.connect(self.sweep_update_line)
+        self.lineEdit_sweepxlimits2.editingFinished.connect(self.sweep_update_line)
+        self.lineEdit_sweepylimits1.editingFinished.connect(self.sweep_update_line)
+        self.lineEdit_sweepylimits2.editingFinished.connect(self.sweep_update_line)
+
+        self.lineEdit_sweepxlimits1.editingFinished.connect(self.sweep_update)
+        self.lineEdit_sweepxlimits2.editingFinished.connect(self.sweep_update)
+        self.lineEdit_sweepylimits1.editingFinished.connect(self.sweep_update)
+        self.lineEdit_sweepylimits2.editingFinished.connect(self.sweep_update)
+        self.lineEdit_increment1.editingFinished.connect(self.sweep_update)
+        self.lineEdit_increment2.editingFinished.connect(self.sweep_update)
+
+        self.lineEdit_bin1.editingFinished.connect(self.update_sweep_graphs)
+        self.lineEdit_bin2.editingFinished.connect(self.update_sweep_graphs)
+
+
         # self.lineEdit_binwidth_2.editingFinished.connect(self.update_sweep_graphs)
         #
         # self.lineEdit_gatevoltageminimum.editingFinished.connect(self.sweep_update_low)
@@ -1946,6 +1974,8 @@ class Ui_MainWindow(QMainWindow):
         self.channel_4.stateChanged.connect(
             lambda: self.textbox_trigger(change="Raw data viewer channel_4 state changed to ",
                                          afterchange=self.channel_4.isChecked()))
+
+
 
         # listview trigger
         # self.listView_channels_2.currentItemChanged.connect(
@@ -2769,9 +2799,9 @@ class Ui_MainWindow(QMainWindow):
                     item = QTableWidgetItem(str(round(stats[x][y], 2)))
                     self.tableView_statistic.setItem(x, y, item)
 
-    def sweep_update_low(self):
+    def sweep_update_low_1(self):
         """update sweep parameter threshold for low"""
-        sweep_thresh = float(self.lineEdit_gatevoltageminimum.text())
+        sweep_thresh = float(self.lineEdit_sweepxlimits1.text())
         try:
             if self.sweep_1_data:
                 data_1 = self.sweep_1_data
@@ -2780,6 +2810,10 @@ class Ui_MainWindow(QMainWindow):
                 self.lineEdit_percentagelow1.setText(str(percentage))
         except AttributeError:
             print("Issue loading data 1")
+
+    def sweep_update_low_2(self):
+        """update sweep parameter threshold for low"""
+        sweep_thresh = float(self.lineEdit_sweepxlimits2.text())
         try:
             if self.sweep_2_data:
                 data_2 = self.sweep_2_data
@@ -2789,9 +2823,9 @@ class Ui_MainWindow(QMainWindow):
         except AttributeError:
             print("Issue loading data 2")
 
-    def sweep_update_high(self):
+    def sweep_update_high_1(self):
         """update sweep parameter threshold for above"""
-        sweep_thresh = float(self.lineEdit_gatevoltagemaximum.text())
+        sweep_thresh = float(self.lineEdit_sweepylimits1.text())
         try:
             if self.sweep_1_data:
                 data_1 = self.sweep_1_data
@@ -2800,6 +2834,10 @@ class Ui_MainWindow(QMainWindow):
                 self.lineEdit_percentagehigh1.setText(str(percentage))
         except AttributeError:
             print("Issue loading data")
+
+    def sweep_update_high_2(self):
+        """update sweep parameter threshold for above"""
+        sweep_thresh = float(self.lineEdit_sweepylimits2.text())
         try:
             if self.sweep_2_data:
                 data_2 = self.sweep_2_data
@@ -2812,38 +2850,41 @@ class Ui_MainWindow(QMainWindow):
     def sweep_update(self):
         """update the sweep result table"""
         try:
-            range_max = float(self.lineEdit_gatevoltagemaximum.text())
-            range_min = float(self.lineEdit_gatevoltageminimum.text())
-            increment = float(self.lineEdit_increments.text())
+            range_max_1 = float(self.lineEdit_sweepylimits1.text())
+            range_min_1 = float(self.lineEdit_sweepxlimits1.text())
+            increment_1 = float(self.lineEdit_increment1.text())
         except:
-            range_max = 0
-            range_min = 0
-            increment = 0
-        if 0 < increment < range_max - range_min and (range_max - range_min) / increment < 500 and \
-                (len(self.sweep_1_data) > 0 or len(self.sweep_2_data) > 0):
-            print("Updating Sweep Table")
+            range_max_1 = 0
+            range_min_1 = 0
+            increment_1 = 0
+        try:
+            range_max_2 = float(self.lineEdit_sweepylimits2.text())
+            range_min_2 = float(self.lineEdit_sweepxlimits2.text())
+            increment_2 = float(self.lineEdit_increment2.text())
+        except:
+            range_max_2 = 0
+            range_min_2 = 0
+            increment_2 = 0
+
+        if 0 < increment_1 < range_max_1 - range_min_1 and (range_max_1 - range_min_1) / increment_1 < 500 and \
+                len(self.sweep_1_data):
+            print("Updating Sweep Table 1")
             self.widget_sweepresult1.clear()
-            self.widget_sweepresult1.setRowCount(int((range_max - range_min) / increment))
+            self.widget_sweepresult1.setRowCount(int((range_max_1 - range_min_1) / increment_1))
             self.widget_sweepresult1.setColumnCount(4)
             self.widget_sweepresult1.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
                                                                 "Total Count", "Percentages"))
             self.widget_sweepresult1.verticalHeader().hide()
-            self.widget_sweepresult2.clear()
-            self.widget_sweepresult2.setRowCount(int((range_max - range_min) / increment))
-            self.widget_sweepresult2.setColumnCount(4)
-            self.widget_sweepresult2.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
-                                                                "Total Count", "Percentages"))
-            self.widget_sweepresult2.verticalHeader().hide()
             try:
                 if len(self.sweep_1_data) > 0:
-                    counter = range_min
+                    counter = range_min_1
                     sweep_list = []
                     i = 0
-                    while counter < range_max:
+                    while counter < range_max_1:
                         filtered_gate_voltage_x = [x for x in self.sweep_1_data if x > counter]
                         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_1_data), 2)
                         sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_1_data), percentage])
-                        counter += increment
+                        counter += increment_1
                         i += 1
                     for x, row in enumerate(sweep_list):
                         for y in range(4):
@@ -2852,16 +2893,26 @@ class Ui_MainWindow(QMainWindow):
                     self.widget_sweepresult1.show()
             except AttributeError:
                 print("Data 1 not loaded")
+
+        if 0 < increment_2 < range_max_2 - range_min_2 and (range_max_2 - range_min_2) / increment_2 < 500 and \
+                len(self.sweep_2_data):
+            print("Updating Sweep Table 2")
+            self.widget_sweepresult2.clear()
+            self.widget_sweepresult2.setRowCount(int((range_max_2 - range_min_2) / increment_2))
+            self.widget_sweepresult2.setColumnCount(4)
+            self.widget_sweepresult2.setHorizontalHeaderLabels(("Voltages", "Counts Above Threshold",
+                                                                "Total Count", "Percentages"))
+            self.widget_sweepresult2.verticalHeader().hide()
             try:
                 if len(self.sweep_2_data) > 0:
-                    counter = range_min
+                    counter = range_min_2
                     sweep_list = []
                     i = 0
-                    while counter < range_max:
+                    while counter < range_max_2:
                         filtered_gate_voltage_x = [x for x in self.sweep_2_data if x > counter]
                         percentage = round(100 * len(filtered_gate_voltage_x) / len(self.sweep_2_data), 2)
                         sweep_list.append([counter, len(filtered_gate_voltage_x), len(self.sweep_2_data), percentage])
-                        counter += increment
+                        counter += increment_2
                         i += 1
                     for x, row in enumerate(sweep_list):
                         for y in range(4):
@@ -2872,7 +2923,7 @@ class Ui_MainWindow(QMainWindow):
                 print("Data 2 not loaded")
 
     def update_sweep_graphs(self, bypass=False):
-        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        # self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         update1 = update2 = data_updated = True
         if update1:
             self.update_sweep_1(data_updated)
@@ -2891,8 +2942,17 @@ class Ui_MainWindow(QMainWindow):
         """Function used to link update sweep with the index changes"""
         self.update_sweep_2(True)
 
+    def sweep_update_line(self):
+        """Function used to link update sweep with the index changes"""
+        self.sweep1_low_line.setValue(float(self.lineEdit_sweepxlimits1.text()))
+        self.sweep1_high_line.setValue(float(self.lineEdit_sweepylimits1.text()))
+        self.sweep2_low_line.setValue(float(self.lineEdit_sweepxlimits2.text()))
+        self.sweep2_high_line.setValue(float(self.lineEdit_sweepylimits2.text()))
+
     def update_sweep_1(self, data_updated=False):
         self.widget_sweepparam2.clear()
+        self.sweep1_low_line.setValue(float(self.lineEdit_sweepxlimits1.text()))
+        self.sweep1_high_line.setValue(float(self.lineEdit_sweepylimits1.text()))
         channel = self.comboBox_option1.currentIndex()
         if channel == -1:
             self.comboBox_option1.setCurrentIndex(0)
@@ -2905,12 +2965,11 @@ class Ui_MainWindow(QMainWindow):
                 self.sweep_1_data = self.sweep_left[channel]
             except:
                 self.sweep_1_data = []
-
         try:
             range_width = int(max(self.sweep_1_data)) + 1
         except:
             range_width = 1
-        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_bin1.text()))
         y, x = np.histogram(self.sweep_1_data, bins=bin_edge)
         separate_y = [0] * len(y)
         for i in range(len(y)):
@@ -2919,10 +2978,15 @@ class Ui_MainWindow(QMainWindow):
             self.widget_sweepparam2.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam2.setXRange(0, max(x), padding=0)
         self.widget_sweepparam2.setYRange(0, max(y), padding=0)
+        self.widget_sweepparam2.addItem(self.sweep1_low_line)
+        self.widget_sweepparam2.addItem(self.sweep1_high_line)
+
         self.label_39.setText(self.comboBox_option1.currentText())
 
     def update_sweep_2(self, data_updated=False):
         self.widget_sweepparam1.clear()
+        self.sweep2_low_line.setValue(float(self.lineEdit_sweepxlimits2.text()))
+        self.sweep2_high_line.setValue(float(self.lineEdit_sweepylimits2.text()))
         channel = self.comboBox_option2.currentIndex()
         if channel == -1:
             self.comboBox_option2.setCurrentIndex(0)
@@ -2935,12 +2999,11 @@ class Ui_MainWindow(QMainWindow):
                 self.sweep_2_data = self.sweep_right[channel]
             except:
                 self.sweep_2_data = []
-
         try:
             range_width = int(max(self.sweep_2_data)) + 1
         except:
             range_width = 1
-        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_binwidth_2.text()))
+        bin_edge = Helper.histogram_bin(range_width, float(self.lineEdit_bin2.text()))
         y, x = np.histogram(self.sweep_2_data, bins=bin_edge)
         separate_y = [0] * len(y)
         for i in range(len(y)):
@@ -2949,15 +3012,11 @@ class Ui_MainWindow(QMainWindow):
             self.widget_sweepparam1.plot(x, separate_y, stepMode=True, fillLevel=0, fillOutline=True, brush=(r, g, b))
         self.widget_sweepparam1.setXRange(0, max(x), padding=0)
         self.widget_sweepparam1.setYRange(0, max(y), padding=0)
+        self.widget_sweepparam1.addItem(self.sweep2_low_line)
+        self.widget_sweepparam1.addItem(self.sweep2_high_line)
         self.label_65.setText(self.comboBox_option2.currentText())
 
-
-
     #             self.thresholdUpdated()
-
-
-
-
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -3033,7 +3092,7 @@ class Ui_MainWindow(QMainWindow):
         self.label_42.setText(_translate("MainWindow", "Percentage High"))
         self.lineEdit_percentagehigh2.setText(_translate("MainWindow", "0"))
         self.label_48.setText(_translate("MainWindow", "%"))
-        self.lineEdit_binwidth_2.setText(_translate("MainWindow", "0.1"))
+        # self.lineEdit_binwidth_2.setText(_translate("MainWindow", "0.1"))
         # self.label_56.setText(_translate("MainWindow", "Bin Width"))
         #         self.label_57
         # self.label_55.setText(_translate("MainWindow", "Channels"))
@@ -3155,7 +3214,7 @@ class Ui_MainWindow(QMainWindow):
         #             self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
         #         else:
         #             self.sweep_file_2 = self.comboBox_option2.currentIndex()
-        self.sweep_bins = float(self.lineEdit_binwidth_2.text())
+        # self.sweep_bins = float(self.lineEdit_binwidth_2.text())
         self.current_file_dict = self.file_dict_list[self.main_file_select]
 
         os.chdir(self.current_file_dict["Root Folder"])
