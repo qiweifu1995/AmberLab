@@ -1043,7 +1043,7 @@ class window_filter(QWidget):
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
             else:
                 """case for locked out file"""
-                if self.parent.current_file_dict['Locked Out Peaks'] != '':
+                if self.current_file_dict['Locked Out Peaks'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
 
 

@@ -27,6 +27,7 @@ def extracted_data_loader(parent, progress_index, file_name):
     time_data = []
     chunk_size = 0
 
+
     # progress span indcate how much of the progress this process is
     progress_span = progress_index[1] - progress_index[0]
     progress_start = progress_index[0]
@@ -369,7 +370,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
             print("Extracting locked out peaks extracted data")
             progress_index = progress_index_list.pop(0)
             list_locked, width_locked, num_peaks_locked, time_locked = extracted_data_loader(parent, progress_index, current_file_dict["Locked Out Extracted Data"])
-            analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked]
+            analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked]
         elif current_file_dict["Locked Out Peaks"] != "":
             print("Extracting locked out peaks")
             progress_index = progress_index_list.pop(0)
@@ -383,7 +384,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
             print("Extracting peaks extracted data")
             progress_index = progress_index_list.pop(0)
             Peaklist, Peakwidth, NumPeaks, TimePeaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"])
-            analog_file[current_file_dict["Sorted Extracted Data"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
+            analog_file[current_file_dict["Peak Record"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks]
 
         else:
             print("Extracting Peak... Parallel")
