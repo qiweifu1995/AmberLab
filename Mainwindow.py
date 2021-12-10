@@ -183,6 +183,10 @@ class Ui_MainWindow(QMainWindow):
         self.button_update.setMaximumSize(QtCore.QSize(100, 16777215))
         self.button_update.setObjectName("button_update")
         self.layout_horizontal_update.addWidget(self.button_update)
+        self.button_extract_all = QtWidgets.QPushButton("Extract All")
+        self.button_extract_all.setMinimumSize(QtCore.QSize(50, 0))
+        self.button_extract_all.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.layout_horizontal_update.addWidget(self.button_extract_all)
         self.layout_vertical_filecontrol.addLayout(self.layout_horizontal_update)
         spacerItem2 = QtWidgets.QSpacerItem(120, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.layout_vertical_filecontrol.addItem(spacerItem2)
@@ -1865,6 +1869,7 @@ class Ui_MainWindow(QMainWindow):
         self.actionAdd_New.triggered.connect(self.add)
 
         self.button_update.clicked.connect(self.pressed)
+        self.button_extract_all.clicked.connect(self.extract_all_clicked)
         #self.button_update_2.clicked.connect(self.filter_width_table)
         self.pushButton_5.clicked.connect(self.reset_linear_plot)
         self.pushButton_4.clicked.connect(self.last_page)
@@ -3449,13 +3454,49 @@ class Ui_MainWindow(QMainWindow):
                     self.comboBox_14_list[len(self.comboBox_14_list)] = "Locked Out Peaks"
                 if self.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] != '':
                     self.comboBox_14_list[len(self.comboBox_14_list)] = "Peak Record"
-                self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
-                    self.comboBox_14_list)
+                # self.tree_dic[(self.file_list_view.currentRow(),)]['tree_windowfilter'].channel_list_update(
+                #     self.comboBox_14_list)
                 self.file_list_view.item(self.main_file_select).setForeground(QColor(255, 255, 0))
                 self.extraction_thread_state[self.main_file_select] = ThreadState.PENDING
                 logging.info("New file added to extraction queue")
             else:
                 logging.info("Thread not ready for processing")
+
+    def extract_all_clicked(self):
+        """function call to handle when extract all is clicked"""
+
+        threshold = [0, 0, 0, 0]
+        width_min = [0, 0, 0, 0]
+        width_max = [500, 500, 500, 500]
+        width_enable = True
+        channel = 0
+
+
+
+        for current_file_index in range(self.file_list_view.count()):
+
+            current_file_dict = self.file_dict_list[current_file_index]
+            stats = Helper.Stats(current_file_dict["Summary"])
+            threshold_check = self.ui_state.threshold_check(self.thresholds, self.file_list_view.currentRow())
+            peaks_threshold = self.thresholds[self.file_list_view.currentRow()]
+
+            if self.update or threshold_check:
+                peak_enable = True
+            else:
+                peak_enable = False
+
+            # this will iterate through each file index and append to extraction list
+            if self.extraction_thread_state[current_file_index] in (ThreadState.IDLING, ThreadState.FINISHED)\
+                    and ThreadState.RUNNING not in self.extraction_thread_state:
+                self.run_extraction(current_file_index, threshold, peaks_threshold, width_min, width_max, width_enable, peak_enable, channel, stats, threshold_check)
+
+            elif ThreadState.RUNNING in self.extraction_thread_state and \
+                    self.extraction_thread_state[current_file_index] in (ThreadState.IDLING, ThreadState.FINISHED):
+                # this case will add a index to the extraction q
+                self.extraction_queue.append([current_file_index, threshold, peaks_threshold, width_min, width_max,
+                                              width_enable, peak_enable, channel, stats, threshold_check])
+                self.file_list_view.item(current_file_index).setForeground(QColor(255, 255, 0))
+                self.extraction_thread_state[current_file_index] = ThreadState.PENDING
 
 
     def update_checkbox(self):
