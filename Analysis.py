@@ -45,7 +45,7 @@ def extracted_data_loader(parent, progress_index, file_name):
     start_count = False
     """while loop to figure out chunksize"""
     while chunk_size == 0 and counter < length:
-        if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 2] == -16:
+        if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 1] == -16:
             """rows with 16,16,16,16 is divider"""
             if start_count:
                 chunk_size = counter
