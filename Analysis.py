@@ -67,7 +67,7 @@ def extracted_data_loader(parent, progress_index, file_name):
         curent_droplet += 1
         droplet_size = extracted_data.iloc[i, 4]
         time_stamp = extracted_data.iloc[i, 3]
-        fret_ratio_data = extracted_data.illoec[i, 2]
+        fret_ratio_data = extracted_data.iloc[i, 2]
         if time_stamp < 0:
             #this is just a test case
             time_stamp = curent_droplet // 6000 + 1
@@ -92,7 +92,7 @@ def extracted_data_loader(parent, progress_index, file_name):
             parent.progress.emit([current_percent, "Extracting " + str(file_name)])
     print("Extracted data loading time: " + str(start-time.time()))
 
-    return peak, width, peak_counts, time_data
+    return peak, width, peak_counts, time_data, fret_ratio
 
 
 def extract(file, threshold,
