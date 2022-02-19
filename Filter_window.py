@@ -103,6 +103,7 @@ class window_filter(QWidget):
             self.peak_width_working_data = []
             self.peak_num_working_data = []
             self.peak_time_working_data = []
+            self.extracted_ratio_data = []
             self.points_inside_square = []
             # root will hold the file index for the root file if true, else None
             self.root = root
@@ -1417,6 +1418,8 @@ class window_filter(QWidget):
             self.peak_num_working_data = []
             self.working_data = []
             self.peak_time_working_data = []
+            self.extracted_ratio_data = []
+
 
             for i in range(4):
                 self.working_data.append([])
@@ -1477,8 +1480,7 @@ class window_filter(QWidget):
                             'Droplet Record'] in self.ui.analog.keys():
                             for i in range(4):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
-                                self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][
-                                    i]
+                                self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][3]
                         if self.ch_select.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
@@ -1513,6 +1515,7 @@ class window_filter(QWidget):
                                         i]
                                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][3]
+                                self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
                         elif self.comboBox_ch_select.currentIndex() == 1:
                             """Case for positive sorted droplet"""
@@ -1522,6 +1525,7 @@ class window_filter(QWidget):
                                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
                                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
 
                         elif self.comboBox_ch_select.currentIndex() == 2:
@@ -1531,6 +1535,7 @@ class window_filter(QWidget):
                                     self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
                                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
                                 for i in range(4):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
@@ -1539,6 +1544,7 @@ class window_filter(QWidget):
                                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
                                         i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
 
                         elif self.comboBox_ch_select.currentIndex() == 3:
@@ -1550,6 +1556,7 @@ class window_filter(QWidget):
                                     self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
                                         i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
                         self.channel_list_update()
                 else:
@@ -1667,6 +1674,9 @@ class window_filter(QWidget):
                                             self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Droplet Record']][3]
+                                    self.extracted_ratio_data += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
@@ -1682,6 +1692,8 @@ class window_filter(QWidget):
                                         self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                     self.peak_time_working_data += \
                                     self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                    self.extracted_ratio_data += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
@@ -1698,6 +1710,8 @@ class window_filter(QWidget):
                                         self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                     self.peak_time_working_data += \
                                     self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                    self.extracted_ratio_data += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
                                     for i in range(4):
                                         self.working_data[i] += \
@@ -1708,6 +1722,8 @@ class window_filter(QWidget):
                                             self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                    self.extracted_ratio_data += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
@@ -1723,6 +1739,8 @@ class window_filter(QWidget):
                                             self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][i]
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                    self.extracted_ratio_data += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
@@ -1819,6 +1837,12 @@ class window_filter(QWidget):
         # made empty array to hold the sorted data according to density
         self.start_plot_update(steps, histo, max_density, percentage_coefficient)
         self.setEnabled(False)
+
+        # temporary function to show the average of ratio and standard deviation
+        ratio_avergae = np.mean(self.extracted_ratio_data)
+        ratio_stdev = np.std(self.extracted_ratio_data)
+        print(f"Mean of the Fret Ratio is: {ratio_avergae}")
+        print(f"Std of the Fret Ratio is: {ratio_stdev}")
 
 
 
