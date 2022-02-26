@@ -76,7 +76,7 @@ class RectQuadrant(pg.GraphicsObject):
 class window_filter(QWidget):
     def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
                  peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
-                 root=None, saved_data=None):
+                 root=None, saved_data=None, extracted_ratio_data=None):
         super().__init__()
 
         self.line_thickness = 4
@@ -143,6 +143,7 @@ class window_filter(QWidget):
                 self.points_inside_square = self.ui.tree_dic[parent_index]['quadrant1_list_or_polygon']
                 self.peak_width_working_data = peak_width_working_data
                 self.peak_num_working_data = peak_num_working_data
+                self.extracted_ratio_data = extracted_ratio_data
                 self.root = None
                 self.comboBox_ch_select.setDisabled(True)
                 self.button_channel_select.setDisabled(True)
@@ -295,10 +296,12 @@ class window_filter(QWidget):
         self.comboBox_1 = QtWidgets.QComboBox()
         self.comboBox_1.addItem("Height")
         self.comboBox_1.addItem("Width")
+        self.comboBox_1.addItem("Ratio")
 
         self.comboBox_2 = QtWidgets.QComboBox()
         self.comboBox_2.addItem("Height")
         self.comboBox_2.addItem("Width")
+        self.comboBox_2.addItem("Ratio")
 
         self.comboBox_3 = QtWidgets.QComboBox()
         self.comboBox_3.addItem("Green")
@@ -609,6 +612,7 @@ class window_filter(QWidget):
         self.histogram_comboBox_1 = QtWidgets.QComboBox()
         self.histogram_comboBox_1.addItem("Height")
         self.histogram_comboBox_1.addItem("Width")
+        self.histogram_comboBox_1.addItem("Ratio")
 
         self.histogram_comboBox_2 = QtWidgets.QComboBox()
         self.histogram_comboBox_2.addItem("Green")
@@ -1324,8 +1328,10 @@ class window_filter(QWidget):
 
         if self.histogram_comboBox_1.currentIndex() == 0:
             self.width = self.working_data[self.histogram_comboBox_2.currentIndex()]
-        else:
+        elif self.histogram_comboBox_1.currentIndex() == 1:
             self.width = self.peak_width_working_data[self.histogram_comboBox_2.currentIndex()]
+        else:
+            self.width = self.extracted_ratio_data
 
         self.full_width = [self.width[i] for i in self.points_inside_square]
 
@@ -1789,15 +1795,19 @@ class window_filter(QWidget):
 
         if self.comboBox_1.currentIndex() == 0:
             data_in_subgating_x = self.working_data[self.comboBox_3.currentIndex()]
-            peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
-        else:
+        elif self.comboBox_1.currentIndex() == 1:
             data_in_subgating_x = self.peak_width_working_data[self.comboBox_3.currentIndex()]
-        peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
+        else:
+            data_in_subgating_x = self.extracted_ratio_data
 
         if self.comboBox_2.currentIndex() == 0:
             data_in_subgating_y = self.working_data[self.comboBox_4.currentIndex()]
-        else:
+        elif self.comboBox_2.currentIndex() == 1:
             data_in_subgating_y = self.peak_width_working_data[self.comboBox_4.currentIndex()]
+        else:
+            data_in_subgating_y = self.extracted_ratio_data
+
+        peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
         peak_num_in_subgating_y = self.peak_num_working_data[self.comboBox_4.currentIndex()]
 
         x_axis_channel = self.comboBox_3.currentIndex()
@@ -2403,13 +2413,10 @@ class window_filter(QWidget):
         """for when channel selected is clicked"""
         self.ch_select.show()
 
-
     def stats_clicked(self):
         """ypdate stats window"""
-
         self.x_quadrant_data = [[] for i in range(4)]
         self.y_quadrant_data = [[] for i in range(4)]
-
 
         for i in range(4):
             if len(self.quadrant_indexs[i]) > 0:
@@ -2419,7 +2426,7 @@ class window_filter(QWidget):
 
         self.stats_window.update(self.windowTitle, self.x_quadrant_data, self.y_quadrant_data)
         self.stats_window.show()
-
+        self.stats_window.activateWindow()
         # "Next filiter" button on the main filter tab, pass the filtered value to next window0
 
     # and assign a index number to next filter
@@ -2483,7 +2490,7 @@ class window_filter(QWidget):
         # open a new window for the new branch
         self.ui.dialog = window_filter(self.ui, self.current_file_dict, self.working_data, self.peak_width_working_data,
                                        self.peak_num_working_data, self.linear_plot_channel_list, self.multi_file,
-                                       self.multi_file_index, None)
+                                       self.multi_file_index, None, None, self.extracted_ratio_data)
         #         self.ui.window_filter[new_index] = self.ui.dialog
         self.ui.tree_dic[new_index]['tree_windowfilter'] = self.ui.dialog
         self.ui.dialog.show()
