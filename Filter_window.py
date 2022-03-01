@@ -620,14 +620,30 @@ class window_filter(QWidget):
         self.histogram_comboBox_2.addItem("Ultra Violet")
         self.histogram_comboBox_2.addItem("Orange")
 
+        self.histogram_comboBox_3 = QtWidgets.QComboBox()
+        self.histogram_comboBox_3.addItem("Green")
+        self.histogram_comboBox_3.addItem("Far Red")
+        self.histogram_comboBox_3.addItem("Ultra Violet")
+        self.histogram_comboBox_3.addItem("Orange")
+
         self.histogram_label_1 = QtWidgets.QLabel("Mode: ")
         self.histogram_label_2 = QtWidgets.QLabel("Channel: ")
+        self.histogram_label_3 = QtWidgets.QLabel("Channel: ")
+
+        control_sub_layout = QtWidgets.QGridLayout()
+        control_sub_layout.addWidget(self.histogram_comboBox_2, 0, 1, 1, 1)
+        control_sub_layout.addWidget(self.histogram_comboBox_3, 1, 1, 1, 1)
+        control_sub_layout.addWidget(self.histogram_label_2, 0, 0, 1, 1)
+        control_sub_layout.addWidget(self.histogram_label_3, 1, 0, 1, 1)
 
         Control_layout.addWidget(self.histogram_label_1, 0, 0, 1, 1)
-        Control_layout.addWidget(self.histogram_label_2, 1, 0, 1, 1)
+
 
         Control_layout.addWidget(self.histogram_comboBox_1, 0, 1, 1, 1)
-        Control_layout.addWidget(self.histogram_comboBox_2, 1, 1, 1, 1)
+
+        Control_layout.addLayout(control_sub_layout, 1, 0, 2, 2)
+        self.histogram_comboBox_3.hide()
+        self.histogram_label_3.hide()
 
         self.line_histo_2 = QtWidgets.QFrame(self.tab_2)
         self.line_histo_2.setFrameShape(QtWidgets.QFrame.HLine)
