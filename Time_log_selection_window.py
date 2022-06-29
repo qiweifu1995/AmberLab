@@ -554,7 +554,7 @@ class TimeLogFileSelectionWindow(QWidget):
             self.tree_dict[new_index]['tree_standarditem'] = StandardItem(self.line_edit_name.text(), 12, set_bold=True)
             self.tree_dict[new_index]['tree_windowfilter'] = Filter_window.window_filter(self.ui, None, None,
                                                                                          None, None,
-                                                                                         self.ui.comboBox_14_list,
+                                                                                         None,
                                                                                          index_holder)
             self.tree_model.appendRow(self.tree_dict[new_index]['tree_standarditem'])
             self.hide()
