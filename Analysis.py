@@ -134,7 +134,6 @@ def extract(file, threshold,
                 row_chunk = current_row_number
                 current_width = 0
                 for i in range(1,len(index_list)):
-                        # 0~99
                     if df1.index[i] > row_chunk:
                         width[channel].append(current_width)
                         current_width = 0
