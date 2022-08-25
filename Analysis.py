@@ -102,22 +102,22 @@ def extract(file, threshold,
             channel_name = "N/A", channel_count = "1", peak_threshold=1, peak_min=0, peak_max=1000):
 
     # select channel and threshold
-    peak = [[],[],[],[]]
-    width =[[],[],[],[]]
-    peak_counts = [[],[],[],[]]
+    peak = [[],[],[],[],[]]
+    width =[[],[],[],[],[]]
+    peak_counts = [[],[],[],[],[]]
     current_row_number = 0
     row_chunk = 0
     peak_row_count = 0
     row_count = 0
     for Ch in pd.read_csv(file, chunksize=20000000, header=header):
         start = time.time()
-        Ch.columns =[0,1,2,3]
+        Ch.columns =[0,1,2,3,4]
         row_count += len(Ch)
         progress_percentage = round(((row_count+1)/(float(channel_count)*user_set_chunk_size))*100,2)
         print(channel_name,progress_percentage,"%")
 
         current_row_number = row_chunk + user_set_chunk_size
-        for channel in range(4):
+        for channel in range(5):
             loop_tracker = 0
             if peak_enable:
                 for row in range(0,len(Ch),user_set_chunk_size):
@@ -188,7 +188,7 @@ def extract(file, threshold,
 #                 print('len(width[0])',len(width[0]),len(width[1]),len(width[2]),len(width[3]))
 #                 break
 
-    for col in range(4):
+    for col in range(5):
         peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
 
     return (peak, width, peak_counts)

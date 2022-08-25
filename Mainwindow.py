@@ -3216,6 +3216,7 @@ class Ui_MainWindow(QMainWindow):
         #             self.sweep_file_1 = self.comboBox_option1.currentIndex()
         #         if self.comboBox_option2.currentIndex() > 2:
         #             self.sweep_file_2 = self.comboBox_option2.currentIndex() - 3
+
         #             self.sweep_2_dict = self.file_dict_list[self.sweep_file_2]
         #         else:
         #             self.sweep_file_2 = self.comboBox_option2.currentIndex()
