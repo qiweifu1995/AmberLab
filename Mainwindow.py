@@ -3265,10 +3265,10 @@ class Ui_MainWindow(QMainWindow):
             reset = False
 
         ### check Voltage threshold(V)
-        threshold = [0, 0, 0, 0]
+        threshold = [0, 0, 0, 0, 0, 0]
         peaks_threshold = []
-        width_min = [0, 0, 0, 0]
-        width_max = [500, 500, 500, 500]
+        width_min = [0, 0, 0, 0, 0, 0]
+        width_max = [500, 500, 500, 500, 500, 500]
 
         """
         if self.current_file_dict["Param"] != "":
@@ -3466,9 +3466,9 @@ class Ui_MainWindow(QMainWindow):
     def extract_all_clicked(self):
         """function call to handle when extract all is clicked"""
 
-        threshold = [0, 0, 0, 0]
-        width_min = [0, 0, 0, 0]
-        width_max = [500, 500, 500, 500]
+        threshold = [0, 0, 0, 0, 0, 0]
+        width_min = [0, 0, 0, 0, 0, 0]
+        width_max = [500, 500, 500, 500, 500, 500]
         width_enable = True
         channel = 0
 
