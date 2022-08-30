@@ -74,6 +74,7 @@ class RectQuadrant(pg.GraphicsObject):
 
 
 class window_filter(QWidget):
+    CHANNEL_NAME = ["488nm Green", "638nm Red", ]
     def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
                  peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
                  root=None, saved_data=None, extracted_ratio_data=None):
@@ -117,8 +118,8 @@ class window_filter(QWidget):
             self.y = []
             self.polygon = []
             self.points_inside = []
-            self.x_quadrant_data = [[] for i in range(4)]
-            self.y_quadrant_data = [[] for i in range(4)]
+            self.x_quadrant_data = [[] for i in range(6)]
+            self.y_quadrant_data = [[] for i in range(6)]
             self.Ch1_channel0 = []
             self.Ch1_channel1 = []
             self.Ch1_channel0_peak_num = []
@@ -181,8 +182,8 @@ class window_filter(QWidget):
             self.y = []
             self.polygon = saved_data.polygon
             self.points_inside = saved_data.points_inside
-            self.x_quadrant_data = [[] for i in range(4)]
-            self.y_quadrant_data = [[] for i in range(4)]
+            self.x_quadrant_data = [[] for i in range(6)]
+            self.y_quadrant_data = [[] for i in range(6)]
 
             self.Ch1_channel0 = saved_data.Ch1_channel0
             self.Ch1_channel1 = saved_data.Ch1_channel1
@@ -266,7 +267,7 @@ class window_filter(QWidget):
         self.lineedit_filter_name = QtWidgets.QLineEdit('')
         Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 2)
 
-        self.line_filter_name = QtWidgets.QFrame()
+        self.line_filter_name = QtWidgets.QFrame()cccc
         self.line_filter_name.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_filter_name.setFrameShadow(QtWidgets.QFrame.Sunken)
         Scatter_plot_layout.addWidget(self.line_filter_name, 2, 0, 1, 7)
