@@ -74,7 +74,7 @@ class RectQuadrant(pg.GraphicsObject):
 
 
 class window_filter(QWidget):
-    CHANNEL_NAME = ["488nm Green", "638nm Red", ]
+    CHANNEL_NAME = ["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"]
     def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
                  peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
                  root=None, saved_data=None, extracted_ratio_data=None):
@@ -201,10 +201,14 @@ class window_filter(QWidget):
             self.comboBox_peak_num_2.setCurrentIndex(saved_data.window_setting["ch2_peak_num_mode"])
             self.comboBox_peak_num_3.setCurrentIndex(saved_data.window_setting["ch3_peak_num_mode"])
             self.comboBox_peak_num_4.setCurrentIndex(saved_data.window_setting["ch4_peak_num_mode"])
+            self.comboBox_peak_num_5.setCurrentIndex(saved_data.window_setting["ch5_peak_num_mode"])
+            self.comboBox_peak_num_6.setCurrentIndex(saved_data.window_setting["ch6_peak_num_mode"])
             self.lineEdit_peak_num_1.setText(saved_data.window_setting["ch1_peak_num"])
             self.lineEdit_peak_num_2.setText(saved_data.window_setting["ch2_peak_num"])
             self.lineEdit_peak_num_3.setText(saved_data.window_setting["ch3_peak_num"])
             self.lineEdit_peak_num_4.setText(saved_data.window_setting["ch4_peak_num"])
+            self.lineEdit_peak_num_5.setText(saved_data.window_setting["ch5_peak_num"])
+            self.lineEdit_peak_num_6.setText(saved_data.window_setting["ch6_peak_num"])
 
             # plot setting
             self.line_thickness = 4
@@ -267,7 +271,7 @@ class window_filter(QWidget):
         self.lineedit_filter_name = QtWidgets.QLineEdit('')
         Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 2)
 
-        self.line_filter_name = QtWidgets.QFrame()cccc
+        self.line_filter_name = QtWidgets.QFrame()
         self.line_filter_name.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_filter_name.setFrameShadow(QtWidgets.QFrame.Sunken)
         Scatter_plot_layout.addWidget(self.line_filter_name, 2, 0, 1, 7)
@@ -305,16 +309,20 @@ class window_filter(QWidget):
         self.comboBox_2.addItem("Ratio")
 
         self.comboBox_3 = QtWidgets.QComboBox()
-        self.comboBox_3.addItem("Green")
-        self.comboBox_3.addItem("Far Red")
-        self.comboBox_3.addItem("Ultra Violet")
-        self.comboBox_3.addItem("Orange")
+        self.comboBox_3.addItem(self.CHANNEL_NAME[0])
+        self.comboBox_3.addItem(self.CHANNEL_NAME[1])
+        self.comboBox_3.addItem(self.CHANNEL_NAME[2])
+        self.comboBox_3.addItem(self.CHANNEL_NAME[3])
+        self.comboBox_3.addItem(self.CHANNEL_NAME[4])
+        self.comboBox_3.addItem(self.CHANNEL_NAME[5])
 
         self.comboBox_4 = QtWidgets.QComboBox()
-        self.comboBox_4.addItem("Green")
-        self.comboBox_4.addItem("Far Red")
-        self.comboBox_4.addItem("Ultra Violet")
-        self.comboBox_4.addItem("Orange")
+        self.comboBox_4.addItem(self.CHANNEL_NAME[0])
+        self.comboBox_4.addItem(self.CHANNEL_NAME[1])
+        self.comboBox_4.addItem(self.CHANNEL_NAME[2])
+        self.comboBox_4.addItem(self.CHANNEL_NAME[3])
+        self.comboBox_4.addItem(self.CHANNEL_NAME[4])
+        self.comboBox_4.addItem(self.CHANNEL_NAME[5])
 
         self.comboBox_ch_select = QtWidgets.QComboBox()
         self.comboBox_ch_select.addItem("All Droplets")
@@ -325,7 +333,6 @@ class window_filter(QWidget):
         Scatter_plot_layout.addWidget(self.comboBox_1, 4, 1, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_2, 5, 1, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_3, 4, 2, 1, 1)
-        Scatter_plot_layout.addWidget(self.comboBox_4, 5, 2, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_4, 5, 2, 1, 1)
         Scatter_plot_layout.addWidget(self.comboBox_ch_select, 4, 5, 1, 1)
 
@@ -363,10 +370,12 @@ class window_filter(QWidget):
         sizePolicy.setHeightForWidth(self.label_num_peak_3.sizePolicy().hasHeightForWidth())
         self.label_num_peak_3.setSizePolicy(sizePolicy)
 
-        self.label_num_peak_4 = QtWidgets.QLabel('Green')
-        self.label_num_peak_5 = QtWidgets.QLabel('Red')
-        self.label_num_peak_6 = QtWidgets.QLabel('Blue')
-        self.label_num_peak_7 = QtWidgets.QLabel('Orange')
+        self.label_num_peak_4 = QtWidgets.QLabel(self.CHANNEL_NAME[0])
+        self.label_num_peak_5 = QtWidgets.QLabel(self.CHANNEL_NAME[1])
+        self.label_num_peak_6 = QtWidgets.QLabel(self.CHANNEL_NAME[2])
+        self.label_num_peak_7 = QtWidgets.QLabel(self.CHANNEL_NAME[3])
+        self.label_num_peak_8 = QtWidgets.QLabel(self.CHANNEL_NAME[4])
+        self.label_num_peak_9 = QtWidgets.QLabel(self.CHANNEL_NAME[5])
 
         Multi_peaks_layout.addWidget(self.label_num_peak_1, 1, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_2, 1, 1)
@@ -375,6 +384,8 @@ class window_filter(QWidget):
         Multi_peaks_layout.addWidget(self.label_num_peak_5, 3, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_6, 4, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_7, 5, 0)
+        Multi_peaks_layout.addWidget(self.label_num_peak_8, 6, 0)
+        Multi_peaks_layout.addWidget(self.label_num_peak_9, 7, 0)
 
         self.comboBox_peak_num_1 = QtWidgets.QComboBox()
         self.comboBox_peak_num_1.addItem(">=")
@@ -396,32 +407,43 @@ class window_filter(QWidget):
         self.comboBox_peak_num_4.addItem("==")
         self.comboBox_peak_num_4.addItem("<=")
 
+        self.comboBox_peak_num_5 = QtWidgets.QComboBox()
+        self.comboBox_peak_num_5.addItem(">=")
+        self.comboBox_peak_num_5.addItem("==")
+        self.comboBox_peak_num_5.addItem("<=")
+
+        self.comboBox_peak_num_6 = QtWidgets.QComboBox()
+        self.comboBox_peak_num_6.addItem(">=")
+        self.comboBox_peak_num_6.addItem("==")
+        self.comboBox_peak_num_6.addItem("<=")
+
         Multi_peaks_layout.addWidget(self.comboBox_peak_num_1, 2, 1)
         Multi_peaks_layout.addWidget(self.comboBox_peak_num_2, 3, 1)
         Multi_peaks_layout.addWidget(self.comboBox_peak_num_3, 4, 1)
         Multi_peaks_layout.addWidget(self.comboBox_peak_num_4, 5, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_5, 6, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_6, 7, 1)
 
         self.lineEdit_peak_num_1 = QtWidgets.QLineEdit('0')
         self.lineEdit_peak_num_2 = QtWidgets.QLineEdit('0')
         self.lineEdit_peak_num_3 = QtWidgets.QLineEdit('0')
         self.lineEdit_peak_num_4 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_5 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_6 = QtWidgets.QLineEdit('0')
 
         Multi_peaks_layout.addWidget(self.lineEdit_peak_num_1, 2, 2, 1, 1)
         Multi_peaks_layout.addWidget(self.lineEdit_peak_num_2, 3, 2, 1, 1)
         Multi_peaks_layout.addWidget(self.lineEdit_peak_num_3, 4, 2, 1, 1)
         Multi_peaks_layout.addWidget(self.lineEdit_peak_num_4, 5, 2, 1, 1)
+        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_5, 6, 2, 1, 1)
+        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_6, 7, 2, 1, 1)
 
         self.line_Multi_peaks = QtWidgets.QFrame()
         self.line_Multi_peaks.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_Multi_peaks.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 6, 0, 1, 3)
+        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 8, 0, 1, 3)
 
         ######## Multi peak end
-
-        self.line_Multi_peaks = QtWidgets.QFrame()
-        self.line_Multi_peaks.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_Multi_peaks.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 6, 0, 1, 3)
 
         self.label_dots_inside_polygon = QLabel("Inside : 0")
         sizePolicy.setHeightForWidth(self.label_dots_inside_polygon.sizePolicy().hasHeightForWidth())
