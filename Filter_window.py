@@ -25,6 +25,7 @@ from Helper import ThreadState
 from functools import partial
 from pathlib import Path
 import csv
+
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
@@ -75,6 +76,7 @@ class RectQuadrant(pg.GraphicsObject):
 
 class window_filter(QWidget):
     CHANNEL_NAME = ["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"]
+
     def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
                  peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
                  root=None, saved_data=None, extracted_ratio_data=None):
@@ -248,8 +250,6 @@ class window_filter(QWidget):
                 self.button_channel_select.setDisabled(True)
             self.infiniteline_table_update()
 
-
-
     def setupUI(self):
         ### layout setup
         outter_layout = QtWidgets.QHBoxLayout()
@@ -294,7 +294,8 @@ class window_filter(QWidget):
         self.button_channel_select = QPushButton("Legacy Ch Select")
         Scatter_plot_layout.addWidget(self.button_channel_select, 5, 5, 1, 1)
 
-        self.spacerItem_ch_select = QtWidgets.QSpacerItem(50, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        self.spacerItem_ch_select = QtWidgets.QSpacerItem(50, 1, QtWidgets.QSizePolicy.Minimum,
+                                                          QtWidgets.QSizePolicy.Minimum)
         Scatter_plot_layout.addItem(self.spacerItem_ch_select, 5, 6, 1, 1)
 
         ### Check box layout
@@ -309,20 +310,12 @@ class window_filter(QWidget):
         self.comboBox_2.addItem("Ratio")
 
         self.comboBox_3 = QtWidgets.QComboBox()
-        self.comboBox_3.addItem(self.CHANNEL_NAME[0])
-        self.comboBox_3.addItem(self.CHANNEL_NAME[1])
-        self.comboBox_3.addItem(self.CHANNEL_NAME[2])
-        self.comboBox_3.addItem(self.CHANNEL_NAME[3])
-        self.comboBox_3.addItem(self.CHANNEL_NAME[4])
-        self.comboBox_3.addItem(self.CHANNEL_NAME[5])
+        for channel_name in self.CHANNEL_NAME:
+            self.comboBox_3.addItem(channel_name)
 
         self.comboBox_4 = QtWidgets.QComboBox()
-        self.comboBox_4.addItem(self.CHANNEL_NAME[0])
-        self.comboBox_4.addItem(self.CHANNEL_NAME[1])
-        self.comboBox_4.addItem(self.CHANNEL_NAME[2])
-        self.comboBox_4.addItem(self.CHANNEL_NAME[3])
-        self.comboBox_4.addItem(self.CHANNEL_NAME[4])
-        self.comboBox_4.addItem(self.CHANNEL_NAME[5])
+        for channel_name in self.CHANNEL_NAME:
+            self.comboBox_4.addItem(channel_name)
 
         self.comboBox_ch_select = QtWidgets.QComboBox()
         self.comboBox_ch_select.addItem("All Droplets")
@@ -370,22 +363,18 @@ class window_filter(QWidget):
         sizePolicy.setHeightForWidth(self.label_num_peak_3.sizePolicy().hasHeightForWidth())
         self.label_num_peak_3.setSizePolicy(sizePolicy)
 
-        self.label_num_peak_4 = QtWidgets.QLabel(self.CHANNEL_NAME[0])
-        self.label_num_peak_5 = QtWidgets.QLabel(self.CHANNEL_NAME[1])
-        self.label_num_peak_6 = QtWidgets.QLabel(self.CHANNEL_NAME[2])
-        self.label_num_peak_7 = QtWidgets.QLabel(self.CHANNEL_NAME[3])
-        self.label_num_peak_8 = QtWidgets.QLabel(self.CHANNEL_NAME[4])
-        self.label_num_peak_9 = QtWidgets.QLabel(self.CHANNEL_NAME[5])
+        # adding the channel name in a loop
+        self.label_num_peak_list = []
+        for channel_name in self.CHANNEL_NAME:
+            self.label_num_peak_list.append(QtWidgets.QLabel(channel_name))
 
         Multi_peaks_layout.addWidget(self.label_num_peak_1, 1, 0)
         Multi_peaks_layout.addWidget(self.label_num_peak_2, 1, 1)
         Multi_peaks_layout.addWidget(self.label_num_peak_3, 1, 2)
-        Multi_peaks_layout.addWidget(self.label_num_peak_4, 2, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_5, 3, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_6, 4, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_7, 5, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_8, 6, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_9, 7, 0)
+
+        # add all the labels using loop
+        for i, ch in enumerate(self.label_num_peak_list):
+            Multi_peaks_layout.addWidget(ch, i+2, 0)
 
         self.comboBox_peak_num_1 = QtWidgets.QComboBox()
         self.comboBox_peak_num_1.addItem(">=")
@@ -637,17 +626,15 @@ class window_filter(QWidget):
         self.histogram_comboBox_1.addItem("Width")
         self.histogram_comboBox_1.addItem("Ratio")
 
+        # adding all the channel names using a loop
         self.histogram_comboBox_2 = QtWidgets.QComboBox()
-        self.histogram_comboBox_2.addItem("Green")
-        self.histogram_comboBox_2.addItem("Far Red")
-        self.histogram_comboBox_2.addItem("Ultra Violet")
-        self.histogram_comboBox_2.addItem("Orange")
+        for channel_name in self.CHANNEL_NAME:
+            self.histogram_comboBox_2.addItem(channel_name)
 
+        # adding all the channel names using a loop
         self.histogram_comboBox_3 = QtWidgets.QComboBox()
-        self.histogram_comboBox_3.addItem("Green")
-        self.histogram_comboBox_3.addItem("Far Red")
-        self.histogram_comboBox_3.addItem("Ultra Violet")
-        self.histogram_comboBox_3.addItem("Orange")
+        for channel_name in self.CHANNEL_NAME:
+            self.histogram_comboBox_3.addItem(channel_name)
 
         self.histogram_label_1 = QtWidgets.QLabel("Mode: ")
         self.histogram_label_2 = QtWidgets.QLabel("Channel: ")
@@ -660,7 +647,6 @@ class window_filter(QWidget):
         control_sub_layout.addWidget(self.histogram_label_3, 1, 0, 1, 1)
 
         Control_layout.addWidget(self.histogram_label_1, 0, 0, 1, 1)
-
 
         Control_layout.addWidget(self.histogram_comboBox_1, 0, 1, 1, 1)
 
@@ -841,16 +827,22 @@ class window_filter(QWidget):
         self.polygon_channel_2 = QtWidgets.QCheckBox("Channel_2")
         self.polygon_channel_3 = QtWidgets.QCheckBox("Channel_3")
         self.polygon_channel_4 = QtWidgets.QCheckBox("Channel_4")
+        self.polygon_channel_5 = QtWidgets.QCheckBox("Channel_5")
+        self.polygon_channel_6 = QtWidgets.QCheckBox("Channel_6")
 
         self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_1)
         self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_2)
         self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_3)
         self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_4)
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_5)
+        self.layout_vertical_checkbox_3.addWidget(self.polygon_channel_6)
 
         self.polygon_channel_1.setChecked(True)
         self.polygon_channel_2.setChecked(True)
         self.polygon_channel_3.setChecked(True)
         self.polygon_channel_4.setChecked(True)
+        self.polygon_channel_5.setChecked(True)
+        self.polygon_channel_6.setChecked(True)
 
         self.gridLayout_42.addItem(self.layout_vertical_checkbox_3, 14, 0, 1, 2)
 
@@ -1090,9 +1082,6 @@ class window_filter(QWidget):
                 if self.current_file_dict['Locked Out Peaks'] != '':
                     self.linear_plot_channel_list[len(self.linear_plot_channel_list)] = "Locked Out Peaks"
 
-
-
-
     def tree_index_update(self, new_index):
         """update index function call, usually called after a filter was removed to update the dict"""
         self.tree_index = new_index
@@ -1300,6 +1289,16 @@ class window_filter(QWidget):
                     pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
                     self.widget_29.plot(height_index, height_data, name='Channel_4', pen=pen, symbol='o', symbolSize=0,
                                         symbolBrush=('m'))
+                if self.polygon_channel_5.isChecked():
+                    height_data = savgol_filter(data[3], window_length, poly_degree)
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
+                    self.widget_29.plot(height_index, height_data, name='Channel_5', pen=pen, symbol='o', symbolSize=0,
+                                        symbolBrush=('m'))
+                if self.polygon_channel_6.isChecked():
+                    height_data = savgol_filter(data[3], window_length, poly_degree)
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
+                    self.widget_29.plot(height_index, height_data, name='Channel_6', pen=pen, symbol='o', symbolSize=0,
+                                        symbolBrush=('m'))
             else:
                 if self.polygon_channel_1.isChecked():
                     pen = pg.mkPen(color=(83, 229, 29), width=self.plot_width)
@@ -1316,6 +1315,14 @@ class window_filter(QWidget):
                 if self.polygon_channel_4.isChecked():
                     pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
                     self.widget_29.plot(height_index, data[3].values.tolist(), name='Channel_4', pen=pen, symbol='o',
+                                        symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_5.isChecked():
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
+                    self.widget_29.plot(height_index, data[3].values.tolist(), name='Channel_5', pen=pen, symbol='o',
+                                        symbolSize=0, symbolBrush=('m'))
+                if self.polygon_channel_6.isChecked():
+                    pen = pg.mkPen(color=(238, 134, 30), width=self.plot_width)
+                    self.widget_29.plot(height_index, data[3].values.tolist(), name='Channel_6', pen=pen, symbol='o',
                                         symbolSize=0, symbolBrush=('m'))
         else:
             print("Enter a new lower bond value")
@@ -1443,7 +1450,7 @@ class window_filter(QWidget):
         """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
         self.peak_num_filtered_index = []
         holder = [[], [], [], []]
-        for ch in range(4):
+        for ch in range(6):
             holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
         self.peak_num_filtered_index = list(set(holder[0]).intersection(set(holder[1]), set(holder[2]), set(holder[3])))
@@ -1465,8 +1472,7 @@ class window_filter(QWidget):
             self.peak_time_working_data = []
             self.extracted_ratio_data = []
 
-
-            for i in range(4):
+            for i in range(6):
                 self.working_data.append([])
                 self.peak_width_working_data.append([])
                 self.peak_num_working_data.append([])
@@ -1479,128 +1485,156 @@ class window_filter(QWidget):
                     self.working_data = []
                     self.peak_time_working_data = []
 
-                    for i in range(4):
+                    for i in range(6):
                         self.working_data.append([])
                         self.peak_width_working_data.append([])
                         self.peak_num_working_data.append([])
 
                     if self.legacy_mode:
-                        if self.ch_select.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch1.isChecked() and self.current_file_dict[
+                            'Ch1 '] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1 ']][3]
-                        if self.ch_select.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch2.isChecked() and self.current_file_dict[
+                            'Ch2 '] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch2 ']][3]
-                        if self.ch_select.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch3.isChecked() and self.current_file_dict[
+                            'Ch3 '] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch3 ']][3]
-                        if self.ch_select.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch12.isChecked() and self.current_file_dict[
+                            'Ch1-2'] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1-2']][3]
-                        if self.ch_select.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch13.isChecked() and self.current_file_dict[
+                            'Ch1-3'] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1-3']][3]
-                        if self.ch_select.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkbox_ch23.isChecked() and self.current_file_dict[
+                            'Ch2-3'] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][0][i]
                                 self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
                                 self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch2-3']][3]
                         if self.ch_select.checkbox_Droplet_Record.isChecked() and self.current_file_dict[
                             'Droplet Record'] in self.ui.analog.keys():
-                            for i in range(4):
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
-                                self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
-                                self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
+                                self.peak_width_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
+                                self.peak_num_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][3]
                         if self.ch_select.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
                             'Locked Out Peaks'] in self.ui.analog.keys():
-                            for i in range(4):
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                 self.peak_width_working_data[i] += \
                                     self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
-                                self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
+                                self.peak_num_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
                                     i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
-                        if self.ch_select.checkBox_7.isChecked() and self.current_file_dict['Peak Record'] in self.ui.analog.keys():
-                            for i in range(4):
+                        if self.ch_select.checkBox_7.isChecked() and self.current_file_dict[
+                            'Peak Record'] in self.ui.analog.keys():
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
-                                self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                self.peak_width_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                                self.peak_num_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                         if len(self.peak_width_working_data) == 0:
-                            for i in range(4):
+                            for i in range(6):
                                 self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
-                                self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                self.peak_width_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                                self.peak_num_working_data[i] += \
+                                self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                             self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                         points_inside_square = [i for i in range(len(self.working_data[0]))]
 
                     else:
                         if self.comboBox_ch_select.currentIndex() == 0:
                             if self.current_file_dict['Droplet Record'] in self.ui.analog.keys():
-                                for i in range(4):
-                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][1][
+                                for i in range(6):
+                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][
                                         i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
-                                self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][3]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][1][
+                                        i]
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Droplet Record']][2][i]
+                                self.peak_time_working_data += self.ui.analog[self.current_file_dict['Droplet Record']][
+                                    3]
                                 self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
                         elif self.comboBox_ch_select.currentIndex() == 1:
                             """Case for positive sorted droplet"""
                             if self.current_file_dict['Peak Record'] in self.ui.analog.keys():
-                                for i in range(4):
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                                 self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
 
                         elif self.comboBox_ch_select.currentIndex() == 2:
                             if self.current_file_dict['Peak Record'] in self.ui.analog.keys():
-                                for i in range(4):
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][1][i]
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                                 self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
-                                for i in range(4):
-                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                                for i in range(6):
+                                    self.working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                     self.peak_width_working_data[i] += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
                                         i]
-                                self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                self.peak_time_working_data += \
+                                self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                                 self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
 
                         elif self.comboBox_ch_select.currentIndex() == 3:
                             if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
-                                for i in range(4):
-                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                                for i in range(6):
+                                    self.working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                     self.peak_width_working_data[i] += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Locked Out Peaks']][2][
                                         i]
-                                self.peak_time_working_data += self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
+                                self.peak_time_working_data += \
+                                self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                                 self.extracted_ratio_data += self.ui.analog[self.current_file_dict['Droplet Record']][4]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
                         self.channel_list_update()
@@ -1619,7 +1653,7 @@ class window_filter(QWidget):
                     self.working_data = []
                     self.peak_time_working_data = []
 
-                    for i in range(4):
+                    for i in range(6):
                         self.working_data.append([])
                         self.peak_width_working_data.append([])
                         self.peak_num_working_data.append([])
@@ -1630,46 +1664,65 @@ class window_filter(QWidget):
                         """iterate through all index and add them all to the working data."""
                         self.current_file_dict = self.ui.file_dict_list[file]
                         if self.legacy_mode:
-                            if self.ch_select.checkbox_ch1.isChecked() and self.current_file_dict['Ch1 '] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch1.isChecked() and self.current_file_dict[
+                                'Ch1 '] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch1 ']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1 ']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1 ']][3]
-                            if self.ch_select.checkbox_ch2.isChecked() and self.current_file_dict['Ch2 '] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch2.isChecked() and self.current_file_dict[
+                                'Ch2 '] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch2 ']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2 ']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch2 ']][3]
-                            if self.ch_select.checkbox_ch3.isChecked() and self.current_file_dict['Ch3 '] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch3.isChecked() and self.current_file_dict[
+                                'Ch3 '] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch3 ']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch3 ']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch3 ']][3]
-                            if self.ch_select.checkbox_ch12.isChecked() and self.current_file_dict['Ch1-2'] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch12.isChecked() and self.current_file_dict[
+                                'Ch1-2'] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch1-2']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-2']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1-2']][3]
-                            if self.ch_select.checkbox_ch13.isChecked() and self.current_file_dict['Ch1-3'] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch13.isChecked() and self.current_file_dict[
+                                'Ch1-3'] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch1-3']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch1-3']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch1-3']][3]
-                            if self.ch_select.checkbox_ch23.isChecked() and self.current_file_dict['Ch2-3'] in self.ui.analog.keys():
-                                for i in range(4):
+                            if self.ch_select.checkbox_ch23.isChecked() and self.current_file_dict[
+                                'Ch2-3'] in self.ui.analog.keys():
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][2][i]
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Ch2-3']][1][i]
+                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Ch2-3']][2][
+                                        i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Ch2-3']][3]
                             if self.ch_select.checkbox_Droplet_Record.isChecked() and self.current_file_dict[
                                 'Droplet Record'] in self.ui.analog.keys():
-                                for i in range(4):
-                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
+                                for i in range(6):
+                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Droplet Record']][0][
+                                        i]
                                     self.peak_width_working_data[i] += \
                                         self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                                     self.peak_num_working_data[i] += \
@@ -1678,8 +1731,9 @@ class window_filter(QWidget):
                                     self.ui.analog[self.current_file_dict['Droplet Record']][3]
                             if self.ch_select.checkbox_Locked_Out_Peaks.isChecked() and self.current_file_dict[
                                 'Locked Out Peaks'] in self.ui.analog.keys():
-                                for i in range(4):
-                                    self.working_data[i] += self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                                for i in range(6):
+                                    self.working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                     self.peak_width_working_data[i] += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
                                     self.peak_num_working_data[i] += \
@@ -1689,19 +1743,23 @@ class window_filter(QWidget):
 
                             if self.ch_select.checkBox_7.isChecked() and self.current_file_dict[
                                 'Peak Record'] in self.ui.analog.keys():
-                                for i in range(4):
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][1][
                                         i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
 
                             if len(self.peak_width_working_data) == 0:
-                                for i in range(4):
+                                for i in range(6):
                                     self.working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][0][i]
-                                    self.peak_width_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][1][
+                                    self.peak_width_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][1][
                                         i]
-                                    self.peak_num_working_data[i] += self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                    self.peak_num_working_data[i] += \
+                                    self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                 self.peak_time_working_data += self.ui.analog[self.current_file_dict['Peak Record']][3]
                             points_inside_square = [i for i in range(len(self.working_data[0]))]
                             self.multi_file_index.append(file_index_holder)
@@ -1710,9 +1768,9 @@ class window_filter(QWidget):
                             if self.comboBox_ch_select.currentIndex() == 0:
                                 """All droplet case"""
                                 if self.current_file_dict['Droplet Record'] in self.ui.analog.keys():
-                                    for i in range(4):
+                                    for i in range(6):
                                         self.working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
+                                            self.ui.analog[self.current_file_dict['Droplet Record']][0][i]
                                         self.peak_width_working_data[i] += \
                                             self.ui.analog[self.current_file_dict['Droplet Record']][1][i]
                                         self.peak_num_working_data[i] += \
@@ -1720,47 +1778,47 @@ class window_filter(QWidget):
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Droplet Record']][3]
                                     self.extracted_ratio_data += \
-                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+                                        self.ui.analog[self.current_file_dict['Droplet Record']][4]
 
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
                             elif self.comboBox_ch_select.currentIndex() == 1:
                                 if self.current_file_dict['Peak Record'] in self.ui.analog.keys():
-                                    for i in range(4):
+                                    for i in range(6):
                                         self.working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][0][i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][0][i]
                                         self.peak_width_working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][1][
-                                            i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][1][
+                                                i]
                                         self.peak_num_working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                     self.peak_time_working_data += \
-                                    self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                        self.ui.analog[self.current_file_dict['Peak Record']][3]
                                     self.extracted_ratio_data += \
-                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+                                        self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
                             elif self.comboBox_ch_select.currentIndex() == 2:
                                 """All Positive"""
                                 if self.current_file_dict['Peak Record'] in self.ui.analog.keys():
-                                    for i in range(4):
+                                    for i in range(6):
                                         self.working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][0][i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][0][i]
                                         self.peak_width_working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][1][
-                                            i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][1][
+                                                i]
                                         self.peak_num_working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Peak Record']][2][i]
+                                            self.ui.analog[self.current_file_dict['Peak Record']][2][i]
                                     self.peak_time_working_data += \
-                                    self.ui.analog[self.current_file_dict['Peak Record']][3]
+                                        self.ui.analog[self.current_file_dict['Peak Record']][3]
                                     self.extracted_ratio_data += \
-                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+                                        self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
-                                    for i in range(4):
+                                    for i in range(6):
                                         self.working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                         self.peak_width_working_data[i] += \
                                             self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
                                         self.peak_num_working_data[i] += \
@@ -1768,16 +1826,16 @@ class window_filter(QWidget):
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                                     self.extracted_ratio_data += \
-                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+                                        self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
                             elif self.comboBox_ch_select.currentIndex() == 3:
                                 """Locked Positive"""
                                 if self.current_file_dict['Locked Out Peaks'] in self.ui.analog.keys():
-                                    for i in range(4):
+                                    for i in range(6):
                                         self.working_data[i] += \
-                                        self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
+                                            self.ui.analog[self.current_file_dict['Locked Out Peaks']][0][i]
                                         self.peak_width_working_data[i] += \
                                             self.ui.analog[self.current_file_dict['Locked Out Peaks']][1][i]
                                         self.peak_num_working_data[i] += \
@@ -1785,7 +1843,7 @@ class window_filter(QWidget):
                                     self.peak_time_working_data += \
                                         self.ui.analog[self.current_file_dict['Locked Out Peaks']][3]
                                     self.extracted_ratio_data += \
-                                    self.ui.analog[self.current_file_dict['Droplet Record']][4]
+                                        self.ui.analog[self.current_file_dict['Droplet Record']][4]
                                 points_inside_square = [i for i in range(len(self.working_data[0]))]
                                 self.multi_file_index.append(file_index_holder)
                                 file_index_holder = len(points_inside_square)
@@ -1800,7 +1858,7 @@ class window_filter(QWidget):
             points_inside_square = self.points_inside_square
 
         # edit filter name
-        logging.info("Data collection time pt1: " + str(time.time()-start))
+        logging.info("Data collection time pt1: " + str(time.time() - start))
         start = time.time()
         # updatename to y vs.  x axis
         if self.lineedit_filter_name.text() == '':
@@ -1820,12 +1878,16 @@ class window_filter(QWidget):
         self.peak_num_mode.append(self.comboBox_peak_num_2.currentIndex())
         self.peak_num_mode.append(self.comboBox_peak_num_3.currentIndex())
         self.peak_num_mode.append(self.comboBox_peak_num_4.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_5.currentIndex())
+        self.peak_num_mode.append(self.comboBox_peak_num_6.currentIndex())
         self.peak_num_in.append(int(self.lineEdit_peak_num_1.text()))
         self.peak_num_in.append(int(self.lineEdit_peak_num_2.text()))
         self.peak_num_in.append(int(self.lineEdit_peak_num_3.text()))
         self.peak_num_in.append(int(self.lineEdit_peak_num_4.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_5.text()))
+        self.peak_num_in.append(int(self.lineEdit_peak_num_6.text()))
 
-        if self.peak_num_mode != [0, 0, 0, 0] or self.peak_num_in != [0, 0, 0, 0]:
+        if self.peak_num_mode != [0, 0, 0, 0, 0, 0] or self.peak_num_in != [0, 0, 0, 0, 0, 0]:
             self.peak_num_filter()
             points_inside_square = list(set(points_inside_square).intersection(set(self.peak_num_filtered_index)))
 
@@ -1871,8 +1933,6 @@ class window_filter(QWidget):
         bins = 2000
         steps = max_voltage / bins
 
-
-
         # all data is first sorted into a histogram
         histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
                                      [[0, max_voltage], [0, max_voltage]],
@@ -1892,8 +1952,6 @@ class window_filter(QWidget):
         ratio_stdev = np.std(self.extracted_ratio_data)
         print(f"Mean of the Fret Ratio is: {ratio_avergae}")
         print(f"Std of the Fret Ratio is: {ratio_stdev}")
-
-
 
     ################################################################################################
     ### these are  the mouse-draggable-lines on the main tab, they are called "infinitelines" in the pyqt documents
@@ -1921,7 +1979,7 @@ class window_filter(QWidget):
         # pass the threshold value to next window
         text_x = self.lr_x_axis.value()
         text_y = self.lr_y_axis.value()
-        self.quadrant_indexs = [[],[],[],[]]
+        self.quadrant_indexs = [[], [], [], []]
         a = (np.array(self.Ch1_channel0) > text_x).tolist()
         c = (np.array(self.Ch1_channel1) > text_y).tolist()
 
@@ -2448,6 +2506,7 @@ class window_filter(QWidget):
             self.label_dots_inside_polygon.setText(points_inside)
 
             # close the filter tab
+
     def channel_select_clicked(self):
         """for when channel selected is clicked"""
         self.ch_select.show()
@@ -2575,7 +2634,7 @@ class window_filter(QWidget):
             self.time_list.append(time_list_holder.copy())
             time_list_holder.clear()
 
-        elif len(self.multi_file_index)>1:
+        elif len(self.multi_file_index) > 1:
             # handles cases where multi file index is true and has more than 1 file index
             counter = 0
             for index in self.multi_file_index:
@@ -2613,8 +2672,6 @@ class window_filter(QWidget):
             self.time_list.append(time_list_holder.copy())
             time_list_holder.clear()
 
-
-
         # this list is for transfering the data to timeLog
         dataframe_list = []
 
@@ -2649,9 +2706,9 @@ class window_filter(QWidget):
 
     def plot_finalization(self):
         """call this function when the worker finish updating plot data"""
-        #self.scatter = pg.ScatterPlotItem()
-        #self.scatter.addPoints(self.spotss)
-        #self.graphWidget.addItem(self.scatter)
+        # self.scatter = pg.ScatterPlotItem()
+        # self.scatter.addPoints(self.spotss)
+        # self.graphWidget.addItem(self.scatter)
         self.setEnabled(True)
         self.loading_bar.hide()
         self.graphWidget.removeItem(self.lr_x_axis)
@@ -2693,7 +2750,8 @@ class window_filter(QWidget):
                           }
 
         output = FilterData(self.linear_plot_channel_list, self.tree_index, self.current_file_dict,
-                            self.working_data, self.points_inside_square, self.points_inside, self.filter_out_list, self.peak_width_working_data,
+                            self.working_data, self.points_inside_square, self.points_inside, self.filter_out_list,
+                            self.peak_width_working_data,
                             self.peak_num_working_data, self.peak_time_working_data, self.root, self.multi_file,
                             self.multi_file_index, self.index_in_all_selected_channel, self.spots, self.Ch1_channel0,
                             self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
@@ -2702,7 +2760,9 @@ class window_filter(QWidget):
 
 class FilterData:
     """this class will hold all the data to reconstruct a filter"""
-    def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, points_inside_square, points_inside, filter_out_list,
+
+    def __init__(self, linear_plot_channel_list, tree_index, current_file_dict, working_data, points_inside_square,
+                 points_inside, filter_out_list,
                  peak_width_working_data, peak_num_working_data, peak_time_working_data, root, multi_file,
                  multi_file_index, index_in_all_selected_channel, spots, Ch1_channel0, Ch1_channel1,
                  Ch1_channel0_peak_num, Ch1_channel1_peak_num, window_setting):
@@ -2739,7 +2799,6 @@ class FilterData:
         self.window_setting = window_setting
 
 
-
 class PlotGenerationWorker(QtCore.QObject):
     """worker to handle plot color generation"""
     finished = QtCore.pyqtSignal()
@@ -2748,15 +2807,15 @@ class PlotGenerationWorker(QtCore.QObject):
     def run(self, parent, steps, histo, max_density, percentage_coefficient):
         parent.spots = []
         print(os.getcwd())
-        step = [i/256 for i in range(255)]
+        step = [i / 256 for i in range(255)]
         colors = []
-        with open(os.path.dirname(os.path.realpath(__file__))+'/CET-R2.csv',  newline='') as f:
+        with open(os.path.dirname(os.path.realpath(__file__)) + '/CET-R2.csv', newline='') as f:
             reader = csv.reader(f)
             for line in reader:
-                colors.append([float(x)*256 for x in line])
+                colors.append([float(x) * 256 for x in line])
         print(colors)
-        cm = pg.ColorMap(pos= step, color=colors)
-        #cm = colormap.get("CET-R2.csv")
+        cm = pg.ColorMap(pos=step, color=colors)
+        # cm = colormap.get("CET-R2.csv")
         progress_percent = 0
         data_size = len(parent.Ch1_channel0)
         for i in range(data_size):
@@ -2783,8 +2842,8 @@ class PlotGenerationWorker(QtCore.QObject):
                         'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
             parent.spots.append(spot_dic.copy())
             # calculate current percentage, this stage max at 80
-            if i*100//data_size != progress_percent:
-                progress_percent = i*80//data_size
+            if i * 100 // data_size != progress_percent:
+                progress_percent = i * 80 // data_size
                 signal_string = "Processing data points: " + str(i) + "/" + str(data_size)
                 self.progress.emit([progress_percent, signal_string])
             # parent.graphWidget.plot(density_listx[i], density_listy[i], symbol='p', pen=None, symbolPen=None,
@@ -2799,6 +2858,7 @@ class PlotGenerationWorker(QtCore.QObject):
 
 class LoadingScreen(QWidget):
     """This class is the pop up window for when graph is loading"""
+
     def __init__(self):
         super(LoadingScreen, self).__init__()
         self.initUI()
@@ -2826,6 +2886,7 @@ class LoadingScreen(QWidget):
 
 class ChannelSelectWindow(QWidget):
     """this class will pop up for legacy channel selection"""
+
     def __init__(self, parent: window_filter):
         super(ChannelSelectWindow, self).__init__()
         self.comboBox_14_list = {}
@@ -2855,7 +2916,7 @@ class ChannelSelectWindow(QWidget):
         self.layout_vertical_checkbox.addWidget(self.checkbox_ch2)
         self.checkbox_ch3 = QtWidgets.QCheckBox("Channel 3")
         self.checkbox_ch3.setObjectName("checkbox_ch3")
-        #elf.layout_vertical_checkbox.addWidget(self.checkbox_ch3)
+        # elf.layout_vertical_checkbox.addWidget(self.checkbox_ch3)
         self.checkbox_ch12 = QtWidgets.QCheckBox("Channel 1-2")
         self.checkbox_ch12.setObjectName("checkbox_ch12")
         self.layout_vertical_checkbox.addWidget(self.checkbox_ch12)
@@ -2955,7 +3016,7 @@ def show_dialog(text: str, window_title: str):
     dialog_text.setText(text)
     layout.addWidget(dialog_text)
     ok_btn = QPushButton("Ok")
-    ok_btn.setMaximumSize(100,50)
+    ok_btn.setMaximumSize(100, 50)
     layout.addWidget(ok_btn, alignment=Qt.AlignCenter)
     ok_btn.clicked.connect(dialog.hide)
     dialog.setLayout(layout)

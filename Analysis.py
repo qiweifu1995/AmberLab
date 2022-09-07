@@ -88,6 +88,14 @@ def extracted_data_loader(parent, progress_index, file_name):
             peak[3].append(0)
             peak_counts[3].append(0)
             width[3].append(0)
+        elif total_channels < 6:
+            """handles AFC data, missing data will be filled with 0"""
+            peak[4].append(0)
+            peak_counts[4].append(0)
+            width[4].append(0)
+            peak[5].append(0)
+            peak_counts[5].append(0)
+            width[5].append(0)
         percentage = curent_droplet * progress_span / total_droplets // 1 + progress_start
         if current_percent != percentage:
             current_percent = percentage
@@ -291,10 +299,12 @@ def extract_parallel2(parent, progress_index, file, threshold,
     print(file_size)
     parent.progress.emit([progress_index[0], "Extracting" + str(file)])
     csv_file = pd.read_csv(file, chunksize=20000000, header=header)
-    total_portions = 0
+    number_of_channels = 0
     for Ch in csv_file:
         start = time.time()
-        Ch.columns = [0, 1, 2, 3, 4, 5]
+        number_of_channels = len(Ch.columns)
+        Ch.columns = [i for i in range(number_of_channels)]
+        print(Ch.columns)
         row_count += len(Ch)
 
 #             progress_percentage = round(((row_count + 1) / (float(channel_count) * user_set_chunk_size)) * 100, 2)
@@ -304,7 +314,7 @@ def extract_parallel2(parent, progress_index, file, threshold,
         with concurrent.futures.ProcessPoolExecutor() as executor:
             extracted_data = [executor.submit(data_extractor, Ch[channel], threshold[channel], peak_threshold[channel],
                                               current_row_number, user_set_chunk_size, peak_max[channel],
-                                              peak_min[channel], channel) for channel in range(6)]
+                                              peak_min[channel], channel) for channel in range(number_of_channels)]
             for f in concurrent.futures.as_completed(extracted_data):
                 holder = f.result()
                 for x in holder[1]:
@@ -316,11 +326,15 @@ def extract_parallel2(parent, progress_index, file, threshold,
                 row_chunk = holder[4]
         parent.progress.emit([progress_index[0] + (progress_index[1]-progress_index[0])//estimated_chunks, "Extracting " + str(file)])
         print("Parallel execution time", str(time.time()-start))
-
     """
     for col in range(4):
         peak[col] = [0 if math.isnan(x) else x for x in peak[col]]
     """
+    if number_of_channels < 6:
+        for i in range(number_of_channels, 6):
+            peak[i].append([i for i in range(len(peak[0]))])
+            width[i].append([i for i in range(len(width[0]))])
+            peak_counts.append([i for i in range(len(peak_counts[0]))])
     return peak, width, peak_counts
 
 
