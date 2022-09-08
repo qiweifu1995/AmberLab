@@ -1041,13 +1041,13 @@ class window_filter(QWidget):
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
-        self.ui.sweep_left = [[], [], [], []]
+        self.ui.sweep_left = [[], [], [], [], [], []]
         for ch in range(len(self.working_data)):
             self.ui.sweep_left[ch] = [self.working_data[ch][i] for i in self.points_inside]
         self.ui.update_sweep_1(data_updated=True)
 
     def update_sweep_right(self):
-        self.ui.sweep_right = [[], [], [], []]
+        self.ui.sweep_right = [[], [], [], [], [], []]
         for ch in range(len(self.working_data)):
             self.ui.sweep_right[ch] = [self.working_data[ch][i] for i in self.points_inside]
         self.ui.update_sweep_2(data_updated=True)

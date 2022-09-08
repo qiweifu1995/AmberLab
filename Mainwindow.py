@@ -56,6 +56,7 @@ class StandardItem(QStandardItem):
 
 
 class Ui_MainWindow(QMainWindow):
+    CHANNEL_NAME = ["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"]
 
     def __init__(self):
         super(Ui_MainWindow, self).__init__()
@@ -314,7 +315,7 @@ class Ui_MainWindow(QMainWindow):
         self.tableView_statistic.setColumnCount(5)
         self.tableView_statistic.setRowCount(4)
         self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
-        self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
+        self.tableView_statistic.setVerticalHeaderLabels(self.CHANNEL_NAME)
         self.verticalLayout_5.addWidget(self.tableView_statistic)
         self.gridLayout_2.addLayout(self.verticalLayout_5, 0, 2, 1, 1)
         spacerItem4 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
@@ -1210,10 +1211,8 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_option1.setSizePolicy(sizePolicy)
         self.comboBox_option1.setMinimumSize(QtCore.QSize(100, 0))
         self.comboBox_option1.setObjectName("comboBox_option1")
-        self.comboBox_option1.addItem("Green")
-        self.comboBox_option1.addItem("Red")
-        self.comboBox_option1.addItem("Blue")
-        self.comboBox_option1.addItem("Orange")
+        for ch in self.CHANNEL_NAME:
+            self.comboBox_option1.addItem(ch)
 
         self.horizontalLayout_option1.addWidget(self.comboBox_option1)
         self.verticalLayout_12.addLayout(self.horizontalLayout_option1)
@@ -1280,10 +1279,8 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_option2.setSizePolicy(sizePolicy)
         self.comboBox_option2.setMinimumSize(QtCore.QSize(100, 0))
         self.comboBox_option2.setObjectName("comboBox_option2")
-        self.comboBox_option2.addItem("Green")
-        self.comboBox_option2.addItem("Red")
-        self.comboBox_option2.addItem("Blue")
-        self.comboBox_option2.addItem("Orange")
+        for ch in self.CHANNEL_NAME:
+            self.comboBox_option2.addItem(ch)
 
         self.horizontalLayout_option2.addWidget(self.comboBox_option2)
         self.verticalLayout_17.addLayout(self.horizontalLayout_option2)
@@ -2791,7 +2788,7 @@ class Ui_MainWindow(QMainWindow):
             stats = []
             self.tableView_statistic.clear()
             self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Max', 'Min'])
-            self.tableView_statistic.setVerticalHeaderLabels(['Green', 'Red', 'Blue', 'Orange'])
+            self.tableView_statistic.setVerticalHeaderLabels(self.CHANNEL_NAME)
             for i in range(4):
                 mean = statistics.mean(self.working_data[i])
                 median = statistics.median(self.working_data[i])
