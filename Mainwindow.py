@@ -313,7 +313,7 @@ class Ui_MainWindow(QMainWindow):
         self.tableView_statistic.setMaximumSize(QtCore.QSize(16777215, 200))
         self.tableView_statistic.setObjectName("tableView_statistic")
         self.tableView_statistic.setColumnCount(5)
-        self.tableView_statistic.setRowCount(4)
+        self.tableView_statistic.setRowCount(6)
         self.tableView_statistic.setHorizontalHeaderLabels(['Mean', 'Median', 'Standard Deviation', 'Min', 'Max'])
         self.tableView_statistic.setVerticalHeaderLabels(self.CHANNEL_NAME)
         self.verticalLayout_5.addWidget(self.tableView_statistic)
@@ -1045,15 +1045,25 @@ class Ui_MainWindow(QMainWindow):
         self.channel_4 = QtWidgets.QCheckBox(self.centralwidget)
         self.channel_4.setObjectName("self.channel_4")
 
+        self.channel_5 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_5.setObjectName("self.channel_5")
+
+        self.channel_6 = QtWidgets.QCheckBox(self.centralwidget)
+        self.channel_6.setObjectName("self.channel_6")
+
         self.layout_vertical_checkbox_2.addWidget(self.channel_1)
         self.layout_vertical_checkbox_2.addWidget(self.channel_2)
         self.layout_vertical_checkbox_2.addWidget(self.channel_3)
         self.layout_vertical_checkbox_2.addWidget(self.channel_4)
+        self.layout_vertical_checkbox_2.addWidget(self.channel_5)
+        self.layout_vertical_checkbox_2.addWidget(self.channel_6)
 
         self.channel_1.setChecked(True)
         self.channel_2.setChecked(True)
         self.channel_3.setChecked(True)
         self.channel_4.setChecked(True)
+        self.channel_5.setChecked(True)
+        self.channel_6.setChecked(True)
 
         self.gridLayout_41.addItem(self.layout_vertical_checkbox_2, 14, 0, 1, 2)
 
@@ -1920,6 +1930,8 @@ class Ui_MainWindow(QMainWindow):
         self.channel_2.stateChanged.connect(self.linear_plot)
         self.channel_3.stateChanged.connect(self.linear_plot)
         self.channel_4.stateChanged.connect(self.linear_plot)
+        self.channel_5.stateChanged.connect(self.linear_plot)
+        self.channel_6.stateChanged.connect(self.linear_plot)
 
         self.recalculate_peak_dataset = True
         self.comboBox_option1.currentIndexChanged.connect(self.sweep_1_index_changed)
@@ -1976,6 +1988,12 @@ class Ui_MainWindow(QMainWindow):
         self.channel_4.stateChanged.connect(
             lambda: self.textbox_trigger(change="Raw data viewer channel_4 state changed to ",
                                          afterchange=self.channel_4.isChecked()))
+        self.channel_5.stateChanged.connect(
+            lambda: self.textbox_trigger(change="Raw data viewer channel_5 state changed to ",
+                                         afterchange=self.channel_5.isChecked()))
+        self.channel_6.stateChanged.connect(
+            lambda: self.textbox_trigger(change="Raw data viewer channel_6 state changed to ",
+                                         afterchange=self.channel_6.isChecked()))
 
 
 
@@ -3035,10 +3053,12 @@ class Ui_MainWindow(QMainWindow):
         self.checkbox_Locked_Out_Peaks.setText(_translate("MainWindow", "Locked Out Peaks"))
         self.checkBox_7.setText(_translate("MainWindow", "Sorted Peaks"))
 
-        self.channel_1.setText(_translate("MainWindow", "Channel 1"))
-        self.channel_2.setText(_translate("MainWindow", "Channel 2"))
-        self.channel_3.setText(_translate("MainWindow", "Channel 3"))
-        self.channel_4.setText(_translate("MainWindow", "Channel 4"))
+        self.channel_1.setText(_translate("MainWindow", self.CHANNEL_NAME[0]))
+        self.channel_2.setText(_translate("MainWindow", self.CHANNEL_NAME[1]))
+        self.channel_3.setText(_translate("MainWindow", self.CHANNEL_NAME[2]))
+        self.channel_4.setText(_translate("MainWindow", self.CHANNEL_NAME[3]))
+        self.channel_5.setText(_translate("MainWindow", self.CHANNEL_NAME[4]))
+        self.channel_6.setText(_translate("MainWindow", self.CHANNEL_NAME[5]))
 
         self.button_update.setText(_translate("MainWindow", "Extract"))
         #         self.label_2.setText(_translate("MainWindow", "Gate Voltages"))
