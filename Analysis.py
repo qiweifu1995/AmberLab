@@ -25,6 +25,8 @@ def extracted_data_loader(parent, progress_index, file_name):
     width = [[], [], [], [], [], []]
     peak_counts = [[], [], [], [], [], []]
     fret_ratio = []
+    doner_droplet_signal = []
+    acceptor_droplet_signal = []
     time_data = []
     chunk_size = 0
 
@@ -47,7 +49,7 @@ def extracted_data_loader(parent, progress_index, file_name):
     """while loop to figure out chunksize"""
     while chunk_size == 0 and counter < length:
         if extracted_data.iloc[counter, 0] == -16 and extracted_data.iloc[counter, 1] == -16:
-            """rows with 16,16,16,16 is divider"""
+            """rows with -16, -16 is divider"""
             if start_count:
                 chunk_size = counter
                 break
@@ -59,7 +61,14 @@ def extracted_data_loader(parent, progress_index, file_name):
 
     total_droplets = length/chunk_size
     print("Total number of droplet extracted: " + str(total_droplets))
-    total_channels = (chunk_size-1)//3
+    # chunk size includes the first 1-2 lines of the extracted data, 2 line means it includes FRET data
+    if (chunk_size-1) % 3:
+        # check for if there is 1 or 2 line extra, if true, then there is 2 line
+        total_channels = (chunk_size-2)//3
+        header_lines = 2
+    else:
+        total_channels = (chunk_size - 1) // 3
+        header_lines = 1
     curent_droplet = 0
     current_percent = 0
     for i in range(0, length, chunk_size):
@@ -75,7 +84,8 @@ def extracted_data_loader(parent, progress_index, file_name):
             time_stamp = curent_droplet // 6000 + 1
         for j in range(i, i+chunk_size):
             channel = (j-(curent_droplet-1)*chunk_size) // 3
-            mode = (j-curent_droplet) % 3
+            # mode is which line of the channel chunk, need to find it by subtracting the header_lines
+            mode = (j-curent_droplet*header_lines) % 3
             if mode == 0:
                 """first line of the chunk, extract number of peaks and vertical value"""
                 peak_counts[channel].append(extracted_data[0][j])

@@ -39,6 +39,7 @@ class Time_log_functions(Enum):
 
 class TimeLogFileSelectionWindow(QWidget):
     """Class that allows user to select the files for syringes, also handles UI for file combine of filters"""
+    CHANNEL_NAME = ["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"]
 
     def __init__(self, file_list: QListWidget, file_model: Qt.QStandardItemModel, file_index: list, tree_dict: dict
                  , tree_model: Qt.QStandardItemModel, parent: QMainWindow, file_dict: list, top_graph: pg.PlotWidget
@@ -137,11 +138,23 @@ class TimeLogFileSelectionWindow(QWidget):
         self.ch_4_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
                                       "this Ch")
 
+        self.ch_5_checkbox = QtWidgets.QCheckBox("Orange")
+        self.ch_5_checkbox.setTristate()
+        self.ch_5_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+
+        self.ch_6_checkbox = QtWidgets.QCheckBox("Orange")
+        self.ch_6_checkbox.setTristate()
+        self.ch_6_checkbox.setToolTip("Check to include Positives from this Ch, Box to exclude positives containing "
+                                      "this Ch")
+
         layout_box = QGridLayout()
         layout_box.addWidget(self.ch_1_checkbox, 0, 0)
         layout_box.addWidget(self.ch_2_checkbox, 0, 1)
         layout_box.addWidget(self.ch_3_checkbox, 1, 0)
         layout_box.addWidget(self.ch_4_checkbox, 1, 1)
+        layout_box.addWidget(self.ch_4_checkbox, 2, 0)
+        layout_box.addWidget(self.ch_4_checkbox, 2, 1)
 
         layout.addLayout(layout_box)
 
