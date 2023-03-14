@@ -24,7 +24,9 @@ def extracted_data_loader(parent, progress_index, file_name):
     peak = [[], [], [], [], [], []]
     width = [[], [], [], [], [], []]
     peak_counts = [[], [], [], [], [], []]
-    fret_ratio = []
+    fret_ratio = [[], [], []]
+    fret_doner = []
+    fret_receptor = []
     doner_droplet_signal = []
     acceptor_droplet_signal = []
     time_data = []
@@ -77,6 +79,13 @@ def extracted_data_loader(parent, progress_index, file_name):
         droplet_size = extracted_data.iloc[i, 4]
         time_stamp = extracted_data.iloc[i, 3]
         fret_ratio_data = extracted_data.iloc[i, 2]
+        if header_lines > 1:
+            # this will write the raw fret data since there is 2 header line
+            fret_doner = extracted_data.iloc[i+1, 0]
+            fret_receptor = extracted_data.iloc[i+1, 1]
+        else:
+            fret_doner = [0 for i in fret_ratio_data]
+            fret_receptor = [0 for i in fret_ratio_data]
         if math.isnan(fret_ratio_data) or math.isinf(fret_ratio_data):
             fret_ratio_data = 0
         if time_stamp < 0:
@@ -92,7 +101,9 @@ def extracted_data_loader(parent, progress_index, file_name):
                 peak[channel].append(extracted_data[1][j])
                 width[channel].append(droplet_size)
         time_data.append(time_stamp)
-        fret_ratio.append(fret_ratio_data)
+        fret_ratio[0] = fret_ratio_data
+        fret_ratio[1] = fret_doner
+        fret_ratio[2] = fret_receptor
         if total_channels < 4:
             """handle AFA data, missing fourth channel"""
             peak[3].append(0)
