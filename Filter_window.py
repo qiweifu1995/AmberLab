@@ -2807,7 +2807,7 @@ class PlotGenerationWorker(QtCore.QObject):
     def run(self, parent, steps, histo, max_density, percentage_coefficient):
         parent.spots = []
         print(os.getcwd())
-        step = [i / 256 for i in range(255)]
+        step = [i / 256 for i in range(256)]
         colors = []
         with open(os.path.dirname(os.path.realpath(__file__)) + '/CET-R2.csv', newline='') as f:
             reader = csv.reader(f)
@@ -2835,11 +2835,11 @@ class PlotGenerationWorker(QtCore.QObject):
             if percentage <= 0 or math.isnan(percentage):
                 percentage = 0.1
             elif percentage > 1:
-                percentage = 1
+                percentage = 0.99
             spot_dic = {'pos': (x, y), 'size': 3,
                         'pen': None,
                         'symbol': 'p',
-                        'brush': cm.map(percentage, mode=pg.ColorMap.QCOLOR)}
+                        'brush': cm.map(float(percentage), mode=pg.ColorMap.QCOLOR)}
             parent.spots.append(spot_dic.copy())
             # calculate current percentage, this stage max at 80
             if i * 100 // data_size != progress_percent:

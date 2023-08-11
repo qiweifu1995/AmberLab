@@ -84,8 +84,8 @@ def extracted_data_loader(parent, progress_index, file_name):
             fret_doner = extracted_data.iloc[i+1, 0]
             fret_receptor = extracted_data.iloc[i+1, 1]
         else:
-            fret_doner = [0 for i in fret_ratio_data]
-            fret_receptor = [0 for i in fret_ratio_data]
+            fret_doner = extracted_data.iloc[i, 0]
+            fret_receptor = extracted_data.iloc[i, 1]
         if math.isnan(fret_ratio_data) or math.isinf(fret_ratio_data):
             fret_ratio_data = 0
         if time_stamp < 0:
