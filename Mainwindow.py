@@ -90,7 +90,7 @@ class Ui_MainWindow(QMainWindow):
     def setupUi(self):
 
         ### GUI setup
-        self.setWindowTitle("AmberLab Analysis Suite Ver. " + self.version_number)
+        self.setWindowTitle("AuraLab Analysis Suite Ver. " + self.version_number)
         self.setObjectName("MainWindow")
         self.resize(1500, 900)
         self.setMinimumSize(QtCore.QSize(150, 150))
@@ -1815,7 +1815,7 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalLayout_report_tab.addWidget(self.textEdit)
         self.tab_widgets_main.addTab(self.tab_report, "")
 
-        self.textbox = "Current version: Amberlab V1.23" + "\n" + "you can find logs here:"
+        self.textbox = "Current version: AuraLab V1.23" + "\n" + "you can find logs here:"
         self.textEdit.setPlainText(self.textbox)
 
         ### tab end
@@ -3540,7 +3540,7 @@ class Ui_MainWindow(QMainWindow):
 
     def save(self):
         """ function to save current instance """
-        file = QFileDialog.getSaveFileName(self, "Save File", os.getcwd(), "AmberLab Save File (*.abl)")
+        file = QFileDialog.getSaveFileName(self, "Save File", os.getcwd(), "AuraLab Save File (*.abl)")
         file_str = str(file[0])
         if file_str:
             full_file_dir = file_str

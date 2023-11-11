@@ -101,9 +101,9 @@ def extracted_data_loader(parent, progress_index, file_name):
                 peak[channel].append(extracted_data[1][j])
                 width[channel].append(droplet_size)
         time_data.append(time_stamp)
-        fret_ratio[0] = fret_ratio_data
-        fret_ratio[1] = fret_doner
-        fret_ratio[2] = fret_receptor
+        fret_ratio[0].append(fret_ratio_data)
+        fret_ratio[1].append(fret_doner)
+        fret_ratio[2].append(fret_receptor)
         if total_channels < 4:
             """handle AFA data, missing fourth channel"""
             peak[3].append(0)
