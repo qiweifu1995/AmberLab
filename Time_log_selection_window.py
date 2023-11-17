@@ -257,11 +257,11 @@ class TimeLogFileSelectionWindow(QWidget):
                 data = pd.read_csv(file["Time Log"])
                 self.file_time_data.append(datetime.datetime.strptime(file["Time Log"][0:13], "%y%m%d_%H%M%S"))
                 data.fillna(0, inplace=True)
-                data.replace(0, int(random.randrange(150, 200, 1)), True)
+                #data.replace(0, int(random.randrange(150, 200, 1)), True)
                 # follow function for testing use only, when file is not good
-                for col in data.columns.values:
-                    for i in data.index.values:
-                        data.loc[i, col] = int(random.randrange(1, 200, 1))
+                #for col in data.columns.values:
+                #    for i in data.index.values:
+                #        data.loc[i, col] = int(random.randrange(1, 200, 1))
                 self.time_log_data.append(data)
                 # print(data)
         # print(self.file_time_data)
