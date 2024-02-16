@@ -21,7 +21,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AuraLab v1',
+    name='AuraLab v1.1',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

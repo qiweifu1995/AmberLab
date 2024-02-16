@@ -324,6 +324,9 @@ def extract_parallel2(parent, progress_index, file, threshold,
     for Ch in csv_file:
         start = time.time()
         number_of_channels = len(Ch.columns)
+        if len(peak_threshold) < number_of_channels:
+            for diff in range(number_of_channels-len(peak_threshold)):
+                peak_threshold.append(0)
         Ch.columns = [i for i in range(number_of_channels)]
         print(Ch.columns)
         row_count += len(Ch)
