@@ -1867,6 +1867,11 @@ class Ui_MainWindow(QMainWindow):
         self.menuFiles.addAction(self.actionAdd_SaveParameters)
         self.menuFiles.addAction(self.actionAdd_LoadParameters)
 
+        # Edit Channel Names
+        self.actionAdd_EditChannels = QtWidgets.QAction(self)
+        self.actionAdd_EditChannels.setObjectName("actionAdd_EditChannels")
+        self.menuFiles.addAction(self.actionAdd_EditChannels)
+
         #         self.menuFiles.addAction(self.Save)
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
@@ -2151,8 +2156,6 @@ class Ui_MainWindow(QMainWindow):
         self.well_right_button.clicked.connect(self.plate_right_button_clicked)
 
         self.tab_peakmax.setLayout(main_vertical_layout)
-
-
 
 
 
@@ -3195,6 +3198,7 @@ class Ui_MainWindow(QMainWindow):
         self.actionAdd_SaveSingleFile.setText(_translate("MainWindow", "Save Single File"))
         self.actionAdd_SaveParameters.setText(_translate("MainWindow", "Save Parameters"))
         self.actionAdd_LoadParameters.setText(_translate("MainWindow", "Load Parameters"))
+        self.actionAdd_EditChannels.setText(_translate("MainWindow", "Edit Channel Names"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
 
     #         self.label_filter.setText(_translate("MainWindow", "test"))

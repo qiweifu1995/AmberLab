@@ -461,7 +461,7 @@ class window_filter(QWidget):
         self.label_density = QLabel("Plot Density")
         layout.addWidget(self.label_density, 8, 1, 1, 1)
         self.density_line_edit = QtWidgets.QDoubleSpinBox()
-        self.density_line_edit.setValue(0.1)
+        self.density_line_edit.setValue(0.01)
         layout.addWidget(self.density_line_edit, 8, 2, 1, 1)
 
         self.pushButton_1 = QPushButton('Next Filter')
