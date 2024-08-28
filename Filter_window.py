@@ -664,7 +664,7 @@ class window_filter(QWidget):
         self.label_bin_width = QLabel("Binwidth")
         Control_layout.addWidget(self.label_bin_width, 3, 0, 1, 1)
 
-        self.histogram_binwidth = QtWidgets.QLineEdit('0.1')
+        self.histogram_binwidth = QtWidgets.QLineEdit('50')
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
