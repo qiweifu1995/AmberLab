@@ -1,3 +1,6 @@
+import os
+from multiprocessing import freeze_support
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QDoubleSpinBox, QSizePolicy
 from PyQt5 import QtWidgets, QtCore, QtGui
 from functools import partial
@@ -7,6 +10,9 @@ class NameEditWindow(QWidget):
     """Window that prompt user for channel naming """
     ok_clicked = QtCore.pyqtSignal()
     revert_clicked = QtCore.pyqtSignal()
+    close_clicked = QtCore.pyqtSignal()
+    DEFAULT_NAMES = ["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"]
+    name_output = ["" for i in range(6)]
 
     def __init__(self, channel_names):
         super().__init__()
@@ -14,6 +20,7 @@ class NameEditWindow(QWidget):
         self.channel_names = channel_names
         self.label = QLabel("Please enter channel names.")
         layout.addWidget(self.label)
+
 
         """set up channel 1 names and inputs"""
         self.channel_1_layout = QHBoxLayout()
@@ -52,8 +59,8 @@ class NameEditWindow(QWidget):
         self.label_ch2.setMinimumSize(QtCore.QSize(40, 0))
         self.label_ch2.setObjectName("label_ch2")
         self.channel_2_layout.addWidget(self.label_ch2)
-        self.label_ch2 = QLineEdit()
-        self.label_ch2.setText(self.channel_names[1])
+        self.input_ch2 = QLineEdit()
+        self.input_ch2.setText(self.channel_names[1])
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -76,8 +83,8 @@ class NameEditWindow(QWidget):
         self.label_ch3.setMinimumSize(QtCore.QSize(40, 0))
         self.label_ch3.setObjectName("label_ch3")
         self.channel_3_layout.addWidget(self.label_ch3)
-        self.label_ch3 = QLineEdit()
-        self.label_ch3.setText(self.channel_names[2])
+        self.input_ch3 = QLineEdit()
+        self.input_ch3.setText(self.channel_names[2])
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -100,8 +107,8 @@ class NameEditWindow(QWidget):
         self.label_ch4.setMinimumSize(QtCore.QSize(40, 0))
         self.label_ch4.setObjectName("label_ch4")
         self.channel_4_layout.addWidget(self.label_ch4)
-        self.label_ch4 = QLineEdit()
-        self.label_ch4.setText(self.channel_names[3])
+        self.input_ch4 = QLineEdit()
+        self.input_ch4.setText(self.channel_names[3])
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -124,8 +131,8 @@ class NameEditWindow(QWidget):
         self.label_ch5.setMinimumSize(QtCore.QSize(40, 0))
         self.label_ch5.setObjectName("label_ch5")
         self.channel_5_layout.addWidget(self.label_ch5)
-        self.label_ch5 = QLineEdit()
-        self.label_ch5.setText(self.channel_names[4])
+        self.input_ch5 = QLineEdit()
+        self.input_ch5.setText(self.channel_names[4])
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -148,8 +155,8 @@ class NameEditWindow(QWidget):
         self.label_ch6.setMinimumSize(QtCore.QSize(40, 0))
         self.label_ch6.setObjectName("label_ch6")
         self.channel_6_layout.addWidget(self.label_ch6)
-        self.label_ch6 = QLineEdit()
-        self.label_ch6.setText(self.channel_names[5])
+        self.input_ch6 = QLineEdit()
+        self.input_ch6.setText(self.channel_names[5])
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -159,13 +166,20 @@ class NameEditWindow(QWidget):
         self.channel_6_layout.addWidget(self.input_ch6)
         layout.addLayout(self.channel_6_layout)
 
+        """setup buttons"""
+        self.pushButton_1 = QPushButton('Ok')
+        self.pushButton_2 = QPushButton('Reset to Default')
+        self.pushButton_3 = QPushButton('Cancel')
+        layout.addWidget(self.pushButton_1)
+        layout.addWidget(self.pushButton_2)
+        layout.addWidget(self.pushButton_3)
         self.setLayout(layout)
+        self.setMinimumSize(300,300)
+        self.setWindowTitle("Channel Name Edit")
 
-    def edit_handler(self, edit_in: QDoubleSpinBox, ch):
-        """handles when edit is done"""
-        print("Validating")
-        if edit_in.hasAcceptableInput():
-            self.thresholds[ch] = edit_in.value()
+        self.pushButton_1.clicked.connect(self.ok_clicked)
+        self.pushButton_2.clicked.connect(self.revert_clicked)
+        self.pushButton_3.clicked.connect(self.close_clicked)
 
     def import_threshold(self, threshold_in):
         """this function is called by main widnow to update the spinboz to current file values"""
@@ -177,11 +191,35 @@ class NameEditWindow(QWidget):
 
     def ok_clicked(self):
         """send out signal to pass the threshold"""
-        self.threshold_set.emit()
+        if self.input_ch1.text():
+            self.name_output[0] = self.input_ch1.text()
+        if self.input_ch2.text():
+            self.name_output[1] = self.input_ch2.text()
+        if self.input_ch3.text():
+            self.name_output[2] = self.input_ch3.text()
+        if self.input_ch4.text():
+            self.name_output[3] = self.input_ch4.text()
+        if self.input_ch5.text():
+            self.name_output[4] = self.input_ch5.text()
+        if self.input_ch6.text():
+            self.name_output[5] = self.input_ch6.text()
+        self.name_updated.emit()
         self.hide()
-    def apply_all_clicked(self):
-        self.apply_all_set.emit()
+
+    def revert_clicked(self):
+        self.name_output = self.DEFAULT_NAMES
+        self.names_reverted.emit()
         self.hide()
 
     def close_clicked(self):
         self.hide()
+
+if __name__ == "__main__":
+    freeze_support()
+    import sys
+
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    app = QtWidgets.QApplication(sys.argv)
+    ui = NameEditWindow(["488nm Green", "638nm Red", "405nm Blue", "561nm Orange", "Ch5", "Ch6"])
+    ui.show()
+    sys.exit(app.exec_())
