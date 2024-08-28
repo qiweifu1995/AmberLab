@@ -24,6 +24,7 @@ def extracted_data_loader(parent, progress_index, file_name):
     peak = [[], [], [], [], [], []]
     width = [[], [], [], [], [], []]
     peak_counts = [[], [], [], [], [], []]
+    aspect_ratio = [[], [], [], [], [], []]
     fret_ratio = [[], [], []]
     fret_doner = []
     fret_receptor = []
@@ -44,7 +45,7 @@ def extracted_data_loader(parent, progress_index, file_name):
         print("reading: " + str(file_name))
     except:
         print("file did not exist")
-        return peak, width, peak_counts, time_data, fret_ratio
+        return peak, width, peak_counts, time_data, fret_ratio, aspect_ratio
 
     counter = 0
     start_count = False
@@ -99,6 +100,7 @@ def extracted_data_loader(parent, progress_index, file_name):
                 """first line of the chunk, extract number of peaks and vertical value"""
                 peak_counts[channel].append(extracted_data[0][j])
                 peak[channel].append(extracted_data[1][j])
+                aspect_ratio[channel].append(extracted_data[2][j])
                 width[channel].append(droplet_size)
         time_data.append(time_stamp)
         fret_ratio[0].append(fret_ratio_data)
@@ -109,21 +111,24 @@ def extracted_data_loader(parent, progress_index, file_name):
             peak[3].append(0)
             peak_counts[3].append(0)
             width[3].append(0)
+            aspect_ratio[3].append(0)
         elif total_channels < 6:
             """handles AFC data, missing data will be filled with 0"""
             peak[4].append(0)
             peak_counts[4].append(0)
             width[4].append(0)
+            aspect_ratio[4].append(0)
             peak[5].append(0)
             peak_counts[5].append(0)
             width[5].append(0)
+            aspect_ratio[5].append(0)
         percentage = curent_droplet * progress_span / total_droplets // 1 + progress_start
         if current_percent != percentage:
             current_percent = percentage
             parent.progress.emit([current_percent, "Extracting " + str(file_name)])
     print("Extracted data loading time: " + str(start-time.time()))
 
-    return peak, width, peak_counts, time_data, fret_ratio
+    return peak, width, peak_counts, time_data, fret_ratio, aspect_ratio
 
 
 def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshold, width_min=0, width_max=1000, width_enable=True,
@@ -242,9 +247,9 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Droplets Extracted Data"] != "" and not rethreshold:
             print("Importing Extracted Droplet Record...")
             progress_index = progress_index_list.pop(0)
-            listDR, widthDR, num_peaksDR, timeDR, ratioDR = extracted_data_loader(parent, progress_index, current_file_dict["Droplets Extracted Data"])
+            listDR, widthDR, num_peaksDR, timeDR, ratioDR, aspectDR = extracted_data_loader(parent, progress_index, current_file_dict["Droplets Extracted Data"])
 
-            analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR, ratioDR]
+            analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR, ratioDR, aspectDR]
         elif current_file_dict["Droplet Record"] != "":
             print("Extracting Droplet Record...")
             progress_index = progress_index_list.pop(0)
@@ -256,8 +261,8 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Locked Out Extracted Data"] != "":
             print("Extracting locked out peaks extracted data")
             progress_index = progress_index_list.pop(0)
-            list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked = extracted_data_loader(parent, progress_index, current_file_dict["Locked Out Extracted Data"])
-            analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked]
+            list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked, aspect_locked = extracted_data_loader(parent, progress_index, current_file_dict["Locked Out Extracted Data"])
+            analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked, aspect_locked]
 
         elif current_file_dict["Locked Out Peaks"] != "":
             print("Extracting locked out peaks")
@@ -272,8 +277,8 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Sorted Extracted Data"] != "":
             print("Extracting peaks extracted data")
             progress_index = progress_index_list.pop(0)
-            Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"])
-            analog_file[current_file_dict["Peak Record"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks]
+            Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"])
+            analog_file[current_file_dict["Peak Record"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks]
 
         else:
             print("Extracting Peak... Parallel")
@@ -284,7 +289,8 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
                                                          peak_threshold, width_min, width_max)
             TimePeaks = [1 for i in range(len(Peaklist[0]))]
             ratio_peaks = []
-            analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks]
+            aspect_peaks = []
+            analog_file[current_file_dict['Peak Record']] = [Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks]
             end = time.time()
             print("parallel extrack time: ", str(start-end))
         """

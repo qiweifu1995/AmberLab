@@ -5,7 +5,7 @@ from functools import partial
 
 class ThresholdWindow(QWidget):
     """Window that prompt user for voltage to use """
-    threshold_set = QtCore.pyqtSignal()
+    ok_clicked = QtCore.pyqtSignal()
     apply_all_set = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):

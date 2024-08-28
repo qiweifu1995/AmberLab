@@ -35,6 +35,7 @@ from multiprocessing import freeze_support
 import Filter_window
 import peak_threshold_window
 import Time_log_selection_window
+import channel_name_edit_window
 from Time_log_selection_window import Time_log_functions
 from Helper import ThreadState
 from enum import Enum
@@ -1943,13 +1944,16 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_option2.currentIndexChanged.connect(self.sweep_2_index_changed)
 
         self.w = peak_threshold_window.ThresholdWindow()
-        self.w.threshold_set.connect(self.threshold_set)
+        #self.w.threshold_set.connect(self.threshold_set)
         self.w.apply_all_set.connect(self.threshold_apply_all)
         self.pushButton_resample.clicked.connect(self.openWindow)
 
         self.actionAdd_Save.triggered.connect(self.save)
         self.actionAdd_Load.triggered.connect(self.load)
         self.actionMapping.triggered.connect(self.open_dispense_folder)
+
+        self.channel_name_window = channel_name_edit_window.NameEditWindow(self.CHANNEL_NAME)
+        self.actionAdd_EditChannels.triggered.connect(self.channel_name_window_open)
 
         # triggers for the log, havn't update adter new filter window function included.
 
@@ -2531,6 +2535,12 @@ class Ui_MainWindow(QMainWindow):
         self.tree_dic[self.tree_index]['tree_windowfilter'].show()
         self.tree_dic[self.tree_index]['tree_windowfilter'].showNormal()
         self.tree_dic[self.tree_index]['tree_windowfilter'].activateWindow()
+
+
+    # channel_name_edit functions
+    def channel_name_window_open(self):
+        self.channel_name_window.show()
+
 
     def get_selected_filter(self, val):
         return
