@@ -114,10 +114,6 @@ def extracted_data_loader(parent, progress_index, file_name):
             aspect_ratio[3].append(0)
         elif total_channels < 6:
             """handles AFC data, missing data will be filled with 0"""
-            peak[4].append(0)
-            peak_counts[4].append(0)
-            width[4].append(0)
-            aspect_ratio[4].append(0)
             peak[5].append(0)
             peak_counts[5].append(0)
             width[5].append(0)

@@ -1483,6 +1483,7 @@ class window_filter(QWidget):
                 self.working_data.append([])
                 self.peak_width_working_data.append([])
                 self.peak_num_working_data.append([])
+                self.extracted_aspect_data.append([])
 
             if self.multi_file is None:
                 """if file is single"""
@@ -1936,7 +1937,7 @@ class window_filter(QWidget):
         elif self.comboBox_1.currentIndex() == 2:
             data_in_subgating_y = self.extracted_ratio_data
         else:
-            data_in_subgating_y = self.extracted_aspect_data[self.comboBox_3.currentIndex()]
+            data_in_subgating_y = self.extracted_aspect_data[self.comboBox_4.currentIndex()]
 
         peak_num_in_subgating_x = self.peak_num_working_data[self.comboBox_3.currentIndex()]
         peak_num_in_subgating_y = self.peak_num_working_data[self.comboBox_4.currentIndex()]
