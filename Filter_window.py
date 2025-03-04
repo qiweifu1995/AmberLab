@@ -1958,24 +1958,34 @@ class window_filter(QWidget):
 
         logging.info("Data collection time pt2: " + str(time.time() - start))
         start = time.time()
-
-        # test color setup
-        max_voltage = 12
         bins = 2000
-        steps = max_voltage / bins
+        max_density  = 0
+        max_voltage_x = max(self.Ch1_channel0)
+        max_voltage_y = max(self.Ch1_channel1)
+        # test color setup
+        while max_density < 10:
 
-        # all data is first sorted into a histogram
-        histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
-                                     [[0, max_voltage], [0, max_voltage]],
-                                     density=False)
-        max_density = histo.max()
+            bins = int(bins / 2)
+            steps = [max_voltage_x / bins, max_voltage_y / bins]
+
+            # all data is first sorted into a histogram
+            histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
+                                         [[0, max_voltage_x], [0, max_voltage_y]],
+                                         density=False)
+            histo_temp = histo[histo != 0]
+            histo_mean = histo_temp.mean()
+            histo_std = histo_temp.std()
+            max_density = histo_mean + 3*histo_std
+
+
+
         percentage_coefficient = self.density_line_edit.value()
 
         logging.info("Data plotting density generation time: " + str(time.time() - start))
         start = time.time()
 
         # made empty array to hold the sorted data according to density
-        self.start_plot_update(steps, histo, max_density, percentage_coefficient)
+        self.start_plot_update(steps, histo, max_density, percentage_coefficient, bins)
         self.setEnabled(False)
 
         # temporary function to show the average of ratio and standard deviation
@@ -2720,14 +2730,14 @@ class window_filter(QWidget):
                                                                             dataframe_list, file_list_index)
         self.time_log_window.show()
 
-    def start_plot_update(self, steps, histo, max_density, percentage_coefficient):
+    def start_plot_update(self, steps, histo, max_density, percentage_coefficient, bins):
         """method to create threads to do plot update"""
         self.loading_bar = LoadingScreen()
         self.scatter = pg.ScatterPlotItem()
         self.thread = QtCore.QThread()
         self.worker = PlotGenerationWorker()
         self.worker.moveToThread(self.thread)
-        self.thread.started.connect(partial(self.worker.run, self, steps, histo, max_density, percentage_coefficient))
+        self.thread.started.connect(partial(self.worker.run, self, steps, histo, max_density, percentage_coefficient, bins))
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -2835,7 +2845,7 @@ class PlotGenerationWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal()
     progress = QtCore.pyqtSignal(list)
 
-    def run(self, parent, steps, histo, max_density, percentage_coefficient):
+    def run(self, parent, steps, histo, max_density, percentage_coefficient, bins):
         parent.spots = []
         print(os.getcwd())
         step = [i / 256 for i in range(256)]
@@ -2853,18 +2863,18 @@ class PlotGenerationWorker(QtCore.QObject):
             x = parent.Ch1_channel0[i]
             y = parent.Ch1_channel1[i]
 
-            a = int(x / steps)
-            b = int(y / steps)
-            if a >= 1000:
-                a = 999
-            if b >= 1000:
-                b = 999
+            a = int(x / steps[0])
+            b = int(y / steps[1])
+            if a >= bins:
+                a = bins-1
+            if b >= bins:
+                b = bins-1
 
             # checking for density, the value divided by steps serves as the index
             density = histo[a][b]
             percentage = density / max_density * 100 * percentage_coefficient
             if percentage <= 0 or math.isnan(percentage):
-                percentage = 0.1
+                percentage = 0.01
             elif percentage > 1:
                 percentage = 0.99
             spot_dic = {'pos': (x, y), 'size': 3,
