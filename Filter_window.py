@@ -460,10 +460,11 @@ class window_filter(QWidget):
         layout.addWidget(self.pushButton_confirm, 8, 0, 1, 1)
 
         # density label
-        self.label_density = QLabel("Plot Density")
+        self.label_density = QLabel("Plot Density Bin")
         layout.addWidget(self.label_density, 8, 1, 1, 1)
-        self.density_line_edit = QtWidgets.QDoubleSpinBox()
-        self.density_line_edit.setValue(0.01)
+        self.density_line_edit = QtWidgets.QSpinBox()
+        self.density_line_edit.setMaximum(1000)
+        self.density_line_edit.setValue(0)
         layout.addWidget(self.density_line_edit, 8, 2, 1, 1)
 
         self.pushButton_1 = QPushButton('Next Filter')
@@ -1958,14 +1959,33 @@ class window_filter(QWidget):
 
         logging.info("Data collection time pt2: " + str(time.time() - start))
         start = time.time()
-        bins = 2000
-        max_density  = 0
+        bins = self.density_line_edit.value()
+        max_density = 0
+        min_density = 0
+        histo_mean = 1
+        histo_std = 20
         max_voltage_x = max(self.Ch1_channel0)
         max_voltage_y = max(self.Ch1_channel1)
         # test color setup
-        while max_density < 10:
+        if bins == 0:
+            """set bins to 0 on new window, if new window, do automated color, if not use user set value"""
+            bins = 1000
+            while max_density < 10:
 
-            bins = int(bins / 2)
+                steps = [max_voltage_x / bins, max_voltage_y / bins]
+
+                # all data is first sorted into a histogram
+                histo, _, _ = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins,
+                                             [[0, max_voltage_x], [0, max_voltage_y]],
+                                             density=False)
+                histo_temp = histo[histo != 0]
+                histo_mean = histo_temp.mean()
+                histo_std = histo_temp.std()
+                min_density = histo_mean
+                max_density = histo_mean + 3*histo_std
+                if max_density < 10:
+                    bins = int(bins / 2)
+        else:
             steps = [max_voltage_x / bins, max_voltage_y / bins]
 
             # all data is first sorted into a histogram
@@ -1975,8 +1995,14 @@ class window_filter(QWidget):
             histo_temp = histo[histo != 0]
             histo_mean = histo_temp.mean()
             histo_std = histo_temp.std()
-            max_density = histo_mean + 3*histo_std
+            min_density = histo_mean
+            max_density = histo_mean + 3 * histo_std
 
+        self.density_line_edit.setValue(bins)
+        print("bin size is "+ str(bins))
+        print("nax density size is " + str(max_density))
+        print("mean is " + str(histo_mean))
+        print("std is " + str(histo_std))
 
 
         percentage_coefficient = self.density_line_edit.value()
@@ -1985,7 +2011,7 @@ class window_filter(QWidget):
         start = time.time()
 
         # made empty array to hold the sorted data according to density
-        self.start_plot_update(steps, histo, max_density, percentage_coefficient, bins)
+        self.start_plot_update(steps, histo, max_density, percentage_coefficient, bins, min_density, histo_std)
         self.setEnabled(False)
 
         # temporary function to show the average of ratio and standard deviation
@@ -2730,14 +2756,14 @@ class window_filter(QWidget):
                                                                             dataframe_list, file_list_index)
         self.time_log_window.show()
 
-    def start_plot_update(self, steps, histo, max_density, percentage_coefficient, bins):
+    def start_plot_update(self, steps, histo, max_density, percentage_coefficient, bins, min_density, std):
         """method to create threads to do plot update"""
         self.loading_bar = LoadingScreen()
         self.scatter = pg.ScatterPlotItem()
         self.thread = QtCore.QThread()
         self.worker = PlotGenerationWorker()
         self.worker.moveToThread(self.thread)
-        self.thread.started.connect(partial(self.worker.run, self, steps, histo, max_density, percentage_coefficient, bins))
+        self.thread.started.connect(partial(self.worker.run, self, steps, histo, max_density, percentage_coefficient, bins, min_density, std))
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -2845,7 +2871,7 @@ class PlotGenerationWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal()
     progress = QtCore.pyqtSignal(list)
 
-    def run(self, parent, steps, histo, max_density, percentage_coefficient, bins):
+    def run(self, parent, steps, histo, max_density, percentage_coefficient, bins, min_density, std):
         parent.spots = []
         print(os.getcwd())
         step = [i / 256 for i in range(256)]
@@ -2872,7 +2898,7 @@ class PlotGenerationWorker(QtCore.QObject):
 
             # checking for density, the value divided by steps serves as the index
             density = histo[a][b]
-            percentage = density / max_density * 100 * percentage_coefficient
+            percentage = (density - min_density) / (max_density - min_density)
             if percentage <= 0 or math.isnan(percentage):
                 percentage = 0.01
             elif percentage > 1:
