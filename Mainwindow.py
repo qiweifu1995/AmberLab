@@ -12,6 +12,7 @@ from functools import partial
 import pickle
 import Wells
 import math
+import csv
 
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import QFont, QColor
@@ -1833,6 +1834,8 @@ class Ui_MainWindow(QMainWindow):
         self.statusbar = QtWidgets.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
         self.setStatusBar(self.statusbar)
+        self.actionImportProject = QtWidgets.QAction(self)
+        self.actionImportProject.setObjectName("actionImportProject")
         self.actionImport = QtWidgets.QAction(self)
         self.actionImport.setObjectName("actionImport")
         self.actionAdd_New = QtWidgets.QAction(self)
@@ -1840,6 +1843,7 @@ class Ui_MainWindow(QMainWindow):
         self.actionMapping = QtWidgets.QAction("Load Dispense Mapping")
         self.actionClose = QtWidgets.QAction(self)
         self.actionClose.setObjectName("actionClose")
+        self.menuFiles.addAction(self.actionImportProject)
         self.menuFiles.addAction(self.actionImport)
         self.menuFiles.addAction(self.actionAdd_New)
         self.menuFiles.addAction(self.actionMapping)
@@ -1879,6 +1883,7 @@ class Ui_MainWindow(QMainWindow):
 
         # list of all connected functions
         self.actionImport.triggered.connect(self.openfolder)
+        self.actionImportProject.triggered.connect(self.openproject)
         self.actionAdd_New.triggered.connect(self.add)
 
         self.button_update.clicked.connect(self.pressed)
@@ -3674,6 +3679,20 @@ class Ui_MainWindow(QMainWindow):
                 self.file_list_view.item(i).setForeground(QColor(255, 255, 0))
             else:
                 self.file_list_view.item(i).setForeground(QColor(0, 0, 0))
+
+
+    def openproject(self):
+        """function handles the new one file project loading"""
+        name, _ = QFileDialog.getOpenFileNames(self, 'Open File', filter="*Project*")
+        # read the cvs file and find all the directory
+        directory = os.path.dirname(name[0])
+        list_of_conditions = {}
+        print("Selected project location: " + directory)
+        with open(name[0], 'r') as project_file:
+            reader = csv.reader(project_file, delimiter= ',')
+            for index, row in enumerate(reader):
+                print(row)
+
 
 
     def openfolder(self):
