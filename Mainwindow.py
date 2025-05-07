@@ -3690,8 +3690,35 @@ class Ui_MainWindow(QMainWindow):
         print("Selected project location: " + directory)
         with open(name[0], 'r') as project_file:
             reader = csv.reader(project_file, delimiter= ',')
+            self.analog = {}
+            self.tree_dic = {}
+            self.file_list_view.clear()
+            self.file_dict_list.clear()
+            self.time_log_file_model.clear()
+            self.treeModel.clear()
+            self.thresholds = []
+            self.thread = []
+            self.extraction_thread_state = []
             for index, row in enumerate(reader):
-                print(row)
+                """enumerate through the file, and go to each folder to find file names"""
+                if index != 0:
+                    target_dir = directory+'/'+row[0]
+                    file_list = os.listdir(target_dir)
+                    peak_record_exist = 0
+                    current_condition_file = {}
+                    for name in file_list:
+                        if name.rfind("Peak Record") >0:
+                            peak_record_exist += 1
+                    if peak_record_exist == 1:
+                        """one file exist in the condition, proceed with file loading"""
+                        print(row[0])
+                        self.file_list_view.addItem(row[0])
+                        for f in file_list:
+                            self.file_dict_list.append(Helper.project_namelist(f))
+                    elif peak_record_exist > 1:
+                        """more than one file was detected, use the newest one"""
+
+
 
 
 
