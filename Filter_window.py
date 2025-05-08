@@ -1391,9 +1391,9 @@ class window_filter(QWidget):
         elif self.histogram_comboBox_1.currentIndex() == 2:
             self.width = self.extracted_ratio_data
         elif self.histogram_comboBox_1.currentIndex() == 3:
-            self.width = self.extracted_aspect_data
+            self.width = self.extracted_aspect_data[self.histogram_comboBox_2.currentIndex()]
         else:
-            self.width = self.extracted_avg_data
+            self.width = self.extracted_avg_data[self.histogram_comboBox_2.currentIndex()]
 
         try:
             """catch issue with possile extracted ratio data containing 3 chanels"""
@@ -1469,7 +1469,7 @@ class window_filter(QWidget):
     def peak_num_filter(self):
         """function for peak num filter, mode 0 is >=, mode 1 is ==, mode 2 is =< """
         self.peak_num_filtered_index = []
-        holder = [[], [], [], []]
+        holder = [[], [], [], [], [], []]
         for ch in range(6):
             holder[ch] = [i for i, x in enumerate(self.peak_num_working_data[ch])
                           if self.peak_num_comp(x, self.peak_num_mode[ch], self.peak_num_in[ch])]
@@ -1973,9 +1973,9 @@ class window_filter(QWidget):
             data_in_subgating_y = self.working_data[self.comboBox_4.currentIndex()]
         elif self.comboBox_2.currentIndex() == 1:
             data_in_subgating_y = self.peak_width_working_data[self.comboBox_4.currentIndex()]
-        elif self.comboBox_1.currentIndex() == 2:
+        elif self.comboBox_2.currentIndex() == 2:
             data_in_subgating_y = self.extracted_ratio_data
-        elif self.comboBox_1.currentIndex() == 3:
+        elif self.comboBox_2.currentIndex() == 3:
             data_in_subgating_y = self.extracted_aspect_data[self.comboBox_4.currentIndex()]
         else:
             data_in_subgating_y = self.extracted_avg_data[self.comboBox_4.currentIndex()]

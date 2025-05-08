@@ -3705,10 +3705,22 @@ class Ui_MainWindow(QMainWindow):
                     target_dir = directory+'/'+row[0]
                     file_list = os.listdir(target_dir)
                     peak_record_exist = 0
-                    current_condition_file = {}
+                    current_condition_file = {} # use this to track the condition name seperate from files
+                    peak_files = []
                     for name in file_list:
+                        if name[0] == " ":
+                            try:
+                                os.rename(target_dir+'/'+name, target_dir+'/'+name.lstrip())
+                            except FileNotFoundError:
+                                print(f"File white space trimming failed {target_dir+name} not found")
+                            except FileExistsError:
+                                print(f"Error: File already exists.")
+                            except Exception as e:
+                                print(f"An error occurred: {e}")
+
                         if name.rfind("Peak Record") >0:
                             peak_record_exist += 1
+                            peak_files.append(name)
                     if peak_record_exist == 1:
                         """one file exist in the condition, proceed with file loading"""
                         print(row[0])
@@ -3717,6 +3729,13 @@ class Ui_MainWindow(QMainWindow):
                             self.file_dict_list.append(Helper.project_namelist(f))
                     elif peak_record_exist > 1:
                         """more than one file was detected, use the newest one"""
+                        print(row[0])
+                        self.file_list_view.addItem(row[0])
+                        max_index = 0
+                        for i in range(len(peak_files)):
+                            if(peak_files[i][0:13] > peak_files[max_index][0:13]):
+                                max_index = i
+                        print(peak_files[max_index])
 
 
 

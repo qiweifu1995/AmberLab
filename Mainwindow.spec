@@ -5,13 +5,14 @@ a = Analysis(
     ['Mainwindow.py'],
     pathex=[],
     binaries=[],
-    datas=[("CET-R2.csv", ".")],
+    datas=[('CET-R2.csv', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
+    optimize=0,
 )
 pyz = PYZ(a.pure)
 
@@ -21,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AuraLab v1.1',
+    name='Mainwindow',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
