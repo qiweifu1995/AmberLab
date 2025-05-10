@@ -3707,6 +3707,7 @@ class Ui_MainWindow(QMainWindow):
                     peak_record_exist = 0
                     current_condition_file = {} # use this to track the condition name seperate from files
                     peak_files = []
+                    peak_files_fullpath = []
                     for name in file_list:
                         if name[0] == " ":
                             try:
@@ -3721,22 +3722,51 @@ class Ui_MainWindow(QMainWindow):
                         if name.rfind("Peak Record") >0:
                             peak_record_exist += 1
                             peak_files.append(name)
+                            peak_files_fullpath.append(target_dir+'/'+name)
                     if peak_record_exist == 1:
                         """one file exist in the condition, proceed with file loading"""
-                        print(row[0])
+                        print(peak_files_fullpath[0])
                         self.file_list_view.addItem(row[0])
-                        for f in file_list:
-                            self.file_dict_list.append(Helper.project_namelist(f))
+                        self.file_dict_list.append(Helper.project_namelist(peak_files_fullpath[0]))
                     elif peak_record_exist > 1:
                         """more than one file was detected, use the newest one"""
-                        print(row[0])
                         self.file_list_view.addItem(row[0])
                         max_index = 0
                         for i in range(len(peak_files)):
                             if(peak_files[i][0:13] > peak_files[max_index][0:13]):
                                 max_index = i
-                        print(peak_files[max_index])
+                        print(peak_files_fullpath[max_index])
+                        self.file_dict_list.append(Helper.project_namelist(peak_files_fullpath[max_index]))
 
+                        time_stamp = peak_files[max_index][0:13]
+                        # once the timestamp for the newest file is found, fetch all files with the itmestamp
+                        peak_files_filtered = []
+                        for file in file_list:
+                            if time_stamp in file:
+                                peak_files_filtered.append(file)    #adding the file list to the array
+                    else:
+                        """file dont exist"""
+            for i in range(self.file_list_view.count()):
+                # create a thread for each of the file added
+                self.thread.append(QtCore.QThread())
+                self.extraction_thread_state.append(ThreadState.IDLING)
+                # create item for the list view
+                item = self.file_list_view.item(i)
+                item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                # initialize the tree dic
+                self.tree_dic[(i,)] = {}
+                text = item.text()
+                self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
+                self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
+                self.tree_index = (i,)
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i)
+                self.thresholds.append([0.0, 0.0, 0.0, 0.0])
+            self.ui_state.threshold_initialize(self.thresholds)
+            self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
+                self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
+                ui, self.file_dict_list, self.time_log_graph_top, self.time_log_graph_bot)
+            self.update_file_color()
+            print(self.tree_dic.keys())
 
 
 
