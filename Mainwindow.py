@@ -3515,6 +3515,7 @@ class Ui_MainWindow(QMainWindow):
 
             current_file_dict = self.file_dict_list[current_file_index]
             stats = Helper.Stats(current_file_dict["Summary"])
+            os.chdir(current_file_dict["Root Folder"])
             threshold_check = self.ui_state.threshold_check(self.thresholds, self.file_list_view.currentRow())
             peaks_threshold = self.thresholds[self.file_list_view.currentRow()]
 

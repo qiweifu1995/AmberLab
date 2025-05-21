@@ -17,7 +17,7 @@ class Droplet:
         self.peak_voltage = peaks
 
 
-def extracted_data_loader(parent, progress_index, file_name):
+def extracted_data_loader(parent, progress_index, file_name, dict_name):
     """function used to load extracted data"""
     print("start extracted data loading")
     start = time.time()
@@ -41,11 +41,14 @@ def extracted_data_loader(parent, progress_index, file_name):
 
     """loading the data, return empty array is file does not exist"""
     try:
+        os.chdir(dict_name["Root Folder"])
         extracted_data = pd.read_csv(file_name, header=None)
         length = len(extracted_data.index)
+        print(os.getcwd())
         print("reading: " + str(file_name))
     except:
         print("file did not exist")
+        print(os.getcwd())
         return peak, width, peak_counts, time_data, fret_ratio, aspect_ratio, droplet_avg
 
     counter = 0
@@ -247,7 +250,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Droplets Extracted Data"] != "" and not rethreshold:
             print("Importing Extracted Droplet Record...")
             progress_index = progress_index_list.pop(0)
-            listDR, widthDR, num_peaksDR, timeDR, ratioDR, aspectDR, avgDR = extracted_data_loader(parent, progress_index, current_file_dict["Droplets Extracted Data"])
+            listDR, widthDR, num_peaksDR, timeDR, ratioDR, aspectDR, avgDR = extracted_data_loader(parent, progress_index, current_file_dict["Droplets Extracted Data"], current_file_dict)
 
             analog_file[current_file_dict["Droplet Record"]] = [listDR, widthDR, num_peaksDR, timeDR, ratioDR, aspectDR, avgDR]
         elif current_file_dict["Droplet Record"] != "":
@@ -263,7 +266,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Locked Out Extracted Data"] != "":
             print("Extracting locked out peaks extracted data")
             progress_index = progress_index_list.pop(0)
-            list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked, aspect_locked, avg_locked = extracted_data_loader(parent, progress_index, current_file_dict["Locked Out Extracted Data"])
+            list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked, aspect_locked, avg_locked = extracted_data_loader(parent, progress_index, current_file_dict["Locked Out Extracted Data"], current_file_dict)
             analog_file[current_file_dict["Locked Out Peaks"]] = [list_locked, width_locked, num_peaks_locked, time_locked, ratio_locked, aspect_locked, avg_locked]
 
         elif current_file_dict["Locked Out Peaks"] != "":
@@ -281,7 +284,7 @@ def file_extracted_data_Qing(parent, current_file_dict, threshold, peak_threshol
         if current_file_dict["Sorted Extracted Data"] != "":
             print("Extracting peaks extracted data")
             progress_index = progress_index_list.pop(0)
-            Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks, avg_peaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"])
+            Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks, avg_peaks = extracted_data_loader(parent, progress_index, current_file_dict["Sorted Extracted Data"],current_file_dict)
             analog_file[current_file_dict["Peak Record"]] = [Peaklist, Peakwidth, NumPeaks, TimePeaks, ratio_peaks, aspect_peaks, avg_peaks]
 
         else:
