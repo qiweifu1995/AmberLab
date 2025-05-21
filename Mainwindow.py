@@ -3206,7 +3206,8 @@ class Ui_MainWindow(QMainWindow):
 
 
         self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
-        self.actionImport.setText(_translate("MainWindow", "Import"))
+        self.actionImport.setText(_translate("MainWindow", "Import Files"))
+        self.actionImportProject.setText(_translate("MainWindow", "Import Project"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
         self.actionAdd_Save.setText(_translate("MainWindow", "Save"))
         self.actionAdd_Load.setText(_translate("MainWindow", "Load"))
@@ -3699,8 +3700,10 @@ class Ui_MainWindow(QMainWindow):
             self.thresholds = []
             self.thread = []
             self.extraction_thread_state = []
+            self.peak_files_filtered = []
             for index, row in enumerate(reader):
                 """enumerate through the file, and go to each folder to find file names"""
+
                 if index != 0:
                     target_dir = directory+'/'+row[0]
                     file_list = os.listdir(target_dir)
@@ -3740,10 +3743,10 @@ class Ui_MainWindow(QMainWindow):
 
                         time_stamp = peak_files[max_index][0:13]
                         # once the timestamp for the newest file is found, fetch all files with the itmestamp
-                        peak_files_filtered = []
+
                         for file in file_list:
                             if time_stamp in file:
-                                peak_files_filtered.append(file)    #adding the file list to the array
+                                self.peak_files_filtered.append(file)    #adding the file list to the array
                     else:
                         """file dont exist"""
             for i in range(self.file_list_view.count()):
