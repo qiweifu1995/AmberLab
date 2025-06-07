@@ -11,6 +11,10 @@ from scipy.signal import savgol_filter
 import Helper
 import numpy as np
 from itertools import compress
+from matplotlib import pyplot as plt
+from matplotlib import cm
+from matplotlib.colors import Normalize
+from scipy.interpolate import interpn
 import matplotlib.path as mpltPath
 import time
 from math import sqrt
@@ -2799,6 +2803,7 @@ class window_filter(QWidget):
 
     def start_plot_update(self, steps, histo, max_density, percentage_coefficient, bins, min_density, std):
         """method to create threads to do plot update"""
+        self.color_array = []
         self.loading_bar = LoadingScreen()
         self.scatter = pg.ScatterPlotItem()
         self.thread = QtCore.QThread()
@@ -2821,7 +2826,8 @@ class window_filter(QWidget):
         self.loading_bar.hide()
         self.graphWidget.removeItem(self.lr_x_axis)
         self.graphWidget.removeItem(self.lr_y_axis)
-
+        #self.graphWidget.getAxis('left').setLogMode(True)
+        #self.graphWidget.getAxis('bottom').setLogMode(True)
         pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
         self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
         self.graphWidget.addItem(self.lr_x_axis)
@@ -2829,6 +2835,7 @@ class window_filter(QWidget):
         self.graphWidget.addItem(self.lr_y_axis)
         self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
         self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
+
 
         self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
         self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
@@ -2838,6 +2845,26 @@ class window_filter(QWidget):
         self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
         # reset threshold # test
         self.infiniteline_table_update()
+        print(self.color_array)
+        x = np.array(self.Ch1_channel0)
+        y = np.array(self.Ch1_channel1)
+        fig, ax = plt.subplots(1,2)
+        data, x_e, y_e = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins=1000, density=True)
+        z = interpn((0.5 * (x_e[1:] + x_e[:-1]), 0.5 * (y_e[1:] + y_e[:-1])), data, np.vstack([x, y]).T,
+                    method="splinef2d", bounds_error=False)
+        idx = z.argsort()
+        x, y, z = x[idx], y[idx], z[idx]
+        ax[0].scatter(x, y, c=z, s=10)
+        norm = Normalize(vmin=np.min(z), vmax=np.max(z))
+        cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=ax)
+        cbar.ax.set_ylabel('Density')
+        ax[1].scatter(x, y, c=z, s=10)
+        ax[1].set_xscale('log')
+        ax[1].set_yscale('log')
+        ax[0].set_title('Linear Scale')
+        ax[1].set_title('Log Scale')
+
+        plt.show()
 
     def filter_export(self):
         """function calls to export data needed to recreate filter"""
@@ -2926,6 +2953,7 @@ class PlotGenerationWorker(QtCore.QObject):
         # cm = colormap.get("CET-R2.csv")
         progress_percent = 0
         data_size = len(parent.Ch1_channel0)
+
         for i in range(data_size):
             x = parent.Ch1_channel0[i]
             y = parent.Ch1_channel1[i]
@@ -2949,6 +2977,7 @@ class PlotGenerationWorker(QtCore.QObject):
                         'symbol': 'p',
                         'brush': cm.map(float(percentage), mode=pg.ColorMap.QCOLOR)}
             parent.spots.append(spot_dic.copy())
+            parent.color_array.append(cm.map(float(percentage)))
             # calculate current percentage, this stage max at 80
             if i * 100 // data_size != progress_percent:
                 progress_percent = i * 80 // data_size
