@@ -661,6 +661,25 @@ class SaveObject:
         self.time_log_data = time_log_window.export_data()
         self.time_log_reconstruct_index = time_log_reconstruct_index
 
+class FilterParam:
+    def __int__(self):
+        self.x_axis_ch = 0
+        self.y_axis_ch = 0
+        self.x_axis_mode = 0
+        self.y_axis_mode = 0
+        self.x_threshold = 0
+        self.y_threshold = 0
+        self.x_range = (0,1)
+        self.y_range = (0,1)
+    def Update(self, x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode, x_threshold, y_threshold, x_range, y_range):
+        self.x_axis_ch = x_axis_ch
+        self.y_axis_ch = y_axis_ch
+        self.x_axis_mode = x_axis_mode
+        self.y_axis_mode = y_axis_mode
+        self.x_threshold = x_threshold
+        self.y_threshold = y_threshold
+        self.x_range = x_range
+        self.y_range = y_range
 
 if __name__ == "__main__":
     state = ui_state()

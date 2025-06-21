@@ -87,6 +87,7 @@ class Ui_MainWindow(QMainWindow):
         self.extraction_queue = []
         self.well_checkbox_queue = []
         self.setupUi()
+        self.filter_default = Helper.FilterParam()
 
 
     def setupUi(self):
@@ -1825,15 +1826,20 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalLayout_4.addWidget(self.tab_widgets_main)
         self.horizontalLayout_15.addLayout(self.horizontalLayout_4)
         self.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1246, 22))
         self.menubar.setObjectName("menubar")
         self.menuFiles = QtWidgets.QMenu(self.menubar)
+        self.menuSetting = QtWidgets.QMenu(self.menubar)
         self.menuFiles.setObjectName("menuFiles")
+        self.menuSetting.setObjectName("menuSetting")
         self.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
         self.setStatusBar(self.statusbar)
+        self.actionSettings = QtWidgets.QAction(self)
+        self.actionSettings.setObjectName("actionSettings")
         self.actionImportProject = QtWidgets.QAction(self)
         self.actionImportProject.setObjectName("actionImportProject")
         self.actionImport = QtWidgets.QAction(self)
@@ -1847,6 +1853,7 @@ class Ui_MainWindow(QMainWindow):
         self.menuFiles.addAction(self.actionImport)
         self.menuFiles.addAction(self.actionAdd_New)
         self.menuFiles.addAction(self.actionMapping)
+        self.menuSetting.addAction(self.actionSettings)
 
         # save project
         self.actionAdd_Save = QtWidgets.QAction(self)
@@ -1880,6 +1887,7 @@ class Ui_MainWindow(QMainWindow):
         #         self.menuFiles.addAction(self.Save)
         self.menuFiles.addAction(self.actionClose)
         self.menubar.addAction(self.menuFiles.menuAction())
+        self.menubar.addAction(self.menuSetting.menuAction())
 
         # list of all connected functions
         self.actionImport.triggered.connect(self.openfolder)
@@ -3208,6 +3216,8 @@ class Ui_MainWindow(QMainWindow):
         self.menuFiles.setTitle(_translate("MainWindow", "Projects"))
         self.actionImport.setText(_translate("MainWindow", "Import Files"))
         self.actionImportProject.setText(_translate("MainWindow", "Import Project"))
+        self.menuSetting.setTitle(_translate("MainWindow", "Options"))
+        self.actionSettings.setText(_translate("MainWindow", "Default XY Range"))
         self.actionAdd_New.setText(_translate("MainWindow", "Add New"))
         self.actionAdd_Save.setText(_translate("MainWindow", "Save"))
         self.actionAdd_Load.setText(_translate("MainWindow", "Load"))
@@ -4143,6 +4153,9 @@ class WellsCheckBox(QtWidgets.QCheckBox):
         super(WellsCheckBox, self).__init__()
         self.x = x
         self.y = y
+
+
+
 
 
 if __name__ == "__main__":

@@ -277,8 +277,12 @@ class window_filter(QWidget):
         self.label_filter_name = QLabel("Filter Name:")
         Scatter_plot_layout.addWidget(self.label_filter_name, 1, 0, 1, 1)
 
+
         self.lineedit_filter_name = QtWidgets.QLineEdit('')
         Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 2)
+
+        self.export_param = QPushButton("Export Parameter")
+        Scatter_plot_layout.addWidget(self.export_param, 1, 3, 1, 1)
 
         self.line_filter_name = QtWidgets.QFrame()
         self.line_filter_name.setFrameShape(QtWidgets.QFrame.HLine)
@@ -472,11 +476,14 @@ class window_filter(QWidget):
 
         # density label
         self.label_density = QLabel("Plot Density Bin")
-        layout.addWidget(self.label_density, 8, 1, 1, 1)
+        layout.addWidget(self.label_density, 8, 2, 1, 1)
         self.density_line_edit = QtWidgets.QSpinBox()
         self.density_line_edit.setMaximum(1000)
         self.density_line_edit.setValue(0)
-        layout.addWidget(self.density_line_edit, 8, 2, 1, 1)
+        layout.addWidget(self.density_line_edit, 8, 3, 1, 1)
+
+        self.checkbox_load_default = QCheckBox("Load Default Param")
+        layout.addWidget(self.checkbox_load_default, 8, 1, 1, 1)
 
         self.pushButton_1 = QPushButton('Next Filter')
         self.pushButton_2 = QPushButton('Stats')
@@ -2891,6 +2898,13 @@ class window_filter(QWidget):
                             self.multi_file_index, self.index_in_all_selected_channel, self.spots, self.Ch1_channel0,
                             self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
         return output
+
+    def filter_export(self):
+        x_range =self.graphWidget.getAxis('bottom').range()
+        y_range = self.graphWidget.getAxis('left').range()
+        self.ui.filter_default.Update(self.comboBox_3, self.comboBox_4, self.comboBox_1, self.comboBox_2,
+                                      self.GateVoltage_x, self.GateVoltage_y,)
+        self.GateVoltage_x
 
 
 class FilterData:
