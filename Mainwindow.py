@@ -2545,6 +2545,7 @@ class Ui_MainWindow(QMainWindow):
             current_branch = current_branch.parent()
 
         # open the branch
+        self.tree_dic[self.tree_index]['tree_windowfilter'].update_ui_element()
         self.tree_dic[self.tree_index]['tree_windowfilter'].show()
         self.tree_dic[self.tree_index]['tree_windowfilter'].showNormal()
         self.tree_dic[self.tree_index]['tree_windowfilter'].activateWindow()

@@ -41,7 +41,6 @@ def project_namelist(file_dir):
     return name_dict.copy()
 
 
-
 class Stats:
     """this class holds all the parameter"""
 
@@ -211,6 +210,8 @@ class Stats:
             self.droplets_out_of_range = stats_dict["Droplets Out of Range"]
         else:
             self.droplets_out_of_range = "Nan"
+
+
 def rgb_select(channel):
     if channel == 0:
         r = 0
@@ -249,6 +250,7 @@ def histogram_bin(range_max, increment):
 
 class ui_state:
     """this class holds all the current state of the UI"""
+
     def __init__(self):
         self.all_check = False
         self.ch1_check = False
@@ -263,23 +265,23 @@ class ui_state:
         self.gating_channel_select = -1
         self.gating_bins = 0
         self.gating_voltage = 0
-    
+
         self.width_gating_channel_select = -1
         self.width_gating_bins = 0
         self.width_gating_voltagee = 0
-    
+
         self.peak_width_channel_select = -1
         self.peak_width_bins = 0
         self.peak_width_threshold = -1
         self.voltage_threshold = [[-1], [-1], [-1], [-1]]
         self.scatter_channel_select_x = -1
-        self.scatter_channel_select_y = -1                    
+        self.scatter_channel_select_y = -1
         self.x_gate = 0
         self.y_gate = 0
         self.density_adjust_2 = 1
         self.density_adjust_1 = 1
         self.density_adjust_3 = 1
-            
+
         self.width_scatter_channel_select_x = -1
         self.width_scatter_channel_select_y = -1
         self.scatter_gate_voltage_x = 0
@@ -288,7 +290,7 @@ class ui_state:
         self.sweep_bins = 0
         self.sweep_file_1 = -1
         self.sweep_file_2 = -1
-        
+
         self.channel_0_min = -1
         self.channel_1_min = -1
         self.channel_2_min = -1
@@ -302,7 +304,7 @@ class ui_state:
         self.peak_num = []
 
         self.threshold = []
-        
+
         self.points_inside_square = 0
         self.points_inside_or_quadrant = 0
         self.subgating_comboBox = 0
@@ -310,12 +312,11 @@ class ui_state:
         self.subgating_preselect_comboBox = 0
         self.subgating_preselect_comboBox2 = 0
 
-
-     
-    def subgating_replot_check(self, points_inside_square, points_inside_or_quadrant, subgating_comboBox, subgating_comboBox2, 
-                              subgating_preselect_comboBox, subgating_preselect_comboBox2, textbox, density_adjust_3):
+    def subgating_replot_check(self, points_inside_square, points_inside_or_quadrant, subgating_comboBox,
+                               subgating_comboBox2,
+                               subgating_preselect_comboBox, subgating_preselect_comboBox2, textbox, density_adjust_3):
         change = False
-        
+
         if points_inside_square is not None and self.points_inside_square != points_inside_square:
             change = True
         if points_inside_or_quadrant is not None and self.points_inside_or_quadrant != points_inside_or_quadrant:
@@ -327,25 +328,25 @@ class ui_state:
         if subgating_comboBox2 is not None and self.subgating_comboBox2 != subgating_comboBox2:
             change = True
             self.subgating_comboBox2 = subgating_comboBox2
-            
+
         if subgating_preselect_comboBox is not None and self.subgating_preselect_comboBox != subgating_preselect_comboBox:
             change = True
             self.subgating_preselect_comboBox = subgating_preselect_comboBox
-            
+
         if subgating_preselect_comboBox2 is not None and self.subgating_preselect_comboBox2 != subgating_preselect_comboBox2:
             change = True
             self.subgating_preselect_comboBox2 = subgating_preselect_comboBox2
         if density_adjust_3 is not None and self.density_adjust_3 != density_adjust_3:
             change = True
             self.density_adjust_3 = density_adjust_3
-            
+
         return change, textbox
-        
+
     def threshold_initialize(self, threshold):
         """call this function for when openfolder is called or add file, initialize the threshold"""
         if len(threshold) > 0:
             self.threshold = threshold.copy()
-        
+
     def threshold_check(self, threshold, file_index):
         changed = False
         try:
@@ -355,7 +356,7 @@ class ui_state:
         except:
             return False
         return changed
-    
+
     def working_file_update_check(self, update_state=True, file=None, chall=None, ch1=None, ch2=None,
                                   ch3=None, ch1_2=None, ch1_3=None, ch2_3=None, Droplet_Record=None, locked_out=None,
                                   reset=None):
@@ -424,8 +425,7 @@ class ui_state:
             if gate_voltage is not None:
                 self.gating_voltage = gate_voltage
         return replot
-    
-    
+
     def width_gating_update(self, update_state=True, channel_select=None, bins=None, gate_voltage=None):
         """keeps track of states in gating"""
         replot = False
@@ -433,7 +433,7 @@ class ui_state:
             replot = True
         elif bins is not None and bins != self.width_gating_bins:
             replot = True
-            
+
         if update_state:
             if channel_select is not None:
                 self.width_gating_channel_select = channel_select
@@ -443,8 +443,6 @@ class ui_state:
                 self.width_gating_voltage = gate_voltage
         return replot
 
-
-    
     def peak_width_update(self, update_state=True, channel_select=None, bins=None, peak_width_threshold=None,
                           voltage_threshold=None):
         """keeps track of states in gating"""
@@ -551,7 +549,8 @@ class ui_state:
 
         return refilter
 
-    def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None, density_adjust_2=1):
+    def scatter_update(self, update_state=True, x_select=None, y_select=None, x_gate=None, y_gate=None,
+                       density_adjust_2=1):
         """keep track of state in scatter tab"""
         replot = False
         if x_select is not None and x_select != self.scatter_channel_select_x:
@@ -565,7 +564,6 @@ class ui_state:
         elif density_adjust_2 is not None and density_adjust_2 != self.density_adjust_2:
             replot = True
 
-            
         if update_state:
             if x_select is not None:
                 self.scatter_channel_select_x = x_select
@@ -579,7 +577,7 @@ class ui_state:
                 self.density_adjust_2 = density_adjust_2
         return replot
 
-    def width_scatter_update(self, update_state=True, x_select=None, y_select=None, density_adjust_1=1 ):
+    def width_scatter_update(self, update_state=True, x_select=None, y_select=None, density_adjust_1=1):
         """keep track of state in width scatter tab"""
         replot = False
         if x_select is not None and x_select != self.width_scatter_channel_select_x:
@@ -587,9 +585,8 @@ class ui_state:
         elif y_select is not None and y_select != self.width_scatter_channel_select_y:
             replot = True
         elif density_adjust_1 is not None and density_adjust_1 != self.density_adjust_1:
-            replot = True            
-            
-            
+            replot = True
+
         if update_state:
             if x_select is not None:
                 self.width_scatter_channel_select_x = x_select
@@ -639,6 +636,7 @@ class ThreadState(Enum):
 
 class SaveObject:
     """this class used for exporting software state with pickle"""
+
     def __init__(self, analog: dict, thresholds: list, file_dict_list: list, working_data: list, current_file_dict: dict
                  , ui_state: ui_state, time_log_file_indexes: list, extraction_thread_state: list, tree_dic: dict,
                  time_log_window, time_log_reconstruct_index):
@@ -661,17 +659,21 @@ class SaveObject:
         self.time_log_data = time_log_window.export_data()
         self.time_log_reconstruct_index = time_log_reconstruct_index
 
+
 class FilterParam:
-    def __int__(self):
+    def __init__(self):
         self.x_axis_ch = 0
         self.y_axis_ch = 0
         self.x_axis_mode = 0
         self.y_axis_mode = 0
         self.x_threshold = 0
         self.y_threshold = 0
-        self.x_range = (0,1)
-        self.y_range = (0,1)
-    def Update(self, x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode, x_threshold, y_threshold, x_range, y_range):
+        self.x_range = (0, 1)
+        self.y_range = (0, 1)
+        self.enable = False
+
+    def update(self, x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode, x_threshold, y_threshold, x_range, y_range):
+        """called to update this value"""
         self.x_axis_ch = x_axis_ch
         self.y_axis_ch = y_axis_ch
         self.x_axis_mode = x_axis_mode
@@ -680,6 +682,26 @@ class FilterParam:
         self.y_threshold = y_threshold
         self.x_range = x_range
         self.y_range = y_range
+        self.enable = True
+
+    def __str__(self):
+        return (f"X Axis Channel: {self.x_axis_ch},"
+                f"Y Axis Channel: {self.y_axis_ch},"
+                f"X Axis Mode: {self.x_axis_mode},"
+                f"Y Axis Mode: {self.y_axis_mode},"
+                f"X Threshold: {self.x_threshold},"
+                f"Y Threshold: {self.y_threshold},"
+                f"X Range: {self.x_range},"
+                f"Y Range: {self.y_range}")
+
+    def set_enable(self):
+        """Enable the default param"""
+        self.enable = True
+
+    def set_disable(self):
+        """disable the defaul param"""
+        self.enable = False
+
 
 if __name__ == "__main__":
     state = ui_state()
@@ -687,8 +709,3 @@ if __name__ == "__main__":
 #     print(update)
 #     print(state.ch2_check)
 #     print(state.ch1_check)
-
-
-
-
-

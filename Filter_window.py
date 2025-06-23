@@ -259,6 +259,8 @@ class window_filter(QWidget):
                 self.button_channel_select.setDisabled(True)
             self.infiniteline_table_update()
 
+        self.checkbox_load_default.setCheckState(self.ui.filter_default.enable)
+
     def setupUI(self):
         ### layout setup
         outter_layout = QtWidgets.QHBoxLayout()
@@ -281,8 +283,8 @@ class window_filter(QWidget):
         self.lineedit_filter_name = QtWidgets.QLineEdit('')
         Scatter_plot_layout.addWidget(self.lineedit_filter_name, 1, 1, 1, 2)
 
-        self.export_param = QPushButton("Export Parameter")
-        Scatter_plot_layout.addWidget(self.export_param, 1, 3, 1, 1)
+        self.pushButton_export_param = QPushButton("Export Parameter")
+        Scatter_plot_layout.addWidget(self.pushButton_export_param, 1, 3, 1, 1)
 
         self.line_filter_name = QtWidgets.QFrame()
         self.line_filter_name.setFrameShape(QtWidgets.QFrame.HLine)
@@ -458,6 +460,9 @@ class window_filter(QWidget):
         #         self.label_8.setMaximumSize(QtCore.QSize(100, 16777215))
         #         self.label_8.setObjectName("label_8")
         layout.addWidget(self.label_dots_inside_polygon, 9, 0, 1, 1)
+
+        self.checkbox_logscale = QCheckBox("Generate Log Scale")
+        layout.addWidget(self.checkbox_logscale,9,1,1,1)
 
         self.polygon_button_1 = QPushButton('Polygon')
         self.polygon_button_2 = QPushButton('Clear')
@@ -1029,8 +1034,12 @@ class window_filter(QWidget):
         self.pushButton_7.clicked.connect(self.polygon_next_page)
         self.pushButton_timelog.clicked.connect(self.time_log_clicked)
         self.button_channel_select.clicked.connect(self.channel_select_clicked)
+        self.pushButton_export_param.clicked.connect(self.param_export)
 
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
+        self.checkbox_load_default.clicked.connect(self.default_param_checkbox_clicked)
+
+
 
         ##########################################################################################
 
@@ -1061,6 +1070,9 @@ class window_filter(QWidget):
             self.graphWidget.getAxis('left').setTextPen(self.axis_pen)
             self.graphWidget.getAxis('bottom').setPen(self.axis_pen)
             self.graphWidget.getAxis('bottom').setTextPen(self.axis_pen)
+
+    def update_ui_element(self):
+        self.checkbox_load_default.setCheckState(self.ui.filter_default.enable)
 
     # update the left and right sweep graphs on the sweep tab
     def update_sweep_left(self):
@@ -1494,6 +1506,18 @@ class window_filter(QWidget):
         # "update" clicked
         # prepare data
         start = time.time()
+        self.checkbox_load_default.setCheckState(self.ui.filter_default.enable)
+        if self.checkbox_load_default.checkState():
+            """load the parameter"""
+            self.comboBox_3.setCurrentIndex(self.ui.filter_default.x_axis_ch)
+            self.comboBox_4.setCurrentIndex(self.ui.filter_default.y_axis_ch)
+            self.comboBox_1.setCurrentIndex(self.ui.filter_default.x_axis_mode)
+            self.comboBox_2.setCurrentIndex(self.ui.filter_default.y_axis_mode)
+            self.GateVoltage_x.setText(str(self.ui.filter_default.x_threshold))
+            self.GateVoltage_y.setText(str(self.ui.filter_default.y_threshold))
+            self.graphWidget.getPlotItem().setXRange(self.ui.filter_default.x_range[0],self.ui.filter_default.x_range[1], padding= 0)
+            self.graphWidget.getPlotItem().setYRange(self.ui.filter_default.y_range[0],self.ui.filter_default.y_range[1], padding= 0)
+            print(self.ui.filter_default)
         if len(self.tree_index) == 1:
             # this is for root data extraction
 
@@ -2717,6 +2741,12 @@ class window_filter(QWidget):
         self.ui.lineEdit_filter.setText(self.lineEdit.text())
         self.close()
 
+    def default_param_checkbox_clicked(self):
+        if self.checkbox_load_default.checkState():
+            self.ui.filter_default.set_enable()
+        else:
+            self.ui.filter_default.set_disable()
+
     def time_log_clicked(self):
         """this function handles when user clicks the export time log, create a timelog window"""
 
@@ -2852,26 +2882,25 @@ class window_filter(QWidget):
         self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
         # reset threshold # test
         self.infiniteline_table_update()
-        print(self.color_array)
-        x = np.array(self.Ch1_channel0)
-        y = np.array(self.Ch1_channel1)
-        fig, ax = plt.subplots(1,2)
-        data, x_e, y_e = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins=1000, density=True)
-        z = interpn((0.5 * (x_e[1:] + x_e[:-1]), 0.5 * (y_e[1:] + y_e[:-1])), data, np.vstack([x, y]).T,
-                    method="splinef2d", bounds_error=False)
-        idx = z.argsort()
-        x, y, z = x[idx], y[idx], z[idx]
-        ax[0].scatter(x, y, c=z, s=10)
-        norm = Normalize(vmin=np.min(z), vmax=np.max(z))
-        cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=ax)
-        cbar.ax.set_ylabel('Density')
-        ax[1].scatter(x, y, c=z, s=10)
-        ax[1].set_xscale('log')
-        ax[1].set_yscale('log')
-        ax[0].set_title('Linear Scale')
-        ax[1].set_title('Log Scale')
-
-        plt.show()
+        if self.checkbox_logscale.checkState():
+            x = np.array(self.Ch1_channel0)
+            y = np.array(self.Ch1_channel1)
+            fig, ax = plt.subplots(1,2)
+            data, x_e, y_e = np.histogram2d(self.Ch1_channel0, self.Ch1_channel1, bins=1000, density=True)
+            z = interpn((0.5 * (x_e[1:] + x_e[:-1]), 0.5 * (y_e[1:] + y_e[:-1])), data, np.vstack([x, y]).T,
+                        method="splinef2d", bounds_error=False)
+            idx = z.argsort()
+            x, y, z = x[idx], y[idx], z[idx]
+            ax[0].scatter(x, y, c=z, s=10)
+            norm = Normalize(vmin=np.min(z), vmax=np.max(z))
+            cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=ax)
+            cbar.ax.set_ylabel('Density')
+            ax[1].scatter(x, y, c=z, s=10)
+            ax[1].set_xscale('log')
+            ax[1].set_yscale('log')
+            ax[0].set_title('Linear Scale')
+            ax[1].set_title('Log Scale')
+            plt.show()
 
     def filter_export(self):
         """function calls to export data needed to recreate filter"""
@@ -2899,12 +2928,21 @@ class window_filter(QWidget):
                             self.Ch1_channel1, self.Ch1_channel0_peak_num, self.Ch1_channel1_peak_num, window_setting)
         return output
 
-    def filter_export(self):
-        x_range =self.graphWidget.getAxis('bottom').range()
-        y_range = self.graphWidget.getAxis('left').range()
-        self.ui.filter_default.Update(self.comboBox_3, self.comboBox_4, self.comboBox_1, self.comboBox_2,
-                                      self.GateVoltage_x, self.GateVoltage_y,)
-        self.GateVoltage_x
+    def param_export(self):
+        """function to export default param"""
+
+
+        x_axis_ch = self.comboBox_3.currentIndex()
+        y_axis_ch = self.comboBox_4.currentIndex()
+        x_axis_mode = self.comboBox_1.currentIndex()
+        y_axis_mode = self.comboBox_2.currentIndex()
+        x_threshold = float(self.GateVoltage_x.text())
+        y_threshold = float(self.GateVoltage_y.text())
+        x_range = self.graphWidget.getPlotItem().viewRange()[0]
+        y_range = self.graphWidget.getPlotItem().viewRange()[1]
+        self.ui.filter_default.update(x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode,
+                                      x_threshold, y_threshold, x_range, y_range)
+        print(self.ui.filter_default)
 
 
 class FilterData:
