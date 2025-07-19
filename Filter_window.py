@@ -84,9 +84,10 @@ class window_filter(QWidget):
     def __init__(self, parent, current_file_dict=None, working_data=None, peak_width_working_data=None,
                  peak_num_working_data=None, linear_plot_channel_list={}, multi_file=None, multi_file_index=None,
                  root=None, saved_data=None, extracted_ratio_data=None, extracted_aspect_data=None,
-                 extracted_avg_data=None):
+                 extracted_avg_data=None,filter_name=None):
         super().__init__()
 
+        self.filter_name = filter_name
         self.line_thickness = 4
         self.axis_font_size = 12
         self.legend_font_size = 12
@@ -99,6 +100,7 @@ class window_filter(QWidget):
         print(saved_data)
         if saved_data is None:
             self.ui = parent
+            self.lineedit_filter_name.setText(self.filter_name)
             self.ch_select = ChannelSelectWindow(self)
             self.legacy_mode = False
             # tree_index saved the index number for all filters, include its parent and child branch
@@ -327,6 +329,7 @@ class window_filter(QWidget):
         self.comboBox_2.addItem("Fret Ratio")
         self.comboBox_2.addItem("Q-Ratio")
         self.comboBox_2.addItem("Droplet Avg")
+        self.comboBox_2.setCurrentIndex(3)
 
         self.comboBox_3 = QtWidgets.QComboBox()
         for channel_name in self.CHANNEL_NAME:
@@ -1517,6 +1520,7 @@ class window_filter(QWidget):
             self.GateVoltage_y.setText(str(self.ui.filter_default.y_threshold))
             self.graphWidget.getPlotItem().setXRange(self.ui.filter_default.x_range[0],self.ui.filter_default.x_range[1], padding= 0)
             self.graphWidget.getPlotItem().setYRange(self.ui.filter_default.y_range[0],self.ui.filter_default.y_range[1], padding= 0)
+            self.comboBox_ch_select.setCurrentIndex(self.ui.filter_default.record_select)
             print(self.ui.filter_default)
         if len(self.tree_index) == 1:
             # this is for root data extraction
@@ -2940,8 +2944,9 @@ class window_filter(QWidget):
         y_threshold = float(self.GateVoltage_y.text())
         x_range = self.graphWidget.getPlotItem().viewRange()[0]
         y_range = self.graphWidget.getPlotItem().viewRange()[1]
+        record_select = self.comboBox_ch_select.currentIndex()
         self.ui.filter_default.update(x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode,
-                                      x_threshold, y_threshold, x_range, y_range)
+                                      x_threshold, y_threshold, x_range, y_range, record_select)
         print(self.ui.filter_default)
 
 

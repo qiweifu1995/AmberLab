@@ -3630,7 +3630,7 @@ class Ui_MainWindow(QMainWindow):
                     self.treeModel.appendRow(self.tree_dic[key]['tree_standarditem'])
                     print(data.filter_data_dict[key])
                     self.tree_dic[key]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=
-                    data.filter_data_dict[key])
+                    data.filter_data_dict[key], filter_name=filter_name)
                 else:
                     parent_key = key[1:]
                     self.tree_dic[key] = {}
@@ -3638,7 +3638,7 @@ class Ui_MainWindow(QMainWindow):
                     self.tree_dic[key]['tree_standarditem'] = StandardItem(filter_name, 12, set_bold=True)
                     self.tree_dic[parent_key]['tree_standarditem'].appendRow(self.tree_dic[key]['tree_standarditem'])
                     self.tree_dic[key]['tree_windowfilter'] = Filter_window.window_filter(ui, saved_data=
-                    data.filter_data_dict[key])
+                    data.filter_data_dict[key], filter_name=filter_name)
 
         self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
             self.file_list_view, self.time_log_file_model, self.time_log_file_indexes, self.tree_dic, self.treeModel,
@@ -3774,7 +3774,7 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
                 self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
                 self.tree_index = (i,)
-                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i)
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i, filter_name=text)
                 self.thresholds.append([0.0, 0.0, 0.0, 0.0])
             self.ui_state.threshold_initialize(self.thresholds)
             self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(
@@ -3826,7 +3826,7 @@ class Ui_MainWindow(QMainWindow):
                 self.tree_dic[(i,)]['tree_standarditem'] = StandardItem(text, 12, set_bold=True)
                 self.treeModel.appendRow(self.tree_dic[(i,)]['tree_standarditem'])
                 self.tree_index = (i,)
-                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i)
+                self.tree_dic[(i,)]['tree_windowfilter'] = Filter_window.window_filter(ui, self.file_dict_list[i], root=i, filter_name=text)
                 self.thresholds.append([0.0, 0.0, 0.0, 0.0])
             self.ui_state.threshold_initialize(self.thresholds)
             self.time_log_window = Time_log_selection_window.TimeLogFileSelectionWindow(

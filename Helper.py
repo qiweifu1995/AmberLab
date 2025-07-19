@@ -5,6 +5,7 @@ import os, csv
 from enum import Enum
 
 
+
 def project_namelist(file_dir):
     """function for loading all file names for the project, returns as dictionary"""
     name_dict = {"Ch1 ": "",
@@ -665,14 +666,15 @@ class FilterParam:
         self.x_axis_ch = 0
         self.y_axis_ch = 0
         self.x_axis_mode = 0
-        self.y_axis_mode = 0
+        self.y_axis_mode = 3
         self.x_threshold = 0
         self.y_threshold = 0
         self.x_range = (0, 1)
         self.y_range = (0, 1)
+        self.record_select = 1
         self.enable = False
 
-    def update(self, x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode, x_threshold, y_threshold, x_range, y_range):
+    def update(self, x_axis_ch, y_axis_ch, x_axis_mode, y_axis_mode, x_threshold, y_threshold, x_range, y_range, record_select):
         """called to update this value"""
         self.x_axis_ch = x_axis_ch
         self.y_axis_ch = y_axis_ch
@@ -682,6 +684,7 @@ class FilterParam:
         self.y_threshold = y_threshold
         self.x_range = x_range
         self.y_range = y_range
+        self.record_select = record_select
         self.enable = True
 
     def __str__(self):
