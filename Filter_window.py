@@ -428,12 +428,12 @@ class window_filter(QWidget):
         self.comboBox_peak_num_6.addItem("==")
         self.comboBox_peak_num_6.addItem("<=")
 
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_1, 2, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_2, 3, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_3, 4, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_4, 5, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_5, 6, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_6, 7, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_1, 2, 1, 1, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_2, 3, 1, 1, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_3, 4, 1, 1, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_4, 5, 1, 1, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_5, 6, 1, 1, 1)
+        Multi_peaks_layout.addWidget(self.comboBox_peak_num_6, 7, 1, 1, 1)
 
         self.lineEdit_peak_num_1 = QtWidgets.QLineEdit('0')
         self.lineEdit_peak_num_2 = QtWidgets.QLineEdit('0')
@@ -452,8 +452,16 @@ class window_filter(QWidget):
         self.line_Multi_peaks = QtWidgets.QFrame()
         self.line_Multi_peaks.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_Multi_peaks.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 8, 0, 1, 3)
+        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 8, 0, 1, 5)
+        self.line_adv_filter = QtWidgets.QFrame()
+        self.line_adv_filter.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_adv_filter.setFrameShadow(QtWidgets.QFrame.Sunken)
+        Multi_peaks_layout.addWidget(self.line_adv_filter, 0, 3, 8, 1)
 
+        self.adv_filter_name = QtWidgets.QLabel('Adv Filters')
+        Multi_peaks_layout.addWidget(self.adv_filter_name, 0, 4, 1, 1)
+        self.button_new_square = QtWidgets.QPushButton("New Square")
+        Multi_peaks_layout.addWidget(self.button_new_square, 2, 4, 1, 1)
         ######## Multi peak end
 
         self.label_dots_inside_polygon = QLabel("Inside : 0")
