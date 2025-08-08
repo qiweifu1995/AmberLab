@@ -24,6 +24,7 @@ import Stats_window
 import Time_log_selection_window
 import logging
 import sys
+import new_square_window
 from pyqtgraph import colormap
 from Helper import ThreadState
 from functools import partial
@@ -95,12 +96,13 @@ class window_filter(QWidget):
         self.axis_font = QFont('Times')
         self.axis_font.setPointSize(21)
         self.axis_pen = pg.mkPen(QColor(0, 0, 0), width=self.axis_thickness)
-
+        self.square_window = new_square_window.SquareWindow()
         self.setupUI()
         print(saved_data)
         if saved_data is None:
             self.ui = parent
             self.lineedit_filter_name.setText(self.filter_name)
+            self.setWindowTitle(self.filter_name)
             self.ch_select = ChannelSelectWindow(self)
             self.legacy_mode = False
             # tree_index saved the index number for all filters, include its parent and child branch
@@ -268,7 +270,7 @@ class window_filter(QWidget):
         outter_layout = QtWidgets.QHBoxLayout()
         vertical_layout = QtWidgets.QVBoxLayout()
         layout = QtWidgets.QGridLayout()
-        Multi_peaks_layout = QtWidgets.QGridLayout()
+        self.Multi_peaks_layout = QtWidgets.QGridLayout()
         Scatter_plot_layout = QtWidgets.QGridLayout()
 
         ### control pannels
@@ -366,12 +368,12 @@ class window_filter(QWidget):
         self.line_ch_select.setFrameShadow(QtWidgets.QFrame.Sunken)
         Scatter_plot_layout.addWidget(self.line_ch_select, 3, 4, 3, 1)
 
-        ######## Multi_peaks_layout grid
+        ######## self.Multi_peaks_layout grid
 
         self.label_num_peak_title = QtWidgets.QLabel('Multi Peaks Gating')
         sizePolicy.setHeightForWidth(self.label_num_peak_title.sizePolicy().hasHeightForWidth())
         self.label_num_peak_title.setSizePolicy(sizePolicy)
-        Multi_peaks_layout.addWidget(self.label_num_peak_title)
+        self.Multi_peaks_layout.addWidget(self.label_num_peak_title)
 
         self.label_num_peak_1 = QtWidgets.QLabel('Channel')
         sizePolicy.setHeightForWidth(self.label_num_peak_1.sizePolicy().hasHeightForWidth())
@@ -388,80 +390,124 @@ class window_filter(QWidget):
         # adding the channel name in a loop
         self.label_num_peak_list = []
         for channel_name in self.CHANNEL_NAME:
-            self.label_num_peak_list.append(QtWidgets.QLabel(channel_name))
+            holder = QtWidgets.QLabel(channel_name)
+            holder.setFixedWidth(100)
+            self.label_num_peak_list.append(holder)
 
-        Multi_peaks_layout.addWidget(self.label_num_peak_1, 1, 0)
-        Multi_peaks_layout.addWidget(self.label_num_peak_2, 1, 1)
-        Multi_peaks_layout.addWidget(self.label_num_peak_3, 1, 2)
+        self.Multi_peaks_layout.addWidget(self.label_num_peak_1, 1, 0)
+        self.Multi_peaks_layout.addWidget(self.label_num_peak_2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.label_num_peak_3, 1, 2)
 
         # add all the labels using loop
         for i, ch in enumerate(self.label_num_peak_list):
-            Multi_peaks_layout.addWidget(ch, i + 2, 0)
+            self.Multi_peaks_layout.addWidget(ch, i + 2, 0)
 
         self.comboBox_peak_num_1 = QtWidgets.QComboBox()
         self.comboBox_peak_num_1.addItem(">=")
         self.comboBox_peak_num_1.addItem("==")
         self.comboBox_peak_num_1.addItem("<=")
+        self.comboBox_peak_num_1.setFixedWidth(60)
 
         self.comboBox_peak_num_2 = QtWidgets.QComboBox()
         self.comboBox_peak_num_2.addItem(">=")
         self.comboBox_peak_num_2.addItem("==")
         self.comboBox_peak_num_2.addItem("<=")
+        self.comboBox_peak_num_2.setFixedWidth(60)
 
         self.comboBox_peak_num_3 = QtWidgets.QComboBox()
         self.comboBox_peak_num_3.addItem(">=")
         self.comboBox_peak_num_3.addItem("==")
         self.comboBox_peak_num_3.addItem("<=")
+        self.comboBox_peak_num_3.setFixedWidth(60)
 
         self.comboBox_peak_num_4 = QtWidgets.QComboBox()
         self.comboBox_peak_num_4.addItem(">=")
         self.comboBox_peak_num_4.addItem("==")
         self.comboBox_peak_num_4.addItem("<=")
+        self.comboBox_peak_num_4.setFixedWidth(60)
 
         self.comboBox_peak_num_5 = QtWidgets.QComboBox()
         self.comboBox_peak_num_5.addItem(">=")
         self.comboBox_peak_num_5.addItem("==")
         self.comboBox_peak_num_5.addItem("<=")
+        self.comboBox_peak_num_5.setFixedWidth(60)
 
         self.comboBox_peak_num_6 = QtWidgets.QComboBox()
         self.comboBox_peak_num_6.addItem(">=")
         self.comboBox_peak_num_6.addItem("==")
         self.comboBox_peak_num_6.addItem("<=")
+        self.comboBox_peak_num_6.setFixedWidth(60)
 
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_1, 2, 1, 1, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_2, 3, 1, 1, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_3, 4, 1, 1, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_4, 5, 1, 1, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_5, 6, 1, 1, 1)
-        Multi_peaks_layout.addWidget(self.comboBox_peak_num_6, 7, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_1, 2, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_2, 3, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_3, 4, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_4, 5, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_5, 6, 1, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.comboBox_peak_num_6, 7, 1, 1, 1)
 
         self.lineEdit_peak_num_1 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_1.setFixedWidth(100)
         self.lineEdit_peak_num_2 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_2.setFixedWidth(100)
         self.lineEdit_peak_num_3 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_3.setFixedWidth(100)
         self.lineEdit_peak_num_4 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_4.setFixedWidth(100)
         self.lineEdit_peak_num_5 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_5.setFixedWidth(100)
         self.lineEdit_peak_num_6 = QtWidgets.QLineEdit('0')
+        self.lineEdit_peak_num_6.setFixedWidth(100)
 
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_1, 2, 2, 1, 1)
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_2, 3, 2, 1, 1)
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_3, 4, 2, 1, 1)
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_4, 5, 2, 1, 1)
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_5, 6, 2, 1, 1)
-        Multi_peaks_layout.addWidget(self.lineEdit_peak_num_6, 7, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_1, 2, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_2, 3, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_3, 4, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_4, 5, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_5, 6, 2, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.lineEdit_peak_num_6, 7, 2, 1, 1)
 
         self.line_Multi_peaks = QtWidgets.QFrame()
         self.line_Multi_peaks.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_Multi_peaks.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Multi_peaks_layout.addWidget(self.line_Multi_peaks, 8, 0, 1, 5)
+        self.Multi_peaks_layout.addWidget(self.line_Multi_peaks, 8, 0, 1, 6)
         self.line_adv_filter = QtWidgets.QFrame()
         self.line_adv_filter.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_adv_filter.setFrameShadow(QtWidgets.QFrame.Sunken)
-        Multi_peaks_layout.addWidget(self.line_adv_filter, 0, 3, 8, 1)
+        self.Multi_peaks_layout.addWidget(self.line_adv_filter, 0, 3, 8, 1)
 
         self.adv_filter_name = QtWidgets.QLabel('Adv Filters')
-        Multi_peaks_layout.addWidget(self.adv_filter_name, 0, 4, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.adv_filter_name, 0, 4, 1, 1)
+
+        self.filter_select_label = QtWidgets.QLabel("Gating Mode: ")
+        self.Multi_peaks_layout.addWidget(self.filter_select_label, 1, 4, 1, 1)
+        spacer = QtWidgets.QSpacerItem(50, 1, QtWidgets.QSizePolicy.Minimum,
+                                                          QtWidgets.QSizePolicy.Minimum)
+        self.Multi_peaks_layout.addItem(spacer, 1, 5, 1, 1)
+        self.filter_select_combobox = QtWidgets.QComboBox()
+        self.filter_select_combobox.addItems(["Square Gating", "Polygon Gating"])
+        self.Multi_peaks_layout.addWidget(self.filter_select_combobox, 2, 4, 1, 1)
+
         self.button_new_square = QtWidgets.QPushButton("New Square")
-        Multi_peaks_layout.addWidget(self.button_new_square, 2, 4, 1, 1)
+        self.button_move_square = QtWidgets.QPushButton("Move Square")
+        self.button_clear_square = QtWidgets.QPushButton("Clear Square")
+        self.Multi_peaks_layout.addWidget(self.button_new_square, 3, 4, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.button_move_square, 4, 4, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.button_clear_square, 5, 4, 1, 1)
+        self.square_button_arrays = [self.button_new_square, self.button_move_square, self.button_clear_square]
+
+        self.polygon_button_1 = QPushButton('Polygon')
+        self.polygon_button_2 = QPushButton('Clear')
+        self.polygon_button_3 = QPushButton('Shape Edit')
+        self.Multi_peaks_layout.addWidget(self.polygon_button_1, 3, 4, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.polygon_button_3, 4, 4, 1, 1)
+        self.Multi_peaks_layout.addWidget(self.polygon_button_2, 5, 4, 1, 1)
+        self.polygon_button_1.hide()
+        self.polygon_button_2.hide()
+        self.polygon_button_3.hide()
+        self.polygon_button_arrays = [self.polygon_button_1, self.polygon_button_3, self.polygon_button_2]
+
+
+
+
         ######## Multi peak end
 
         self.label_dots_inside_polygon = QLabel("Inside : 0")
@@ -475,15 +521,7 @@ class window_filter(QWidget):
         self.checkbox_logscale = QCheckBox("Generate Log Scale")
         layout.addWidget(self.checkbox_logscale,9,1,1,1)
 
-        self.polygon_button_1 = QPushButton('Polygon')
-        self.polygon_button_2 = QPushButton('Clear')
-        self.polygon_button_3 = QPushButton('Shape Edit')
 
-        #         self.button_rename.setSizePolicy(sizePolicy)
-
-        layout.addWidget(self.polygon_button_1, 10, 0, 1, 1)
-        layout.addWidget(self.polygon_button_2, 10, 1, 1, 1)
-        layout.addWidget(self.polygon_button_3, 10, 2, 1, 1)
 
         # confirm buttons
 
@@ -582,7 +620,7 @@ class window_filter(QWidget):
         outter_layout.addWidget(self.tab_widgets_main)
 
         vertical_layout.addLayout(Scatter_plot_layout)
-        vertical_layout.addLayout(Multi_peaks_layout)
+        vertical_layout.addLayout(self.Multi_peaks_layout)
         vertical_layout.addLayout(layout)
 
         # tab1
@@ -1049,10 +1087,37 @@ class window_filter(QWidget):
 
         self.graphWidget.sigRangeChanged.connect(self.quadrant_rect_resize)
         self.checkbox_load_default.clicked.connect(self.default_param_checkbox_clicked)
+        self.filter_select_combobox.currentIndexChanged.connect(self.update_gating_ui)
+        self.button_new_square.clicked.connect(self.new_square_pressed)
+        self.square_window.confirm_clicked.custom_signal.connect(self.new_square_confirmed)
 
 
 
         ##########################################################################################
+
+    def update_gating_ui(self):
+        """update the UI buttons depending on the combobox index"""
+        if self.filter_select_combobox.currentIndex() == 0:
+            for button in self.polygon_button_arrays:
+                button.hide()
+            for button in self.square_button_arrays:
+                button.show()
+            print("add square buttons")
+        else:
+            for button in self.square_button_arrays:
+                button.hide()
+            for button in self.polygon_button_arrays:
+                button.show()
+            print("add poly buttons")
+
+
+    def new_square_pressed(self):
+        """New square button pressed"""
+        self.square_window.activateWindow()
+        self.square_window.show()
+
+    def new_square_confirmed(self, square):
+        print(square)
 
     def update_fonts(self):
         print("update fonts")

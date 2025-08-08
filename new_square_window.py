@@ -6,16 +6,21 @@ from multiprocessing import freeze_support
 import statistics
 
 
+class MySignalEmitter(QtCore.QThread):
+    # Define a custom signal with a value
+    custom_signal = QtCore.pyqtSignal(object)
+
 class SquareWindow(QWidget):
     """creates the window that display stats of the quadrants"""
     def __init__(self):
         super().__init__()
-
+        self.confirm_clicked = MySignalEmitter()
         self.setupUI()
         self.setWindowTitle("New Square")
-        self.output = [[] for i in range(4)]
-
-
+        self.origin = (0, 0)
+        self.size = (0, 0)
+        self.repeat = False
+        self.repeat_num = 0
 
     def setupUI(self):
         self.setFixedWidth(250)
@@ -74,52 +79,31 @@ class SquareWindow(QWidget):
         vertical_layout.addWidget(self.cancel_button, 10, 1, 1, 1)
         self.setLayout(vertical_layout)
 
-    def update(self, name, quadrant_list_x, quadrant_list_y):
-        """this function is called whenever the button press to show statistic is called"""
+        ### set up triggers from here
+        self.confirm_button.clicked.connect(self.confirmed)
+
+    def confirmed(self):
+        """this function returns data back to filter"""
         try:
-            self.setWindowTitle(name)
+            self.origin = (float(self.origin_lineedit_x.text()), float(self.origin_lineedit_y.text()))
         except:
-            self.setWindowTitle('Statistics')
+            self.origin = (0.0, 0.0)
 
-        self.output = [[] for i in range(4)]
+        try:
+            self.size = (float(self.width_lineedit.text()), float(self.height_lineedit.text()))
+        except:
+            self.size = (0.0, 0.0)
 
-        for i in range(4):
-            try:
-                self.output[i].append(str(round(statistics.mean(quadrant_list_x[i]), 3)))
-                self.output[i].append(str(round(statistics.median(quadrant_list_x[i]), 3)))
-                self.output[i].append(str(round(statistics.stdev(quadrant_list_x[i]), 3)))
-                self.output[i].append(str(round(max(quadrant_list_x[i]), 3)))
-                self.output[i].append(str(round(min(quadrant_list_x[i]), 3)))
-            except:
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-            try:
-                self.output[i].append(str(round(statistics.mean(quadrant_list_y[i]), 3)))
-                self.output[i].append(str(round(statistics.median(quadrant_list_y[i]), 3)))
-                self.output[i].append(str(round(statistics.stdev(quadrant_list_y[i]), 3)))
-                self.output[i].append(str(round(max(quadrant_list_y[i]), 3)))
-                self.output[i].append(str(round(min(quadrant_list_y[i]), 3)))
-            except:
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-                self.output[i].append('NA')
-            try:
-                ratio = [b/a for a, b in zip(quadrant_list_x[i], quadrant_list_y[i])]
-                self.output[i].append(str(round(statistics.mean(ratio), 3)))
-                self.output[i].append(str(round(statistics.stdev(ratio), 3)))
-            except:
-                self.output[i].append("NA")
-                self.output[i].append("NA")
+        self.repeat = self.repeat_checkbox.checkState()
+
+        try:
+            self.repeat_num = float(self.repeat_lineedit.text())
+        except:
+            self.repeat_num = 1
+        print("confirmed square")
+        self.confirm_clicked.custom_signal.emit({"origin": self.origin, "size": self.size, "repeat": self.repeat, "repeat_num": self.repeat_num})
 
 
-        for i in range(4):
-            for j in range(12):
-                self.stats_table.setItem(i, j, QTableWidgetItem(self.output[i][j]))
 
 
 if __name__ == "__main__":
