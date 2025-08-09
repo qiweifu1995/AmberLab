@@ -1117,6 +1117,21 @@ class window_filter(QWidget):
         self.square_window.show()
 
     def new_square_confirmed(self, square):
+        """handle the data returned from window"""
+        pen = pg.mkPen(color='r', width=3, style=QtCore.Qt.DashLine)
+        self.square_array = []
+        if square["repeat"]:
+            origin = square["origin"]
+            size = square["size"]
+            repeat_num = square["repeat_num"]
+            for i in range(repeat_num):
+                self.square_array.append(pg.RectROI((origin[0]+i*size[0],origin[1]), square["size"], pen=pen))
+        else:
+            self.square_array.append(pg.RectROI(square["origin"], square["size"], pen=pen))
+
+        for item in self.square_array:
+            self.graphWidget.addItem(item)
+        self.square_window.hide()
         print(square)
 
     def update_fonts(self):

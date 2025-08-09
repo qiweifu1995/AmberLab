@@ -97,7 +97,7 @@ class SquareWindow(QWidget):
         self.repeat = self.repeat_checkbox.checkState()
 
         try:
-            self.repeat_num = float(self.repeat_lineedit.text())
+            self.repeat_num = int(self.repeat_lineedit.text())
         except:
             self.repeat_num = 1
         print("confirmed square")
