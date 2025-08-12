@@ -483,7 +483,7 @@ class window_filter(QWidget):
                                                           QtWidgets.QSizePolicy.Minimum)
         self.Multi_peaks_layout.addItem(spacer, 1, 5, 1, 1)
         self.filter_select_combobox = QtWidgets.QComboBox()
-        self.filter_select_combobox.addItems(["Square Gating", "Polygon Gating"])
+        self.filter_select_combobox.addItems(["Threshold Gating", "Square Gating", "Polygon Gating"])
         self.Multi_peaks_layout.addWidget(self.filter_select_combobox, 2, 4, 1, 1)
 
         self.button_new_square = QtWidgets.QPushButton("New Square")
@@ -1097,18 +1097,19 @@ class window_filter(QWidget):
 
     def update_gating_ui(self):
         """update the UI buttons depending on the combobox index"""
-        if self.filter_select_combobox.currentIndex() == 0:
+        if self.filter_select_combobox.currentIndex() == 1:
             for button in self.polygon_button_arrays:
                 button.hide()
             for button in self.square_button_arrays:
                 button.show()
             print("add square buttons")
-        else:
+        elif self.filter_select_combobox.currentIndex() == 2:
             for button in self.square_button_arrays:
                 button.hide()
             for button in self.polygon_button_arrays:
                 button.show()
             print("add poly buttons")
+        self.table_type_change()
 
 
     def new_square_pressed(self):
@@ -2187,6 +2188,41 @@ class window_filter(QWidget):
         print(f"Mean of the Fret Ratio is: {ratio_avergae}")
         print(f"Std of the Fret Ratio is: {ratio_stdev}")
 
+    def table_type_change(self):
+        """this function to change when filter type changes"""
+        if self.filter_select_combobox.currentIndex() == 0:
+            # set row count
+            self.tableView_scatterquadrants.setRowCount(4)
+            # set column count
+            self.tableView_scatterquadrants.setColumnCount(7)
+            self.tableView_scatterquadrants.setHorizontalHeaderLabels(
+                ('Count', '% Total Peaks', '% Total Droplets', 'X Single Peak %',
+                 'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
+            self.tableView_scatterquadrants.setVerticalHeaderLabels(
+                ('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
+
+        elif self.filter_select_combobox.currentIndex() == 1:
+            self.tableView_scatterquadrants.setRowCount(len(self.square_array))
+            self.tableView_scatterquadrants.setColumnCount(11)
+            self.tableView_scatterquadrants.setHorizontalHeaderLabels(
+                ('Count', '% Total Peaks', '% Total Droplets',
+                 'X Single Peak %', 'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %', 'X', 'Y','Width', 'Height'))
+            name_array = []
+            try:
+                for index, item in enumerate(self.square_array):
+                    name = "Square " + str(index)
+                    name_array.append(name)
+            except:
+                name_array.append("Square 1")
+            self.tableView_scatterquadrants.setVerticalHeaderLabels(name_array)
+
+
+    ################################################################################################
+    #### starting here, have square gating funtions
+    def square_table_update(self):
+        return 0
+
+
     ################################################################################################
     ### these are  the mouse-draggable-lines on the main tab, they are called "infinitelines" in the pyqt documents
     def infiniteline_update(self):
@@ -2201,90 +2237,93 @@ class window_filter(QWidget):
 
     def infiniteline_table_update(self):
         """yodate the gate voltage filter"""
-        single_peak_count_channel0 = [0, 0, 0, 0]
-        single_peak_count_channel1 = [0, 0, 0, 0]
-        multi_peak_count_channel0 = [0, 0, 0, 0]
-        multi_peak_count_channel1 = [0, 0, 0, 0]
-        count_quadrant = [0, 0, 0, 0]
-        quadrant_values_array = []
-        for i in range(4):
-            quadrant_values_array.append([])
+        #first ensure it is in he right mode
+        if self.filter_select_combobox.currentIndex() == 0:
+            """currently in threshold gating mode"""
+            single_peak_count_channel0 = [0, 0, 0, 0]
+            single_peak_count_channel1 = [0, 0, 0, 0]
+            multi_peak_count_channel0 = [0, 0, 0, 0]
+            multi_peak_count_channel1 = [0, 0, 0, 0]
+            count_quadrant = [0, 0, 0, 0]
+            quadrant_values_array = []
+            for i in range(4):
+                quadrant_values_array.append([])
 
-        # pass the threshold value to next window
-        text_x = self.lr_x_axis.value()
-        text_y = self.lr_y_axis.value()
-        self.quadrant_indexs = [[], [], [], []]
-        a = (np.array(self.Ch1_channel0) > text_x).tolist()
-        c = (np.array(self.Ch1_channel1) > text_y).tolist()
+            # pass the threshold value to next window
+            text_x = self.lr_x_axis.value()
+            text_y = self.lr_y_axis.value()
+            self.quadrant_indexs = [[], [], [], []]
+            a = (np.array(self.Ch1_channel0) > text_x).tolist()
+            c = (np.array(self.Ch1_channel1) > text_y).tolist()
 
-        self.quadrant1_list = [False] * len(a)
-        self.quadrant2_list = [False] * len(a)
-        self.quadrant3_list = [False] * len(a)
-        self.quadrant4_list = [False] * len(a)
+            self.quadrant1_list = [False] * len(a)
+            self.quadrant2_list = [False] * len(a)
+            self.quadrant3_list = [False] * len(a)
+            self.quadrant4_list = [False] * len(a)
 
-        for i in range(len(a)):
-            """determine each quadrant values"""
-            if a[i] and c[i]:
-                quadrant = 0
-                self.quadrant1_list[i] = True
-                self.quadrant_indexs[0].append(i)
-            elif not a[i] and c[i]:
-                quadrant = 1
-                self.quadrant2_list[i] = True
-                self.quadrant_indexs[1].append(i)
-            elif not a[i] and not c[i]:
-                quadrant = 2
-                self.quadrant3_list[i] = True
-                self.quadrant_indexs[2].append(i)
-            else:
-                quadrant = 3
-                self.quadrant4_list[i] = True
-                self.quadrant_indexs[3].append(i)
-
-            count_quadrant[quadrant] += 1
-            if self.Ch1_channel0_peak_num[i] == 1:
-                single_peak_count_channel0[quadrant] += 1
-            elif self.Ch1_channel0_peak_num[i] > 1:
-                multi_peak_count_channel0[quadrant] += 1
-            if self.Ch1_channel1_peak_num[i] == 1:
-                single_peak_count_channel1[quadrant] += 1
-            elif self.Ch1_channel1_peak_num[i] > 1:
-                multi_peak_count_channel1[quadrant] += 1
-        try:
-            droplets = float(self.ui.lineEdit_totaldroplets.text())
-        except:
-            droplets = 1
-
-        for i in range(4):
-
-            if len(self.Ch1_channel0) != 0:
-                view1 = str(round(100 * count_quadrant[i] / len(self.Ch1_channel0), 2))
-                totalpercent = str(round(100 * count_quadrant[i] / droplets, 2))
-                if count_quadrant[i] > 0:
-                    x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_quadrant[i], 2))
-                    y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_quadrant[i], 2))
-                    x_multi_1 = str(round(100 * multi_peak_count_channel0[i] / count_quadrant[i], 2))
-                    y_multi_1 = str(round(100 * multi_peak_count_channel1[i] / count_quadrant[i], 2))
+            for i in range(len(a)):
+                """determine each quadrant values"""
+                if a[i] and c[i]:
+                    quadrant = 0
+                    self.quadrant1_list[i] = True
+                    self.quadrant_indexs[0].append(i)
+                elif not a[i] and c[i]:
+                    quadrant = 1
+                    self.quadrant2_list[i] = True
+                    self.quadrant_indexs[1].append(i)
+                elif not a[i] and not c[i]:
+                    quadrant = 2
+                    self.quadrant3_list[i] = True
+                    self.quadrant_indexs[2].append(i)
                 else:
+                    quadrant = 3
+                    self.quadrant4_list[i] = True
+                    self.quadrant_indexs[3].append(i)
+
+                count_quadrant[quadrant] += 1
+                if self.Ch1_channel0_peak_num[i] == 1:
+                    single_peak_count_channel0[quadrant] += 1
+                elif self.Ch1_channel0_peak_num[i] > 1:
+                    multi_peak_count_channel0[quadrant] += 1
+                if self.Ch1_channel1_peak_num[i] == 1:
+                    single_peak_count_channel1[quadrant] += 1
+                elif self.Ch1_channel1_peak_num[i] > 1:
+                    multi_peak_count_channel1[quadrant] += 1
+            try:
+                droplets = float(self.ui.lineEdit_totaldroplets.text())
+            except:
+                droplets = 1
+
+            for i in range(4):
+
+                if len(self.Ch1_channel0) != 0:
+                    view1 = str(round(100 * count_quadrant[i] / len(self.Ch1_channel0), 2))
+                    totalpercent = str(round(100 * count_quadrant[i] / droplets, 2))
+                    if count_quadrant[i] > 0:
+                        x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_quadrant[i], 2))
+                        y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_quadrant[i], 2))
+                        x_multi_1 = str(round(100 * multi_peak_count_channel0[i] / count_quadrant[i], 2))
+                        y_multi_1 = str(round(100 * multi_peak_count_channel1[i] / count_quadrant[i], 2))
+                    else:
+                        x_single_1 = '0'
+                        y_single_1 = '0'
+                        x_multi_1 = '0'
+                        y_multi_1 = '0'
+                else:
+                    view1 = 0
+                    totalpercent = '0'
                     x_single_1 = '0'
                     y_single_1 = '0'
                     x_multi_1 = '0'
                     y_multi_1 = '0'
-            else:
-                view1 = 0
-                totalpercent = '0'
-                x_single_1 = '0'
-                y_single_1 = '0'
-                x_multi_1 = '0'
-                y_multi_1 = '0'
 
-            self.tableView_scatterquadrants.setItem(i, 0, QTableWidgetItem(str(count_quadrant[i])))
-            self.tableView_scatterquadrants.setItem(i, 1, QTableWidgetItem(view1))
-            self.tableView_scatterquadrants.setItem(i, 2, QTableWidgetItem(str(totalpercent)))
-            self.tableView_scatterquadrants.setItem(i, 3, QTableWidgetItem(x_single_1))
-            self.tableView_scatterquadrants.setItem(i, 4, QTableWidgetItem(y_single_1))
-            self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
-            self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
+                self.tableView_scatterquadrants.setItem(i, 0, QTableWidgetItem(str(count_quadrant[i])))
+                self.tableView_scatterquadrants.setItem(i, 1, QTableWidgetItem(view1))
+                self.tableView_scatterquadrants.setItem(i, 2, QTableWidgetItem(str(totalpercent)))
+                self.tableView_scatterquadrants.setItem(i, 3, QTableWidgetItem(x_single_1))
+                self.tableView_scatterquadrants.setItem(i, 4, QTableWidgetItem(y_single_1))
+                self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
+                self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
     def quadrant_rect_click_handle(self):
         """update the quadrant rectangle when mouse is clicked, remove or add the box as needed"""
