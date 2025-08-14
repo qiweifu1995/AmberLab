@@ -130,6 +130,7 @@ class window_filter(QWidget):
             self.x = []
             self.y = []
             self.polygon = []
+            self.square_array = []
             self.points_inside = []
             self.x_quadrant_data = [[] for i in range(6)]
             self.y_quadrant_data = [[] for i in range(6)]
@@ -137,6 +138,7 @@ class window_filter(QWidget):
             self.Ch1_channel1 = []
             self.Ch1_channel0_peak_num = []
             self.Ch1_channel1_peak_num = []
+
 
             # plot setting
             self.line_thickness = 4
@@ -1120,7 +1122,6 @@ class window_filter(QWidget):
     def new_square_confirmed(self, square):
         """handle the data returned from window"""
         pen = pg.mkPen(color='r', width=3, style=QtCore.Qt.DashLine)
-        self.square_array = []
         if square["repeat"]:
             origin = square["origin"]
             size = square["size"]
@@ -1134,6 +1135,8 @@ class window_filter(QWidget):
             self.graphWidget.addItem(item)
         self.square_window.hide()
         print(square)
+        self.table_type_change()
+        self.square_table_update()
 
     def update_fonts(self):
         print("update fonts")
@@ -2215,12 +2218,94 @@ class window_filter(QWidget):
             except:
                 name_array.append("Square 1")
             self.tableView_scatterquadrants.setVerticalHeaderLabels(name_array)
+            self.square_table_update()
+        elif self.filter_select_combobox.currentIndex() == 2:
+            # set row count
+            self.tableView_scatterquadrants.setRowCount(1)
+            # set column count
+            self.tableView_scatterquadrants.setColumnCount(7)
+            self.tableView_scatterquadrants.setHorizontalHeaderLabels(
+                ('Count', '% Total Peaks', '% Total Droplets', 'X Single Peak %',
+                 'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
+            self.tableView_scatterquadrants.setVerticalHeaderLabels(["Polygon"])
 
 
     ################################################################################################
     #### starting here, have square gating funtions
     def square_table_update(self):
-        return 0
+        """yodate the square filter"""
+        # first ensure it is in he right mode
+        if self.filter_select_combobox.currentIndex() == 1:
+            """currently in threshold gating mode"""
+            single_peak_count_channel0 = [0 for x in range(len(self.square_array))]
+            single_peak_count_channel1 = [0 for x in range(len(self.square_array))]
+            multi_peak_count_channel0 = [0 for x in range(len(self.square_array))]
+            multi_peak_count_channel1 = [0 for x in range(len(self.square_array))]
+            count_square = [0 for x in range(len(self.square_array))]
+            quadrant_values_array = [0 for x in range(len(self.square_array))]
+
+            # pass the threshold value to next window
+            for square_index, square in enumerate(self.square_array):
+                x_min = square.pos()[0]
+                y_min = square.pos()[1]
+                x_max = x_min + square.size()[0]
+                y_max = y_min + square.size()[1]
+
+                self.square_indexs = [[] for x in range(len(self.square_array))]
+                a = ((np.array(self.Ch1_channel0) > x_min) & (x_max > np.array(self.Ch1_channel0))).tolist()
+                c = ((np.array(self.Ch1_channel1) > y_min) & (y_max > np.array(self.Ch1_channel1))).tolist()
+
+                self.square_list = [False] * len(a)
+
+                for i in range(len(a)):
+                    """determine each quadrant values"""
+                    if a[i] and c[i]:
+                        self.square_list[i] = True
+                        self.square_indexs[square_index].append(i)
+                        count_square[square_index] += 1
+                    if self.Ch1_channel0_peak_num[i] == 1:
+                        single_peak_count_channel0[square_index] += 1
+                    elif self.Ch1_channel0_peak_num[i] > 1:
+                        multi_peak_count_channel0[square_index] += 1
+                    if self.Ch1_channel1_peak_num[i] == 1:
+                        single_peak_count_channel1[square_index] += 1
+                    elif self.Ch1_channel1_peak_num[i] > 1:
+                        multi_peak_count_channel1[square_index] += 1
+                try:
+                    droplets = float(self.ui.lineEdit_totaldroplets.text())
+                except:
+                    droplets = 1
+
+            for i in range(len(self.square_array)):
+
+                if len(self.Ch1_channel0) != 0:
+                    view1 = str(round(100 * count_square[i] / len(self.Ch1_channel0), 2))
+                    totalpercent = str(round(100 * count_square[i] / droplets, 2))
+                    if count_square[i] > 0:
+                        x_single_1 = str(round(100 * single_peak_count_channel0[i] / count_square[i], 2))
+                        y_single_1 = str(round(100 * single_peak_count_channel1[i] / count_square[i], 2))
+                        x_multi_1 = str(round(100 * multi_peak_count_channel0[i] / count_square[i], 2))
+                        y_multi_1 = str(round(100 * multi_peak_count_channel1[i] / count_square[i], 2))
+                    else:
+                        x_single_1 = '0'
+                        y_single_1 = '0'
+                        x_multi_1 = '0'
+                        y_multi_1 = '0'
+                else:
+                    view1 = 0
+                    totalpercent = '0'
+                    x_single_1 = '0'
+                    y_single_1 = '0'
+                    x_multi_1 = '0'
+                    y_multi_1 = '0'
+
+                self.tableView_scatterquadrants.setItem(i, 0, QTableWidgetItem(str(count_square[i])))
+                self.tableView_scatterquadrants.setItem(i, 1, QTableWidgetItem(view1))
+                self.tableView_scatterquadrants.setItem(i, 2, QTableWidgetItem(str(totalpercent)))
+                self.tableView_scatterquadrants.setItem(i, 3, QTableWidgetItem(x_single_1))
+                self.tableView_scatterquadrants.setItem(i, 4, QTableWidgetItem(y_single_1))
+                self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
+                self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
 
     ################################################################################################
