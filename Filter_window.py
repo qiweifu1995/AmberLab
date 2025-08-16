@@ -122,6 +122,8 @@ class window_filter(QWidget):
             # root will hold the file index for the root file if true, else None
             self.root = root
             self.selected_quadrant = 1
+            self.selected_squares = []
+            self.square_rect_obj = []
             self.rect_trigger = False
             self.reset_comboBox = True
             self.multi_file = multi_file
@@ -1127,12 +1129,17 @@ class window_filter(QWidget):
             size = square["size"]
             repeat_num = square["repeat_num"]
             for i in range(repeat_num):
+                current_square = pg.RectROI((origin[0]+i*size[0],origin[1]), square["size"], pen=pen)
                 self.square_array.append(pg.RectROI((origin[0]+i*size[0],origin[1]), square["size"], pen=pen))
+                self.square_array[i].sigRegionChangeFinished.connect(self.square_table_update)
         else:
             self.square_array.append(pg.RectROI(square["origin"], square["size"], pen=pen))
+            self.square_array[-1].sigRegionChangeFinished.connect(self.square_table_update)
 
         for item in self.square_array:
             self.graphWidget.addItem(item)
+
+        self.filter_select_combobox.setCurrentIndex(1)
         self.square_window.hide()
         print(square)
         self.table_type_change()
@@ -2234,7 +2241,7 @@ class window_filter(QWidget):
     #### starting here, have square gating funtions
     def square_table_update(self):
         """yodate the square filter"""
-        # first ensure it is in he right mode
+        # first ensure it is in the right mode
         if self.filter_select_combobox.currentIndex() == 1:
             """currently in threshold gating mode"""
             single_peak_count_channel0 = [0 for x in range(len(self.square_array))]
@@ -2276,6 +2283,11 @@ class window_filter(QWidget):
                 except:
                     droplets = 1
 
+                self.tableView_scatterquadrants.setItem(square_index, 7, QTableWidgetItem(str(x_min)))
+                self.tableView_scatterquadrants.setItem(square_index, 8, QTableWidgetItem(str(y_min)))
+                self.tableView_scatterquadrants.setItem(square_index, 9, QTableWidgetItem(str(y_max)))
+                self.tableView_scatterquadrants.setItem(square_index, 10, QTableWidgetItem(str(y_max)))
+
             for i in range(len(self.square_array)):
 
                 if len(self.Ch1_channel0) != 0:
@@ -2298,6 +2310,7 @@ class window_filter(QWidget):
                     y_single_1 = '0'
                     x_multi_1 = '0'
                     y_multi_1 = '0'
+
 
                 self.tableView_scatterquadrants.setItem(i, 0, QTableWidgetItem(str(count_square[i])))
                 self.tableView_scatterquadrants.setItem(i, 1, QTableWidgetItem(view1))
@@ -2409,6 +2422,19 @@ class window_filter(QWidget):
                 self.tableView_scatterquadrants.setItem(i, 4, QTableWidgetItem(y_single_1))
                 self.tableView_scatterquadrants.setItem(i, 5, QTableWidgetItem(x_multi_1))
                 self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
+
+
+    def square_click_add_handle(self):
+        """update the square clicks"""
+        if self.quad_rect:
+            self.graphWidget.removeItem(self.quad_rect)
+            self.rect_trigger = False
+        for index in self.selected_squares:
+            square = self.square_array[index]
+            self.square_rect_obj.append(RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1])))
+        for obj in self.square_rect_obj:
+            self.graphWidget.addItem(obj)
+
 
     def quadrant_rect_click_handle(self):
         """update the quadrant rectangle when mouse is clicked, remove or add the box as needed"""
@@ -2627,7 +2653,7 @@ class window_filter(QWidget):
     # step 2,3
     def onMouseMoved(self, point):
         """handle the mouse click event"""
-        if not self.polygon_trigger and point.button() == 1:
+        if (not self.polygon_trigger and point.button() == 1) and self.filter_select_combobox.currentIndex()==0:
             """this will handle the quandrant selection, where polygonal gating is off"""
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
             x = p.x()
@@ -2667,8 +2693,32 @@ class window_filter(QWidget):
                     self.points_inside = []
                 self.quadrant_rect_click_handle()
 
-        elif self.stop_edit_trigger and self.polygon_trigger and point.button() == 1:
+        elif point.button() == 1 and self.filter_select_combobox.currentIndex()==1:
+            """square click """
+            if self.quad_rect:
+                self.graphWidget.removeItem(self.quad_rect)
 
+            p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
+            x = p.x()
+            y = p.y()
+            square_clicked = -1
+
+            for square_index, square in enumerate(self.square_array):
+                x_min = square.pos()[0]
+                y_min = square.pos()[1]
+                x_max = square.size()[0]
+                y_max = square.size()[1]
+                # check if click in square
+                if x_min < x < x_max and y_min < y < y_max:
+                    if square_index in self.selected_squares:
+                        self.selected_squares.remove(square_index)
+                    else:
+                        self.selected_squares.append(square_index)
+                        self.square_click_add_handle()
+
+        elif (self.stop_edit_trigger and self.polygon_trigger and point.button() == 1
+              and self.filter_select_combobox.currentIndex()==2):
+            """polygon mode"""
             self.graphWidget.removeItem(self.quad_rect)
 
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
