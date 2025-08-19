@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from pyqtgraph.Qt import QtCore
 from pyqtgraph import PlotWidget
 from PyQt5.Qt import QStandardItem
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject
 import pyqtgraph as pg
 import pandas as pd
 import os
@@ -1131,13 +1131,15 @@ class window_filter(QWidget):
             for i in range(repeat_num):
                 current_square = pg.RectROI((origin[0]+i*size[0],origin[1]), square["size"], pen=pen)
                 self.square_array.append(pg.RectROI((origin[0]+i*size[0],origin[1]), square["size"], pen=pen))
+                self.square_array[-1].sigRegionChanged.connect(self.square_rect_resize)
                 self.square_array[i].sigRegionChangeFinished.connect(self.square_table_update)
+                self.graphWidget.addItem(self.square_array[-1])
         else:
             self.square_array.append(pg.RectROI(square["origin"], square["size"], pen=pen))
+            self.square_array[-1].sigRegionChanged.connect(self.square_rect_resize)
             self.square_array[-1].sigRegionChangeFinished.connect(self.square_table_update)
+            self.graphWidget.addItem(self.square_array[-1])
 
-        for item in self.square_array:
-            self.graphWidget.addItem(item)
 
         self.filter_select_combobox.setCurrentIndex(1)
         self.square_window.hide()
@@ -2424,16 +2426,37 @@ class window_filter(QWidget):
                 self.tableView_scatterquadrants.setItem(i, 6, QTableWidgetItem(y_multi_1))
 
 
-    def square_click_add_handle(self):
+    def square_click_add_handle(self, square_index):
         """update the square clicks"""
         if self.quad_rect:
             self.graphWidget.removeItem(self.quad_rect)
             self.rect_trigger = False
-        for index in self.selected_squares:
-            square = self.square_array[index]
-            self.square_rect_obj.append(RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1])))
-        for obj in self.square_rect_obj:
-            self.graphWidget.addItem(obj)
+        square = self.square_array[square_index]
+        self.square_rect_obj.append(RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1])))
+        self.graphWidget.addItem(self.square_rect_obj[-1])
+
+    def square_click_remove_handle(self, square_index):
+        """remove the square clicks"""
+        try:
+            self.graphWidget.removeItem(self.square_rect_obj[square_index])
+            self.square_rect_obj.pop(square_index)
+        except:
+            print("issue removing squre")
+
+
+
+    def square_rect_resize(self):
+        """update the square rectangle"""
+        print("redraw square")
+        square = QObject.sender(self)
+
+        for index, saved_squares in enumerate(self.square_array):
+            if saved_squares == square:
+                self.square_rect_obj[index].resize(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1]))
+            else:
+                print("Square not found")
+
+
 
 
     def quadrant_rect_click_handle(self):
@@ -2695,8 +2718,10 @@ class window_filter(QWidget):
 
         elif point.button() == 1 and self.filter_select_combobox.currentIndex()==1:
             """square click """
-            if self.quad_rect:
+            try:
                 self.graphWidget.removeItem(self.quad_rect)
+            except:
+                print("No rect")
 
             p = self.graphWidget.plotItem.vb.mapSceneToView(point.scenePos())
             x = p.x()
@@ -2706,15 +2731,18 @@ class window_filter(QWidget):
             for square_index, square in enumerate(self.square_array):
                 x_min = square.pos()[0]
                 y_min = square.pos()[1]
-                x_max = square.size()[0]
-                y_max = square.size()[1]
+                x_max = x_min + square.size()[0]
+                y_max = y_min + square.size()[1]
                 # check if click in square
                 if x_min < x < x_max and y_min < y < y_max:
                     if square_index in self.selected_squares:
                         self.selected_squares.remove(square_index)
+                        self.square_click_remove_handle(square_index)
+                        print("remove squre")
                     else:
                         self.selected_squares.append(square_index)
-                        self.square_click_add_handle()
+                        self.square_click_add_handle(square_index)
+                        print("add square")
 
         elif (self.stop_edit_trigger and self.polygon_trigger and point.button() == 1
               and self.filter_select_combobox.currentIndex()==2):
