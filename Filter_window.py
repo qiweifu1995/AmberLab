@@ -1134,11 +1134,13 @@ class window_filter(QWidget):
                 self.square_array[-1].sigRegionChanged.connect(self.square_rect_resize)
                 self.square_array[i].sigRegionChangeFinished.connect(self.square_table_update)
                 self.graphWidget.addItem(self.square_array[-1])
+                self.square_rect_obj.append(None)
         else:
             self.square_array.append(pg.RectROI(square["origin"], square["size"], pen=pen))
             self.square_array[-1].sigRegionChanged.connect(self.square_rect_resize)
             self.square_array[-1].sigRegionChangeFinished.connect(self.square_table_update)
             self.graphWidget.addItem(self.square_array[-1])
+            self.square_rect_obj.append(None)
 
 
         self.filter_select_combobox.setCurrentIndex(1)
@@ -2253,6 +2255,8 @@ class window_filter(QWidget):
             count_square = [0 for x in range(len(self.square_array))]
             quadrant_values_array = [0 for x in range(len(self.square_array))]
 
+            self.square_indexs = [[] for x in range(len(self.square_array))]
+            self.square_list = [[] for x in range(len(self.square_array))]
             # pass the threshold value to next window
             for square_index, square in enumerate(self.square_array):
                 x_min = square.pos()[0]
@@ -2260,16 +2264,16 @@ class window_filter(QWidget):
                 x_max = x_min + square.size()[0]
                 y_max = y_min + square.size()[1]
 
-                self.square_indexs = [[] for x in range(len(self.square_array))]
+
                 a = ((np.array(self.Ch1_channel0) > x_min) & (x_max > np.array(self.Ch1_channel0))).tolist()
                 c = ((np.array(self.Ch1_channel1) > y_min) & (y_max > np.array(self.Ch1_channel1))).tolist()
 
-                self.square_list = [False] * len(a)
+                self.square_list[square_index] = [False] * len(a)
 
                 for i in range(len(a)):
                     """determine each quadrant values"""
                     if a[i] and c[i]:
-                        self.square_list[i] = True
+                        self.square_list[square_index][i] = True
                         self.square_indexs[square_index].append(i)
                         count_square[square_index] += 1
                     if self.Ch1_channel0_peak_num[i] == 1:
@@ -2432,14 +2436,14 @@ class window_filter(QWidget):
             self.graphWidget.removeItem(self.quad_rect)
             self.rect_trigger = False
         square = self.square_array[square_index]
-        self.square_rect_obj.append(RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1])))
+        self.square_rect_obj[square_index] = RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1]))
         self.graphWidget.addItem(self.square_rect_obj[-1])
 
     def square_click_remove_handle(self, square_index):
         """remove the square clicks"""
         try:
             self.graphWidget.removeItem(self.square_rect_obj[square_index])
-            self.square_rect_obj.pop(square_index)
+            self.square_rect_obj[square_index] = None
         except:
             print("issue removing squre")
 
@@ -2510,51 +2514,52 @@ class window_filter(QWidget):
 
     def quadrant_rect_resize(self):
         """update the quadrant rectangle"""
-        print("redraw square")
-        y_axis = self.graphWidget.getAxis('left')
-        x_axis = self.graphWidget.getAxis('bottom')
-        x_range = x_axis.range
-        y_range = y_axis.range
-        x_threshold = self.lr_x_axis.value()
-        y_threshold = self.lr_y_axis.value()
-        # calls the custom function
-        if self.rect_trigger:
-            self.graphWidget.removeItem(self.quad_rect)
+        if self.filter_select_combobox.currentIndex() == 0:
+            print("redraw square")
+            y_axis = self.graphWidget.getAxis('left')
+            x_axis = self.graphWidget.getAxis('bottom')
+            x_range = x_axis.range
+            y_range = y_axis.range
+            x_threshold = self.lr_x_axis.value()
+            y_threshold = self.lr_y_axis.value()
+            # calls the custom function
+            if self.rect_trigger:
+                self.graphWidget.removeItem(self.quad_rect)
 
-        self.rect_trigger = True
+            self.rect_trigger = True
 
-        if self.selected_quadrant == 0:
-            if x_threshold < x_range[1] and y_threshold < y_range[1]:
-                x_width = x_range[1] - x_threshold
-                y_width = y_range[1] - y_threshold
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
-            else:
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
-        elif self.selected_quadrant == 1:
-            if x_threshold > x_range[0] and y_threshold < y_range[1]:
-                x_width = x_range[0] - x_threshold
-                y_width = y_range[1] - y_threshold
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
-            else:
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
-        elif self.selected_quadrant == 2:
-            if x_threshold > x_range[0] and y_threshold > y_range[0]:
-                x_width = x_range[0] - x_threshold
-                y_width = y_range[0] - y_threshold
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
-            else:
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
-        elif self.selected_quadrant == 3:
-            if x_threshold < x_range[1] and y_threshold > y_range[0]:
-                x_width = x_range[1] - x_threshold
-                y_width = y_range[0] - y_threshold
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
-            else:
-                rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+            if self.selected_quadrant == 0:
+                if x_threshold < x_range[1] and y_threshold < y_range[1]:
+                    x_width = x_range[1] - x_threshold
+                    y_width = y_range[1] - y_threshold
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+                else:
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+            elif self.selected_quadrant == 1:
+                if x_threshold > x_range[0] and y_threshold < y_range[1]:
+                    x_width = x_range[0] - x_threshold
+                    y_width = y_range[1] - y_threshold
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+                else:
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+            elif self.selected_quadrant == 2:
+                if x_threshold > x_range[0] and y_threshold > y_range[0]:
+                    x_width = x_range[0] - x_threshold
+                    y_width = y_range[0] - y_threshold
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+                else:
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
+            elif self.selected_quadrant == 3:
+                if x_threshold < x_range[1] and y_threshold > y_range[0]:
+                    x_width = x_range[1] - x_threshold
+                    y_width = y_range[0] - y_threshold
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, x_width, y_width)
+                else:
+                    rect_object = QtCore.QRectF(x_threshold, y_threshold, 0, 0)
 
-        self.quad_rect = RectQuadrant(rect_object)
-        self.graphWidget.addItem(self.quad_rect)
-        self.graphWidget.disableAutoRange()
+            self.quad_rect = RectQuadrant(rect_object)
+            self.graphWidget.addItem(self.quad_rect)
+            self.graphWidget.disableAutoRange()
 
     ### infinite lines end
     ################################################################################################
@@ -2967,7 +2972,7 @@ class window_filter(QWidget):
     def ok_clicked(self):
         # incase user forgot to click polygon again to finish polygon
 
-        if self.polygon_trigger == False:
+        if self.filter_select_combobox.currentIndex() == 0:
             """
             text_x = self.lr_x_axis.value()
             text_y = self.lr_y_axis.value()
@@ -2990,7 +2995,19 @@ class window_filter(QWidget):
                 self.points_inside = list(compress(self.points_inside_square, self.quadrant4_list))
 
             self.filter_out_list = self.points_inside
-        else:
+
+        elif self.filter_select_combobox.currentIndex() == 1:
+            """process data for all the square list"""
+            if len(self.selected_squares) != 0:
+                list_holder = [False] * len(self.square_list[0])
+                for index in self.selected_squares:
+                    boolean_list = self.square_list[index]
+                    list_holder = [a or b for a, b in zip(list_holder, boolean_list)]
+
+                self.points_inside = list(compress(self.points_inside_square, list_holder))
+                self.filter_out_list = self.points_inside
+
+        elif self.filter_select_combobox.currentIndex() == 2:
             # run trigger again incase user forgot to finish the shape
             self.polygon_triggering()
             # pass polygon value to next window
@@ -3155,25 +3172,35 @@ class window_filter(QWidget):
         # self.graphWidget.addItem(self.scatter)
         self.setEnabled(True)
         self.loading_bar.hide()
-        self.graphWidget.removeItem(self.lr_x_axis)
-        self.graphWidget.removeItem(self.lr_y_axis)
-        #self.graphWidget.getAxis('left').setLogMode(True)
-        #self.graphWidget.getAxis('bottom').setLogMode(True)
-        pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
-        self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
-        self.graphWidget.addItem(self.lr_x_axis)
-        self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
-        self.graphWidget.addItem(self.lr_y_axis)
-        self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
-        self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
+        if self.filter_select_combobox.currentIndex() == 0:
+            self.graphWidget.removeItem(self.lr_x_axis)
+            self.graphWidget.removeItem(self.lr_y_axis)
+            #self.graphWidget.getAxis('left').setLogMode(True)
+            #self.graphWidget.getAxis('bottom').setLogMode(True)
+            pen = pg.mkPen(color='r', width=5, style=QtCore.Qt.DashLine)
+            self.lr_x_axis = pg.InfiniteLine(0, movable=True, pen=pen)
+            self.graphWidget.addItem(self.lr_x_axis)
+            self.lr_y_axis = pg.InfiniteLine(0, movable=True, pen=pen, angle=0)
+            self.graphWidget.addItem(self.lr_y_axis)
+            self.lr_x_axis.setValue(float(self.GateVoltage_x.text()))
+            self.lr_y_axis.setValue(float(self.GateVoltage_y.text()))
 
 
-        self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
-        self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
-        self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
-        self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
-        self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
-        self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+            self.lr_x_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+            self.lr_x_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+            self.lr_x_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+            self.lr_y_axis.sigPositionChangeFinished.connect(self.infiniteline_update)
+            self.lr_y_axis.sigPositionChanged.connect(self.quadrant_rect_resize)
+            self.lr_y_axis.sigPositionChangeFinished.connect(self.quadrant_rect_resize)
+
+        elif self.filter_select_combobox.currentIndex() == 1:
+            for square in self.square_array:
+                self.graphWidget.addItem(square)
+            for obj in self.square_rect_obj:
+                if obj:
+                    self.graphWidget.addItem(obj)
+
+
         # reset threshold # test
         self.infiniteline_table_update()
         if self.checkbox_logscale.checkState():
