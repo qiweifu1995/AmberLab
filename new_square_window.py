@@ -81,6 +81,7 @@ class SquareWindow(QWidget):
 
         ### set up triggers from here
         self.confirm_button.clicked.connect(self.confirmed)
+        self.cancel_button.clicked.connect(self.cancelled)
 
     def confirmed(self):
         """this function returns data back to filter"""
@@ -103,7 +104,9 @@ class SquareWindow(QWidget):
         print("confirmed square")
         self.confirm_clicked.custom_signal.emit({"origin": self.origin, "size": self.size, "repeat": self.repeat, "repeat_num": self.repeat_num})
 
-
+    def cancelled(self):
+        """this handles closing the filter"""
+        self.hide()
 
 
 if __name__ == "__main__":

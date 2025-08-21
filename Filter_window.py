@@ -2214,6 +2214,39 @@ class window_filter(QWidget):
                  'Y Single Peak %', 'X Multi Peak %', 'Y Multi Peak %'))
             self.tableView_scatterquadrants.setVerticalHeaderLabels(
                 ('Top Right', 'Top Left', 'Bottom Left', 'Bottom Right'))
+            try:
+                for square in self.square_array:
+                    square.hide()
+            except:
+                print("No squares to remove")
+
+            try:
+                for square_obj in self.square_rect_obj:
+                    square_obj.hide()
+            except:
+                print("No squares ojb to remove")
+
+            try:
+                self.quad_rect.show()
+            except:
+                print("no rect to show")
+
+            try:
+                if  self.lr_x_axis in self.graphWidget.items():
+                    self.lr_x_axis.show()
+                else:
+                    self.graphWidget.addItem(self.lr_x_axis)
+            except:
+                print("No line to add")
+
+            try:
+                if  self.lr_y_axis in self.graphWidget.items():
+                    self.lr_y_axis.show()
+                else:
+                    self.graphWidget.addItem(self.lr_y_axis)
+            except:
+                print("No line to add")
+
 
         elif self.filter_select_combobox.currentIndex() == 1:
             self.tableView_scatterquadrants.setRowCount(len(self.square_array))
@@ -2230,6 +2263,27 @@ class window_filter(QWidget):
                 name_array.append("Square 1")
             self.tableView_scatterquadrants.setVerticalHeaderLabels(name_array)
             self.square_table_update()
+
+            if self.lr_x_axis in self.graphWidget.items():
+                self.lr_x_axis.hide()
+
+            if self.lr_y_axis in self.graphWidget.items():
+                self.lr_y_axis.hide()
+
+            if self.quad_rect in self.graphWidget.items():
+                self.quad_rect.hide()
+
+            try:
+                for square in self.square_array:
+                    square.show()
+            except:
+                print("No square to add")
+            try:
+                for square_obj in self.square_rect_obj:
+                    square_obj.show()
+            except:
+                print("No square to add")
+
         elif self.filter_select_combobox.currentIndex() == 2:
             # set row count
             self.tableView_scatterquadrants.setRowCount(1)
@@ -2432,9 +2486,11 @@ class window_filter(QWidget):
 
     def square_click_add_handle(self, square_index):
         """update the square clicks"""
-        if self.quad_rect:
+        try:
             self.graphWidget.removeItem(self.quad_rect)
             self.rect_trigger = False
+        except:
+            print("No rect to delete, add square")
         square = self.square_array[square_index]
         self.square_rect_obj[square_index] = RectQuadrant(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1]))
         self.graphWidget.addItem(self.square_rect_obj[-1])
@@ -2456,7 +2512,11 @@ class window_filter(QWidget):
 
         for index, saved_squares in enumerate(self.square_array):
             if saved_squares == square:
-                self.square_rect_obj[index].resize(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1]))
+                try:
+                    self.square_rect_obj[index].resize(QtCore.QRectF(square.pos()[0], square.pos()[1], square.size()[0], square.size()[1]))
+                except:
+                    print("Square not found")
+
             else:
                 print("Square not found")
 
